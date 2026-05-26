@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown, X } from 'lucide-react';
 import './Home.css';
 
 interface HomeProps {
@@ -28,6 +28,18 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       return () => clearTimeout(timer);
     }
   }, []);
+
+  // Listen for Escape key to close the welcome popup modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showWelcomeModal) {
+        localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
+        setShowWelcomeModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showWelcomeModal]);
 
   // Steps to display in sequence during analysis to keep the user engaged
   const analysisSteps = [
@@ -173,8 +185,28 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   return (
     <div className="home-container animate-fade-in-up">
       {showWelcomeModal && (
-        <div className="welcome-modal-overlay animate-fade-in">
+        <div 
+          className="welcome-modal-overlay animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
+              setShowWelcomeModal(false);
+            }
+          }}
+          title="Click outside to close"
+        >
           <div className="welcome-modal-card glass-card animate-scale-up">
+            <button 
+              className="modal-close-icon-btn" 
+              onClick={() => {
+                localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
+                setShowWelcomeModal(false);
+              }}
+              title="Close announcement (Esc)"
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
             <div className="modal-badge">
               <Sparkles size={14} className="animate-pulse" /> Platform Upgrade
             </div>

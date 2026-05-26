@@ -887,9 +887,9 @@
 .welcome-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 9, 11, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(3, 9, 11, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: grid;
   place-items: center;
   z-index: 99999;
@@ -899,7 +899,7 @@
 .welcome-modal-card {
   max-width: 520px;
   width: 100%;
-  background: rgba(6, 16, 20, 0.95) !important;
+  background: rgba(6, 16, 20, 0.96) !important;
   border: 1px solid rgba(0, 245, 255, 0.28) !important;
   border-radius: 24px;
   padding: 2.2rem;
@@ -911,6 +911,29 @@
   align-items: center;
   text-align: center;
   position: relative;
+}
+
+.modal-close-icon-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.modal-close-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #00f5ff;
+  transform: rotate(90deg);
 }
 
 .modal-badge {
