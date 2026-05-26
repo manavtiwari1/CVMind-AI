@@ -20,7 +20,7 @@ const starterPrompts = [
 ];
 
 export default function Chatbot({ customApiKey }: ChatbotProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
