@@ -9,9 +9,9 @@ CVMind AI is a state-of-the-art, premium SPA tool designed to parse, analyze, an
 *   **AI Resume Audit Console:** Instant, non-blocking scan checking ATS algorithms, corporate action verbs, quantified achievements, and overall readability.
 *   **Highly Polished Dashboard:** Glassmorphism UI presenting rating gauges, score distributions, active keyword radars, and beautiful interactive summaries.
 *   **Hybrid Database System:** Seamlessly integrates with MongoDB Atlas and gracefully falls back to a local JSON file store if environment credentials are absent.
-*   **Secure Admin Workspace:** Multi-user authentication (**Username: `admin`, Password: `Admin@1234`**) with persistent sessions and full database health telemetry.
+*   **Secure Admin Workspace:** Secure administrator area with persistent session states and database health telemetry.
 *   **OpenRouter API Routing:** Direct fallback support for custom Gemini/OpenRouter keys, optimizing budget parameters with precise token thresholds.
-*   **Clean History Routing:** Powered by the HTML5 History API, removing old `#` hash routes for clean `/admin` and `/about` paths.
+*   **Clean History Routing:** Powered by the HTML5 History API, removing old `#` hash routes for clean subpath navigation.
 
 ---
 
