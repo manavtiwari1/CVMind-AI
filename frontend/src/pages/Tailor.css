@@ -709,17 +709,18 @@
   transition: transform 0.25s ease;
 }
 
-.download-arrow.open {
+.download-dropdown-container:hover .download-arrow {
   transform: rotate(180deg);
 }
 
 .download-dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
   right: 0;
   width: 210px;
-  background: rgba(6, 16, 20, 0.95) !important;
+  background: rgba(6, 16, 20, 0.96) !important;
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(0, 245, 255, 0.2) !important;
   border-radius: 10px;
   padding: 0.5rem;
@@ -728,18 +729,18 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  animation: fadeInDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  
+  /* Transition state */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.download-dropdown-container:hover .download-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(4px);
 }
 
 .download-dropdown-item {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Upload, FileText, ChevronRight, Check, Copy, Sparkles, BrainCircuit, RefreshCw, Cpu, CheckCircle2, ShieldCheck, FileCheck, Download, ChevronDown } from 'lucide-react';
 import './Tailor.css';
 
@@ -25,22 +25,8 @@ export default function Tailor({ customApiKey }: TailorProps) {
   const [copied, setCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState('');
-  const [showDownloadDropdown, setShowDownloadDropdown] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDownloadDropdown(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   const loaderSteps = [
     'Reading original CV structures...',
@@ -396,37 +382,26 @@ export default function Tailor({ customApiKey }: TailorProps) {
                     {copied ? 'Copied' : 'Copy Text'}
                   </button>
 
-                  <div className="download-dropdown-container" ref={dropdownRef}>
-                    <button 
-                      className="btn-primary control-btn download-toggle-btn"
-                      onClick={() => setShowDownloadDropdown(!showDownloadDropdown)}
-                    >
-                      <Download size={14} /> Download <ChevronDown size={12} className={`download-arrow ${showDownloadDropdown ? 'open' : ''}`} />
+                  <div className="download-dropdown-container">
+                    <button className="btn-primary control-btn download-toggle-btn">
+                      <Download size={14} /> Download <ChevronDown size={12} className="download-arrow" />
                     </button>
-                    {showDownloadDropdown && (
-                      <div className="download-dropdown-menu glass-card">
-                        <button 
-                          className="download-dropdown-item"
-                          onClick={() => {
-                            handleDownloadDocx();
-                            setShowDownloadDropdown(false);
-                          }}
-                        >
-                          <FileText size={14} className="dropdown-item-icon color-blue" />
-                          <span>Word Document (.doc)</span>
-                        </button>
-                        <button 
-                          className="download-dropdown-item"
-                          onClick={() => {
-                            handleDownloadPDF();
-                            setShowDownloadDropdown(false);
-                          }}
-                        >
-                          <FileCheck size={14} className="dropdown-item-icon color-cyan" />
-                          <span>PDF Document (.pdf)</span>
-                        </button>
-                      </div>
-                    )}
+                    <div className="download-dropdown-menu glass-card">
+                      <button 
+                        className="download-dropdown-item"
+                        onClick={handleDownloadDocx}
+                      >
+                        <FileText size={14} className="dropdown-item-icon color-blue" />
+                        <span>Word Document (.doc)</span>
+                      </button>
+                      <button 
+                        className="download-dropdown-item"
+                        onClick={handleDownloadPDF}
+                      >
+                        <FileCheck size={14} className="dropdown-item-icon color-cyan" />
+                        <span>PDF Document (.pdf)</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
