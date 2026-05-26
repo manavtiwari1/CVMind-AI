@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { 
   Award, FileText, CheckCircle2, AlertTriangle, 
-  RotateCcw, Printer, ArrowRight, Target, Check, AlertCircle, Copy 
+  RotateCcw, Printer, ArrowRight, Target, Check, AlertCircle, Copy,
+  Sparkles, Download, Loader2, Zap
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -36,12 +37,18 @@ interface AnalysisData {
 interface DashboardProps {
   setCurrentPage: (page: string) => void;
   analysisResult: AnalysisData | null;
+  resumeText: string;
   resetAnalysis: () => void;
+  customApiKey: string;
 }
 
-export default function Dashboard({ setCurrentPage, analysisResult, resetAnalysis }: DashboardProps) {
-  const [activeTab, setActiveTab] = useState<'summary' | 'keywords' | 'rewrites' | 'formatting'>('summary');
+export default function Dashboard({ setCurrentPage, analysisResult, resumeText, resetAnalysis, customApiKey }: DashboardProps) {
+  const [activeTab, setActiveTab] = useState<'summary' | 'keywords' | 'rewrites' | 'formatting' | 'optimize'>('summary');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [optimizing, setOptimizing] = useState(false);
+  const [optimizedResume, setOptimizedResume] = useState<string>('');
+  const [optimizeError, setOptimizeError] = useState<string>('');
+  const [optimizeCopied, setOptimizeCopied] = useState(false);
 
   // Return to uploader if no results yet
   if (!analysisResult) {
@@ -87,6 +94,46 @@ export default function Dashboard({ setCurrentPage, analysisResult, resetAnalysi
     setTimeout(() => {
       setCopiedIndex(null);
     }, 1500);
+  };
+
+  const handleOptimize = async () => {
+    if (!resumeText || optimizing) return;
+    setOptimizing(true);
+    setOptimizeError('');
+    setOptimizedResume('');
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (customApiKey) headers['x-gemini-key'] = customApiKey;
+      const res = await fetch(`${baseUrl}/api/optimize`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ resumeText, analysisResult })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Optimization failed.');
+      setOptimizedResume(data.data.optimizedResume);
+    } catch (err: any) {
+      setOptimizeError(err.message || 'Something went wrong.');
+    } finally {
+      setOptimizing(false);
+    }
+  };
+
+  const handleCopyOptimized = () => {
+    navigator.clipboard.writeText(optimizedResume);
+    setOptimizeCopied(true);
+    setTimeout(() => setOptimizeCopied(false), 1800);
+  };
+
+  const handleDownload = () => {
+    const blob = new Blob([optimizedResume], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'optimized_resume_cvmind.txt';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const triggerPrint = () => {
@@ -194,6 +241,12 @@ export default function Dashboard({ setCurrentPage, analysisResult, resetAnalysi
           onClick={() => setActiveTab('formatting')}
         >
           <FileText size={16} /> Formatting & Layout
+        </button>
+        <button 
+          className={`tab-btn tab-btn-optimize ${activeTab === 'optimize' ? 'active' : ''}`}
+          onClick={() => setActiveTab('optimize')}
+        >
+          <Sparkles size={16} /> AI Auto-Fix Resume
         </button>
       </div>
 
@@ -377,6 +430,107 @@ export default function Dashboard({ setCurrentPage, analysisResult, resetAnalysi
               </div>
 
               <p className="formatting-feedback-content">{formattingAndStyle.feedback}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 5: AI Auto-Fix Resume */}
+        {activeTab === 'optimize' && (
+          <div className="tab-pane">
+            <div className="optimize-panel glass-card">
+
+              {/* Header */}
+              <div className="optimize-header">
+                <div className="optimize-title-row">
+                  <Sparkles size={22} className="optimize-icon" />
+                  <h4 className="panel-title">AI Auto-Fix Resume</h4>
+                </div>
+                <p className="optimize-subtitle">
+                  Our AI will rewrite your entire resume — injecting missing ATS keywords, strengthening every bullet point with action verbs and metrics, and restructuring sections for maximum recruiter impact.
+                </p>
+
+                {/* Keyword badges to be injected */}
+                {atsKeywords.missing.length > 0 && (
+                  <div className="optimize-keywords-preview">
+                    <span className="optimize-kw-label">Keywords to inject:</span>
+                    <div className="badge-grid">
+                      {atsKeywords.missing.slice(0, 8).map((kw, i) => (
+                        <span key={i} className="badge badge-danger">{kw}</span>
+                      ))}
+                      {atsKeywords.missing.length > 8 && (
+                        <span className="badge badge-primary">+{atsKeywords.missing.length - 8} more</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* CTA / Loading / Result */}
+              {!optimizedResume && !optimizing && (
+                <div className="optimize-cta-area">
+                  {optimizeError && (
+                    <div className="optimize-error">
+                      <AlertTriangle size={16} /> {optimizeError}
+                    </div>
+                  )}
+                  {!resumeText && (
+                    <p className="optimize-no-text">Resume text unavailable. Please re-upload your resume to use this feature.</p>
+                  )}
+                  <button
+                    className="btn-optimize"
+                    onClick={handleOptimize}
+                    disabled={!resumeText}
+                    id="optimize-generate-btn"
+                  >
+                    <Zap size={18} />
+                    Generate AI-Optimized Resume
+                  </button>
+                </div>
+              )}
+
+              {optimizing && (
+                <div className="optimize-loading">
+                  <div className="optimize-spinner-ring">
+                    <Loader2 size={32} className="spin-icon" />
+                  </div>
+                  <p className="optimize-loading-text">AI is rewriting your resume...</p>
+                  <p className="optimize-loading-sub">Injecting keywords · Strengthening bullets · Restructuring sections</p>
+                </div>
+              )}
+
+              {optimizedResume && (
+                <div className="optimize-result-area">
+                  <div className="optimize-result-header">
+                    <div className="optimize-result-badge">
+                      <Check size={14} /> ATS-Optimized Resume Ready
+                    </div>
+                    <div className="optimize-result-actions">
+                      <button
+                        className="copy-btn"
+                        onClick={handleCopyOptimized}
+                        id="optimize-copy-btn"
+                      >
+                        {optimizeCopied ? <><Check size={14} className="text-success" /> Copied!</> : <><Copy size={14} /> Copy All</>}
+                      </button>
+                      <button
+                        className="btn-download"
+                        onClick={handleDownload}
+                        id="optimize-download-btn"
+                      >
+                        <Download size={14} /> Download .txt
+                      </button>
+                    </div>
+                  </div>
+                  <pre className="optimized-resume-output">{optimizedResume}</pre>
+                  <button
+                    className="optimize-regenerate-btn"
+                    onClick={handleOptimize}
+                  >
+                    <RotateCcw size={14} /> Regenerate
+                  </button>
+                </div>
+              )}
+
             </div>
           </div>
         )}

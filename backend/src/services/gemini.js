@@ -340,3 +340,118 @@ export async function chatWithCVMind(message, history = [], customApiKey = null)
     throw new Error('Chat assistant failed. ' + error.message);
   }
 }
+
+/**
+ * Takes the original resume text + analysis result and rewrites the full resume
+ * as an ATS-optimized plain-text document.
+ * @param {string} resumeText - Raw original resume text.
+ * @param {object} analysisResult - The structured evaluation returned by analyzeResumeWithGemini.
+ * @param {string} [customApiKey] - Optional user-supplied API key.
+ * @returns {Promise<string>} - The full rewritten resume as a plain-text string.
+ */
+export async function optimizeResumeWithGemini(resumeText, analysisResult, customApiKey = null) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const missingKeywords = (analysisResult?.atsKeywords?.missing || []).join(', ');
+  const weaknesses = (analysisResult?.weaknesses || []).join('; ');
+  const recommendations = (analysisResult?.recommendations || []).join('; ');
+  const bulletRewrites = (analysisResult?.contentAndImpact?.suggestions || [])
+    .map(s => `Original: "${s.original}" → Improved: "${s.improved}"`)
+    .join('\n');
+
+  const systemPrompt = `You are an elite resume writer, ATS optimization specialist, and Fortune 500 hiring expert.
+Your task is to completely rewrite the provided resume to make it a top-tier, ATS-passing document.
+
+RULES (follow all of them strictly):
+1. Keep ALL real information from the original resume — do NOT invent companies, titles, dates, or degrees.
+2. Naturally inject these missing ATS keywords where relevant: ${missingKeywords || 'none identified'}.
+3. Fix these identified weaknesses: ${weaknesses || 'none identified'}.
+4. Follow these recommendations: ${recommendations || 'none identified'}.
+5. Apply these bullet rewrites where the original bullets appear: ${bulletRewrites || 'none'}.
+6. Use strong action verbs (Led, Engineered, Delivered, Increased, Reduced, Optimized, Spearheaded, etc.).
+7. Quantify every achievement possible — add realistic percentages, numbers, timeframes where implied.
+8. Structure the resume in this exact order using UPPERCASE section headers:
+   PROFESSIONAL SUMMARY
+   SKILLS
+   EXPERIENCE
+   EDUCATION
+   (plus CERTIFICATIONS / PROJECTS / AWARDS if present in original)
+9. Keep formatting ATS-safe: plain text, no tables, no columns, no graphics, no special symbols except standard dashes and bullets (•).
+10. Target length: 1 full page (400–600 words). Be concise but impactful.
+11. Return ONLY the rewritten resume text. No preamble, no explanations, no markdown wrappers.`;
+
+  const userPrompt = `Here is the original resume to rewrite:
+"""
+${resumeText}
+"""
+
+Rewrite it now as a fully ATS-optimized resume following all the rules above.`;
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.3,
+          max_tokens: 2000
+        })
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+
+      const result = await response.json();
+      if (!result.choices || result.choices.length === 0) {
+        throw new Error('No choices returned by OpenRouter API.');
+      }
+
+      return result.choices[0].message.content.trim();
+    } catch (error) {
+      console.error('OpenRouter Optimize Error:', error);
+      throw new Error('Resume optimization failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        temperature: 0.3,
+        maxOutputTokens: 2000
+      }
+    });
+
+    return result.response.text().trim();
+  } catch (error) {
+    console.error('Gemini Optimize Error:', error);
+    if (error.status === 403 || error.message.includes('API key')) {
+      throw new Error('Invalid Gemini API Key.');
+    }
+    throw new Error('Resume optimization failed. ' + error.message);
+  }
+}

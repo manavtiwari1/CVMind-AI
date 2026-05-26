@@ -5,10 +5,11 @@ import './Home.css';
 interface HomeProps {
   setCurrentPage: (page: string) => void;
   setAnalysisResult: (result: any) => void;
+  setResumeText: (text: string) => void;
   customApiKey: string;
 }
 
-export default function Home({ setCurrentPage, setAnalysisResult, customApiKey }: HomeProps) {
+export default function Home({ setCurrentPage, setAnalysisResult, setResumeText, customApiKey }: HomeProps) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -138,6 +139,9 @@ export default function Home({ setCurrentPage, setAnalysisResult, customApiKey }
 
       if (resData.success && resData.data) {
         setAnalysisResult(resData.data);
+        if (resData.resumeText) {
+          setResumeText(resData.resumeText);
+        }
         setCurrentPage('dashboard');
       } else {
         throw new Error('Analysis completed, but failed to retrieve proper feedback metrics.');

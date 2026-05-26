@@ -17,6 +17,7 @@ export default function App() {
     return localStorage.getItem('resumetrics_gemini_key') || '';
   });
   const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [resumeText, setResumeText] = useState<string>('');
 
   const setCurrentPage = (page: string) => {
     setCurrentPageState(page);
@@ -43,6 +44,7 @@ export default function App() {
 
   const resetAnalysis = () => {
     setAnalysisResult(null);
+    setResumeText('');
     setCurrentPage('home');
   };
 
@@ -53,7 +55,8 @@ export default function App() {
         return (
           <Home 
             setCurrentPage={setCurrentPage} 
-            setAnalysisResult={setAnalysisResult} 
+            setAnalysisResult={setAnalysisResult}
+            setResumeText={setResumeText}
             customApiKey={customApiKey}
           />
         );
@@ -65,8 +68,10 @@ export default function App() {
         return (
           <Dashboard 
             setCurrentPage={setCurrentPage} 
-            analysisResult={analysisResult} 
+            analysisResult={analysisResult}
+            resumeText={resumeText}
             resetAnalysis={resetAnalysis}
+            customApiKey={customApiKey}
           />
         );
       case 'admin':
@@ -75,7 +80,8 @@ export default function App() {
         return (
           <Home 
             setCurrentPage={setCurrentPage} 
-            setAnalysisResult={setAnalysisResult} 
+            setAnalysisResult={setAnalysisResult}
+            setResumeText={setResumeText}
             customApiKey={customApiKey}
           />
         );

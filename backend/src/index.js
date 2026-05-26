@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind } from './services/gemini.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini } from './services/gemini.js';
 import { getAdminStats, saveContactMessage, saveScan } from './db.js';
 
 const app = express();
@@ -187,10 +187,11 @@ apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
       });
     }
 
-    // Return the detailed analysis
+    // Return the detailed analysis + original text (needed for AI optimizer)
     return res.json({
       success: true,
-      data: evaluation
+      data: evaluation,
+      resumeText: extractedText
     });
 
   } catch (error) {
@@ -204,6 +205,34 @@ apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
     // Handle generic errors
     return res.status(500).json({ 
       error: error.message || 'An error occurred during resume analysis.' 
+    });
+  }
+});
+
+// AI Resume Optimizer Endpoint
+apiRouter.post('/api/optimize', async (req, res) => {
+  try {
+    const { resumeText, analysisResult } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!resumeText || typeof resumeText !== 'string' || resumeText.trim().length < 50) {
+      return res.status(400).json({ error: 'Resume text is required and must be at least 50 characters.' });
+    }
+
+    if (!analysisResult || typeof analysisResult !== 'object') {
+      return res.status(400).json({ error: 'Analysis result is required.' });
+    }
+
+    const optimizedResume = await optimizeResumeWithGemini(resumeText, analysisResult, customApiKey);
+
+    return res.json({
+      success: true,
+      data: { optimizedResume }
+    });
+  } catch (error) {
+    console.error('Optimize API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'Resume optimization failed.'
     });
   }
 });

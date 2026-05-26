@@ -926,3 +926,313 @@
   border-color: rgba(18,32,43,0.1);
   color: var(--text-primary);
 }
+
+/* ═══════════════════════════════════════
+   AI AUTO-FIX RESUME TAB STYLES
+═══════════════════════════════════════ */
+
+/* Special glowing tab button for optimize */
+.tab-btn-optimize {
+  color: var(--color-primary) !important;
+  position: relative;
+}
+
+.tab-btn-optimize.active {
+  border-bottom-color: var(--color-primary) !important;
+  background: rgba(0, 245, 255, 0.05) !important;
+}
+
+.tab-btn-optimize::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,245,255,0.06), transparent);
+  border-radius: 4px 4px 0 0;
+  pointer-events: none;
+}
+
+/* Panel container */
+.optimize-panel {
+  text-align: left;
+  border: 1px solid rgba(0, 245, 255, 0.18) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Header */
+.optimize-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.optimize-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.optimize-icon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.optimize-subtitle {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.optimize-keywords-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 245, 255, 0.03);
+  border: 1px solid rgba(0, 245, 255, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+.optimize-kw-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+/* CTA area */
+.optimize-cta-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2.5rem 1rem;
+}
+
+.optimize-error {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--color-danger);
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.93rem;
+  width: 100%;
+}
+
+.optimize-no-text {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+/* The main CTA generate button */
+.btn-optimize {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2.25rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: linear-gradient(135deg, #00f5ff, #4c7dff);
+  color: #fff;
+  box-shadow: 0 0 28px rgba(0, 245, 255, 0.35), 0 14px 36px rgba(0, 0, 0, 0.18);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-optimize::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transition: 0.5s;
+}
+
+.btn-optimize:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 42px rgba(0, 245, 255, 0.5), 0 18px 42px rgba(0, 0, 0, 0.22);
+}
+
+.btn-optimize:hover::before {
+  left: 100%;
+}
+
+.btn-optimize:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading state */
+.optimize-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 1rem;
+}
+
+@keyframes spinFull {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-icon {
+  animation: spinFull 1s linear infinite;
+  color: var(--color-primary);
+}
+
+.optimize-spinner-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(0, 245, 255, 0.06);
+  border: 1px solid rgba(0, 245, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.optimize-loading-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.optimize-loading-sub {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Result area */
+.optimize-result-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.optimize-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.optimize-result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--color-success);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.optimize-result-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+/* The download button */
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, #167d72, #315f9f);
+  color: #fff;
+  border: none;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(22, 125, 114, 0.25);
+}
+
+.btn-download:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+/* Optimized resume pre output box */
+.optimized-resume-output {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 245, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.optimize-regenerate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: none;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  color: var(--text-muted);
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  font-family: 'Outfit', sans-serif;
+  border-radius: 6px;
+  cursor: pointer;
+  width: fit-content;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.optimize-regenerate-btn:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* Mobile optimize styles */
+@media (max-width: 480px) {
+  .btn-optimize {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.95rem;
+    padding: 0.9rem 1.5rem;
+  }
+
+  .optimize-result-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .optimized-resume-output {
+    font-size: 0.8rem;
+    padding: 1rem;
+    max-height: 380px;
+  }
+
+  .optimize-cta-area {
+    padding: 1.5rem 0.5rem;
+  }
+}
+
