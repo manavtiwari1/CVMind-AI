@@ -117,7 +117,7 @@ export default function Home({ setCurrentPage, setAnalysisResult, customApiKey }
     try {
       // Direct integration with the Express backend
       // We will support a local dev server port OR dynamic environment detection.
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
       
       const headers: Record<string, string> = {};
       if (customApiKey) {

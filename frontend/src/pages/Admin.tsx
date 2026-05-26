@@ -99,7 +99,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const BACKEND = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const BACKEND = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
 
   // Live time counter in top bar
   useEffect(() => {
