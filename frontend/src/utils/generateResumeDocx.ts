@@ -3,17 +3,9 @@ import {
   Packer,
   Paragraph,
   TextRun,
-  HeadingLevel,
   AlignmentType,
   BorderStyle,
-  ShadingType,
-  TabStopPosition,
-  TabStopType,
   convertInchesToTwip,
-  Header,
-  Footer,
-  PageNumber,
-  NumberFormat,
 } from 'docx';
 import { saveAs } from 'file-saver';
 
