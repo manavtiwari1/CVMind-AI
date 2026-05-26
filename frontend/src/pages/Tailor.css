@@ -682,3 +682,96 @@
     text-align: center;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   Download Dropdown Styles
+   ═══════════════════════════════════════════════════════ */
+.download-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.download-toggle-btn {
+  background: linear-gradient(135deg, #00e5ff, #4c7dff) !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.25);
+  transition: all 0.25s ease;
+  border: 1px solid transparent !important;
+}
+
+.download-toggle-btn:hover {
+  box-shadow: 0 0 25px rgba(0, 245, 255, 0.42);
+  transform: translateY(-1px);
+}
+
+.download-arrow {
+  transition: transform 0.25s ease;
+}
+
+.download-arrow.open {
+  transform: rotate(180deg);
+}
+
+.download-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 210px;
+  background: rgba(6, 16, 20, 0.95) !important;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 245, 255, 0.2) !important;
+  border-radius: 10px;
+  padding: 0.5rem;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 245, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  animation: fadeInDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.download-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.download-dropdown-item:hover {
+  background: rgba(0, 245, 255, 0.08);
+  color: #00f5ff;
+}
+
+.dropdown-item-icon {
+  flex-shrink: 0;
+}
+
+.dropdown-item-icon.color-blue {
+  color: #3b82f6;
+}
+
+.dropdown-item-icon.color-cyan {
+  color: #00f5ff;
+}

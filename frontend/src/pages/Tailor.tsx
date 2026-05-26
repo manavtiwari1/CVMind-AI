@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Upload, FileText, ChevronRight, Check, Copy, Sparkles, BrainCircuit, RefreshCw, Cpu, CheckCircle2, ShieldCheck, FileCheck } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Upload, FileText, ChevronRight, Check, Copy, Sparkles, BrainCircuit, RefreshCw, Cpu, CheckCircle2, ShieldCheck, FileCheck, Download, ChevronDown } from 'lucide-react';
 import './Tailor.css';
 
 interface TailorProps {
@@ -25,8 +25,22 @@ export default function Tailor({ customApiKey }: TailorProps) {
   const [copied, setCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState('');
+  const [showDownloadDropdown, setShowDownloadDropdown] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDownloadDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const loaderSteps = [
     'Reading original CV structures...',
@@ -159,6 +173,71 @@ export default function Tailor({ customApiKey }: TailorProps) {
     navigator.clipboard.writeText(editedText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownloadDocx = () => {
+    const header = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+      '<head>' +
+      '<title>Tailored Resume</title>' +
+      '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->' +
+      '<style>body { font-family: "Courier New", Courier, monospace; font-size: 11pt; line-height: 1.5; white-space: pre-wrap; }</style>' +
+      '</head>' +
+      '<body>';
+    const footer = '</body></html>';
+    const formattedBody = editedText.replace(/\n/g, '<br/>');
+    const html = header + formattedBody + footer;
+    const blob = new Blob(['\ufeff' + html], {
+      type: 'application/msword'
+    });
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const filename = selectedFile ? selectedFile.name.split('.').slice(0, -1).join('.') + '_Tailored.doc' : 'Tailored_Resume.doc';
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadPDF = () => {
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document || iframe.contentDocument;
+    if (!doc) return;
+
+    const htmlContent = '<html>' +
+      '<head>' +
+      '<title>Tailored_Resume</title>' +
+      '<style>' +
+      '@page { size: A4; margin: 20mm; }' +
+      'body { font-family: "Courier New", Courier, monospace; font-size: 10.5pt; line-height: 1.5; color: #111111; white-space: pre-wrap; word-break: break-word; background: #ffffff; padding: 0; margin: 0; }' +
+      'pre { font-family: inherit; white-space: pre-wrap; margin: 0; padding: 0; }' +
+      '</style>' +
+      '</head>' +
+      '<body>' +
+      '<pre>' + editedText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>' +
+      '<script>' +
+      'window.onload = function() {' +
+      '  window.print();' +
+      '  setTimeout(function() {' +
+      '    window.frameElement.remove();' +
+      '  }, 100);' +
+      '};' +
+      '</script>' +
+      '</body>' +
+      '</html>';
+
+    doc.write(htmlContent);
+    doc.close();
   };
 
   const handleReset = () => {
@@ -312,10 +391,43 @@ export default function Tailor({ customApiKey }: TailorProps) {
                   >
                     {isEditing ? 'Done Tweak' : 'Tweak Text'}
                   </button>
-                  <button className="btn-primary control-btn" onClick={handleCopy}>
+                  <button className="btn-secondary control-btn" onClick={handleCopy}>
                     {copied ? <Check size={15} /> : <Copy size={15} />}
                     {copied ? 'Copied' : 'Copy Text'}
                   </button>
+
+                  <div className="download-dropdown-container" ref={dropdownRef}>
+                    <button 
+                      className="btn-primary control-btn download-toggle-btn"
+                      onClick={() => setShowDownloadDropdown(!showDownloadDropdown)}
+                    >
+                      <Download size={14} /> Download <ChevronDown size={12} className={`download-arrow ${showDownloadDropdown ? 'open' : ''}`} />
+                    </button>
+                    {showDownloadDropdown && (
+                      <div className="download-dropdown-menu glass-card">
+                        <button 
+                          className="download-dropdown-item"
+                          onClick={() => {
+                            handleDownloadDocx();
+                            setShowDownloadDropdown(false);
+                          }}
+                        >
+                          <FileText size={14} className="dropdown-item-icon color-blue" />
+                          <span>Word Document (.doc)</span>
+                        </button>
+                        <button 
+                          className="download-dropdown-item"
+                          onClick={() => {
+                            handleDownloadPDF();
+                            setShowDownloadDropdown(false);
+                          }}
+                        >
+                          <FileCheck size={14} className="dropdown-item-icon color-cyan" />
+                          <span>PDF Document (.pdf)</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
