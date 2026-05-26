@@ -313,7 +313,7 @@ a {
 /* Responsive Grid Helper */
 .responsive-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: 2rem;
 }
 
@@ -373,6 +373,16 @@ textarea.form-input {
   }
   .glass-card {
     padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+  /* Extra bottom clearance for fixed bottom navbar */
+  .main-content {
+    padding: 5.5rem 1rem 6rem;
   }
 }
 

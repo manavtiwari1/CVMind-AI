@@ -20,7 +20,7 @@
 }
 
 .dashboard-title-text {
-  font-size: 2.25rem;
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
   font-weight: 800;
   margin-bottom: 0.25rem;
 }
@@ -716,6 +716,140 @@
   .dashboard-actions button {
     flex: 1;
     justify-content: center;
+  }
+  .panel-header-row {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .panel-title {
+    font-size: 1.25rem;
+  }
+  .tab-score-badge {
+    font-size: 0.72rem;
+  }
+}
+
+/* ── Extra-small screens (phones ≤ 480px) ── */
+@media (max-width: 480px) {
+  .dashboard-container {
+    gap: 1.25rem;
+    /* Push content above the fixed bottom navbar */
+    padding-bottom: 5rem;
+  }
+
+  .dashboard-header {
+    padding-bottom: 1rem;
+  }
+
+  .dashboard-title-text {
+    font-size: 1.4rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.88rem;
+  }
+
+  .dashboard-actions {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .dashboard-actions button {
+    width: 100%;
+  }
+
+  /* Tab bar: wrap tabs onto 2 rows, shrink text */
+  .tabs-bar {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding-bottom: 0;
+  }
+
+  .tab-btn {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.78rem;
+    flex: 1 1 calc(50% - 0.25rem);
+    justify-content: center;
+    border-bottom: 2px solid transparent;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .tab-btn.active {
+    background: rgba(0,245,255,0.06);
+  }
+
+  /* Score card — horizontal row on small phones */
+  .score-radial-card {
+    flex-direction: row;
+    gap: 1.25rem;
+    padding: 1.25rem !important;
+    justify-content: flex-start;
+  }
+
+  .radial-label-group {
+    text-align: left;
+  }
+
+  .radial-grade-label {
+    font-size: 1.15rem;
+  }
+
+  .score-number-display {
+    font-size: 2.25rem;
+  }
+
+  /* Responsive grid: never go below 260px columns */
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .glass-card {
+    padding: 1.25rem !important;
+  }
+
+  .panel-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .panel-title {
+    font-size: 1.15rem;
+  }
+
+  .rec-block-title {
+    font-size: 1.1rem;
+  }
+
+  .sw-card-title {
+    font-size: 1.1rem;
+  }
+
+  .keyword-badges-container {
+    gap: 1.25rem;
+  }
+
+  .rewrite-row {
+    padding: 0.85rem;
+  }
+
+  .block-label {
+    font-size: 0.7rem;
+  }
+
+  .copy-btn {
+    padding: 0.25rem 0.55rem;
+    font-size: 0.7rem;
+  }
+
+  .rec-timeline-item {
+    gap: 0.85rem;
+  }
+
+  .dashboard-empty-state {
+    padding: 2rem 1.25rem;
+    min-height: 300px;
   }
 }
 
