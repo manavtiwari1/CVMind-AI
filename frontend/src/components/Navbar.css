@@ -1,0 +1,135 @@
+/* ═══════════════════════════════════════════════════════
+   CVMind AI — Navbar
+═══════════════════════════════════════════════════════ */
+
+.navbar-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4.8rem;
+  background: rgba(3, 9, 11, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 245, 255, 0.14);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ── Logo ─────────────────────────────────────────── */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.navbar-logo-img {
+  height: 2.85rem;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.16));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.navbar-brand:hover .navbar-logo-img {
+  transform: scale(1.04) translateY(-1px);
+  filter: drop-shadow(0 0 16px rgba(0, 245, 255, 0.5));
+}
+
+/* ── Centered Nav Links ───────────────────────────── */
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2.25rem;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  padding: 0.5rem 0.15rem;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #00f5ff;
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.75);
+  transition: width 0.25s ease;
+  border-radius: 2px;
+}
+
+.nav-link.active {
+  color: #ffffff;
+}
+
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 1.25rem;
+  }
+
+  .navbar-nav {
+    gap: 1.1rem;
+  }
+
+  .nav-link {
+    font-size: 0.82rem;
+  }
+
+  .navbar-logo-img {
+    height: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-nav {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    justify-content: space-around;
+    padding: 0.6rem;
+    border-radius: 12px;
+    background: rgba(3, 9, 11, 0.96);
+    border: 1px solid rgba(0, 245, 255, 0.2);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    gap: 0;
+  }
+
+  .nav-link {
+    font-size: 0.78rem;
+  }
+}

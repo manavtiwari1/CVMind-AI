@@ -1,0 +1,294 @@
+import fs from 'fs';
+import path from 'path';
+import { randomUUID } from 'crypto';
+import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dataDir = path.resolve(__dirname, '..', 'data');
+const dbPath = path.join(dataDir, 'resumetrics-db.json');
+
+const defaultDb = {
+  scans: [],
+  contacts: [],
+  keywordCounts: {},
+  meta: {
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+};
+
+// ─── LOCAL JSON DATABASE HELPERS ──────────────────────────────────────────────
+function ensureDb() {
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+
+  if (!fs.existsSync(dbPath)) {
+    fs.writeFileSync(dbPath, JSON.stringify(defaultDb, null, 2));
+  }
+}
+
+function readDb() {
+  ensureDb();
+  try {
+    return JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+  } catch {
+    const backupPath = `${dbPath}.broken-${Date.now()}`;
+    fs.renameSync(dbPath, backupPath);
+    fs.writeFileSync(dbPath, JSON.stringify(defaultDb, null, 2));
+    return JSON.parse(JSON.stringify(defaultDb));
+  }
+}
+
+function writeDb(db) {
+  db.meta = {
+    ...(db.meta || {}),
+    updatedAt: new Date().toISOString()
+  };
+  fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+}
+
+// ─── CLOUD MONGODB (MONGOOSE) SETUP ──────────────────────────────────────────
+const mongoURI = process.env.MONGODB_URI;
+
+if (mongoURI) {
+  mongoose.connect(mongoURI)
+    .then(() => {
+      console.log('MongoDB connected successfully!');
+    })
+    .catch((err) => {
+      console.error('MongoDB connection error. Falling back to Local JSON database. Error:', err.message);
+    });
+}
+
+// ─── MONGOOSE MODELS ─────────────────────────────────────────────────────────
+const scanSchema = new mongoose.Schema({
+  fileName: { type: String, required: true },
+  fileType: { type: String, required: true },
+  fileSize: { type: Number, required: true },
+  score: { type: Number, required: true },
+  summary: { type: String, default: '' },
+  missingKeywords: [{ type: String }],
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Scan = mongoose.models.Scan || mongoose.model('Scan', scanSchema);
+
+const contactSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  subject: { type: String, default: 'General inquiry' },
+  message: { type: String, required: true },
+  status: { type: String, default: 'new' },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Contact = mongoose.models.Contact || mongoose.model('Contact', contactSchema);
+
+// Await active MongoDB connection during startup to prevent race condition fallback
+async function ensureMongoConnection() {
+  if (mongoURI && mongoose.connection.readyState === 2) {
+    let attempts = 0;
+    while (mongoose.connection.readyState === 2 && attempts < 50) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      attempts++;
+    }
+  }
+}
+
+// ─── HYBRID DATABASE EXPORTS ──────────────────────────────────────────────────
+
+export async function saveScan({ fileName, fileType, fileSize, evaluation }) {
+  await ensureMongoConnection();
+  const score = Number(evaluation?.score || 0);
+  const missing = Array.isArray(evaluation?.atsKeywords?.missing)
+    ? evaluation.atsKeywords.missing
+    : [];
+
+  // 1. MongoDB Mode (Non-blocking)
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    Scan.create({
+      fileName,
+      fileType,
+      fileSize,
+      score,
+      summary: evaluation?.summary || '',
+      missingKeywords: missing
+    }).catch(err => console.error('MongoDB saveScan error:', err));
+    return;
+  }
+
+  // 2. Local JSON DB Mode (Fallback)
+  const db = readDb();
+  db.scans.unshift({
+    id: randomUUID(),
+    fileName,
+    fileType,
+    fileSize,
+    score,
+    summary: evaluation?.summary || '',
+    missingKeywords: missing,
+    createdAt: new Date().toISOString()
+  });
+
+  missing.forEach((keyword) => {
+    const cleanKeyword = String(keyword || '').trim();
+    if (cleanKeyword) {
+      db.keywordCounts[cleanKeyword] = (db.keywordCounts[cleanKeyword] || 0) + 1;
+    }
+  });
+
+  writeDb(db);
+}
+
+export async function saveContactMessage({ name, email, subject, message }) {
+  await ensureMongoConnection();
+  // 1. MongoDB Mode (Non-blocking)
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const contact = new Contact({
+      name,
+      email,
+      subject: subject || 'General inquiry',
+      message,
+      status: 'new'
+    });
+    contact.save().catch(err => console.error('MongoDB saveContactMessage error:', err));
+    return {
+      id: contact._id,
+      createdAt: contact.createdAt
+    };
+  }
+
+  // 2. Local JSON DB Mode (Fallback)
+  const db = readDb();
+  const contact = {
+    id: randomUUID(),
+    name,
+    email,
+    subject: subject || 'General inquiry',
+    message,
+    status: 'new',
+    createdAt: new Date().toISOString()
+  };
+
+  db.contacts.unshift(contact);
+  writeDb(db);
+  return contact;
+}
+
+export async function getAdminStats() {
+  await ensureMongoConnection();
+  // 1. MongoDB Mode
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    try {
+      const scans = await Scan.find().sort({ createdAt: -1 }).limit(100);
+      const contacts = await Contact.find().sort({ createdAt: -1 }).limit(100);
+      
+      const totalScans = await Scan.countDocuments();
+      const totalContacts = await Contact.countDocuments();
+      
+      const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
+      const averageScore = totalScans > 0 ? Number((totalScoreSum / Math.min(totalScans, 100)).toFixed(1)) : 0;
+      
+      const scoreDistAggregate = await Scan.aggregate([
+        {
+          $group: {
+            _id: null,
+            high: { $sum: { $cond: [{ $gte: ["$score", 8] }, 1, 0] } },
+            medium: { $sum: { $cond: [{ $and: [{ $gte: ["$score", 6] }, { $lt: ["$score", 8] }] }, 1, 0] } },
+            low: { $sum: { $cond: [{ $lt: ["$score", 6] }, 1, 0] } }
+          }
+        }
+      ]);
+      
+      const scoreDistribution = scoreDistAggregate[0] || { low: 0, medium: 0, high: 0 };
+      if (scoreDistribution._id !== undefined) delete scoreDistribution._id;
+
+      // Group by lowercase keyword and count
+      const keywordTrendsAggregate = await Scan.aggregate([
+        { $unwind: "$missingKeywords" },
+        { 
+          $group: { 
+            _id: { $toLower: { $trim: { input: "$missingKeywords" } } }, 
+            count: { $sum: 1 } 
+          } 
+        },
+        { $sort: { count: -1 } },
+        { $limit: 10 },
+        { $project: { keyword: "$_id", count: 1, _id: 0 } }
+      ]);
+      const keywordTrends = keywordTrendsAggregate;
+
+      return {
+        totalScans,
+        averageScore,
+        scoreDistribution,
+        keywordTrends,
+        recentScans: scans.slice(0, 8).map(s => ({
+          id: s._id,
+          fileName: s.fileName,
+          score: s.score,
+          createdAt: s.createdAt,
+          missingKeywords: s.missingKeywords
+        })),
+        contactMessages: contacts.slice(0, 8).map(c => ({
+          id: c._id,
+          name: c.name,
+          email: c.email,
+          subject: c.subject,
+          message: c.message,
+          createdAt: c.createdAt
+        })),
+        totalContacts,
+        database: {
+          path: 'Cloud MongoDB Cluster0 (Atlas)',
+          updatedAt: new Date().toISOString()
+        }
+      };
+    } catch (err) {
+      console.error('MongoDB getAdminStats error, falling back to local:', err);
+    }
+  }
+
+  // 2. Local JSON DB Mode (Fallback)
+  const db = readDb();
+  const scans = Array.isArray(db.scans) ? db.scans : [];
+  const contacts = Array.isArray(db.contacts) ? db.contacts : [];
+  const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
+  const totalScans = scans.length;
+
+  const scoreDistribution = scans.reduce(
+    (acc, scan) => {
+      const score = Number(scan.score || 0);
+      if (score >= 8) acc.high += 1;
+      else if (score >= 6) acc.medium += 1;
+      else acc.low += 1;
+      return acc;
+    },
+    { low: 0, medium: 0, high: 0 }
+  );
+
+  const keywordTrends = Object.entries(db.keywordCounts || {})
+    .map(([keyword, count]) => ({ keyword, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  return {
+    totalScans,
+    averageScore: totalScans > 0 ? Number((totalScoreSum / totalScans).toFixed(1)) : 0,
+    scoreDistribution,
+    keywordTrends,
+    recentScans: scans.slice(0, 8),
+    contactMessages: contacts.slice(0, 8),
+    totalContacts: contacts.length,
+    database: {
+      path: dbPath,
+      updatedAt: db.meta?.updatedAt || null
+    }
+  };
+}
