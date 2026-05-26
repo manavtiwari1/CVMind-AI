@@ -4,7 +4,7 @@ import cors from 'cors';
 import multer from 'multer';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix } from './db.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -277,6 +277,16 @@ apiRouter.post('/api/tailor', upload.single('resume'), async (req, res) => {
     }
 
     const result = await tailorResumeWithGemini(extractedText, jobDescription, customApiKey);
+
+    // Record the tailoring event in MongoDB / Local DB
+    saveTailorLog({
+      fileName: file.originalname,
+      fileSize: file.size,
+      score: result.matchScore,
+      jobDescription: jobDescription,
+      matchedSkills: result.matchedSkills,
+      missingSkills: result.missingSkillsRecommended
+    }).catch(err => console.error('Error logging tailoring scan:', err));
 
     return res.json({
       success: true,

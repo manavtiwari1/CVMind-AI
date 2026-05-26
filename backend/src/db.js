@@ -15,6 +15,7 @@ const dbPath = path.join(dataDir, 'resumetrics-db.json');
 const defaultDb = {
   scans: [],
   contacts: [],
+  tailorLogs: [],
   keywordCounts: {},
   meta: {
     createdAt: new Date().toISOString(),
@@ -97,6 +98,18 @@ const fixSchema = new mongoose.Schema({
 });
 
 const Fix = mongoose.models.Fix || mongoose.model('Fix', fixSchema);
+
+const tailorSchema = new mongoose.Schema({
+  fileName: { type: String, required: true },
+  fileSize: { type: Number, required: true },
+  score: { type: Number, required: true },
+  jobDescription: { type: String, required: true },
+  matchedSkills: [{ type: String }],
+  missingSkills: [{ type: String }],
+  createdAt: { type: Date, default: Date.now }
+});
+
+const TailorLog = mongoose.models.TailorLog || mongoose.model('TailorLog', tailorSchema);
 
 // Await active MongoDB connection during startup to prevent race condition fallback
 async function ensureMongoConnection() {
@@ -215,6 +228,41 @@ export async function saveFix({ fileName, priorScore }) {
   writeDb(db);
 }
 
+export async function saveTailorLog({ fileName, fileSize, score, jobDescription, matchedSkills, missingSkills }) {
+  await ensureMongoConnection();
+  const scoreVal = Number(score || 0);
+  const sizeVal = Number(fileSize || 0);
+
+  // 1. MongoDB Mode (Non-blocking)
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    TailorLog.create({
+      fileName,
+      fileSize: sizeVal,
+      score: scoreVal,
+      jobDescription,
+      matchedSkills: matchedSkills || [],
+      missingSkills: missingSkills || []
+    }).catch(err => console.error('MongoDB saveTailorLog error:', err));
+    return;
+  }
+
+  // 2. Local JSON DB Mode (Fallback)
+  const db = readDb();
+  if (!db.tailorLogs) db.tailorLogs = [];
+  db.tailorLogs.unshift({
+    id: randomUUID(),
+    fileName,
+    fileSize: sizeVal,
+    score: scoreVal,
+    jobDescription,
+    matchedSkills: matchedSkills || [],
+    missingSkills: missingSkills || [],
+    createdAt: new Date().toISOString()
+  });
+
+  writeDb(db);
+}
+
 export async function getAdminStats() {
   await ensureMongoConnection();
   // 1. MongoDB Mode
@@ -223,10 +271,12 @@ export async function getAdminStats() {
       const scans = await Scan.find().sort({ createdAt: -1 }).limit(100);
       const contacts = await Contact.find().sort({ createdAt: -1 }).limit(100);
       const fixes = await Fix.find().sort({ createdAt: -1 }).limit(100);
+      const tailorLogs = await TailorLog.find().sort({ createdAt: -1 }).limit(100);
       
       const totalScans = await Scan.countDocuments();
       const totalContacts = await Contact.countDocuments();
       const totalFixes = await Fix.countDocuments();
+      const totalTailors = await TailorLog.countDocuments();
       
       const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
       const averageScore = totalScans > 0 ? Number((totalScoreSum / Math.min(totalScans, 100)).toFixed(1)) : 0;
@@ -288,6 +338,17 @@ export async function getAdminStats() {
         })),
         totalFixes,
         totalContacts,
+        recentTailors: tailorLogs.slice(0, 15).map(t => ({
+          id: t._id,
+          fileName: t.fileName,
+          fileSize: t.fileSize,
+          score: t.score,
+          jobDescription: t.jobDescription,
+          matchedSkills: t.matchedSkills,
+          missingSkills: t.missingSkills,
+          createdAt: t.createdAt
+        })),
+        totalTailors,
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
           updatedAt: new Date().toISOString()
@@ -303,6 +364,7 @@ export async function getAdminStats() {
   const scans = Array.isArray(db.scans) ? db.scans : [];
   const contacts = Array.isArray(db.contacts) ? db.contacts : [];
   const fixes = Array.isArray(db.fixes) ? db.fixes : [];
+  const tailorLogs = Array.isArray(db.tailorLogs) ? db.tailorLogs : [];
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
 
@@ -330,8 +392,10 @@ export async function getAdminStats() {
     recentScans: scans.slice(0, 8),
     contactMessages: contacts.slice(0, 8),
     recentFixes: fixes.slice(0, 10),
+    recentTailors: tailorLogs.slice(0, 15),
     totalFixes: fixes.length,
     totalContacts: contacts.length,
+    totalTailors: tailorLogs.length,
     database: {
       path: dbPath,
       updatedAt: db.meta?.updatedAt || null

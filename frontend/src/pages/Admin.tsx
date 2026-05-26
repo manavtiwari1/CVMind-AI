@@ -31,6 +31,17 @@ interface AdminStats {
   averageScore: number;
   totalContacts: number;
   totalFixes?: number;
+  totalTailors?: number;
+  recentTailors?: Array<{
+    id: string;
+    fileName: string;
+    fileSize: number;
+    score: number;
+    jobDescription: string;
+    matchedSkills: string[];
+    missingSkills: string[];
+    createdAt: string;
+  }>;
   scoreDistribution: { low: number; medium: number; high: number };
   keywordTrends: Array<{ keyword: string; count: number }>;
   recentScans: Array<{ id: string; fileName: string; score: number; createdAt: string; missingKeywords: string[] }>;
@@ -284,6 +295,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
             <div className="admin-sidebar-section-label">Data Storage</div>
             <NavItem icon={<FileText size={15} />}        label="Recent Scans"      active={activeSection === 'scans'}      onClick={() => setActiveSection('scans')} />
             <NavItem icon={<BrainCircuit size={15} />}    label="AI Auto-Fixes"     active={activeSection === 'fixes'}      onClick={() => setActiveSection('fixes')} />
+            <NavItem icon={<Sparkles size={15} />}        label="AI Tailor Logs"    active={activeSection === 'tailors'}    onClick={() => setActiveSection('tailors')} />
             <NavItem icon={<Mail size={15} />}            label="Contact Leads"  active={activeSection === 'messages'}   onClick={() => setActiveSection('messages')} />
 
             <div className="admin-sidebar-section-label">System</div>
@@ -315,6 +327,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'keywords'   && 'Keyword Analytics & Trends'}
                 {activeSection === 'scans'      && 'Scan Database Records'}
                 {activeSection === 'fixes'      && 'AI Resume Auto-Fix Logs'}
+                {activeSection === 'tailors'    && 'AI Resume Tailoring Logs'}
                 {activeSection === 'messages'   && 'Incoming Contact Leads'}
                 {activeSection === 'database'   && 'System Architecture & Health'}
               </h1>
@@ -391,7 +404,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <StatCard icon={<TrendingUp size={18} />}  label="Average Score"          value={stats.averageScore ? `${stats.averageScore}/10` : '—'} caption={`${highRate}% scored 8 or above`} trendCls="card-cyan" />
                       <StatCard icon={<Search size={18} />}      label="Skills Monitored"       value={stats.keywordTrends.length.toString()} caption="Unique missing ATS keywords" trendCls="card-indigo" />
                       <StatCard icon={<BrainCircuit size={18} />} label="Resumes Auto-Fixed"     value={(stats.totalFixes ?? 0).toLocaleString()} caption="ATS-optimized by AI" trendCls="card-emerald" />
-                      <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact form" trendCls="card-amber" />
+                      <StatCard icon={<Sparkles size={18} />}    label="Resumes Tailored"       value={(stats.totalTailors ?? 0).toLocaleString()} caption="Aligned to target JDs" trendCls="card-rose" />
+                      <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact" trendCls="card-amber" />
                     </div>
 
                     {/* Grid — score dist + keywords */}
@@ -735,6 +749,80 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                               <div className="msg-footer-details">
                                 <span>Message Reference ID: <code>{msg.id}</code></span>
                               </div>
+                            </article>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ RESUME TAILOR LOGS SECTION ─ */}
+                {activeSection === 'tailors' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Resume Tailoring & JD Alignment History</h2>
+                      <span className="panel-badge">{stats.totalTailors ?? 0} operations logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentTailors || stats.recentTailors.length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">✨</span>
+                          <p>No resume tailoring actions logged yet. History logs will populate when candidates use the AI Tailor tool.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {stats.recentTailors.map((tailor) => (
+                            <article key={tailor.id} className="admin-log-item glass-card">
+                              <div className="msg-header">
+                                <div className="msg-sender">
+                                  <strong>{tailor.fileName}</strong>
+                                  <span className="msg-email-code">Size: {(tailor.fileSize / (1024 * 1024)).toFixed(2)} MB</span>
+                                </div>
+                                <span className="msg-time">{new Date(tailor.createdAt).toLocaleString()}</span>
+                              </div>
+                              
+                              <div style={{ marginTop: '0.8rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(0, 245, 255, 0.08)', border: '1px solid rgba(0, 245, 255, 0.2)', padding: '0.25rem 0.65rem', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 800, color: '#a8fbff' }}>
+                                  Match Score: {tailor.score}%
+                                </div>
+                                <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
+                                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)' }}>JD Alignment</span>
+                              </div>
+
+                              <div style={{ marginTop: '1rem' }}>
+                                <strong style={{ display: 'block', fontSize: '0.82rem', color: '#ffffff', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Target Job Description:</strong>
+                                <blockquote style={{ margin: 0, padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.015)', borderLeft: '3px solid #00f5ff', borderRadius: '0 8px 8px 0', fontSize: '0.86rem', color: 'rgba(255,255,255,0.72)', maxHeight: '120px', overflowY: 'auto', lineBreak: 'anywhere', whiteSpace: 'pre-wrap' }}>
+                                  {tailor.jobDescription}
+                                </blockquote>
+                              </div>
+
+                              {((tailor.matchedSkills && tailor.matchedSkills.length > 0) || (tailor.missingSkills && tailor.missingSkills.length > 0)) && (
+                                <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                  {tailor.matchedSkills && tailor.matchedSkills.length > 0 && (
+                                    <div>
+                                      <strong style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.3', textTransform: 'uppercase' }}>Matched Keywords:</strong>
+                                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                                        {tailor.matchedSkills.slice(0, 8).map(s => (
+                                          <span key={s} style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '999px', background: 'rgba(0, 245, 255, 0.05)', border: '1px solid rgba(0, 245, 255, 0.15)', color: '#a8fbff' }}>{s}</span>
+                                        ))}
+                                        {tailor.matchedSkills.length > 8 && <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)' }}>+{tailor.matchedSkills.length - 8} more</span>}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {tailor.missingSkills && tailor.missingSkills.length > 0 && (
+                                    <div>
+                                      <strong style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.3rem', textTransform: 'uppercase' }}>Recommended Additions:</strong>
+                                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                                        {tailor.missingSkills.slice(0, 8).map(s => (
+                                          <span key={s} style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.15)', color: '#fbbf24' }}>{s}</span>
+                                        ))}
+                                        {tailor.missingSkills.length > 8 && <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)' }}>+{tailor.missingSkills.length - 8} more</span>}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </article>
                           ))}
                         </div>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown } from 'lucide-react';
 import './Home.css';
 
@@ -15,8 +15,19 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const hasSeen = localStorage.getItem('cvmind_tailor_welcome_seen');
+    if (!hasSeen) {
+      const timer = setTimeout(() => {
+        setShowWelcomeModal(true);
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Steps to display in sequence during analysis to keep the user engaged
   const analysisSteps = [
@@ -161,6 +172,55 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
 
   return (
     <div className="home-container animate-fade-in-up">
+      {showWelcomeModal && (
+        <div className="welcome-modal-overlay animate-fade-in">
+          <div className="welcome-modal-card glass-card animate-scale-up">
+            <div className="modal-badge">
+              <Sparkles size={14} className="animate-pulse" /> Platform Upgrade
+            </div>
+            <h2 className="modal-title">Optimized JD Tailoring is Here!</h2>
+            <p className="modal-desc">
+              You can now align and optimize your resume directly against any target Job Description (JD) to pass strict ATS scanners and grab recruiter attention!
+            </p>
+            <div className="modal-feature-list">
+              <div className="modal-feature-item">
+                <CheckCircle2 size={16} className="modal-feature-icon" />
+                <span>Upload CV + paste Target Job Description.</span>
+              </div>
+              <div className="modal-feature-item">
+                <CheckCircle2 size={16} className="modal-feature-icon" />
+                <span>Receive detailed keyword badges and ATS insights.</span>
+              </div>
+              <div className="modal-feature-item">
+                <CheckCircle2 size={16} className="modal-feature-icon" />
+                <span>Download professionally formatted PDF and DOCX files.</span>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="btn-primary modal-cta-btn" 
+                onClick={() => {
+                  localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
+                  setShowWelcomeModal(false);
+                  setCurrentPage('tailor');
+                }}
+              >
+                Try AI Resume Tailorer <ArrowRight size={16} />
+              </button>
+              <button 
+                className="btn-secondary modal-close-btn" 
+                onClick={() => {
+                  localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
+                  setShowWelcomeModal(false);
+                }}
+              >
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="cyber-stage" aria-hidden="true">
         <div className="neon-orbit"></div>
         <div className="scan-beam"></div>
@@ -366,6 +426,56 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
             <span>Step 05</span>
             <h3>Download as DOCX</h3>
             <p>Get your AI-optimized resume as a professionally formatted <strong>.docx</strong> Word file — ATS-safe layout, clean section headers, action-verb bullets, ready to send to recruiters.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Feature Highlight: AI Resume Tailor */}
+      <section className="tailor-highlight-section glass-card animate-fade-in-up">
+        <div className="tailor-highlight-content">
+          <div className="tailor-highlight-badge">
+            <Cpu size={14} /> NEW FEATURE RELEASE
+          </div>
+          <h2 className="tailor-highlight-title">Tailor Your Resume to Any Target Job Description (JD)</h2>
+          <p className="tailor-highlight-desc">
+            Stop applying with a generic resume. Paste the specific Job Description of the role you want, upload your CV, and let our corporate AI align your accomplishments, skills, and terminology to match recruiter expectations.
+          </p>
+          <div className="tailor-highlight-bullets">
+            <div className="tailor-bullet">
+              <CheckCircle2 size={16} className="tailor-bullet-icon" />
+              <span><strong>Recruiter Alignment:</strong> Injects target skills and keywords naturally.</span>
+            </div>
+            <div className="tailor-bullet">
+              <CheckCircle2 size={16} className="tailor-bullet-icon" />
+              <span><strong>Dynamic Match Score:</strong> Live circular matching progress gauge.</span>
+            </div>
+            <div className="tailor-bullet">
+              <CheckCircle2 size={16} className="tailor-bullet-icon" />
+              <span><strong>One-Click PDF/DOCX Download:</strong> Export professional ATS-styled resumes instantly.</span>
+            </div>
+          </div>
+          <button className="btn-primary tailor-cta-btn" onClick={() => setCurrentPage('tailor')}>
+            Try AI Resume Tailorer <ArrowRight size={16} />
+          </button>
+        </div>
+        <div className="tailor-highlight-preview">
+          <div className="tailor-preview-circle">
+            <span className="tailor-preview-number">95%</span>
+            <span className="tailor-preview-label">ATS MATCH</span>
+          </div>
+          <div className="tailor-preview-lines">
+            <div className="preview-line matched">
+              <CheckCircle2 size={12} />
+              <span>Matched: React.js & TypeScript</span>
+            </div>
+            <div className="preview-line matched">
+              <CheckCircle2 size={12} />
+              <span>Matched: RESTful APIs</span>
+            </div>
+            <div className="preview-line missing">
+              <Sparkles size={12} />
+              <span>Recommendation: AWS Cloud</span>
+            </div>
           </div>
         </div>
       </section>

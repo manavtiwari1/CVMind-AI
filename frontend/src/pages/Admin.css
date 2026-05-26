@@ -1351,6 +1351,27 @@
   color: var(--admin-emerald);
 }
 
+.card-emerald strong {
+  color: var(--admin-emerald);
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+}
+
+/* ── Rose StatCard Custom Styles ───────────────────── */
+.card-rose .card-ambient-glow {
+  background-color: var(--admin-rose);
+}
+
+.card-rose .admin-stat-icon {
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.22);
+  color: var(--admin-rose);
+}
+
+.card-rose strong {
+  color: var(--admin-rose);
+  text-shadow: 0 0 10px rgba(244, 63, 94, 0.15);
+}
+
 /* ── AI Auto-Fix Logs Styling ──────────────────────── */
 .admin-fixes-detail-list {
   display: flex;
