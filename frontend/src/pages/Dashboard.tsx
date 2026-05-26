@@ -4,6 +4,7 @@ import {
   RotateCcw, Printer, ArrowRight, Target, Check, AlertCircle, Copy,
   Sparkles, Download, Loader2, Zap
 } from 'lucide-react';
+import { downloadResumeAsDocx } from '../utils/generateResumeDocx';
 import './Dashboard.css';
 
 interface Suggestions {
@@ -127,13 +128,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
   };
 
   const handleDownload = () => {
-    const blob = new Blob([optimizedResume], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'optimized_resume_cvmind.txt';
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadResumeAsDocx(optimizedResume);
   };
 
   const triggerPrint = () => {
@@ -517,7 +512,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
                         onClick={handleDownload}
                         id="optimize-download-btn"
                       >
-                        <Download size={14} /> Download .txt
+                        <Download size={14} /> Download .docx
                       </button>
                     </div>
                   </div>
