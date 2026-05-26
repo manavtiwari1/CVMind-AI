@@ -295,9 +295,9 @@ export default function Admin({ setCurrentPage }: AdminProps) {
               <Shield size={16} />
             </div>
             <div className="admin-user-info">
-              <div className="admin-user-name">SysAdmin</div>
+              <div className="admin-user-name">Admin</div>
               <div className="admin-user-role">
-                <span className="admin-user-dot"></span> Live Session
+                <span className="admin-user-dot"></span> Online
               </div>
             </div>
           </div>
