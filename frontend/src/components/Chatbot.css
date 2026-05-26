@@ -249,3 +249,35 @@
     display: none;
   }
 }
+
+/* ── Chatbot Pulsing Green Dot ────────────────────── */
+.chatbot-launcher {
+  position: relative;
+}
+
+.chatbot-pulse-dot {
+  width: 9px;
+  height: 9px;
+  background-color: #10b981;
+  border-radius: 50%;
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  box-shadow: 0 0 10px #10b981;
+  animation: chatbotGreenPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes chatbotGreenPulse {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}

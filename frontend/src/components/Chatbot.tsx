@@ -20,7 +20,7 @@ const starterPrompts = [
 ];
 
 export default function Chatbot({ customApiKey }: ChatbotProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
@@ -147,6 +147,7 @@ export default function Chatbot({ customApiKey }: ChatbotProps) {
       )}
 
       <button className="chatbot-launcher" onClick={() => setIsOpen((value) => !value)}>
+        {!isOpen && <span className="chatbot-pulse-dot"></span>}
         {isOpen ? <X size={22} /> : <Sparkles size={22} />}
         <span>{isOpen ? 'Close' : 'Ask CVMind AI'}</span>
       </button>
