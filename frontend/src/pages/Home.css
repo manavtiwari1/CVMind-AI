@@ -891,9 +891,10 @@
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   display: grid;
-  place-items: center;
+  place-items: start center;
   z-index: 99999;
-  padding: 1.5rem;
+  padding: 4rem 1.5rem 1.5rem 1.5rem;
+  overflow-y: auto;
 }
 
 .welcome-modal-card {
