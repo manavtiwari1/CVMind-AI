@@ -7,6 +7,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import Tailor from './pages/Tailor';
 import './styles/theme.css';
 
 export default function App() {
@@ -76,6 +77,8 @@ export default function App() {
         );
       case 'admin':
         return <Admin setCurrentPage={setCurrentPage} />;
+      case 'tailor':
+        return <Tailor customApiKey={customApiKey} />;
       default:
         return (
           <Home 

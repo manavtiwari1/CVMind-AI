@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react';
 import cvmindLogo from '../assets/cvmind_logo_transparent.png';
 import './Navbar.css';
 
@@ -32,6 +33,28 @@ export default function Navbar({ currentPage, setCurrentPage }: NavbarProps) {
           >
             Dashboard
           </button>
+          
+          {/* Products Dropdown */}
+          <div className="nav-dropdown-container">
+            <button className={`nav-link dropdown-toggle ${currentPage === 'home' || currentPage === 'tailor' ? 'active' : ''}`}>
+              Products <ChevronDown size={14} className="dropdown-arrow" />
+            </button>
+            <div className="nav-dropdown-menu">
+              <button 
+                className={`dropdown-item ${currentPage === 'home' ? 'active' : ''}`}
+                onClick={() => setCurrentPage('home')}
+              >
+                AI Analyzer
+              </button>
+              <button 
+                className={`dropdown-item ${currentPage === 'tailor' ? 'active' : ''}`}
+                onClick={() => setCurrentPage('tailor')}
+              >
+                AI Resume Tailorer
+              </button>
+            </div>
+          </div>
+
           <button
             className={`nav-link ${currentPage === 'about' ? 'active' : ''}`}
             onClick={() => setCurrentPage('about')}

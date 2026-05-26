@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini } from './services/gemini.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini } from './services/gemini.js';
 import { getAdminStats, saveContactMessage, saveScan, saveFix } from './db.js';
 
 const app = express();
@@ -242,6 +242,50 @@ apiRouter.post('/api/optimize', async (req, res) => {
     console.error('Optimize API Error:', error);
     return res.status(500).json({
       error: error.message || 'Resume optimization failed.'
+    });
+  }
+});
+
+// AI Resume Tailoring Endpoint
+apiRouter.post('/api/tailor', upload.single('resume'), async (req, res) => {
+  try {
+    const { file } = req;
+    const { jobDescription } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No resume file uploaded. Please upload a PDF, DOCX, or TXT file.' });
+    }
+
+    if (!jobDescription || typeof jobDescription !== 'string' || jobDescription.trim().length < 15) {
+      return res.status(400).json({ error: 'Job Description is required and must be at least 15 characters.' });
+    }
+
+    let extractedText = '';
+    if (file.mimetype === 'application/pdf') {
+      extractedText = await parsePdf(file.buffer);
+    } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      extractedText = await parseDocx(file.buffer);
+    } else if (file.mimetype === 'text/plain') {
+      extractedText = parseTxt(file.buffer);
+    } else {
+      return res.status(400).json({ error: 'Unsupported file format. Please upload PDF, DOCX, or TXT.' });
+    }
+
+    if (!extractedText || extractedText.trim().length < 50) {
+      return res.status(400).json({ error: 'Unable to extract text from the uploaded resume.' });
+    }
+
+    const result = await tailorResumeWithGemini(extractedText, jobDescription, customApiKey);
+
+    return res.json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error('Tailor API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'Resume tailoring failed.'
     });
   }
 });

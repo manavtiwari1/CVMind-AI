@@ -455,3 +455,147 @@ Rewrite it now as a fully ATS-optimized resume following all the rules above.`;
     throw new Error('Resume optimization failed. ' + error.message);
   }
 }
+
+const tailorSchema = {
+  type: 'object',
+  properties: {
+    tailoredResume: {
+      type: 'string',
+      description: 'The complete rewritten resume in plain text format, perfectly tailored to the provided Job Description (JD). Naturally integrate skills, emphasize relevant accomplishments, and format cleanly.'
+    },
+    matchScore: {
+      type: 'integer',
+      description: 'An estimated match rating between the tailored resume and the job description, from 0 to 100.'
+    },
+    keyTailoringInsights: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'A list of 3-4 key changes and adjustments made to align the resume with the JD.'
+    },
+    matchedSkills: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Relevant skills/keywords from the job description that were successfully integrated into the resume.'
+    },
+    missingSkillsRecommended: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Important skills from the job description that are recommended to be added (but were missing or weak in the original).'
+    }
+  },
+  required: [
+    'tailoredResume',
+    'matchScore',
+    'keyTailoringInsights',
+    'matchedSkills',
+    'missingSkillsRecommended'
+  ]
+};
+
+/**
+ * Tailors a resume text specifically to a provided Job Description using Gemini.
+ * @param {string} resumeText - Raw text of the CV.
+ * @param {string} jobDescription - Target Job Description / requirements.
+ * @param {string} [customApiKey] - Optional user supplied API key.
+ * @returns {Promise<object>} - Structured JSON analysis containing tailored resume and insights.
+ */
+export async function tailorResumeWithGemini(resumeText, jobDescription, customApiKey = null) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const systemPrompt = `You are an elite corporate resume writer, talent acquisition specialist, and hiring consultant.
+  Your task is to completely rewrite and optimize the candidate's CV so it matches the provided Job Description (JD) / Target Role guidelines perfectly.
+  
+  RULES:
+  1. Strictly preserve all factual information from the original resume — do NOT invent companies, titles, dates, or degrees.
+  2. Naturally inject matched skills and primary keywords from the JD into the summary, skills list, and experience bullets.
+  3. Re-phrase work experience highlights to emphasize contributions and achievements that directly match the responsibilities requested in the JD.
+  4. Ensure a premium, ATS-compliant plain-text output structure:
+     PROFESSIONAL SUMMARY
+     SKILLS
+     EXPERIENCE
+     EDUCATION
+  5. Provide an estimated match score (0-100), key tailoring insights, matched skills, and recommended missing skills.
+  6. You MUST strictly return your response in the specified JSON structure. Do not wrap it in any HTML or markdown, only raw JSON matching the schema.`;
+
+  const userPrompt = `Target Job Description / Role Guidelines:
+  """
+  ${jobDescription}
+  """
+  
+  Candidate's Original Resume Text:
+  """
+  ${resumeText}
+  """
+  
+  Tailor and optimize this resume now.`;
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: `${systemPrompt}\nYou MUST strictly respond with a JSON object that conforms to this JSON schema:\n${JSON.stringify(tailorSchema, null, 2)}` },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.25,
+          max_tokens: 3000,
+          response_format: { type: 'json_object' }
+        })
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+
+      const result = await response.json();
+      if (!result.choices || result.choices.length === 0) {
+        throw new Error('No choices returned by OpenRouter API.');
+      }
+
+      return JSON.parse(result.choices[0].message.content.trim());
+    } catch (error) {
+      console.error('OpenRouter Tailor Error:', error);
+      throw new Error('Resume tailoring failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: tailorSchema,
+        temperature: 0.25
+      }
+    });
+
+    return JSON.parse(result.response.text().trim());
+  } catch (error) {
+    console.error('Gemini Tailor Error:', error);
+    if (error.status === 403 || error.message.includes('API key')) {
+      throw new Error('Invalid Gemini API Key.');
+    }
+    throw new Error('Resume tailoring failed. ' + error.message);
+  }
+}
