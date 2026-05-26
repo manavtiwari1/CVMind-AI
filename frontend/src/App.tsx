@@ -18,19 +18,6 @@ export default function App() {
   });
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [resumeText, setResumeText] = useState<string>('');
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    return (localStorage.getItem('cvmind_theme') as 'dark' | 'light') || 'dark';
-  });
-
-  // Sync theme attribute to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('cvmind_theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
 
   const setCurrentPage = (page: string) => {
     setCurrentPageState(page);
@@ -111,8 +98,6 @@ export default function App() {
           setCurrentPage={setCurrentPage} 
           customApiKey={customApiKey}
           setCustomApiKey={setCustomApiKey}
-          theme={theme}
-          toggleTheme={toggleTheme}
         />
       )}
 
