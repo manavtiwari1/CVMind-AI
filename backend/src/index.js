@@ -9,14 +9,6 @@ import { getAdminStats, saveContactMessage, saveScan } from './db.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Support Vercel Multi-Service route prefixing dynamically
-app.use((req, res, next) => {
-  if (req.url.startsWith('/_/backend')) {
-    req.url = req.url.replace('/_/backend', '');
-  }
-  next();
-});
-
 // Enable CORS for all requests, allow credentials and specific headers
 app.use(cors({
   origin: '*', 
@@ -25,6 +17,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+const apiRouter = express.Router();
 
 // In-memory file upload configuration
 const upload = multer({
@@ -47,7 +41,7 @@ const upload = multer({
 });
 
 // Root Health Check Route
-app.get('/', (req, res) => {
+apiRouter.get('/', (req, res) => {
   res.json({
     status: 'online',
     message: 'CVMind AI Backend API is running smoothly.',
@@ -56,7 +50,7 @@ app.get('/', (req, res) => {
 });
 
 // Admin Authentication Login Route
-app.post('/api/admin/login', (req, res) => {
+apiRouter.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body || {};
   const targetUsername = process.env.ADMIN_USERNAME || 'admin';
   const targetPassword = process.env.ADMIN_PASSWORD || 'Admin@1234';
@@ -77,7 +71,7 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 // Admin Analytics Stats Secure Route
-app.post('/api/admin/stats', async (req, res) => {
+apiRouter.post('/api/admin/stats', async (req, res) => {
   const adminSecret = req.headers['x-admin-secret'] || req.body.secret || null;
   const configuredSecret = process.env.ADMIN_SECRET || 'admin123';
 
@@ -96,7 +90,7 @@ app.post('/api/admin/stats', async (req, res) => {
   }
 });
 
-app.post('/api/contact', (req, res) => {
+apiRouter.post('/api/contact', (req, res) => {
   const { name, email, subject, message } = req.body || {};
 
   if (!name || !email || !message) {
@@ -124,7 +118,7 @@ app.post('/api/contact', (req, res) => {
   });
 });
 
-app.post('/api/chat', async (req, res) => {
+apiRouter.post('/api/chat', async (req, res) => {
   try {
     const { message, history } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
@@ -144,7 +138,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // Resume Analysis Endpoint
-app.post('/api/analyze', upload.single('resume'), async (req, res) => {
+apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
   try {
     const { file } = req;
     
@@ -213,6 +207,9 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
     });
   }
 });
+
+app.use('/_/backend', apiRouter);
+app.use('/', apiRouter);
 
 // Handle 404
 app.use((req, res) => {
