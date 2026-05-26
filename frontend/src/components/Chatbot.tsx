@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bot, BrainCircuit, ChevronDown, Loader2, Send, Sparkles, X } from 'lucide-react';
+import { Bot, ChevronDown, Loader2, Send, Sparkles, X } from 'lucide-react';
+import cvmindLogo from '../assets/cvmind_logo_transparent.png';
 import './Chatbot.css';
 
 interface ChatMessage {
@@ -96,7 +97,7 @@ export default function Chatbot({ customApiKey }: ChatbotProps) {
           <header className="chatbot-header">
             <div className="chatbot-title">
               <div className="chatbot-avatar">
-                <BrainCircuit size={20} />
+                <img src={cvmindLogo} alt="CVMind AI Logo" className="chatbot-logo-img" />
               </div>
               <div>
                 <span>CVMind AI</span>
