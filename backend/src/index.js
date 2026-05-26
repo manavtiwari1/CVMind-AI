@@ -9,6 +9,14 @@ import { getAdminStats, saveContactMessage, saveScan } from './db.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Support Vercel Multi-Service route prefixing dynamically
+app.use((req, res, next) => {
+  if (req.url.startsWith('/_/backend')) {
+    req.url = req.url.replace('/_/backend', '');
+  }
+  next();
+});
+
 // Enable CORS for all requests, allow credentials and specific headers
 app.use(cors({
   origin: '*', 
