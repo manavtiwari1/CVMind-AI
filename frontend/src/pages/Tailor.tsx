@@ -161,16 +161,122 @@ export default function Tailor({ customApiKey }: TailorProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const convertResumeTextToHTML = (text: string) => {
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+    
+    let name = '';
+    const contactLines: string[] = [];
+    let bodyStartIndex = 0;
+    
+    for (let i = 0; i < Math.min(lines.length, 6); i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      
+      if (/summary|skills|competencies|internship|experience|employment|responsibility|education|projects|certifications|achievements/i.test(line)) {
+        bodyStartIndex = i;
+        break;
+      }
+      
+      if (!name && line.length > 2 && line.length < 40 && !line.includes('|') && !line.includes('@') && !line.includes(':') && !line.includes('Phone')) {
+        name = line;
+        bodyStartIndex = i + 1;
+      } else if (line.includes('@') || line.includes('|') || line.includes('Phone') || line.includes('Email') || line.includes('LinkedIn') || line.includes('github.com')) {
+        contactLines.push(line);
+        bodyStartIndex = i + 1;
+      }
+    }
+
+    if (!name && lines[0]) {
+      name = lines[0].trim().replace(/[#*]/g, '');
+      bodyStartIndex = 1;
+    }
+
+    html += '<div class="resume-header">';
+    html += '<h1 class="candidate-name">' + name + '</h1>';
+    if (contactLines.length > 0) {
+      const contactText = contactLines.join(' | ').replace(/\s*\|\s*\|\s*/g, ' | ');
+      html += '<div class="contact-info">' + contactText + '</div>';
+    }
+    html += '</div>';
+    html += '<hr class="header-divider"/>';
+
+    for (let i = bodyStartIndex; i < lines.length; i++) {
+      let line = lines[i].trim();
+      if (!line) {
+        if (inList) {
+          html += '</ul>';
+          inList = false;
+        }
+        continue;
+      }
+
+      line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      line = line.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      const cleanHeaderLine = line.replace(/^[#\s\-*]+/, '').replace(/<[^>]*>/g, '').trim();
+      const isSectionHeader = /^(professional\s+)?summary$|^(technical\s+)?skills$|^(core\s+)?competencies$|^internship$|^(work\s+)?experience$|^(professional\s+)?experience$|^employment\s+history$|^position(s)?\s+of\s+responsibility$|^education$|^(academic\s+)?projects$|^projects$|^certifications$|^achievements$/i.test(cleanHeaderLine);
+
+      if (isSectionHeader) {
+        if (inList) {
+          html += '</ul>';
+          inList = false;
+        }
+        html += '<h2 class="section-title">' + cleanHeaderLine.toUpperCase() + '</h2>';
+        continue;
+      }
+
+      const isListItem = /^[•\-\*\s]+/.test(lines[i]) || line.startsWith('-') || line.startsWith('*');
+      if (isListItem) {
+        const cleanContent = line.replace(/^[•\-\*\s]+/, '').trim();
+        if (!inList) {
+          html += '<ul class="bullet-list">';
+          inList = true;
+        }
+        html += '<li>' + cleanContent + '</li>';
+      } else {
+        if (inList) {
+          html += '</ul>';
+          inList = false;
+        }
+        
+        if (line.includes('|') || line.includes(' - ') || line.includes('Present') || line.includes('202')) {
+          html += '<div class="info-line">' + line + '</div>';
+        } else {
+          html += '<p class="normal-paragraph">' + line + '</p>';
+        }
+      }
+    }
+
+    if (inList) {
+      html += '</ul>';
+    }
+
+    return html;
+  };
+
   const handleDownloadDocx = () => {
     const header = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
       '<head>' +
       '<title>Tailored Resume</title>' +
       '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->' +
-      '<style>body { font-family: "Courier New", Courier, monospace; font-size: 11pt; line-height: 1.5; white-space: pre-wrap; }</style>' +
+      '<style>' +
+      'body { font-family: Arial, sans-serif; font-size: 10.5pt; line-height: 1.4; color: #111111; margin: 1in; }' +
+      '.resume-header { text-align: center; margin-bottom: 8px; }' +
+      '.candidate-name { font-size: 20pt; font-weight: bold; color: #102a43; margin-bottom: 4px; }' +
+      '.contact-info { font-size: 9.5pt; color: #486581; }' +
+      '.header-divider { border-top: 2px solid #102a43; height: 0; margin-bottom: 12px; }' +
+      '.section-title { font-size: 11pt; font-weight: bold; color: #102a43; text-transform: uppercase; border-bottom: 1.5px solid #102a43; padding-bottom: 2px; margin-top: 14px; margin-bottom: 6px; }' +
+      '.bullet-list { margin-bottom: 6px; padding-left: 20px; }' +
+      '.bullet-list li { font-size: 10.5pt; color: #243e56; margin-bottom: 3px; }' +
+      '.info-line { font-weight: bold; font-size: 10.5pt; color: #102a43; margin-top: 6px; margin-bottom: 3px; }' +
+      '.normal-paragraph { font-size: 10.5pt; color: #243e56; margin-bottom: 6px; text-align: justify; }' +
+      '</style>' +
       '</head>' +
       '<body>';
     const footer = '</body></html>';
-    const formattedBody = editedText.replace(/\n/g, '<br/>');
+    const formattedBody = convertResumeTextToHTML(editedText);
     const html = header + formattedBody + footer;
     const blob = new Blob(['\ufeff' + html], {
       type: 'application/msword'
@@ -205,12 +311,21 @@ export default function Tailor({ customApiKey }: TailorProps) {
       '<title>Tailored_Resume</title>' +
       '<style>' +
       '@page { size: A4; margin: 20mm; }' +
-      'body { font-family: "Courier New", Courier, monospace; font-size: 10.5pt; line-height: 1.5; color: #111111; white-space: pre-wrap; word-break: break-word; background: #ffffff; padding: 0; margin: 0; }' +
-      'pre { font-family: inherit; white-space: pre-wrap; margin: 0; padding: 0; }' +
+      'body { font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #1a1a1a; background: #ffffff; padding: 0; margin: 0; }' +
+      '.resume-header { text-align: center; margin-bottom: 8px; }' +
+      '.candidate-name { font-size: 20pt; font-weight: 800; color: #102a43; margin: 0 0 4px; }' +
+      '.contact-info { font-size: 9.5pt; color: #486581; margin: 0; font-weight: 500; }' +
+      '.header-divider { border: 0; border-top: 2px solid #102a43; margin: 8px 0 12px; }' +
+      '.section-title { font-size: 11pt; font-weight: 800; color: #102a43; text-transform: uppercase; border-bottom: 1.5px solid #102a43; padding-bottom: 3px; margin-top: 14px; margin-bottom: 6px; letter-spacing: 0.02em; }' +
+      '.bullet-list { margin: 0 0 6px; padding-left: 20px; list-style-type: disc; }' +
+      '.bullet-list li { margin-bottom: 3px; font-size: 10.5pt; color: #243e56; text-align: justify; }' +
+      '.info-line { font-weight: bold; font-size: 10.5pt; color: #102a43; margin-top: 6px; margin-bottom: 3px; }' +
+      '.normal-paragraph { font-size: 10.5pt; color: #243e56; margin: 0 0 6px; text-align: justify; }' +
+      'strong { color: #102a43; font-weight: bold; }' +
       '</style>' +
       '</head>' +
       '<body>' +
-      '<pre>' + editedText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>' +
+      convertResumeTextToHTML(editedText) +
       '<script>' +
       'window.onload = function() {' +
       '  window.print();' +
