@@ -341,6 +341,53 @@ export default function Tailor({ customApiKey }: TailorProps) {
     doc.close();
   };
 
+  const parseSkillsBadges = (skillsArray: string[] | undefined): string[] => {
+    if (!skillsArray || !Array.isArray(skillsArray)) return [];
+    
+    let processed: string[] = [];
+    
+    skillsArray.forEach(item => {
+      if (!item) return;
+      
+      const itemLower = item.toLowerCase();
+      
+      if ((item.includes(',') || item.includes(';')) && (item.length > 30 || itemLower.includes('related to') || itemLower.includes('such as') || itemLower.includes('e.g.'))) {
+        let listText = item;
+        const egi = item.search(/\((e\.g\.|such as)/i);
+        if (egi !== -1) {
+          const match = item.substring(egi).match(/\((.*?)\)/);
+          if (match && match[1]) {
+            listText = match[1].replace(/e\.g\.,?\s*|such as\s*/i, '');
+          }
+        }
+        
+        const parts = listText.split(/[,;]+/);
+        parts.forEach(part => {
+          const cleanPart = part.replace(/[()'"\.*]/g, '').trim();
+          if (cleanPart && cleanPart.length > 1 && cleanPart.length < 35 && !/specific|related|skills|begging|e\.g\./i.test(cleanPart)) {
+            processed.push(cleanPart);
+          }
+        });
+      } else {
+        const clean = item.replace(/[()'"\.*]/g, '').trim();
+        if (clean && clean.length > 1 && clean.length < 35) {
+          processed.push(clean);
+        }
+      }
+    });
+
+    processed = Array.from(new Set(processed));
+    
+    if (processed.length === 0) {
+      skillsArray.forEach(item => {
+        const clean = item.replace(/[#*]/g, '').trim();
+        if (clean) processed.push(clean.substring(0, 40));
+      });
+    }
+    
+    return processed.slice(0, 15);
+  };
+
   const handleReset = () => {
     setResult(null);
     setJobDescription('');
@@ -551,21 +598,32 @@ export default function Tailor({ customApiKey }: TailorProps) {
               </div>
 
               {/* Keyword Badges */}
-              <div className="glass-card keywords-card">
-                <h4><BrainCircuit size={16} /> Matched Skills & Keywords</h4>
-                <div className="keyword-badges-grid">
-                  {result.matchedSkills.map((skill) => (
-                    <span key={skill} className="keyword-badge matched">{skill}</span>
-                  ))}
-                </div>
+              {((result.matchedSkills && parseSkillsBadges(result.matchedSkills).length > 0) || 
+                (result.missingSkillsRecommended && parseSkillsBadges(result.missingSkillsRecommended).length > 0)) && (
+                <div className="glass-card keywords-card">
+                  {result.matchedSkills && parseSkillsBadges(result.matchedSkills).length > 0 && (
+                    <>
+                      <h4><BrainCircuit size={16} /> Matched Skills & Keywords</h4>
+                      <div className="keyword-badges-grid">
+                        {parseSkillsBadges(result.matchedSkills).map((skill) => (
+                          <span key={skill} className="keyword-badge matched">{skill}</span>
+                        ))}
+                      </div>
+                    </>
+                  )}
 
-                <h4 className="mt-4"><Sparkles size={16} /> Recommended Additions</h4>
-                <div className="keyword-badges-grid">
-                  {result.missingSkillsRecommended.map((skill) => (
-                    <span key={skill} className="keyword-badge missing">{skill}</span>
-                  ))}
+                  {result.missingSkillsRecommended && parseSkillsBadges(result.missingSkillsRecommended).length > 0 && (
+                    <>
+                      <h4 className={result.matchedSkills && parseSkillsBadges(result.matchedSkills).length > 0 ? "mt-4" : ""}><Sparkles size={16} /> Recommended Additions</h4>
+                      <div className="keyword-badges-grid">
+                        {parseSkillsBadges(result.missingSkillsRecommended).map((skill) => (
+                          <span key={skill} className="keyword-badge missing">{skill}</span>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
+              )}
 
               {/* Action Insights */}
               <div className="glass-card insights-list-card">
