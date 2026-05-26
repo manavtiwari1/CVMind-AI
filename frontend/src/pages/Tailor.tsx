@@ -423,7 +423,7 @@ export default function Tailor({ customApiKey }: TailorProps) {
             <div className="results-insights-pane">
               {/* Match Score Card */}
               <div className="glass-card match-score-card">
-                <div className="gauge-wrapper">
+                <div className="gauge-wrapper" style={{ '--percentage': `${result.matchScore}%` } as React.CSSProperties}>
                   <div className="gauge-content">
                     <span className="gauge-number">{result.matchScore}%</span>
                     <span className="gauge-label">Match Score</span>

@@ -418,25 +418,36 @@
   padding-bottom: 1.2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 1.2rem;
+  flex-wrap: nowrap;
 }
 
 .pane-header h3 {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 800;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap !important;
 }
 
 .editor-controls {
   display: flex;
   gap: 0.65rem;
+  align-items: center;
 }
 
 .control-btn {
-  padding: 0.5rem 1.1rem;
-  font-size: 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px !important;
+  padding: 0 1.2rem !important;
+  font-size: 0.82rem !important;
+  font-weight: 700;
+  border-radius: 8px !important;
   gap: 0.4rem;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
 }
 
 .active-edit-mode {
@@ -676,6 +687,19 @@
     height: 520px;
   }
   
+  .pane-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .editor-controls {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
   .match-score-card {
     grid-template-columns: 1fr;
     justify-items: center;
@@ -698,6 +722,12 @@
   box-shadow: 0 0 15px rgba(0, 245, 255, 0.25);
   transition: all 0.25s ease;
   border: 1px solid transparent !important;
+  height: 38px !important;
+  padding: 0 1.2rem !important;
+  box-sizing: border-box !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .download-toggle-btn:hover {
@@ -717,7 +747,8 @@
   position: absolute;
   top: 100%;
   right: 0;
-  width: 210px;
+  width: 210px !important;
+  min-width: 210px !important;
   background: rgba(6, 16, 20, 0.96) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -758,6 +789,7 @@
   text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap !important;
 }
 
 .download-dropdown-item:hover {
