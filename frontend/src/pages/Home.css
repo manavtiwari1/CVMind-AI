@@ -628,6 +628,58 @@
   gap: 1.2rem;
 }
 
+/* 5-step grid: first row 3 cols, second row 2 cols centered */
+.steps-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.steps-grid-5 .step-card:nth-child(4),
+.steps-grid-5 .step-card:nth-child(5) {
+  /* Push the 4th and 5th card into a centered 2-col second row */
+}
+
+/* On wide screens show 5 in one row */
+@media (min-width: 1100px) {
+  .steps-grid-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* Highlight card — for AI Auto-Fix + Download steps */
+.step-card-highlight {
+  border-color: rgba(0, 245, 255, 0.35) !important;
+  background: linear-gradient(180deg, rgba(0,245,255,0.1), rgba(76,125,255,0.07)) !important;
+  box-shadow: 0 0 28px rgba(0,245,255,0.1), 0 24px 60px rgba(0,0,0,0.18) !important;
+  position: relative;
+}
+
+.step-card-highlight::before {
+  content: '✦ NEW';
+  position: absolute;
+  top: 0.75rem;
+  right: 0.85rem;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #00f5ff;
+  opacity: 0.75;
+}
+
+/* Glowing icon for highlight cards */
+.step-icon-glow {
+  background: linear-gradient(135deg, #00f5ff, #4c7dff) !important;
+  box-shadow: 0 0 18px rgba(0, 245, 255, 0.55), 0 8px 20px rgba(0,0,0,0.2) !important;
+  animation: iconPulse 3s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(0,245,255,0.55), 0 8px 20px rgba(0,0,0,0.2); }
+  50%       { box-shadow: 0 0 30px rgba(0,245,255,0.85), 0 8px 24px rgba(0,0,0,0.25); }
+}
+
+
 .step-card,
 .feature-card {
   border-radius: 18px;

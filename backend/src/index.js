@@ -4,7 +4,7 @@ import cors from 'cors';
 import multer from 'multer';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan } from './db.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -224,6 +224,15 @@ apiRouter.post('/api/optimize', async (req, res) => {
     }
 
     const optimizedResume = await optimizeResumeWithGemini(resumeText, analysisResult, customApiKey);
+
+    // Record the optimization fix safely in admin diagnostics
+    try {
+      const fileName = req.body.fileName || analysisResult.fileName || 'Unknown Resume';
+      const priorScore = Number(analysisResult.score || 0);
+      await saveFix({ fileName, priorScore });
+    } catch (dbErr) {
+      console.error('Error saving optimization fix log:', dbErr);
+    }
 
     return res.json({
       success: true,

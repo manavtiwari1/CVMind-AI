@@ -90,6 +90,14 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.models.Contact || mongoose.model('Contact', contactSchema);
 
+const fixSchema = new mongoose.Schema({
+  fileName: { type: String, required: true },
+  priorScore: { type: Number, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Fix = mongoose.models.Fix || mongoose.model('Fix', fixSchema);
+
 // Await active MongoDB connection during startup to prevent race condition fallback
 async function ensureMongoConnection() {
   if (mongoURI && mongoose.connection.readyState === 2) {
@@ -181,6 +189,32 @@ export async function saveContactMessage({ name, email, subject, message }) {
   return contact;
 }
 
+export async function saveFix({ fileName, priorScore }) {
+  await ensureMongoConnection();
+  const score = Number(priorScore || 0);
+
+  // 1. MongoDB Mode (Non-blocking)
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    Fix.create({
+      fileName,
+      priorScore: score
+    }).catch(err => console.error('MongoDB saveFix error:', err));
+    return;
+  }
+
+  // 2. Local JSON DB Mode (Fallback)
+  const db = readDb();
+  if (!db.fixes) db.fixes = [];
+  db.fixes.unshift({
+    id: randomUUID(),
+    fileName,
+    priorScore: score,
+    createdAt: new Date().toISOString()
+  });
+
+  writeDb(db);
+}
+
 export async function getAdminStats() {
   await ensureMongoConnection();
   // 1. MongoDB Mode
@@ -188,9 +222,11 @@ export async function getAdminStats() {
     try {
       const scans = await Scan.find().sort({ createdAt: -1 }).limit(100);
       const contacts = await Contact.find().sort({ createdAt: -1 }).limit(100);
+      const fixes = await Fix.find().sort({ createdAt: -1 }).limit(100);
       
       const totalScans = await Scan.countDocuments();
       const totalContacts = await Contact.countDocuments();
+      const totalFixes = await Fix.countDocuments();
       
       const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
       const averageScore = totalScans > 0 ? Number((totalScoreSum / Math.min(totalScans, 100)).toFixed(1)) : 0;
@@ -244,6 +280,13 @@ export async function getAdminStats() {
           message: c.message,
           createdAt: c.createdAt
         })),
+        recentFixes: fixes.slice(0, 10).map(f => ({
+          id: f._id,
+          fileName: f.fileName,
+          priorScore: f.priorScore,
+          createdAt: f.createdAt
+        })),
+        totalFixes,
         totalContacts,
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
@@ -259,6 +302,7 @@ export async function getAdminStats() {
   const db = readDb();
   const scans = Array.isArray(db.scans) ? db.scans : [];
   const contacts = Array.isArray(db.contacts) ? db.contacts : [];
+  const fixes = Array.isArray(db.fixes) ? db.fixes : [];
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
 
@@ -285,6 +329,8 @@ export async function getAdminStats() {
     keywordTrends,
     recentScans: scans.slice(0, 8),
     contactMessages: contacts.slice(0, 8),
+    recentFixes: fixes.slice(0, 10),
+    totalFixes: fixes.length,
     totalContacts: contacts.length,
     database: {
       path: dbPath,

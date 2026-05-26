@@ -13,6 +13,7 @@ interface Suggestions {
 }
 
 interface AnalysisData {
+  fileName?: string;
   score: number;
   summary: string;
   atsKeywords: {
@@ -109,7 +110,11 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
       const res = await fetch(`${baseUrl}/api/optimize`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ resumeText, analysisResult })
+        body: JSON.stringify({ 
+          resumeText, 
+          analysisResult,
+          fileName: analysisResult.fileName || 'Unknown Resume'
+        })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Optimization failed.');

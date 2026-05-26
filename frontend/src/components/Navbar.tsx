@@ -1,3 +1,4 @@
+import { Sun, Moon } from 'lucide-react';
 import cvmindLogo from '../assets/cvmind_logo_transparent.png';
 import './Navbar.css';
 
@@ -6,9 +7,11 @@ interface NavbarProps {
   setCurrentPage: (page: string) => void;
   customApiKey: string;
   setCustomApiKey: (key: string) => void;
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
 }
 
-export default function Navbar({ currentPage, setCurrentPage }: NavbarProps) {
+export default function Navbar({ currentPage, setCurrentPage, theme, toggleTheme }: NavbarProps) {
   return (
     <header className="navbar-header">
       <div className="navbar-container">
@@ -46,9 +49,16 @@ export default function Navbar({ currentPage, setCurrentPage }: NavbarProps) {
           </button>
         </nav>
 
-        {/* Right spacer — keeps nav centered */}
-        <div className="navbar-brand" style={{ visibility: 'hidden', pointerEvents: 'none' }}>
-          <img src={cvmindLogo} alt="" className="navbar-logo-img" />
+        {/* Right Actions */}
+        <div className="navbar-actions">
+          <button 
+            className="theme-toggle-btn" 
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={18} className="theme-icon sun" /> : <Moon size={18} className="theme-icon moon" />}
+          </button>
         </div>
 
       </div>

@@ -387,7 +387,7 @@ textarea.form-input {
 }
 
 /* 2026 editorial dashboard refresh */
-:root {
+[data-theme="light"] {
   --bg-primary: #f6f2ea;
   --bg-secondary: #e9f4f1;
   --bg-card: rgba(255, 255, 255, 0.78);
@@ -418,7 +418,8 @@ textarea.form-input {
   --radius-lg: 8px;
 }
 
-html, body {
+[data-theme="light"] html,
+[data-theme="light"] body {
   background-color: var(--bg-primary);
   background-image:
     linear-gradient(120deg, rgba(246,242,234,0.88), rgba(233,244,241,0.82)),
@@ -427,12 +428,17 @@ html, body {
   color: var(--text-primary);
 }
 
-h1, h2, h3, h4, h5, h6 {
+[data-theme="light"] h1, 
+[data-theme="light"] h2, 
+[data-theme="light"] h3, 
+[data-theme="light"] h4, 
+[data-theme="light"] h5, 
+[data-theme="light"] h6 {
   color: var(--text-primary);
   letter-spacing: 0;
 }
 
-p {
+[data-theme="light"] p {
   color: var(--text-secondary);
 }
 
@@ -441,12 +447,12 @@ p {
   padding: 0;
 }
 
-.glass-card {
+[data-theme="light"] .glass-card {
   border-radius: 8px;
   color: var(--text-primary);
 }
 
-.glass-card::before {
+[data-theme="light"] .glass-card::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -454,47 +460,47 @@ p {
   border-top: 1px solid rgba(255,255,255,0.78);
 }
 
-.btn-primary {
+[data-theme="light"] .btn-primary {
   background: var(--gradient-primary);
   box-shadow: 0 14px 28px rgba(22, 125, 114, 0.2);
 }
 
-.btn-secondary {
+[data-theme="light"] .btn-secondary {
   background: rgba(255,255,255,0.72);
   border-color: rgba(21,35,47,0.13);
   color: var(--text-primary);
 }
 
-.badge {
+[data-theme="light"] .badge {
   border-radius: 999px;
   letter-spacing: 0;
 }
 
-.badge-primary {
+[data-theme="light"] .badge-primary {
   background: rgba(22,125,114,0.11);
   color: #14665f;
   border-color: rgba(22,125,114,0.22);
 }
 
-.badge-success {
+[data-theme="light"] .badge-success {
   background: rgba(22,134,95,0.11);
   color: #166b50;
 }
 
-.badge-danger {
+[data-theme="light"] .badge-danger {
   background: rgba(194,65,75,0.11);
   color: #9b3038;
 }
 
-.glow-ambient {
+[data-theme="light"] .glow-ambient {
   display: none;
 }
 
-::-webkit-scrollbar-track {
+[data-theme="light"] ::-webkit-scrollbar-track {
   background: #eee6d9;
 }
 
-::-webkit-scrollbar-thumb {
+[data-theme="light"] ::-webkit-scrollbar-thumb {
   background: #b8c8c2;
   border-color: #eee6d9;
 }

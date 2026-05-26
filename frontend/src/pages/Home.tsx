@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown } from 'lucide-react';
 import './Home.css';
 
 interface HomeProps {
@@ -138,7 +138,11 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       }
 
       if (resData.success && resData.data) {
-        setAnalysisResult(resData.data);
+        const resultWithMeta = {
+          ...resData.data,
+          fileName: selectedFile.name
+        };
+        setAnalysisResult(resultWithMeta);
         if (resData.resumeText) {
           setResumeText(resData.resumeText);
         }
@@ -329,27 +333,39 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       <section className="steps-section">
         <div className="section-heading-row">
           <span>How it works</span>
-          <h2 className="section-title">Resume analysis made effortlessly simple</h2>
-          <p className="section-subtitle">Three quick steps to get a complete, professional resume report.</p>
+          <h2 className="section-title">From raw resume to job-ready in five steps</h2>
+          <p className="section-subtitle">Upload once — get a full audit, an AI-rewritten resume, and a recruiter-ready DOCX file.</p>
         </div>
-        <div className="steps-grid">
+        <div className="steps-grid steps-grid-5">
           <div className="step-card">
             <div className="step-icon"><Upload size={22} /></div>
             <span>Step 01</span>
             <h3>Upload Your Resume</h3>
-            <p>Select a PDF, DOCX, or TXT file. Your resume is never saved to disk — it is parsed entirely in memory for complete privacy.</p>
+            <p>Drop a PDF, DOCX, or TXT file. Your document is parsed entirely in memory — never saved to disk.</p>
           </div>
           <div className="step-card">
             <div className="step-icon"><Search size={22} /></div>
             <span>Step 02</span>
-            <h3>AI Scan Runs Instantly</h3>
-            <p>The system checks ATS keywords, action verbs, formatting, quantified impact, and overall recruiter readability.</p>
+            <h3>AI Deep Scan</h3>
+            <p>Our AI checks ATS keyword gaps, weak bullet points, formatting issues, and overall recruiter readability in seconds.</p>
           </div>
           <div className="step-card">
             <div className="step-icon"><BarChart3 size={22} /></div>
             <span>Step 03</span>
-            <h3>View Your Scorecard</h3>
-            <p>Get your score, strengths, gaps, missing keywords, bullet rewrites, and a downloadable PDF report — all in one dashboard.</p>
+            <h3>Review Your Scorecard</h3>
+            <p>See your full score, top strengths, major gaps, matched and missing ATS keywords — all in one clear dashboard.</p>
+          </div>
+          <div className="step-card step-card-highlight">
+            <div className="step-icon step-icon-glow"><Wand2 size={22} /></div>
+            <span>Step 04</span>
+            <h3>AI Auto-Fixes Resume</h3>
+            <p>Click <strong>"AI Auto-Fix Resume"</strong> — the AI rewrites your entire resume: injects missing keywords, replaces weak bullets with quantified achievements, and restructures every section for maximum ATS score.</p>
+          </div>
+          <div className="step-card step-card-highlight">
+            <div className="step-icon step-icon-glow"><FileDown size={22} /></div>
+            <span>Step 05</span>
+            <h3>Download as DOCX</h3>
+            <p>Get your AI-optimized resume as a professionally formatted <strong>.docx</strong> Word file — ATS-safe layout, clean section headers, action-verb bullets, ready to send to recruiters.</p>
           </div>
         </div>
       </section>

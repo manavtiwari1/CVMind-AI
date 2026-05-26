@@ -20,7 +20,8 @@ import {
   Users,
   Activity,
   Calendar,
-  AlertTriangle
+  AlertTriangle,
+  Sparkles
 } from 'lucide-react';
 import './Admin.css';
 
@@ -29,10 +30,12 @@ interface AdminStats {
   totalScans: number;
   averageScore: number;
   totalContacts: number;
+  totalFixes?: number;
   scoreDistribution: { low: number; medium: number; high: number };
   keywordTrends: Array<{ keyword: string; count: number }>;
   recentScans: Array<{ id: string; fileName: string; score: number; createdAt: string; missingKeywords: string[] }>;
   contactMessages: Array<{ id: string; name: string; email: string; subject: string; message: string; createdAt: string }>;
+  recentFixes?: Array<{ id: string; fileName: string; priorScore: number; createdAt: string }>;
   database: { path: string; updatedAt: string | null };
 }
 
@@ -280,6 +283,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
 
             <div className="admin-sidebar-section-label">Data Storage</div>
             <NavItem icon={<FileText size={15} />}        label="Recent Scans"      active={activeSection === 'scans'}      onClick={() => setActiveSection('scans')} />
+            <NavItem icon={<BrainCircuit size={15} />}    label="AI Auto-Fixes"     active={activeSection === 'fixes'}      onClick={() => setActiveSection('fixes')} />
             <NavItem icon={<Mail size={15} />}            label="Contact Leads"  active={activeSection === 'messages'}   onClick={() => setActiveSection('messages')} />
 
             <div className="admin-sidebar-section-label">System</div>
@@ -310,6 +314,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'scores'     && 'Score Matrix Analytics'}
                 {activeSection === 'keywords'   && 'Keyword Analytics & Trends'}
                 {activeSection === 'scans'      && 'Scan Database Records'}
+                {activeSection === 'fixes'      && 'AI Resume Auto-Fix Logs'}
                 {activeSection === 'messages'   && 'Incoming Contact Leads'}
                 {activeSection === 'database'   && 'System Architecture & Health'}
               </h1>
@@ -385,6 +390,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <StatCard icon={<FileText size={18} />}    label="Total Resumes Scanned" value={stats.totalScans.toLocaleString()} caption="Evaluated against ATS rules" trendCls="card-purple" />
                       <StatCard icon={<TrendingUp size={18} />}  label="Average Score"          value={stats.averageScore ? `${stats.averageScore}/10` : '—'} caption={`${highRate}% scored 8 or above`} trendCls="card-cyan" />
                       <StatCard icon={<Search size={18} />}      label="Skills Monitored"       value={stats.keywordTrends.length.toString()} caption="Unique missing ATS keywords" trendCls="card-indigo" />
+                      <StatCard icon={<BrainCircuit size={18} />} label="Resumes Auto-Fixed"     value={(stats.totalFixes ?? 0).toLocaleString()} caption="ATS-optimized by AI" trendCls="card-emerald" />
                       <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact form" trendCls="card-amber" />
                     </div>
 
@@ -502,6 +508,41 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                         </div>
                       </div>
                     </div>
+
+                    {/* Grid — recent fixes */}
+                    <div className="admin-panel glass-card" style={{ marginTop: '2rem' }}>
+                      <div className="admin-panel-head">
+                        <h2><BrainCircuit size={15} /> Recent AI Auto-Fix Logs</h2>
+                        <span className="panel-badge">Latest Optimizations</span>
+                      </div>
+                      <div className="admin-panel-body">
+                        {!(stats.recentFixes) || stats.recentFixes.length === 0 ? (
+                          <div className="admin-empty">
+                            <span className="admin-empty-icon">🤖</span>
+                            <p>No resume optimizations recorded in logs.</p>
+                          </div>
+                        ) : (
+                          <div className="admin-table-list">
+                            {stats.recentFixes.slice(0, 5).map(fix => (
+                              <div className="admin-table-row glass-card" key={fix.id}>
+                                <div className="table-row-details">
+                                  <strong className="row-filename">{fix.fileName}</strong>
+                                  <small className="row-timestamp">{new Date(fix.createdAt).toLocaleString()}</small>
+                                </div>
+                                <div className="table-row-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                  <span className="admin-prior-score-pill" style={{ background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    Prior Score: <strong style={{ color: 'var(--admin-cyan)' }}>{fix.priorScore}/10</strong>
+                                  </span>
+                                  <span className="badge badge-success">
+                                    Fixed
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </>
                 )}
 
@@ -614,6 +655,47 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                               <div className="table-row-right">
                                 <span className={`admin-score-pill large ${scan.score >= 8 ? 'high' : scan.score >= 6 ? 'mid' : 'low'}`}>
                                   {scan.score}/10
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ AI AUTO-FIX LOGS SECTION ─ */}
+                {activeSection === 'fixes' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><BrainCircuit size={15} /> AI Resume Auto-Fix Logs</h2>
+                      <span className="panel-badge">{(stats.recentFixes || []).length} optimizations</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!(stats.recentFixes) || stats.recentFixes.length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">🤖</span>
+                          <p>No AI optimizations recorded yet. Logs appear when users trigger the AI Auto-Fix.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {stats.recentFixes.map(fix => (
+                            <div className="admin-table-row glass-card detail" key={fix.id}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{fix.fileName}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Log ID: <code className="admin-status-mono">{fix.id.slice(0,8)}...</code></span>
+                                  <span>•</span>
+                                  <span>Optimized: {new Date(fix.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                              <div className="table-row-right" style={{ display: 'flex', alignItems: 'center' }}>
+                                <span className="admin-prior-score-pill">
+                                  Prior Score: <strong>{fix.priorScore}/10</strong>
+                                </span>
+                                <span className="badge badge-success" style={{ marginLeft: '1rem', padding: '0.45rem 0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                                  <Sparkles size={11} /> Auto-Fixed
                                 </span>
                               </div>
                             </div>
