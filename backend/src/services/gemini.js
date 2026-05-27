@@ -672,7 +672,7 @@ export async function generatePrepQuestionsWithGemini(resumeText, customApiKey =
             { role: 'user', content: userPrompt }
           ],
           temperature: 0.3,
-          max_tokens: 3500,
+          max_tokens: 2200,
           response_format: { type: 'json_object' }
         })
       });
