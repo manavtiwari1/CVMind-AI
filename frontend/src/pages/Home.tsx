@@ -210,43 +210,41 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
             <div className="modal-badge">
               <Sparkles size={14} className="animate-pulse" /> Platform Upgrade
             </div>
-            <h2 className="modal-title">Optimized JD Tailoring is Here!</h2>
+            <h2 className="modal-title">Major AI Platform Upgrades Released!</h2>
             <p className="modal-desc">
-              You can now align and optimize your resume directly against any target Job Description (JD) to pass strict ATS scanners and grab recruiter attention!
+              We have launched two powerful, premium corporate-hiring features to make your resume completely job-ready and help you ace your interview panels.
             </p>
             <div className="modal-feature-list">
               <div className="modal-feature-item">
                 <CheckCircle2 size={16} className="modal-feature-icon" />
-                <span>Upload CV + paste Target Job Description.</span>
+                <span><strong>AI Resume Tailorer:</strong> Align and optimize CV accomplishments to any target Job Description (JD) to pass ATS checks.</span>
               </div>
               <div className="modal-feature-item">
-                <CheckCircle2 size={16} className="modal-feature-icon" />
-                <span>Receive detailed keyword badges and ATS insights.</span>
-              </div>
-              <div className="modal-feature-item">
-                <CheckCircle2 size={16} className="modal-feature-icon" />
-                <span>Download professionally formatted PDF and DOCX files.</span>
+                <CheckCircle2 size={16} className="modal-feature-icon" style={{ color: '#a855f7' }} />
+                <span><strong>SmartPrep AI:</strong> Scan your CV history to generate targeted interview prep scorecards with STAR answers and expert recruiter tips.</span>
               </div>
             </div>
             <div className="modal-actions">
               <button 
                 className="btn-primary modal-cta-btn" 
+                style={{ background: 'linear-gradient(135deg, #a855f7, #00f5ff)', boxShadow: '0 0 16px rgba(168,85,247,0.3)' }}
                 onClick={() => {
                   localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
                   setShowWelcomeModal(false);
-                  setCurrentPage('tailor');
+                  setCurrentPage('prep');
                 }}
               >
-                Try AI Resume Tailorer <ArrowRight size={16} />
+                Try SmartPrep AI <ArrowRight size={16} />
               </button>
               <button 
                 className="btn-secondary modal-close-btn" 
                 onClick={() => {
                   localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
                   setShowWelcomeModal(false);
+                  setCurrentPage('tailor');
                 }}
               >
-                Maybe Later
+                Resume Tailorer
               </button>
             </div>
           </div>
@@ -509,6 +507,57 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
               <span>Recommendation: AWS Cloud</span>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Premium Feature Highlight: SmartPrep AI */}
+      <section className="tailor-highlight-section glass-card animate-fade-in-up" style={{ border: '1px solid rgba(168, 85, 247, 0.25)' }}>
+        <div className="tailor-highlight-preview" style={{ background: 'rgba(168, 85, 247, 0.02)', borderColor: 'rgba(168, 85, 247, 0.2)' }}>
+          <div className="tailor-preview-circle" style={{ background: 'conic-gradient(#a855f7 95%, rgba(255,255,255,0.06) 0)', boxShadow: '0 0 22px rgba(168, 85, 247, 0.35)' }}>
+            <span className="tailor-preview-number" style={{ fontSize: '1.4rem' }}>STAR</span>
+            <span className="tailor-preview-label">METHOD</span>
+          </div>
+          <div className="tailor-preview-lines">
+            <div className="preview-line matched" style={{ background: 'rgba(168, 85, 247, 0.08)', borderColor: 'rgba(168, 85, 247, 0.22)', color: '#e9d5ff' }}>
+              <CheckCircle2 size={12} style={{ color: '#a855f7' }} />
+              <span>Google & Amazon HR Sourced</span>
+            </div>
+            <div className="preview-line matched" style={{ background: 'rgba(168, 85, 247, 0.08)', borderColor: 'rgba(168, 85, 247, 0.22)', color: '#e9d5ff' }}>
+              <CheckCircle2 size={12} style={{ color: '#a855f7' }} />
+              <span>STAR Answers Generated</span>
+            </div>
+            <div className="preview-line missing" style={{ background: 'rgba(0, 245, 255, 0.08)', borderColor: 'rgba(0, 245, 255, 0.22)', color: '#a8fbff' }}>
+              <Sparkles size={12} style={{ color: '#00f5ff' }} />
+              <span>Collapsible Recruiter Tips</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="tailor-highlight-content">
+          <div className="tailor-highlight-badge" style={{ color: '#a855f7', borderColor: 'rgba(168, 85, 247, 0.24)', background: 'rgba(168, 85, 247, 0.08)' }}>
+            <Sparkles size={14} /> NEW PRODUCT PREP
+          </div>
+          <h2 className="tailor-highlight-title">Generate Sourced Big Tech & Big 4 Interview Questions</h2>
+          <p className="tailor-highlight-desc">
+            Acing interviews requires targeted preparation. Our corporate recruiter model will scan your CV achievements to construct personalized interview scorecards—featuring customized questions from top tech and advisory styles (Google, McKinsey, Amazon, PwC, Deloitte), model answers, and expert coaching tips.
+          </p>
+          <div className="tailor-highlight-bullets">
+            <div className="tailor-bullet">
+              <CheckCircle2 size={16} className="tailor-bullet-icon" style={{ color: '#a855f7' }} />
+              <span><strong>STAR Responses:</strong> Generates structured Situation-Task-Action-Result guides.</span>
+            </div>
+            <div className="tailor-bullet">
+              <CheckCircle2 size={16} className="tailor-bullet-icon" style={{ color: '#a855f7' }} />
+              <span><strong>Industry Sourcing:</strong> Real questions reflecting elite corporate HR pipelines.</span>
+            </div>
+            <div className="tailor-bullet">
+              <CheckCircle2 size={16} className="tailor-bullet-icon" style={{ color: '#a855f7' }} />
+              <span><strong>Insider Strategy:</strong> Expert feedback outlining exactly what recruiters focus on.</span>
+            </div>
+          </div>
+          <button className="btn-primary tailor-cta-btn" onClick={() => setCurrentPage('prep')} style={{ background: 'linear-gradient(135deg, #a855f7 0%, #00f5ff 100%)', boxShadow: '0 6px 20px rgba(168, 85, 247, 0.25)' }}>
+            Try SmartPrep AI <ArrowRight size={16} />
+          </button>
         </div>
       </section>
 

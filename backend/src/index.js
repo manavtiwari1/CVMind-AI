@@ -3,8 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog } from './db.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini } from './services/gemini.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -299,6 +299,66 @@ apiRouter.post('/api/tailor', upload.single('resume'), async (req, res) => {
     });
   }
 });
+
+// AI Interview Prep Endpoint
+apiRouter.post('/api/prep', upload.single('resume'), async (req, res) => {
+  try {
+    const { file } = req;
+    const { resumeText } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    let textToAnalyze = '';
+    let fileName = 'Direct Input';
+    let fileSize = 0;
+
+    if (file) {
+      fileName = file.originalname;
+      fileSize = file.size;
+      if (file.mimetype === 'application/pdf') {
+        textToAnalyze = await parsePdf(file.buffer);
+      } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        textToAnalyze = await parseDocx(file.buffer);
+      } else if (file.mimetype === 'text/plain') {
+        textToAnalyze = parseTxt(file.buffer);
+      } else {
+        return res.status(400).json({ error: 'Unsupported file format. Please upload PDF, DOCX, or TXT.' });
+      }
+    } else if (resumeText && typeof resumeText === 'string' && resumeText.trim().length >= 50) {
+      textToAnalyze = resumeText;
+      fileName = req.body.fileName || 'Cached Resume';
+      fileSize = Number(req.body.fileSize || resumeText.length);
+    } else {
+      return res.status(400).json({ error: 'No resume file uploaded or text provided. Please upload a PDF, DOCX, or TXT file, or provide your parsed resume text.' });
+    }
+
+    if (!textToAnalyze || textToAnalyze.trim().length < 50) {
+      return res.status(400).json({ error: 'Unable to extract text from the resume. Please check if the file contains readable text.' });
+    }
+
+    const result = await generatePrepQuestionsWithGemini(textToAnalyze, customApiKey);
+
+    // Save logs to MongoDB / Local DB
+    if (result && result.questions) {
+      savePrepLog({
+        fileName: fileName,
+        fileSize: fileSize,
+        questionsCount: result.questions.length
+      }).catch(err => console.error('Error logging prep action:', err));
+    }
+
+    return res.json({
+      success: true,
+      data: result,
+      resumeText: textToAnalyze
+    });
+  } catch (error) {
+    console.error('Prep API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'Interview prep questions generation failed.'
+    });
+  }
+});
+
 
 app.use('/_/backend', apiRouter);
 app.use('/', apiRouter);

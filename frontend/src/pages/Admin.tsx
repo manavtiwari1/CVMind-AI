@@ -47,6 +47,8 @@ interface AdminStats {
   recentScans: Array<{ id: string; fileName: string; score: number; createdAt: string; missingKeywords: string[] }>;
   contactMessages: Array<{ id: string; name: string; email: string; subject: string; message: string; createdAt: string }>;
   recentFixes?: Array<{ id: string; fileName: string; priorScore: number; createdAt: string }>;
+  totalPreps?: number;
+  recentPreps?: Array<{ id: string; fileName: string; fileSize: number; questionsCount: number; createdAt: string }>;
   database: { path: string; updatedAt: string | null };
 }
 
@@ -296,6 +298,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
             <NavItem icon={<FileText size={15} />}        label="Recent Scans"      active={activeSection === 'scans'}      onClick={() => setActiveSection('scans')} />
             <NavItem icon={<BrainCircuit size={15} />}    label="AI Auto-Fixes"     active={activeSection === 'fixes'}      onClick={() => setActiveSection('fixes')} />
             <NavItem icon={<Sparkles size={15} />}        label="AI Tailor Logs"    active={activeSection === 'tailors'}    onClick={() => setActiveSection('tailors')} />
+            <NavItem icon={<Sparkles size={15} />}        label="AI Prep Logs"      active={activeSection === 'preps'}      onClick={() => setActiveSection('preps')} />
             <NavItem icon={<Mail size={15} />}            label="Contact Leads"  active={activeSection === 'messages'}   onClick={() => setActiveSection('messages')} />
 
             <div className="admin-sidebar-section-label">System</div>
@@ -328,6 +331,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'scans'      && 'Scan Database Records'}
                 {activeSection === 'fixes'      && 'AI Resume Auto-Fix Logs'}
                 {activeSection === 'tailors'    && 'AI Resume Tailoring Logs'}
+                {activeSection === 'preps'      && 'AI Interview Prep Scorecard Logs'}
                 {activeSection === 'messages'   && 'Incoming Contact Leads'}
                 {activeSection === 'database'   && 'System Architecture & Health'}
               </h1>
@@ -394,7 +398,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <span className="admin-status-sep" />
                       <div className="admin-status-item">
                         <Calendar size={13} /> Data Source:
-                        <span className="admin-status-mono">Local JSON Document</span>
+                        <span className="admin-status-mono">{stats.database?.path || 'Local JSON Document'}</span>
                       </div>
                     </div>
 
@@ -405,6 +409,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <StatCard icon={<Search size={18} />}      label="Skills Monitored"       value={stats.keywordTrends.length.toString()} caption="Unique missing ATS keywords" trendCls="card-indigo" />
                       <StatCard icon={<BrainCircuit size={18} />} label="Resumes Auto-Fixed"     value={(stats.totalFixes ?? 0).toLocaleString()} caption="ATS-optimized by AI" trendCls="card-emerald" />
                       <StatCard icon={<Sparkles size={18} />}    label="Resumes Tailored"       value={(stats.totalTailors ?? 0).toLocaleString()} caption="Aligned to target JDs" trendCls="card-rose" />
+                      <StatCard icon={<Sparkles size={18} />}    label="SmartPreps Generated"   value={(stats.totalPreps ?? 0).toLocaleString()} caption="Interview prep scorecards" trendCls="card-purple" />
                       <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact" trendCls="card-amber" />
                     </div>
 
@@ -824,6 +829,49 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                 </div>
                               )}
                             </article>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ AI PREP LOGS SECTION ─ */}
+                {activeSection === 'preps' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Historical Interview Preparation Scorecard Logs</h2>
+                      <span className="panel-badge">{stats.totalPreps ?? 0} preps logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentPreps || stats.recentPreps.length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">✨</span>
+                          <p>No interview preps logged in the database yet. Logs appear when users generate interview prep cards.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {stats.recentPreps.map(p => (
+                            <div className="admin-table-row glass-card detail" key={p.id}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{p.fileName}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Log ID: <code className="admin-status-mono">{p.id.slice(0, 8)}...</code></span>
+                                  <span>•</span>
+                                  <span>File Size: {(p.fileSize / (1024 * 1024)).toFixed(2)} MB</span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(p.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                              <div className="table-row-right" style={{ display: 'flex', alignItems: 'center' }}>
+                                <span className="admin-prior-score-pill" style={{ padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800 }}>
+                                  Questions Count: <strong style={{ color: 'var(--color-primary)' }}>{p.questionsCount}</strong>
+                                </span>
+                                <span className="badge badge-success" style={{ marginLeft: '1rem', padding: '0.45rem 0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                                  Generated
+                                </span>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       )}

@@ -8,6 +8,7 @@ import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import Tailor from './pages/Tailor';
+import Prep from './pages/Prep';
 import './styles/theme.css';
 
 export default function App() {
@@ -79,6 +80,15 @@ export default function App() {
         return <Admin setCurrentPage={setCurrentPage} />;
       case 'tailor':
         return <Tailor customApiKey={customApiKey} />;
+      case 'prep':
+        return (
+          <Prep 
+            customApiKey={customApiKey}
+            resumeText={resumeText}
+            setResumeText={setResumeText}
+            setCurrentPage={setCurrentPage}
+          />
+        );
       default:
         return (
           <Home 

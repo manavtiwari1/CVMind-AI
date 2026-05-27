@@ -853,79 +853,7 @@
   }
 }
 
-/* Light editorial dashboard refresh */
-.dashboard-title-text {
-  -webkit-text-fill-color: initial;
-  background: none;
-  color: var(--text-primary);
-  letter-spacing: 0;
-}
 
-.dashboard-header {
-  border-bottom-color: rgba(21,35,47,0.12);
-}
-
-.score-radial-card,
-.summary-block,
-.sw-card,
-.recommendations-block,
-.keywords-panel,
-.rewrites-panel,
-.formatting-panel {
-  background: rgba(255,255,255,0.76) !important;
-  border-color: rgba(21,35,47,0.1) !important;
-}
-
-.score-number-display,
-.summary-title,
-.panel-title,
-.sw-card-title,
-.rec-block-title,
-.block-content {
-  color: var(--text-primary);
-}
-
-.summary-content,
-.rec-content,
-.sw-list-item,
-.panel-desc,
-.formatting-feedback-content {
-  color: var(--text-secondary);
-}
-
-.tabs-bar {
-  border-bottom-color: rgba(21,35,47,0.12);
-}
-
-.tab-btn {
-  color: var(--text-secondary);
-}
-
-.tab-btn:hover,
-.tab-btn.active {
-  color: var(--color-primary);
-}
-
-.tab-btn.active {
-  border-bottom-color: var(--color-primary);
-}
-
-.rewrite-row {
-  background: rgba(255,255,255,0.54);
-  border-color: rgba(21,35,47,0.1);
-  border-radius: 8px;
-}
-
-.rec-number-badge {
-  background: rgba(22,125,114,0.1);
-  color: var(--color-primary);
-}
-
-.copy-btn {
-  background: rgba(18,32,43,0.06);
-  border-color: rgba(18,32,43,0.1);
-  color: var(--text-primary);
-}
 
 /* ═══════════════════════════════════════
    AI AUTO-FIX RESUME TAB STYLES

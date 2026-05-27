@@ -599,3 +599,124 @@ export async function tailorResumeWithGemini(resumeText, jobDescription, customA
     throw new Error('Resume tailoring failed. ' + error.message);
   }
 }
+
+const prepSchema = {
+  type: 'object',
+  properties: {
+    questions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          category: { type: 'string', description: 'The category of the question: Technical, Behavioral, HR, or Situational.' },
+          companySource: { type: 'string', description: 'The corporate source style of the question: Google, Amazon, McKinsey, Goldman Sachs, Deloitte, PwC, EY, KPMG.' },
+          question: { type: 'string', description: 'Candid, customized interview question tailored directly to the candidate\'s resume background.' },
+          answer: { type: 'string', description: 'A high-impact, professional model answer following optimal interview frameworks (like STAR for behavioral).' },
+          tip: { type: 'string', description: 'Recruiter insider tip highlighting what hiring managers look for when evaluating this question.' }
+        },
+        required: ['category', 'companySource', 'question', 'answer', 'tip']
+      },
+      description: 'List of 5 to 7 premium interview questions tailored to the candidate\'s resume.'
+    }
+  },
+  required: ['questions']
+};
+
+/**
+ * Generates tailored interview questions based on the candidate's resume text using Gemini.
+ * @param {string} resumeText - Raw text of the CV.
+ * @param {string} [customApiKey] - Optional user supplied API key.
+ * @returns {Promise<object>} - Structured JSON analysis containing tailored questions and model answers.
+ */
+export async function generatePrepQuestionsWithGemini(resumeText, customApiKey = null) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const systemPrompt = `You are a premier Talent Acquisition Partner, Executive Coach, and Interview Board Panelist for Fortune 500 tech companies (like Google, Amazon, Microsoft) and Big 4 advisory networks (like Deloitte, PwC).
+  Your task is to scan the candidate's resume and generate 5 to 7 customized, high-value interview questions they are highly likely to face from HRs and hiring managers.
+  
+  For each question, provide:
+  1. A target corporate style category source (e.g. Google, Amazon, McKinsey, Deloitte, PwC). Sourced questions should feel authentic to those organizations.
+  2. The question type (Behavioral, Technical, HR, Situational).
+  3. A robust, highly polished AI model answer demonstrating industry best practices (such as the STAR method: Situation, Task, Action, Result).
+  4. An insider recruiter tip outlining exactly what hiring panels analyze in the candidate's response.
+  
+  You MUST strictly return your response in the specified JSON structure. Do not wrap it in any HTML or markdown, only raw JSON matching the schema.`;
+
+  const userPrompt = `Here is the candidate's resume text:
+  """
+  ${resumeText}
+  """
+  
+  Scan this resume and generate the structured interview preparation scorecard now.`;
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: `${systemPrompt}\nYou MUST strictly respond with a JSON object that conforms to this JSON schema:\n${JSON.stringify(prepSchema, null, 2)}` },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.3,
+          max_tokens: 3500,
+          response_format: { type: 'json_object' }
+        })
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+
+      const result = await response.json();
+      if (!result.choices || result.choices.length === 0) {
+        throw new Error('No choices returned by OpenRouter API.');
+      }
+
+      return JSON.parse(result.choices[0].message.content.trim());
+    } catch (error) {
+      console.error('OpenRouter Prep Error:', error);
+      throw new Error('Interview prep questions generation failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: prepSchema,
+        temperature: 0.3
+      }
+    });
+
+    return JSON.parse(result.response.text().trim());
+  } catch (error) {
+    console.error('Gemini Prep Error:', error);
+    if (error.status === 403 || error.message.includes('API key')) {
+      throw new Error('Invalid Gemini API Key.');
+    }
+    throw new Error('Interview prep questions generation failed. ' + error.message);
+  }
+}
+

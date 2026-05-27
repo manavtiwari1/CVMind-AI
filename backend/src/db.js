@@ -111,6 +111,16 @@ const tailorSchema = new mongoose.Schema({
 
 const TailorLog = mongoose.models.TailorLog || mongoose.model('TailorLog', tailorSchema);
 
+const prepLogSchema = new mongoose.Schema({
+  fileName: { type: String, required: true },
+  fileSize: { type: Number, required: true },
+  questionsCount: { type: Number, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const PrepLog = mongoose.models.PrepLog || mongoose.model('PrepLog', prepLogSchema);
+
+
 // Await active MongoDB connection during startup to prevent race condition fallback
 async function ensureMongoConnection() {
   if (mongoURI && mongoose.connection.readyState === 2) {
@@ -263,6 +273,36 @@ export async function saveTailorLog({ fileName, fileSize, score, jobDescription,
   writeDb(db);
 }
 
+export async function savePrepLog({ fileName, fileSize, questionsCount }) {
+  await ensureMongoConnection();
+  const sizeVal = Number(fileSize || 0);
+  const countVal = Number(questionsCount || 0);
+
+  // 1. MongoDB Mode (Non-blocking)
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    PrepLog.create({
+      fileName,
+      fileSize: sizeVal,
+      questionsCount: countVal
+    }).catch(err => console.error('MongoDB savePrepLog error:', err));
+    return;
+  }
+
+  // 2. Local JSON DB Mode (Fallback)
+  const db = readDb();
+  if (!db.prepLogs) db.prepLogs = [];
+  db.prepLogs.unshift({
+    id: randomUUID(),
+    fileName,
+    fileSize: sizeVal,
+    questionsCount: countVal,
+    createdAt: new Date().toISOString()
+  });
+
+  writeDb(db);
+}
+
+
 export async function getAdminStats() {
   await ensureMongoConnection();
   // 1. MongoDB Mode
@@ -272,11 +312,13 @@ export async function getAdminStats() {
       const contacts = await Contact.find().sort({ createdAt: -1 }).limit(100);
       const fixes = await Fix.find().sort({ createdAt: -1 }).limit(100);
       const tailorLogs = await TailorLog.find().sort({ createdAt: -1 }).limit(100);
+      const prepLogs = await PrepLog.find().sort({ createdAt: -1 }).limit(100);
       
       const totalScans = await Scan.countDocuments();
       const totalContacts = await Contact.countDocuments();
       const totalFixes = await Fix.countDocuments();
       const totalTailors = await TailorLog.countDocuments();
+      const totalPreps = await PrepLog.countDocuments();
       
       const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
       const averageScore = totalScans > 0 ? Number((totalScoreSum / Math.min(totalScans, 100)).toFixed(1)) : 0;
@@ -349,6 +391,14 @@ export async function getAdminStats() {
           createdAt: t.createdAt
         })),
         totalTailors,
+        recentPreps: prepLogs.slice(0, 15).map(p => ({
+          id: p._id,
+          fileName: p.fileName,
+          fileSize: p.fileSize,
+          questionsCount: p.questionsCount,
+          createdAt: p.createdAt
+        })),
+        totalPreps,
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
           updatedAt: new Date().toISOString()
@@ -365,6 +415,7 @@ export async function getAdminStats() {
   const contacts = Array.isArray(db.contacts) ? db.contacts : [];
   const fixes = Array.isArray(db.fixes) ? db.fixes : [];
   const tailorLogs = Array.isArray(db.tailorLogs) ? db.tailorLogs : [];
+  const prepLogs = Array.isArray(db.prepLogs) ? db.prepLogs : [];
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
 
@@ -393,9 +444,11 @@ export async function getAdminStats() {
     contactMessages: contacts.slice(0, 8),
     recentFixes: fixes.slice(0, 10),
     recentTailors: tailorLogs.slice(0, 15),
+    recentPreps: prepLogs.slice(0, 15),
     totalFixes: fixes.length,
     totalContacts: contacts.length,
     totalTailors: tailorLogs.length,
+    totalPreps: prepLogs.length,
     database: {
       path: dbPath,
       updatedAt: db.meta?.updatedAt || null

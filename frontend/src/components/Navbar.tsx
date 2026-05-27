@@ -36,7 +36,7 @@ export default function Navbar({ currentPage, setCurrentPage }: NavbarProps) {
           
           {/* Products Dropdown */}
           <div className="nav-dropdown-container">
-            <button className={`nav-link dropdown-toggle ${currentPage === 'home' || currentPage === 'tailor' ? 'active' : ''}`}>
+            <button className={`nav-link dropdown-toggle ${currentPage === 'home' || currentPage === 'tailor' || currentPage === 'prep' ? 'active' : ''}`}>
               Products <ChevronDown size={14} className="dropdown-arrow" />
             </button>
             <div className="nav-dropdown-menu">
@@ -51,6 +51,12 @@ export default function Navbar({ currentPage, setCurrentPage }: NavbarProps) {
                 onClick={() => setCurrentPage('tailor')}
               >
                 AI Resume Tailorer
+              </button>
+              <button 
+                className={`dropdown-item ${currentPage === 'prep' ? 'active' : ''}`}
+                onClick={() => setCurrentPage('prep')}
+              >
+                SmartPrep AI
               </button>
             </div>
           </div>
