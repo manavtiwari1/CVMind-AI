@@ -189,18 +189,8 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
     setTimeout(() => setCopiedAll(false), 1800);
   };
 
-  const downloadPrepDoc = () => {
-    const formatted = questions.map((q, i) => 
-      `Question ${i + 1} [Source: ${q.companySource} | Category: ${q.category}]\nQuestion: ${q.question}\n\nModel Answer:\n${q.answer}\n\nRecruiter Insider Tip:\n${q.tip}\n\n${'='.repeat(60)}`
-    ).join('\n\n');
-    
-    const element = document.createElement('a');
-    const file = new Blob([`CVMIND AI - SMARTPREP INTERVIEW scorecard\nGenerated at: ${new Date().toLocaleDateString()}\n\n${formatted}`], { type: 'text/plain;charset=utf-8' });
-    element.href = URL.createObjectURL(file);
-    element.download = `cvmind_smartprep_interview_prep.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+  const downloadPrepPDF = () => {
+    window.print();
   };
 
   const categories = ['All', ...Array.from(new Set(questions.map(q => q.category)))];
@@ -378,8 +368,8 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
                 <button className="btn-secondary btn-sm" onClick={handleCopyAll}>
                   {copiedAll ? <><Check size={14} className="text-success" /> Copied Scorecard!</> : <><Copy size={14} /> Copy All</>}
                 </button>
-                <button className="btn-primary btn-sm" onClick={downloadPrepDoc}>
-                  <FileDown size={14} /> Download TXT
+                 <button className="btn-primary btn-sm" onClick={downloadPrepPDF}>
+                  <FileDown size={14} /> Download PDF
                 </button>
               </div>
             </div>
@@ -474,6 +464,40 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
           </div>
         )}
 
+      </div>
+
+      {/* Printable PDF Template */}
+      <div className="print-scorecard-document">
+        <div className="print-header">
+          <h1 className="print-title">CVMIND AI - SMARTPREP SCORECARD</h1>
+          <p className="print-meta">
+            Generated on: {new Date().toLocaleDateString()} | Resume Source: {selectedFile ? selectedFile.name : 'Active Session CV'}
+          </p>
+        </div>
+        
+        <div className="print-questions-list">
+          {questions.map((q, idx) => (
+            <div key={idx} className="print-question-item">
+              <div className="print-question-header">
+                <h3>{idx + 1}. {q.question}</h3>
+                <div className="print-question-meta">
+                  <span><strong>Company Style:</strong> {q.companySource} Style</span>
+                  <span><strong>Category:</strong> {q.category}</span>
+                </div>
+              </div>
+              <div className="print-question-body">
+                <div className="print-answer-block">
+                  <strong>Professional Model Answer (STAR Method):</strong>
+                  <p>{q.answer}</p>
+                </div>
+                <div className="print-tip-block">
+                  <strong>Recruiter Insider Tip:</strong>
+                  <p>{q.tip}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
