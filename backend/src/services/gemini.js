@@ -611,12 +611,12 @@ const prepSchema = {
           category: { type: 'string', description: 'The category of the question: Technical, Behavioral, HR, or Situational.' },
           companySource: { type: 'string', description: 'The corporate source style of the question: Google, Amazon, McKinsey, Goldman Sachs, Deloitte, PwC, EY, KPMG.' },
           question: { type: 'string', description: 'Candid, customized interview question tailored directly to the candidate\'s resume background.' },
-          answer: { type: 'string', description: 'A high-impact, professional model answer following optimal interview frameworks (like STAR for behavioral).' },
-          tip: { type: 'string', description: 'Recruiter insider tip highlighting what hiring managers look for when evaluating this question.' }
+          answer: { type: 'string', description: 'A concise, high-impact, professional model answer (under 120 words) following optimal frameworks like STAR.' },
+          tip: { type: 'string', description: 'A concise recruiter insider tip (under 60 words) highlighting key evaluation points.' }
         },
         required: ['category', 'companySource', 'question', 'answer', 'tip']
       },
-      description: 'List of 5 to 7 premium interview questions tailored to the candidate\'s resume.'
+      description: 'List of exactly 4 premium interview questions tailored to the candidate\'s resume.'
     }
   },
   required: ['questions']
@@ -636,14 +636,15 @@ export async function generatePrepQuestionsWithGemini(resumeText, customApiKey =
   }
 
   const systemPrompt = `You are a premier Talent Acquisition Partner, Executive Coach, and Interview Board Panelist for Fortune 500 tech companies (like Google, Amazon, Microsoft) and Big 4 advisory networks (like Deloitte, PwC).
-  Your task is to scan the candidate's resume and generate 5 to 7 customized, high-value interview questions they are highly likely to face from HRs and hiring managers.
+  Your task is to scan the candidate's resume and generate exactly 4 customized, high-value interview questions (covering 1 Technical, 1 Behavioral, 1 HR, and 1 Situational context) they are highly likely to face from HRs and hiring managers.
   
   For each question, provide:
   1. A target corporate style category source (e.g. Google, Amazon, McKinsey, Deloitte, PwC). Sourced questions should feel authentic to those organizations.
   2. The question type (Behavioral, Technical, HR, Situational).
-  3. A robust, highly polished AI model answer demonstrating industry best practices (such as the STAR method: Situation, Task, Action, Result).
-  4. An insider recruiter tip outlining exactly what hiring panels analyze in the candidate's response.
+  3. A concise, highly polished AI model answer (keep it high-impact and strictly under 120 words, following the STAR method: Situation, Task, Action, Result where appropriate).
+  4. A brief insider recruiter tip (under 60 words) outlining exactly what hiring panels analyze in the response.
   
+  CRITICAL: Keep all answers and tips concise, clear, and punchy. The entire JSON response MUST be compact to ensure it completes fully without truncation under strict token limits.
   You MUST strictly return your response in the specified JSON structure. Do not wrap it in any HTML or markdown, only raw JSON matching the schema.`;
 
   const userPrompt = `Here is the candidate's resume text:
