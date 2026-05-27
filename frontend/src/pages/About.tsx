@@ -1,4 +1,4 @@
-import { Cpu, Eye, FileSearch, GraduationCap } from 'lucide-react';
+import { Cpu, Eye, FileSearch, GraduationCap, Briefcase, Sparkles } from 'lucide-react';
 import './About.css';
 
 export default function About() {
@@ -47,6 +47,44 @@ export default function About() {
         <p className="info-text">
           CVMind AI was built to solve this asymmetry. By deploying advanced Large Language Models, we give you immediate access to corporate-level resume diagnostics. You receive instant, comprehensive, and hyper-actionable feedback that aligns your profile with what recruiters and algorithms search for.
         </p>
+      </section>
+
+      {/* Core Capabilities Suite */}
+      <section className="about-capabilities-section">
+        <h2 className="capabilities-title">Our Premium Product Suite</h2>
+        <p className="capabilities-subtitle">Advanced AI products engineered to transform your career search:</p>
+        
+        <div className="capabilities-grid">
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper score-icon">
+              <Eye size={24} />
+            </div>
+            <h4>Resume Analyzer & Audit</h4>
+            <p>
+              Scans your resume for keyword matches, readability, structural format, and sentence impact scores to bypass strict ATS filters.
+            </p>
+          </div>
+          
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper tailor-icon">
+              <Briefcase size={24} />
+            </div>
+            <h4>AI Resume Tailoring</h4>
+            <p>
+              Compare your resume against any target job description. The AI automatically identifies skill gaps and rewrites your resume sections to perfectly match recruiter expectations.
+            </p>
+          </div>
+          
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper prep-icon">
+              <Sparkles size={24} />
+            </div>
+            <h4>SmartPrep AI Interview Coach</h4>
+            <p>
+              Generates customized interview prep scorecards based on your CV history, featuring Big Tech and Big 4 style Q&As, STAR method answers, insider recruiter tips, and vector PDF exports.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Workflow Process Timeline */}
