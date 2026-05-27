@@ -536,30 +536,30 @@
 }
 
 @media print {
-  /* Hide all standard web content */
-  body, html, #root, .prep-container, .navbar, .no-print, .prep-header, .prep-results-toolbar, .prep-questions-list, .glow-ambient {
-    visibility: hidden !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
+  /* Hide specific non-print elements */
+  .navbar, nav, footer, .no-print, .glow-ambient, .prep-header, .prep-workspace {
+    display: none !important;
   }
 
-  /* Show only the printable scorecard container */
-  .print-scorecard-document, .print-scorecard-document * {
-    visibility: visible !important;
+  /* Reset layout constraints for printing */
+  body, html, #root, .prep-container {
+    background: #ffffff !important;
+    color: #111827 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: auto !important;
   }
 
   .print-scorecard-document {
     display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+    width: 100% !important;
     color: #111827 !important;
     background: #ffffff !important;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    padding: 20px;
+    padding: 10px 0;
     box-sizing: border-box;
   }
 
