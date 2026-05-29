@@ -410,7 +410,7 @@ Rewrite it now as a fully ATS-optimized resume following all the rules above.`;
             { role: 'user', content: userPrompt }
           ],
           temperature: 0.3,
-          max_tokens: 2000
+          max_tokens: 3500
         })
       });
 
@@ -442,7 +442,7 @@ Rewrite it now as a fully ATS-optimized resume following all the rules above.`;
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 2000
+        maxOutputTokens: 8192
       }
     });
 
