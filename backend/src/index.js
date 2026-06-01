@@ -223,7 +223,9 @@ apiRouter.post('/api/auth/github', async (req, res) => {
 
     if (tokenData.error) {
       console.error('GitHub token exchange error:', tokenData);
-      return res.status(400).json({ error: tokenData.error_description || 'GitHub token exchange failed.' });
+      return res.status(400).json({ 
+        error: tokenData.error_description || tokenData.error || 'GitHub token exchange failed.' 
+      });
     }
 
     const accessToken = tokenData.access_token;
