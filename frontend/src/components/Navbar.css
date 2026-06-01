@@ -193,19 +193,88 @@
   transform: scale(1.02);
 }
 
-/* ── Mobile ─────────────────────────────────────────────── */
+/* ── Mobile & Responsive Drawer ────────────────────────── */
+.mobile-menu-toggle {
+  display: none !important;
+}
+
+.navbar-mobile-drawer {
+  position: absolute;
+  top: 52px;
+  left: 0;
+  right: 0;
+  background: rgba(10, 10, 10, 0.96);
+  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  gap: 0.65rem;
+  transform: translateY(-125%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 99;
+}
+
+.navbar-mobile-drawer.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-drawer-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.mobile-drawer-link:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mobile-drawer-link.active {
+  color: var(--blue);
+  background: var(--blue-dim);
+  font-weight: 700;
+}
+
 @media (max-width: 860px) {
   .navbar-container {
     grid-template-columns: 1fr auto;
     padding: 0 1.25rem;
   }
 
-  .navbar-nav {
-    display: none;
+  .navbar-nav,
+  .navbar-actions .navbar-cta {
+    display: none !important;
+  }
+
+  .mobile-menu-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
   }
 }
 
 @media (max-width: 480px) {
   .navbar-header { height: 48px; }
   .navbar-brand-name { display: none; }
+  .navbar-mobile-drawer { top: 48px; }
 }

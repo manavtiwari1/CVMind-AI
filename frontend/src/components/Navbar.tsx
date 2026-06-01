@@ -109,8 +109,7 @@ export default function Navbar({ currentPage, setCurrentPage, isLoggedIn, setSho
           )}
           {/* Mobile menu toggle */}
           <button
-            className="nav-link"
-            style={{ display: 'none' }}
+            className="mobile-menu-toggle nav-link"
             onClick={() => setMobileOpen(v => !v)}
             aria-label="Toggle menu"
           >
@@ -118,6 +117,58 @@ export default function Navbar({ currentPage, setCurrentPage, isLoggedIn, setSho
           </button>
         </div>
 
+      </div>
+
+      {/* Premium Sliding Frosted Glass Mobile Menu Drawer */}
+      <div className={`navbar-mobile-drawer ${mobileOpen ? 'open' : ''}`}>
+        {[
+          { label: 'Home', page: 'home' },
+          { label: 'Dashboard', page: 'dashboard' },
+          { label: 'Resume Tailor', page: 'tailor' },
+          { label: 'Interview Prep AI', page: 'prep' },
+          { label: 'About CVMind AI', page: 'about' },
+          { label: 'Contact Support', page: 'contact' }
+        ].map(({ label, page }) => (
+          <button
+            key={label}
+            className={`mobile-drawer-link${currentPage === page ? ' active' : ''}`}
+            onClick={() => go(page)}
+          >
+            {label}
+          </button>
+        ))}
+
+        {/* Dynamic Mobile CTA */}
+        <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '0.5rem 0' }}></div>
+        {isLoggedIn ? (
+          <button
+            className="navbar-cta"
+            style={{ 
+              width: '100%',
+              background: 'rgba(255, 69, 58, 0.08)', 
+              color: 'var(--red)', 
+              border: '1px solid rgba(255, 69, 58, 0.22)',
+              padding: '0.65rem'
+            }}
+            onClick={() => {
+              handleSignOut();
+              setMobileOpen(false);
+            }}
+          >
+            Sign Out
+          </button>
+        ) : (
+          <button
+            className="navbar-cta"
+            style={{ width: '100%', padding: '0.65rem' }}
+            onClick={() => {
+              setShowAuthModal(true);
+              setMobileOpen(false);
+            }}
+          >
+            Sign In
+          </button>
+        )}
       </div>
     </header>
   );
