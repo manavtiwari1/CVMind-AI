@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ShieldCheck, AlertCircle, ArrowLeft } from 'lucide-react';
 import './GithubCallback.css';
 
@@ -9,6 +9,7 @@ interface GithubCallbackProps {
 export default function GithubCallback({ onSuccess }: GithubCallbackProps) {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -19,6 +20,9 @@ export default function GithubCallback({ onSuccess }: GithubCallbackProps) {
       setErrorMsg('No authorization code returned from GitHub.');
       return;
     }
+
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
 
     const verifyGithubAuth = async () => {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
