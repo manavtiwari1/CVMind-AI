@@ -15,9 +15,16 @@ import './styles/theme.css';
 
 export default function App() {
   const [currentPage, setCurrentPageState] = useState<string>(() => {
+    const urlPage = window.location.pathname.replace(/^\//, '');
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'resume-builder'];
+    if (urlPage && validPages.includes(urlPage)) {
+      return urlPage;
+    }
     const savedPage = localStorage.getItem('cvmind_current_page');
-    if (savedPage) return savedPage;
-    return window.location.pathname.replace(/^\//, '') || 'home';
+    if (savedPage && validPages.includes(savedPage)) {
+      return savedPage;
+    }
+    return 'home';
   });
   const [customApiKey, setCustomApiKey] = useState<string>(() => {
     return localStorage.getItem('resumetrics_gemini_key') || '';
