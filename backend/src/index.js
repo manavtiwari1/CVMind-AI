@@ -2,9 +2,11 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
+import bcrypt from 'bcryptjs';
+import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog } from './db.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -68,6 +70,229 @@ apiRouter.post('/api/admin/login', (req, res) => {
     success: false,
     error: 'Invalid username or password.'
   });
+});
+
+// User Sign Up Route
+apiRouter.post('/api/auth/signup', async (req, res) => {
+  const { name, email, password } = req.body || {};
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: 'Name, email, and password are required.' });
+  }
+
+  try {
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email is already registered. Please sign in.' });
+    }
+
+    // Hash the password securely with 10 salt rounds
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = await createUser({
+      email,
+      name,
+      password: hashedPassword
+    });
+
+    return res.json({
+      success: true,
+      message: 'Account created successfully!',
+      user: {
+        id: newUser.id || newUser._id,
+        name: newUser.name,
+        email: newUser.email
+      }
+    });
+  } catch (err) {
+    console.error('Sign Up Error:', err);
+    return res.status(500).json({ error: err.message || 'An error occurred during account creation.' });
+  }
+});
+
+// User Sign In Route
+apiRouter.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body || {};
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+
+  try {
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    // Compare bcrypt hashes
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Sign in successful!',
+      user: {
+        id: user.id || user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (err) {
+    console.error('Sign In Error:', err);
+    return res.status(500).json({ error: err.message || 'An error occurred during sign in.' });
+  }
+});
+
+// Google Auth Verification Route
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+apiRouter.post('/api/auth/google', async (req, res) => {
+  const { token } = req.body || {};
+
+  if (!token) {
+    return res.status(400).json({ error: 'OAuth ID token is required.' });
+  }
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload) {
+      return res.status(400).json({ error: 'Invalid Google token payload.' });
+    }
+    
+    const { email, name, picture } = payload;
+
+    let user = await findUserByEmail(email);
+    if (!user) {
+      // Auto-create Google user with dynamic unique mock password hash
+      const salt = await bcrypt.genSalt(10);
+      const mockPasswordHash = await bcrypt.hash('oauth-google-' + Math.random().toString(36), salt);
+      user = await createUser({
+        email,
+        name: name || email.split('@')[0],
+        password: mockPasswordHash
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Sign in with Google successful!',
+      user: {
+        id: user.id || user._id,
+        name: user.name,
+        email: user.email,
+        avatar: picture || ''
+      }
+    });
+  } catch (err) {
+    console.error('Google Sign In Error:', err);
+    return res.status(400).json({ error: 'Google authentication failed. Please try again.' });
+  }
+});
+
+// GitHub Auth Verification Route
+apiRouter.post('/api/auth/github', async (req, res) => {
+  const { code } = req.body || {};
+
+  if (!code) {
+    return res.status(400).json({ error: 'OAuth authorization code is required.' });
+  }
+
+  try {
+    // 1. Exchange authorization code for access token
+    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code
+      })
+    });
+
+    const tokenData = await tokenResponse.json();
+
+    if (tokenData.error) {
+      console.error('GitHub token exchange error:', tokenData);
+      return res.status(400).json({ error: tokenData.error_description || 'GitHub token exchange failed.' });
+    }
+
+    const accessToken = tokenData.access_token;
+    if (!accessToken) {
+      return res.status(400).json({ error: 'No access token returned from GitHub.' });
+    }
+
+    // 2. Fetch user profile from GitHub
+    const userResponse = await fetch('https://api.github.com/user', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'User-Agent': 'CVMind-AI'
+      }
+    });
+
+    const userData = await userResponse.json();
+    if (!userResponse.ok) {
+      console.error('GitHub user profile error:', userData);
+      return res.status(400).json({ error: 'Failed to fetch user profile from GitHub.' });
+    }
+
+    // 3. Fetch user email (often null or private in public user profile)
+    let email = userData.email;
+    if (!email) {
+      const emailResponse = await fetch('https://api.github.com/user/emails', {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'User-Agent': 'CVMind-AI'
+        }
+      });
+      const emails = await emailResponse.json();
+      if (emailResponse.ok && Array.isArray(emails)) {
+        // Find primary verified email, fallback to first email
+        const primaryEmail = emails.find(e => e.primary && e.verified);
+        email = primaryEmail ? primaryEmail.email : (emails[0] ? emails[0].email : null);
+      }
+    }
+
+    if (!email) {
+      // Fallback: create a dummy unique email if GitHub doesn't return any email
+      email = `${userData.login || 'github_user'}@github.invalid`;
+    }
+
+    let user = await findUserByEmail(email);
+    if (!user) {
+      // Auto-create user with a secure hashed dummy password
+      const salt = await bcrypt.genSalt(10);
+      const mockPasswordHash = await bcrypt.hash('oauth-github-' + Math.random().toString(36), salt);
+      user = await createUser({
+        email,
+        name: userData.name || userData.login || email.split('@')[0],
+        password: mockPasswordHash
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Sign in with GitHub successful!',
+      user: {
+        id: user.id || user._id,
+        name: user.name,
+        email: user.email,
+        avatar: userData.avatar_url || ''
+      }
+    });
+  } catch (err) {
+    console.error('GitHub Sign In Error:', err);
+    return res.status(500).json({ error: 'GitHub authentication failed. Please try again.' });
+  }
 });
 
 // Admin Analytics Stats Secure Route

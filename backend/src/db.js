@@ -120,6 +120,73 @@ const prepLogSchema = new mongoose.Schema({
 
 const PrepLog = mongoose.models.PrepLog || mongoose.model('PrepLog', prepLogSchema);
 
+const userSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  password: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+export async function findUserByEmail(email) {
+  await ensureMongoConnection();
+  const searchEmail = String(email || '').trim().toLowerCase();
+
+  // 1. MongoDB Mode
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    return await User.findOne({ email: searchEmail });
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  if (!db.users) db.users = [];
+  return db.users.find(u => u.email === searchEmail) || null;
+}
+
+export async function createUser({ email, name, password }) {
+  await ensureMongoConnection();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  const cleanName = String(name || '').trim();
+
+  // 1. MongoDB Mode
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const newUser = new User({
+      email: cleanEmail,
+      name: cleanName,
+      password
+    });
+    await newUser.save();
+    return {
+      id: newUser._id,
+      email: newUser.email,
+      name: newUser.name,
+      createdAt: newUser.createdAt
+    };
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  if (!db.users) db.users = [];
+
+  const existingUser = db.users.find(u => u.email === cleanEmail);
+  if (existingUser) {
+    throw new Error('User already exists');
+  }
+
+  const newUser = {
+    id: randomUUID(),
+    email: cleanEmail,
+    name: cleanName,
+    password,
+    createdAt: new Date().toISOString()
+  };
+
+  db.users.unshift(newUser);
+  writeDb(db);
+  return newUser;
+}
+
 
 // Await active MongoDB connection during startup to prevent race condition fallback
 async function ensureMongoConnection() {

@@ -1,5 +1,6 @@
 /* ═══════════════════════════════════════════════════════
    CVMind AI — Tailor Page Stylesheet
+   Apple-dark premium theme
    ═══════════════════════════════════════════════════════ */
 
 .tailor-page-container {
@@ -11,7 +12,7 @@
   isolation: isolate;
 }
 
-/* Background Cyber Stage Glows */
+/* Background ambient stage — subtle, no neon */
 .tailor-stage {
   position: fixed;
   inset: 0;
@@ -26,9 +27,9 @@
   left: -5%;
   width: 440px;
   height: 440px;
-  background: radial-gradient(circle, rgba(0, 245, 255, 0.015) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(41, 151, 255, 0.04) 0%, transparent 70%);
   border-radius: 50%;
-  filter: blur(40px);
+  filter: blur(60px);
 }
 
 .stage-glow-right {
@@ -37,12 +38,14 @@
   right: -5%;
   width: 480px;
   height: 480px;
-  background: radial-gradient(circle, rgba(76, 125, 255, 0.02) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(191, 90, 242, 0.04) 0%, transparent 70%);
   border-radius: 50%;
-  filter: blur(45px);
+  filter: blur(65px);
 }
 
-/* Header Sections */
+/* ═══════════════════════════════════════════════════════
+   Header
+   ═══════════════════════════════════════════════════════ */
 .tailor-header {
   display: flex;
   flex-direction: column;
@@ -55,7 +58,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #00f5ff;
+  color: var(--blue);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -63,28 +66,29 @@
   margin-bottom: 1.2rem;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
-  border: 1px solid rgba(0, 245, 255, 0.28);
-  background: rgba(0, 245, 255, 0.07);
+  border: 1px solid rgba(41, 151, 255, 0.28);
+  background: var(--blue-dim);
 }
 
 .tailor-title {
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: clamp(2.2rem, 4.4vw, 4.4rem);
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1.05;
   margin-bottom: 1.2rem;
-  text-shadow: 0 0 34px rgba(0, 245, 255, 0.12);
 }
 
 .tailor-subtitle {
   max-width: 720px;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-secondary);
   font-size: 1.08rem;
   line-height: 1.6;
 }
 
-/* Main Workspace Split Layout (Inputs & Instructions) */
+/* ═══════════════════════════════════════════════════════
+   Main Workspace Split Layout
+   ═══════════════════════════════════════════════════════ */
 .tailor-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
@@ -95,43 +99,46 @@
 .workspace-card-title {
   font-size: 1.2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 1.1rem;
   font-family: 'Outfit', sans-serif;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .workspace-card-title.mt-4 {
   margin-top: 2rem;
 }
 
-/* Upload CV Area */
+/* ═══════════════════════════════════════════════════════
+   Upload CV Area
+   ═══════════════════════════════════════════════════════ */
 .tailor-upload-zone {
   min-height: 200px;
-  border: 2px dashed rgba(0, 245, 255, 0.6);
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(0, 245, 255, 0.04), rgba(76, 125, 255, 0.03));
-  box-shadow: inset 0 0 30px rgba(0, 245, 255, 0.02);
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.8rem;
   position: relative;
   overflow: hidden;
-  transition: transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+  transition: transform 0.3s var(--ease-apple),
+              border-color 0.3s var(--ease-apple),
+              background-color 0.3s var(--ease-apple);
 }
 
 .tailor-upload-zone:hover,
 .tailor-upload-zone.drag-active {
   transform: translateY(-2px);
-  border-color: #ffffff;
-  background-color: rgba(0, 245, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.26);
+  background-color: var(--bg-card-hover);
 }
 
 .tailor-upload-zone.has-file,
 .tailor-upload-zone.is-loading {
   border-style: solid;
-  border-color: rgba(0, 245, 255, 0.78);
+  border-color: rgba(41, 151, 255, 0.5);
 }
 
 .tailor-hidden-input {
@@ -150,31 +157,34 @@
 .tailor-prompt .upload-icon {
   width: 44px;
   height: 44px;
-  color: rgba(255, 255, 255, 0.44);
+  color: var(--text-tertiary);
   margin-bottom: 1rem;
 }
 
 .upload-cta-btn {
   border: 0;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #00e5ff, #4c7dff);
+  border-radius: 999px;
+  background: var(--blue);
   color: #fff;
   font-family: inherit;
   font-size: 0.9rem;
-  font-weight: 800;
+  font-weight: 700;
   padding: 0.75rem 1.8rem;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(0, 245, 255, 0.35);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(41, 151, 255, 0.3);
+  transition: transform 0.3s var(--ease-apple),
+              box-shadow 0.3s var(--ease-apple),
+              opacity 0.3s var(--ease-apple);
 }
 
 .upload-cta-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 28px rgba(0, 245, 255, 0.46);
+  box-shadow: 0 6px 28px rgba(41, 151, 255, 0.45);
+  opacity: 0.92;
 }
 
 .file-formats-note {
-  color: rgba(255, 255, 255, 0.52);
+  color: var(--text-tertiary);
   font-size: 0.78rem;
   margin-top: 0.55rem;
 }
@@ -190,11 +200,11 @@
 .tailor-file-icon {
   width: 60px;
   height: 60px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.07);
   display: grid;
   place-items: center;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 0.9rem;
 }
 
@@ -206,7 +216,7 @@
 }
 
 .tailor-file-meta .file-name {
-  color: #ffffff;
+  color: var(--text-primary);
   font-weight: 800;
   font-size: 1.05rem;
   max-width: 320px;
@@ -216,7 +226,7 @@
 }
 
 .tailor-file-meta .file-size {
-  color: rgba(255, 255, 255, 0.58);
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -225,7 +235,9 @@
   padding: 0.5rem 1.2rem;
 }
 
-/* Loading state */
+/* ═══════════════════════════════════════════════════════
+   Loading State
+   ═══════════════════════════════════════════════════════ */
 .tailor-loading-state {
   display: flex;
   flex-direction: column;
@@ -238,70 +250,79 @@
   left: 1rem;
   right: 1rem;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #00f5ff, transparent);
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
   animation: tailorSweep 2.2s linear infinite;
 }
 
 .tailor-spinner {
   width: 44px;
   height: 44px;
-  border: 3px solid rgba(255, 255, 255, 0.12);
-  border-top-color: #00f5ff;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--blue);
   border-radius: 50%;
   margin-bottom: 1.1rem;
   animation: spin 0.9s linear infinite;
 }
 
 .loading-title {
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 1.2rem;
+  font-weight: 700;
   margin-bottom: 0.35rem;
 }
 
 .loading-text {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-secondary);
   font-size: 0.88rem;
   min-height: 1.25rem;
 }
 
-/* Job Description Textarea */
+/* ═══════════════════════════════════════════════════════
+   Job Description Textarea
+   ═══════════════════════════════════════════════════════ */
 .tailor-textarea {
   width: 100%;
   min-height: 180px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 1rem 1.2rem;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.96rem;
   font-family: inherit;
   resize: vertical;
   outline: none;
-  transition: all 0.25s ease;
+  transition: border-color 0.3s var(--ease-apple),
+              background 0.3s var(--ease-apple),
+              box-shadow 0.3s var(--ease-apple);
 }
 
 .tailor-textarea:focus {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #00f5ff;
-  box-shadow: 0 0 12px rgba(0, 245, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.15);
 }
 
 .tailor-textarea::placeholder {
-  color: rgba(255, 255, 255, 0.34);
+  color: var(--text-tertiary);
 }
 
-/* Error Banner */
+/* ═══════════════════════════════════════════════════════
+   Error Banner
+   ═══════════════════════════════════════════════════════ */
 .tailor-error-banner {
   margin-top: 1.2rem;
-  color: #fecaca;
-  background: rgba(239, 68, 68, 0.16);
-  border: 1px solid rgba(248, 113, 113, 0.32);
-  border-radius: 8px;
+  color: #ffb3b0;
+  background: var(--red-dim);
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
 }
 
-/* Action buttons */
+/* ═══════════════════════════════════════════════════════
+   Action Buttons
+   ═══════════════════════════════════════════════════════ */
 .tailor-submit-btn {
   margin-top: 1.8rem;
   width: 100%;
@@ -310,21 +331,23 @@
   padding: 0.95rem 2rem;
 }
 
-/* Features details card (right side) */
+/* ═══════════════════════════════════════════════════════
+   Features Card (right side)
+   ═══════════════════════════════════════════════════════ */
 .features-card-title {
   display: flex;
   align-items: center;
   gap: 0.55rem;
   font-size: 1.3rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 0.8rem;
   font-family: 'Outfit', sans-serif;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .features-card-desc {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--text-secondary);
   font-size: 0.92rem;
   line-height: 1.5;
   margin-bottom: 1.8rem;
@@ -344,37 +367,39 @@
 }
 
 .bullet-icon-check {
-  color: #00f5ff;
+  color: var(--green);
   flex-shrink: 0;
   margin-top: 0.2rem;
 }
 
 .features-bullet-item strong {
   display: block;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.95rem;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 0.25rem;
 }
 
 .features-bullet-item p {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--text-secondary);
   font-size: 0.88rem;
   line-height: 1.5;
 }
 
 .security-guarantee {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border);
   padding-top: 1.2rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgba(255, 255, 255, 0.52);
+  color: var(--text-tertiary);
   font-size: 0.8rem;
   font-weight: 700;
 }
 
-/* RESULTS WORKSPACE */
+/* ═══════════════════════════════════════════════════════
+   Results Workspace
+   ═══════════════════════════════════════════════════════ */
 .tailor-results-workspace {
   width: 100%;
   display: flex;
@@ -402,12 +427,14 @@
   align-items: start;
 }
 
-/* Left Pane - Resume Draft Editor */
+/* ═══════════════════════════════════════════════════════
+   Left Pane — Resume Draft Editor
+   ═══════════════════════════════════════════════════════ */
 .results-editor-pane {
   display: flex;
   flex-direction: column;
   height: 650px;
-  overflow: visible !important; /* Fixed: allows absolute dropdowns to extend outside without cutting off */
+  overflow: visible !important;
   padding: 1.8rem 1.8rem 1.4rem !important;
 }
 
@@ -416,15 +443,17 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 1.2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border);
   margin-bottom: 1.2rem;
-  flex-wrap: wrap; /* Fixed: wraps controls elegantly when width is constrained to prevent overlapping */
-  gap: 1.2rem; /* Fixed: Spacing between items when wrapped */
+  flex-wrap: wrap;
+  gap: 1.2rem;
 }
 
 .pane-header h3 {
   font-size: 1.15rem;
   font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -449,13 +478,26 @@
   gap: 0.4rem;
   white-space: nowrap !important;
   box-sizing: border-box !important;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.3s var(--ease-apple),
+              background 0.3s var(--ease-apple),
+              color 0.3s var(--ease-apple);
+}
+
+.control-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
 .active-edit-mode {
-  background: rgba(0, 245, 255, 0.12);
-  border-color: #00f5ff;
-  color: #00f5ff;
-  box-shadow: 0 0 10px rgba(0,245,255,0.22);
+  background: var(--blue-dim);
+  border-color: rgba(41, 151, 255, 0.5);
+  color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.1);
 }
 
 .editor-workspace-container {
@@ -468,31 +510,35 @@
 .tailored-textarea-editor {
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 1rem;
-  color: #ffffff;
+  color: var(--text-primary);
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.92rem;
   line-height: 1.5;
   resize: none;
   outline: none;
+  transition: border-color 0.3s var(--ease-apple),
+              box-shadow 0.3s var(--ease-apple),
+              background 0.3s var(--ease-apple);
 }
 
 .tailored-textarea-editor:focus {
-  border-color: rgba(0, 245, 255, 0.5);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-focus);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.15);
 }
 
 .tailored-resume-pre {
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.01);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md);
   padding: 1rem;
-  color: rgba(255, 255, 255, 0.86);
+  color: var(--text-secondary);
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.92rem;
   line-height: 1.55;
@@ -505,25 +551,30 @@
 .tailored-resume-pre::-webkit-scrollbar {
   width: 8px;
 }
+
 .tailored-resume-pre::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .tailored-resume-pre::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 4px;
 }
+
 .tailored-resume-pre::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.16);
+  background: rgba(255, 255, 255, 0.16);
 }
 
-/* Right Pane - Sizing, scores and list checks */
+/* ═══════════════════════════════════════════════════════
+   Right Pane — Scores & Insights
+   ═══════════════════════════════════════════════════════ */
 .results-insights-pane {
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
 }
 
-/* Match score circular card */
+/* Match Score Circular Card */
 .match-score-card {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -535,11 +586,15 @@
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  background: conic-gradient(#00f5ff var(--percentage, 88%), rgba(255,255,255,0.08) 0);
+  background: conic-gradient(
+    var(--blue) 0deg,
+    var(--purple) calc(var(--percentage, 88) * 3.6deg),
+    rgba(255, 255, 255, 0.08) calc(var(--percentage, 88) * 3.6deg)
+  );
   display: grid;
   place-items: center;
   position: relative;
-  box-shadow: 0 0 18px rgba(0,245,255,0.22);
+  box-shadow: 0 0 24px rgba(41, 151, 255, 0.2);
 }
 
 .gauge-wrapper::before {
@@ -548,7 +603,7 @@
   width: 76px;
   height: 76px;
   border-radius: 50%;
-  background: #061014;
+  background: #0d0d0d;
 }
 
 .gauge-content {
@@ -560,7 +615,7 @@
 }
 
 .gauge-number {
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 1.5rem;
   font-weight: 900;
   line-height: 1;
@@ -568,7 +623,7 @@
 
 .gauge-label {
   font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.44);
+  color: var(--text-tertiary);
   font-weight: 800;
   text-transform: uppercase;
   margin-top: 0.15rem;
@@ -578,26 +633,28 @@
 .score-feedback h4 {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
+  letter-spacing: -0.02em;
 }
 
 .score-feedback p {
-  color: rgba(255, 255, 255, 0.58);
+  color: var(--text-secondary);
   font-size: 0.85rem;
   line-height: 1.45;
 }
 
-/* Keywords matched card styles */
+/* Keywords Card */
 .keywords-card h4 {
   display: flex;
   align-items: center;
   gap: 0.45rem;
   font-size: 0.94rem;
-  color: #ffffff;
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 0.85rem;
   font-family: 'Outfit', sans-serif;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 
 .keywords-card h4.mt-4 {
@@ -612,30 +669,32 @@
 
 .keyword-badge {
   font-size: 0.74rem;
-  font-weight: 800;
+  font-weight: 700;
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
   letter-spacing: 0.01em;
 }
 
 .keyword-badge.matched {
-  background: rgba(0, 245, 255, 0.08);
-  border: 1px solid rgba(0, 245, 255, 0.26);
-  color: #a8fbff;
+  background: var(--green-dim);
+  border: 1px solid rgba(48, 209, 88, 0.28);
+  color: var(--green);
 }
 
 .keyword-badge.missing {
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.26);
-  color: #fbbf24;
+  background: rgba(255, 159, 10, 0.12);
+  border: 1px solid rgba(255, 159, 10, 0.28);
+  color: #ff9f0a;
 }
 
-/* Insights checklist card */
+/* Insights Checklist Card */
 .insights-list-card h4 {
   font-size: 1.05rem;
-  color: #ffffff;
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 1rem;
   font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.01em;
 }
 
 .insights-checklist {
@@ -651,7 +710,7 @@
 }
 
 .insight-checklist-item .check-bullet {
-  color: #00f5ff;
+  color: var(--blue);
   flex-shrink: 0;
   margin-top: 0.15rem;
   width: 14px;
@@ -659,57 +718,23 @@
 }
 
 .insight-checklist-item span {
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--text-secondary);
   font-size: 0.88rem;
   line-height: 1.45;
   text-align: left;
 }
 
-/* Sizing animations */
+/* ═══════════════════════════════════════════════════════
+   Animations
+   ═══════════════════════════════════════════════════════ */
 @keyframes tailorSweep {
-  0% { top: 10%; opacity: 0; }
+  0%   { top: 10%; opacity: 0; }
   15%, 85% { opacity: 1; }
   100% { top: 90%; opacity: 0; }
 }
 
-/* RESPONSIVE TAILOR BREAKPOINTS */
-@media (max-width: 1050px) {
-  .tailor-workspace {
-    grid-template-columns: 1fr;
-  }
-  
-  .results-split-pane {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .results-editor-pane {
-    height: 520px;
-  }
-  
-  .pane-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .editor-controls {
-    width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-  
-  .match-score-card {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    text-align: center;
-  }
-}
-
 /* ═══════════════════════════════════════════════════════
-   Download Dropdown Styles
+   Download Dropdown
    ═══════════════════════════════════════════════════════ */
 .download-dropdown-container {
   position: relative;
@@ -717,11 +742,13 @@
 }
 
 .download-toggle-btn {
-  background: linear-gradient(135deg, #00e5ff, #4c7dff) !important;
+  background: var(--blue) !important;
   color: #ffffff !important;
-  font-weight: 800;
-  box-shadow: 0 0 15px rgba(0, 245, 255, 0.25);
-  transition: all 0.25s ease;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(41, 151, 255, 0.28);
+  transition: transform 0.3s var(--ease-apple),
+              box-shadow 0.3s var(--ease-apple),
+              opacity 0.3s var(--ease-apple);
   border: 1px solid transparent !important;
   height: 38px !important;
   padding: 0 1.2rem !important;
@@ -729,15 +756,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  border-radius: 8px !important;
 }
 
 .download-toggle-btn:hover {
-  box-shadow: 0 0 25px rgba(0, 245, 255, 0.42);
+  box-shadow: 0 6px 28px rgba(41, 151, 255, 0.42);
   transform: translateY(-1px);
+  opacity: 0.92;
 }
 
 .download-arrow {
-  transition: transform 0.25s ease;
+  transition: transform 0.3s var(--ease-apple);
 }
 
 .download-dropdown-container:hover .download-arrow {
@@ -750,23 +779,25 @@
   right: 0;
   width: 210px !important;
   min-width: 210px !important;
-  background: rgba(6, 16, 20, 0.96) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 245, 255, 0.2) !important;
-  border-radius: 10px;
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-md);
   padding: 0.5rem;
   z-index: 100;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 245, 255, 0.05);
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  
+
   /* Transition state */
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.25s var(--ease-apple),
+              visibility 0.25s var(--ease-apple),
+              transform 0.25s var(--ease-apple);
 }
 
 .download-dropdown-container:hover .download-dropdown-menu {
@@ -783,19 +814,20 @@
   padding: 0.6rem 0.85rem;
   background: transparent;
   border: none;
-  border-radius: 6px;
-  color: rgba(255, 255, 255, 0.82);
+  border-radius: 8px;
+  color: var(--text-secondary);
   font-size: 0.82rem;
   font-weight: 700;
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s var(--ease-apple),
+              color 0.2s var(--ease-apple);
   white-space: nowrap !important;
 }
 
 .download-dropdown-item:hover {
-  background: rgba(0, 245, 255, 0.08);
-  color: #00f5ff;
+  background: var(--blue-dim);
+  color: var(--blue);
 }
 
 .dropdown-item-icon {
@@ -803,9 +835,47 @@
 }
 
 .dropdown-item-icon.color-blue {
-  color: #3b82f6;
+  color: var(--blue);
 }
 
 .dropdown-item-icon.color-cyan {
-  color: #00f5ff;
+  color: var(--blue);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Responsive Breakpoints
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 1050px) {
+  .tailor-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .results-split-pane {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .results-editor-pane {
+    height: 520px;
+  }
+
+  .pane-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .editor-controls {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .match-score-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
 }

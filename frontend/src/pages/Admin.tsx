@@ -535,14 +535,14 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                         <span className="panel-badge">Latest Optimizations</span>
                       </div>
                       <div className="admin-panel-body">
-                        {!(stats.recentFixes) || stats.recentFixes.length === 0 ? (
+                        {!(stats.recentFixes) || (stats.recentFixes || []).length === 0 ? (
                           <div className="admin-empty">
                             <span className="admin-empty-icon">🤖</span>
                             <p>No resume optimizations recorded in logs.</p>
                           </div>
                         ) : (
                           <div className="admin-table-list">
-                            {stats.recentFixes.slice(0, 5).map(fix => (
+                            {(stats.recentFixes || []).slice(0, 5).map(fix => (
                               <div className="admin-table-row glass-card" key={fix.id}>
                                 <div className="table-row-details">
                                   <strong className="row-filename">{fix.fileName}</strong>
@@ -692,14 +692,14 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <span className="panel-badge">{(stats.recentFixes || []).length} optimizations</span>
                     </div>
                     <div className="admin-panel-body">
-                      {!(stats.recentFixes) || stats.recentFixes.length === 0 ? (
+                      {!(stats.recentFixes) || (stats.recentFixes || []).length === 0 ? (
                         <div className="admin-empty">
                           <span className="admin-empty-icon">🤖</span>
                           <p>No AI optimizations recorded yet. Logs appear when users trigger the AI Auto-Fix.</p>
                         </div>
                       ) : (
                         <div className="admin-fixes-detail-list">
-                          {stats.recentFixes.map(fix => (
+                          {(stats.recentFixes || []).map(fix => (
                             <div className="admin-table-row glass-card detail" key={fix.id}>
                               <div className="table-row-details">
                                 <strong className="row-filename">{fix.fileName}</strong>
@@ -770,14 +770,14 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <span className="panel-badge">{stats.totalTailors ?? 0} operations logged</span>
                     </div>
                     <div className="admin-panel-body">
-                      {!stats.recentTailors || stats.recentTailors.length === 0 ? (
+                      {!stats.recentTailors || (stats.recentTailors || []).length === 0 ? (
                         <div className="admin-empty">
                           <span className="admin-empty-icon">✨</span>
                           <p>No resume tailoring actions logged yet. History logs will populate when candidates use the AI Tailor tool.</p>
                         </div>
                       ) : (
                         <div className="admin-fixes-detail-list">
-                          {stats.recentTailors.map((tailor) => (
+                          {(stats.recentTailors || []).map((tailor) => (
                             <article key={tailor.id} className="admin-log-item glass-card">
                               <div className="msg-header">
                                 <div className="msg-sender">
@@ -802,7 +802,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                 </blockquote>
                               </div>
 
-                              {((tailor.matchedSkills && tailor.matchedSkills.length > 0) || (tailor.missingSkills && tailor.missingSkills.length > 0)) && (
+                              {(((tailor.matchedSkills && tailor.matchedSkills.length > 0)) || ((tailor.missingSkills && tailor.missingSkills.length > 0))) && (
                                 <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                   {tailor.matchedSkills && tailor.matchedSkills.length > 0 && (
                                     <div>
@@ -844,14 +844,14 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <span className="panel-badge">{stats.totalPreps ?? 0} preps logged</span>
                     </div>
                     <div className="admin-panel-body">
-                      {!stats.recentPreps || stats.recentPreps.length === 0 ? (
+                      {!stats.recentPreps || (stats.recentPreps || []).length === 0 ? (
                         <div className="admin-empty">
                           <span className="admin-empty-icon">✨</span>
                           <p>No interview preps logged in the database yet. Logs appear when users generate interview prep cards.</p>
                         </div>
                       ) : (
                         <div className="admin-fixes-detail-list">
-                          {stats.recentPreps.map(p => (
+                          {(stats.recentPreps || []).map(p => (
                             <div className="admin-table-row glass-card detail" key={p.id}>
                               <div className="table-row-details">
                                 <strong className="row-filename">{p.fileName}</strong>

@@ -7,9 +7,11 @@ interface HomeProps {
   setAnalysisResult: (result: any) => void;
   setResumeText: (text: string) => void;
   customApiKey: string;
+  isLoggedIn: boolean;
+  setShowAuthModal: (show: boolean) => void;
 }
 
-export default function Home({ setCurrentPage, setAnalysisResult, setResumeText, customApiKey }: HomeProps) {
+export default function Home({ setCurrentPage, setAnalysisResult, setResumeText, customApiKey, isLoggedIn, setShowAuthModal }: HomeProps) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -18,6 +20,32 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [tiltStyle, setTiltStyle] = useState<{ transform: string }>({ transform: 'rotateY(-14deg) rotateX(8deg)' });
+  const sceneRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove3D = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!sceneRef.current) return;
+    const rect = sceneRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateY = ((x - centerX) / centerX) * 18 - 14;
+    const rotateX = -(((y - centerY) / centerY) * 14) + 8;
+    
+    setTiltStyle({
+      transform: `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`
+    });
+  };
+
+  const handleMouseLeave3D = () => {
+    setTiltStyle({
+      transform: 'rotateY(-14deg) rotateX(8deg)'
+    });
+  };
 
   useEffect(() => {
     const hasSeen = localStorage.getItem('cvmind_tailor_welcome_seen');
@@ -73,6 +101,11 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
     e.stopPropagation();
     setDragActive(false);
     
+    if (!isLoggedIn) {
+      setShowAuthModal(true);
+      return;
+    }
+    
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       validateAndSetFile(e.dataTransfer.files[0]);
     }
@@ -107,6 +140,10 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   };
 
   const onButtonClick = () => {
+    if (!isLoggedIn) {
+      setShowAuthModal(true);
+      return;
+    }
     fileInputRef.current?.click();
   };
 
@@ -264,146 +301,204 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       </div>
 
       <section className="hero-section">
-        <div className="hero-copy">
-          <div className="hero-badge">
-            <Cpu size={14} /> AI Resume Checker
-          </div>
-          <h1 className="hero-title">
-            CVMind AI Resume Intelligence.
-          </h1>
-          <p className="hero-subtitle">
-            Upload your resume and get a futuristic ATS scorecard with keyword gaps, formatting alerts, recruiter insights, and bullet rewrites in seconds.
-          </p>
+        <div className="hero-grid-container">
+          <div className="hero-left-content">
+            <div className="hero-badge">
+              <Cpu size={13} /> AI-Powered Resume Intelligence
+            </div>
+            <div className="hero-copy">
+              <h1 className="hero-title">
+                Build Resumes That<br />
+                <span className="gradient-word">Get You Hired.</span>
+              </h1>
+              <p className="hero-subtitle">
+                Upload your resume and receive an instant ATS scorecard — keyword gaps, formatting issues, recruiter insights, and AI-powered rewrites in seconds.
+              </p>
 
-          <div className="hero-chip-row" aria-label="CVMind AI capabilities">
-            <span>ATS Score</span>
-            <span>Keyword Radar</span>
-            <span>AI Rewrites</span>
-            <span>PDF Report</span>
-          </div>
-
-          <div className="upload-section">
-            <div className="upload-wrapper">
-              <div 
-                className={`upload-zone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''} ${loading ? 'is-loading' : ''}`}
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-              >
-                <input 
-                  ref={fileInputRef}
-                  type="file"
-                  className="file-input-hidden"
-                  accept=".pdf,.docx,.txt"
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-
-                {loading ? (
-                  <div className="loading-state">
-                    <div className="shimmer-scanner"></div>
-                    <div className="spinner-wrapper">
-                      <div className="premium-spinner"></div>
-                    </div>
-                    <h3 className="loading-title">Analyzing Your Resume</h3>
-                    <p className="loading-step-text animate-pulse">{analysisSteps[loadingStep]}</p>
-                    <div className="progress-bar-container">
-                      <div 
-                        className="progress-bar-fill" 
-                        style={{ width: `${((loadingStep + 1) / analysisSteps.length) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ) : selectedFile ? (
-                  <div className="file-selected-state">
-                    <div className="file-icon-wrapper">
-                      <FileText className="file-icon" />
-                    </div>
-                    <div className="file-details">
-                      <span className="file-name">{selectedFile.name}</span>
-                      <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
-                    </div>
-                    <div className="file-actions">
-                      <button className="btn-secondary" onClick={removeFile}>
-                        Remove
-                      </button>
-                      <button className="btn-primary" onClick={handleAnalyze}>
-                        Analyze Resume <ArrowRight size={18} />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="upload-prompt-state" onClick={onButtonClick}>
-                    <Upload className="upload-icon" />
-                    <button className="upload-cta" type="button">
-                      Upload Your Resume
-                    </button>
-                    <div className="privacy-note">
-                      <Lock size={14} /> Privacy guaranteed
-                    </div>
-                    <div className="file-limits-info">
-                      PDF, DOCX, or TXT up to 5MB
-                    </div>
-                  </div>
-                )}
+              <div className="hero-chip-row" aria-label="CVMind AI capabilities">
+                <span>ATS Score</span>
+                <span>Keyword Analysis</span>
+                <span>AI Rewrites</span>
+                <span>DOCX Export</span>
               </div>
 
-              {errorMsg && (
-                <div className="error-message-bar animate-fade-in-up">
-                  <ShieldAlert className="error-icon" />
-                  <span>{errorMsg}</span>
+              <div className="upload-section">
+                <div className="upload-wrapper">
+                  <div 
+                    className={`upload-zone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''} ${loading ? 'is-loading' : ''}`}
+                    onDragEnter={handleDrag}
+                    onDragOver={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDrop={handleDrop}
+                  >
+                    <input 
+                      ref={fileInputRef}
+                      type="file"
+                      className="file-input-hidden"
+                      accept=".pdf,.docx,.txt"
+                      onChange={handleChange}
+                      disabled={loading}
+                    />
+
+                    {loading ? (
+                      <div className="loading-state">
+                        <div className="shimmer-scanner"></div>
+                        <div className="spinner-wrapper">
+                          <div className="premium-spinner"></div>
+                        </div>
+                        <h3 className="loading-title">Analyzing Your Resume</h3>
+                        <p className="loading-step-text animate-pulse">{analysisSteps[loadingStep]}</p>
+                        <div className="progress-bar-container">
+                          <div 
+                            className="progress-bar-fill" 
+                            style={{ width: `${((loadingStep + 1) / analysisSteps.length) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    ) : selectedFile ? (
+                      <div className="file-selected-state">
+                        <div className="file-icon-wrapper">
+                          <FileText className="file-icon" />
+                        </div>
+                        <div className="file-details">
+                          <span className="file-name">{selectedFile.name}</span>
+                          <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                        </div>
+                        <div className="file-actions">
+                          <button className="btn-secondary" onClick={removeFile}>
+                            Remove
+                          </button>
+                          <button className="btn-primary" onClick={handleAnalyze}>
+                            Analyze Resume <ArrowRight size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="upload-prompt-state" onClick={onButtonClick}>
+                        <Upload className="upload-icon" />
+                        <button className="upload-cta" type="button">
+                          Upload Your Resume
+                        </button>
+                        <div className="privacy-note">
+                          <Lock size={14} /> Privacy guaranteed
+                        </div>
+                        <div className="file-limits-info">
+                          PDF, DOCX, or TXT up to 5MB
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {errorMsg && (
+                    <div className="error-message-bar animate-fade-in-up">
+                      <ShieldAlert className="error-icon" />
+                      <span>{errorMsg}</span>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="hero-preview" aria-hidden="true">
-          <div className="preview-glow-label">Live AI Audit Console</div>
-          <div className="preview-browser">
-            <div className="preview-topbar">
-              <span>CVMind AI</span>
-              <div className="preview-bars">
-                <i></i><i></i><i></i><i></i>
-              </div>
-              <b>Score 86/100</b>
-            </div>
-            <div className="preview-body">
-              <aside className="preview-sidebar">
-                <span></span><span></span><span className="active"></span><span></span>
-              </aside>
-              <div className="preview-analytics">
-                <h3>Analytics</h3>
-                <div className="score-card">
-                  <div>
-                    <strong>ATS Score</strong>
-                    <small>Good match for recruiter screening</small>
+          <div 
+            className="hero-right-visual"
+            ref={sceneRef}
+            onMouseMove={handleMouseMove3D}
+            onMouseLeave={handleMouseLeave3D}
+          >
+            <div className="scene-3d-wrapper">
+              <div className="scene-3d" style={tiltStyle}>
+                {/* 1. Profile Badge (floating top-left) */}
+                <div className="floating-element float-profile glass-card">
+                  <div className="profile-avatar-circle">
+                    <img 
+                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80" 
+                      alt="Profile" 
+                      className="profile-avatar" 
+                    />
                   </div>
-                  <span>86</span>
-                  <div className="score-line"><i></i></div>
+                  <div className="profile-info">
+                    <span className="profile-name-tag">Sarah Jenkins</span>
+                    <span className="profile-role-tag">Senior Software Engineer</span>
+                  </div>
                 </div>
-                <div className="issue-card">
-                  <strong>Missing keywords</strong>
-                  <p>React, SQL, Leadership, AWS</p>
+
+                {/* 2. ATS Score Circle Badge (floating top-right) */}
+                <div className="floating-element float-score glass-card">
+                  <div className="score-ring-container-3d">
+                    <svg className="score-ring-svg-3d" viewBox="0 0 36 36">
+                      <path className="ring-bg-3d" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path className="ring-fill-3d" strokeDasharray="88, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <div className="score-ring-text-3d">88</div>
+                  </div>
+                  <div className="score-details-3d">
+                    <span className="score-title-3d">ATS Score</span>
+                    <span className="score-status-3d">Perfect Rank</span>
+                  </div>
                 </div>
-                <div className="issue-card neural-card">
-                  <strong>AI rewrite ready</strong>
-                  <p>3 weak bullets improved with metrics</p>
+
+                {/* 3. The Main Resume Card (Tilted centerpiece) */}
+                <div className="resume-3d-card glass-card">
+                  <div className="resume-3d-header">
+                    <div className="resume-3d-name-bar">Sarah Jenkins</div>
+                    <div className="resume-3d-sub-bar">Senior Software Engineer • San Francisco, CA • sarah.j@gmail.com</div>
+                  </div>
+                  <div className="resume-3d-body">
+                    <div className="resume-3d-section-title">Professional Summary</div>
+                    <div className="resume-3d-text-line">Highly driven engineer with 6+ years of experience...</div>
+                    <div className="resume-3d-text-line short">Focused on scalable cloud architecture and intuitive interfaces.</div>
+                    
+                    <div className="resume-3d-section-title">Core Experience</div>
+                    <div className="resume-3d-exp-block">
+                      <div className="resume-3d-exp-title">Lead Engineer @ Tech Corp <span className="resume-3d-date">2023 - Pres</span></div>
+                      <div className="resume-3d-text-line">• Spearheaded transition to serverless, reducing latency by 42%.</div>
+                      <div className="resume-3d-text-line short-mid">• Mentored 6 developers, standardizing pipeline architecture.</div>
+                    </div>
+                    <div className="resume-3d-exp-block">
+                      <div className="resume-3d-exp-title">Software Developer @ SaaS Inc <span className="resume-3d-date">2020 - 2023</span></div>
+                      <div className="resume-3d-text-line">• Built complex React dashboards, increasing engagement by 18%.</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="preview-resume">
-                <div className="avatar"></div>
-                <h4>Candidate Resume</h4>
-                <span></span><span></span><span></span>
-                <div className="resume-lines">
-                  <i></i><i></i><i></i><i></i><i></i>
+
+                {/* 4. Skills Panel Card (floating bottom-left) */}
+                <div className="floating-element float-skills glass-card">
+                  <span className="skills-heading-3d">Matched Keywords</span>
+                  <div className="skills-tags-3d">
+                    <span className="skill-tag-3d green">React.js</span>
+                    <span className="skill-tag-3d green">TypeScript</span>
+                    <span className="skill-tag-3d green">Node.js</span>
+                    <span className="skill-tag-3d purple">AWS Cloud</span>
+                  </div>
                 </div>
+
+                {/* 5. Recruiter Checklist Card (floating bottom-right) */}
+                <div className="floating-element float-checklist glass-card">
+                  <span className="checklist-heading-3d">Format Audit</span>
+                  <div className="checklist-items-3d">
+                    <div className="checklist-item-3d">
+                      <CheckCircle2 size={12} className="check-icon-3d" />
+                      <span>Quantified Metrics (12x)</span>
+                    </div>
+                    <div className="checklist-item-3d">
+                      <CheckCircle2 size={12} className="check-icon-3d" />
+                      <span>Active Action Verbs</span>
+                    </div>
+                    <div className="checklist-item-3d">
+                      <CheckCircle2 size={12} className="check-icon-3d" />
+                      <span>One-Page Rule Safe</span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
         </div>
       </section>
+
+
 
       <section className="security-badges-row">
         <div className="sec-badge">

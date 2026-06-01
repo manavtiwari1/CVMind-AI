@@ -1,42 +1,38 @@
 /* ═══════════════════════════════════════════════════════════
    CVMIND AI — ADMIN PANEL STYLESHEET
-   Futuristic Cyber-Stage Dark Premium Dashboard Design
-   Designed for Visual Excellence & High-Fidelity Engagement
+   Premium Apple-Dark Design System
    ═══════════════════════════════════════════════════════════ */
 
 /* ── Global Admin Variables ────────────────────────────── */
 :root {
-  --admin-bg: #030709;
-  --admin-bg-secondary: #050d11;
-  --admin-card: rgba(255, 255, 255, 0.035);
-  --admin-card-hover: rgba(255, 255, 255, 0.065);
-  --admin-border: rgba(0, 245, 255, 0.12);
-  --admin-border-hover: rgba(0, 245, 255, 0.42);
-  --admin-text-primary: #ffffff;
-  --admin-text-secondary: rgba(255, 255, 255, 0.72);
-  --admin-text-muted: rgba(255, 255, 255, 0.45);
-  
-  --admin-cyan: #00f5ff;
-  --admin-purple: #a855f7;
-  --admin-indigo: #6366f1;
-  --admin-amber: #f59e0b;
-  --admin-emerald: #10b981;
-  --admin-rose: #f43f5e;
-  
-  --admin-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --admin-radius: 14px;
-  --admin-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --admin-bg:            #000000;
+  --admin-bg-secondary:  #0a0a0a;
+  --admin-card:          rgba(255, 255, 255, 0.04);
+  --admin-card-hover:    rgba(255, 255, 255, 0.07);
+  --admin-border:        rgba(255, 255, 255, 0.08);
+  --admin-border-hover:  rgba(255, 255, 255, 0.18);
+  --admin-text-primary:  #f5f5f7;
+  --admin-text-secondary: #a1a1a6;
+  --admin-text-muted:    #6e6e73;
+
+  --admin-cyan:    #2997ff;
+  --admin-purple:  #bf5af2;
+  --admin-indigo:  #2997ff;
+  --admin-amber:   #ff9f0a;
+  --admin-emerald: #30d158;
+  --admin-rose:    #ff453a;
+
+  --admin-shadow:     0 8px 32px rgba(0, 0, 0, 0.6);
+  --admin-radius:     14px;
+  --admin-transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1);
 }
 
 /* ── Page Layout ────────────────────────────────────────── */
 .admin-page {
   min-height: 100vh;
   background-color: var(--admin-bg);
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(0, 245, 255, 0.06), transparent 30rem),
-    radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.06), transparent 35rem);
   color: var(--admin-text-primary);
-  font-family: 'Inter', 'Outfit', sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
   overflow-x: hidden;
 }
 
@@ -213,9 +209,9 @@
 }
 
 .admin-field-wrapper:focus-within {
-  border-color: var(--admin-cyan);
-  box-shadow: 0 0 14px rgba(0, 245, 255, 0.15);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(41, 151, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .admin-field-wrapper .field-icon {
@@ -370,7 +366,7 @@
   bottom: 0;
   width: 3px;
   background: var(--admin-cyan);
-  box-shadow: 0 0 10px var(--admin-cyan);
+  border-radius: 0 3px 3px 0;
 }
 
 .admin-nav-btn .btn-icon {
@@ -382,7 +378,6 @@
 
 .admin-nav-btn.active .btn-icon {
   transform: scale(1.1);
-  filter: drop-shadow(0 0 4px var(--admin-cyan));
 }
 
 .admin-sidebar-user {
@@ -463,9 +458,9 @@
   border-radius: 0;
   border: none;
   border-bottom: 1px solid var(--admin-border);
-  background: rgba(5, 13, 17, 0.72);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   position: sticky;
   top: 0;
   z-index: 9;
@@ -534,9 +529,9 @@
 }
 
 .admin-icon-btn:hover:not(:disabled) {
-  background: rgba(0, 245, 255, 0.06);
-  border-color: rgba(0, 245, 255, 0.28);
-  color: #ffffff;
+  background: rgba(41, 151, 255, 0.08);
+  border-color: rgba(41, 151, 255, 0.35);
+  color: var(--admin-text-primary);
   transform: translateY(-1px);
 }
 

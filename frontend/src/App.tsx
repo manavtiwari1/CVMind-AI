@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import Tailor from './pages/Tailor';
 import Prep from './pages/Prep';
+import GithubCallback from './pages/GithubCallback';
+import AuthModal from './components/AuthModal';
 import './styles/theme.css';
 
 export default function App() {
@@ -20,6 +22,12 @@ export default function App() {
   });
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [resumeText, setResumeText] = useState<string>('');
+
+  // Authentication State
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    return localStorage.getItem('cvmind_logged_in') === 'true';
+  });
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
 
   const setCurrentPage = (page: string) => {
     setCurrentPageState(page);
@@ -44,6 +52,21 @@ export default function App() {
     }
   }, [customApiKey]);
 
+  // Private route interceptor to enforce Sign In for product modules
+  useEffect(() => {
+    const privatePages = ['dashboard', 'tailor', 'prep'];
+    if (privatePages.includes(currentPage) && !isLoggedIn) {
+      setCurrentPage('home');
+      setShowAuthModal(true);
+    }
+  }, [currentPage, isLoggedIn]);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('cvmind_logged_in');
+    setIsLoggedIn(false);
+    resetAnalysis();
+  };
+
   const resetAnalysis = () => {
     setAnalysisResult(null);
     setResumeText('');
@@ -60,6 +83,8 @@ export default function App() {
             setAnalysisResult={setAnalysisResult}
             setResumeText={setResumeText}
             customApiKey={customApiKey}
+            isLoggedIn={isLoggedIn}
+            setShowAuthModal={setShowAuthModal}
           />
         );
       case 'about':
@@ -89,6 +114,15 @@ export default function App() {
             setCurrentPage={setCurrentPage}
           />
         );
+      case 'github-callback':
+        return (
+          <GithubCallback 
+            onSuccess={() => {
+              setIsLoggedIn(true);
+              setCurrentPage('home');
+            }} 
+          />
+        );
       default:
         return (
           <Home 
@@ -96,6 +130,8 @@ export default function App() {
             setAnalysisResult={setAnalysisResult}
             setResumeText={setResumeText}
             customApiKey={customApiKey}
+            isLoggedIn={isLoggedIn}
+            setShowAuthModal={setShowAuthModal}
           />
         );
     }
@@ -111,6 +147,9 @@ export default function App() {
           setCurrentPage={setCurrentPage} 
           customApiKey={customApiKey}
           setCustomApiKey={setCustomApiKey}
+          isLoggedIn={isLoggedIn}
+          setShowAuthModal={setShowAuthModal}
+          handleSignOut={handleSignOut}
         />
       )}
 
@@ -120,6 +159,12 @@ export default function App() {
 
       {!isAdminPage && <Footer setCurrentPage={setCurrentPage} />}
       {!isAdminPage && <Chatbot customApiKey={customApiKey} />}
+
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+        onSuccess={() => setIsLoggedIn(true)} 
+      />
     </div>
   );
 }
