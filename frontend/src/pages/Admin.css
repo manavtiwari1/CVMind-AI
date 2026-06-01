@@ -1393,3 +1393,41 @@
 .admin-prior-score-pill strong {
   color: var(--admin-cyan);
 }
+
+/* ── Login Provider Badges Styling ──────────────────── */
+.provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 980px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.provider-badge.badge-password {
+  background: rgba(191, 90, 242, 0.12);
+  border: 1px solid rgba(191, 90, 242, 0.25);
+  color: var(--admin-purple);
+}
+
+.provider-badge.badge-google {
+  background: rgba(41, 151, 255, 0.12);
+  border: 1px solid rgba(41, 151, 255, 0.25);
+  color: var(--admin-cyan);
+}
+
+.provider-badge.badge-github {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--admin-text-primary);
+}
+
+.provider-badge.badge-signup {
+  background: rgba(48, 209, 88, 0.12);
+  border: 1px solid rgba(48, 209, 88, 0.25);
+  color: var(--admin-emerald);
+}
+

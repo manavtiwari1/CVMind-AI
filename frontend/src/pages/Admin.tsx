@@ -11,6 +11,7 @@ import {
   FileText,
   KeyRound,
   LayoutDashboard,
+  LogIn,
   Lock,
   Mail,
   RefreshCw,
@@ -32,6 +33,14 @@ interface AdminStats {
   totalContacts: number;
   totalFixes?: number;
   totalTailors?: number;
+  totalLogins?: number;
+  recentLogins?: Array<{
+    id: string;
+    email: string;
+    name: string;
+    provider: string;
+    createdAt: string;
+  }>;
   recentTailors?: Array<{
     id: string;
     fileName: string;
@@ -299,6 +308,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
             <NavItem icon={<BrainCircuit size={15} />}    label="AI Auto-Fixes"     active={activeSection === 'fixes'}      onClick={() => setActiveSection('fixes')} />
             <NavItem icon={<Sparkles size={15} />}        label="AI Tailor Logs"    active={activeSection === 'tailors'}    onClick={() => setActiveSection('tailors')} />
             <NavItem icon={<Sparkles size={15} />}        label="AI Prep Logs"      active={activeSection === 'preps'}      onClick={() => setActiveSection('preps')} />
+            <NavItem icon={<LogIn size={15} />}           label="Login Logs"        active={activeSection === 'logins'}     onClick={() => setActiveSection('logins')} />
             <NavItem icon={<Mail size={15} />}            label="Contact Leads"  active={activeSection === 'messages'}   onClick={() => setActiveSection('messages')} />
 
             <div className="admin-sidebar-section-label">System</div>
@@ -332,6 +342,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'fixes'      && 'AI Resume Auto-Fix Logs'}
                 {activeSection === 'tailors'    && 'AI Resume Tailoring Logs'}
                 {activeSection === 'preps'      && 'AI Interview Prep Scorecard Logs'}
+                {activeSection === 'logins'     && 'User Authentication & Login Activity Logs'}
                 {activeSection === 'messages'   && 'Incoming Contact Leads'}
                 {activeSection === 'database'   && 'System Architecture & Health'}
               </h1>
@@ -904,6 +915,68 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ LOGIN LOGS SECTION ─ */}
+                {activeSection === 'logins' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><LogIn size={15} /> User Authentication & Login Logs</h2>
+                      <span className="panel-badge">{(stats.recentLogins || []).length} historical sessions</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentLogins || (stats.recentLogins || []).length === 0 ? (
+                        <div className="panel-empty-state" style={{ padding: '3rem', textAlign: 'center' }}>
+                          <LogIn size={28} style={{ color: 'var(--admin-rose)', marginBottom: '1rem', opacity: 0.8 }} />
+                          <p style={{ color: 'var(--admin-text-secondary)' }}>No authentication logs recorded in the database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="table-responsive" style={{ marginTop: '1rem' }}>
+                          <table className="admin-table">
+                            <thead>
+                              <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Auth Provider</th>
+                                <th>Timestamp</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {(stats.recentLogins || []).map((login) => {
+                                let providerBadgeCls = "badge-password";
+                                let providerLabel = "Password Auth";
+                                if (login.provider === 'google') {
+                                  providerBadgeCls = "badge-google";
+                                  providerLabel = "Google OAuth";
+                                } else if (login.provider === 'github') {
+                                  providerBadgeCls = "badge-github";
+                                  providerLabel = "GitHub OAuth";
+                                } else if (login.provider === 'signup') {
+                                  providerBadgeCls = "badge-signup";
+                                  providerLabel = "New Sign Up";
+                                }
+
+                                return (
+                                  <tr key={login.id}>
+                                    <td style={{ fontWeight: 600 }}>{login.name}</td>
+                                    <td style={{ color: 'var(--admin-text-secondary)' }}>{login.email}</td>
+                                    <td>
+                                      <span className={`provider-badge ${providerBadgeCls}`}>
+                                        {providerLabel}
+                                      </span>
+                                    </td>
+                                    <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>
+                                      {new Date(login.createdAt).toLocaleString()}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

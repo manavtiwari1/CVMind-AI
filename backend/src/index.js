@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser } from './db.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -96,6 +96,8 @@ apiRouter.post('/api/auth/signup', async (req, res) => {
       password: hashedPassword
     });
 
+    await saveLoginLog({ email: newUser.email, name: newUser.name, provider: 'signup' });
+
     return res.json({
       success: true,
       message: 'Account created successfully!',
@@ -130,6 +132,8 @@ apiRouter.post('/api/auth/login', async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
+
+    await saveLoginLog({ email: user.email, name: user.name, provider: 'password' });
 
     return res.json({
       success: true,
@@ -179,6 +183,8 @@ apiRouter.post('/api/auth/google', async (req, res) => {
         password: mockPasswordHash
       });
     }
+
+    await saveLoginLog({ email: user.email, name: user.name, provider: 'google' });
 
     return res.json({
       success: true,
@@ -280,6 +286,8 @@ apiRouter.post('/api/auth/github', async (req, res) => {
         password: mockPasswordHash
       });
     }
+
+    await saveLoginLog({ email: user.email, name: user.name, provider: 'github' });
 
     return res.json({
       success: true,

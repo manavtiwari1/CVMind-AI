@@ -129,6 +129,44 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
+const loginLogSchema = new mongoose.Schema({
+  email: { type: String, required: true },
+  name: { type: String, required: true },
+  provider: { type: String, required: true }, // e.g. 'google', 'github', 'password', 'signup'
+  createdAt: { type: Date, default: Date.now }
+});
+
+const LoginLog = mongoose.models.LoginLog || mongoose.model('LoginLog', loginLogSchema);
+
+export async function saveLoginLog({ email, name, provider }) {
+  await ensureMongoConnection();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  const cleanName = String(name || '').trim();
+  const cleanProvider = String(provider || 'password').trim().toLowerCase();
+
+  // 1. MongoDB Mode (Non-blocking)
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    LoginLog.create({
+      email: cleanEmail,
+      name: cleanName,
+      provider: cleanProvider
+    }).catch(err => console.error('MongoDB saveLoginLog error:', err));
+    return;
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  if (!db.loginLogs) db.loginLogs = [];
+  db.loginLogs.unshift({
+    id: randomUUID(),
+    email: cleanEmail,
+    name: cleanName,
+    provider: cleanProvider,
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
 export async function findUserByEmail(email) {
   await ensureMongoConnection();
   const searchEmail = String(email || '').trim().toLowerCase();
@@ -380,12 +418,14 @@ export async function getAdminStats() {
       const fixes = await Fix.find().sort({ createdAt: -1 }).limit(100);
       const tailorLogs = await TailorLog.find().sort({ createdAt: -1 }).limit(100);
       const prepLogs = await PrepLog.find().sort({ createdAt: -1 }).limit(100);
+      const loginLogs = await LoginLog.find().sort({ createdAt: -1 }).limit(100);
       
       const totalScans = await Scan.countDocuments();
       const totalContacts = await Contact.countDocuments();
       const totalFixes = await Fix.countDocuments();
       const totalTailors = await TailorLog.countDocuments();
       const totalPreps = await PrepLog.countDocuments();
+      const totalLogins = await LoginLog.countDocuments();
       
       const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
       const averageScore = totalScans > 0 ? Number((totalScoreSum / Math.min(totalScans, 100)).toFixed(1)) : 0;
@@ -466,6 +506,14 @@ export async function getAdminStats() {
           createdAt: p.createdAt
         })),
         totalPreps,
+        recentLogins: loginLogs.slice(0, 20).map(l => ({
+          id: l._id,
+          email: l.email,
+          name: l.name,
+          provider: l.provider,
+          createdAt: l.createdAt
+        })),
+        totalLogins,
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
           updatedAt: new Date().toISOString()
@@ -483,6 +531,7 @@ export async function getAdminStats() {
   const fixes = Array.isArray(db.fixes) ? db.fixes : [];
   const tailorLogs = Array.isArray(db.tailorLogs) ? db.tailorLogs : [];
   const prepLogs = Array.isArray(db.prepLogs) ? db.prepLogs : [];
+  const loginLogs = Array.isArray(db.loginLogs) ? db.loginLogs : [];
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
 
@@ -512,10 +561,12 @@ export async function getAdminStats() {
     recentFixes: fixes.slice(0, 10),
     recentTailors: tailorLogs.slice(0, 15),
     recentPreps: prepLogs.slice(0, 15),
+    recentLogins: loginLogs.slice(0, 20),
     totalFixes: fixes.length,
     totalContacts: contacts.length,
     totalTailors: tailorLogs.length,
     totalPreps: prepLogs.length,
+    totalLogins: loginLogs.length,
     database: {
       path: dbPath,
       updatedAt: db.meta?.updatedAt || null
