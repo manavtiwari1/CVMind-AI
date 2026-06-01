@@ -9,7 +9,6 @@ import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import Tailor from './pages/Tailor';
 import Prep from './pages/Prep';
-import GithubCallback from './pages/GithubCallback';
 import AuthModal from './components/AuthModal';
 import './styles/theme.css';
 
@@ -112,15 +111,6 @@ export default function App() {
             resumeText={resumeText}
             setResumeText={setResumeText}
             setCurrentPage={setCurrentPage}
-          />
-        );
-      case 'github-callback':
-        return (
-          <GithubCallback 
-            onSuccess={() => {
-              setIsLoggedIn(true);
-              setCurrentPage('home');
-            }} 
           />
         );
       default:
