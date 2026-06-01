@@ -701,6 +701,46 @@
   margin-top: 0.35rem;
 }
 
+/* ── "or" divider inside upload zone ─────────────────────── */
+.upload-or-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 260px;
+  gap: 0.65rem;
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin: 0.25rem 0;
+}
+
+.upload-or-divider::before,
+.upload-or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+}
+
+/* Create Resume button — same shape as upload-cta, secondary colour */
+.create-resume-cta {
+  background: transparent !important;
+  color: var(--blue) !important;
+  border: 1.5px solid rgba(41,151,255,0.45) !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  margin-bottom: 0.5rem;
+}
+
+.create-resume-cta:hover {
+  background: rgba(41,151,255,0.1) !important;
+  border-color: var(--blue) !important;
+  box-shadow: 0 4px 16px rgba(41,151,255,0.2) !important;
+  transform: scale(1.02);
+}
+
 /* File selected state */
 .file-icon-wrapper {
   width: 64px;
@@ -1137,3 +1177,491 @@
   .steps-grid-5 { grid-template-columns: 1fr; }
   .security-badges-row { gap: 1rem; }
 }
+
+/* ── Create Resume CTA ────────────────────────────────────── */
+.home-create-resume-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: fadeInUp 0.7s var(--ease-out) 0.5s both;
+}
+
+.home-cta-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.75rem;
+  color: var(--text-tertiary);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.home-cta-divider::before,
+.home-cta-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.home-create-resume-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.14);
+  border-radius: 14px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-apple);
+  letter-spacing: -0.01em;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-create-resume-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(41,151,255,0.08), rgba(191,90,242,0.06));
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.home-create-resume-btn:hover {
+  border-color: rgba(41,151,255,0.45);
+  box-shadow: 0 0 0 1px rgba(41,151,255,0.2), var(--shadow-lg);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.home-create-resume-btn:hover::before { opacity: 1; }
+
+.home-cta-arrow {
+  margin-left: auto;
+  transition: transform 0.2s var(--ease-apple);
+}
+
+.home-create-resume-btn:hover .home-cta-arrow {
+  transform: translateX(4px);
+}
+
+.home-cta-sub {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+/* ── Way beyond a resume builder section ──────────────────── */
+.beyond-section {
+  max-width: var(--max-width);
+  margin: 6rem auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.beyond-section-title {
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.beyond-section-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 3.5rem;
+  line-height: 1.6;
+}
+
+/* Grid Layout matching screenshot */
+.beyond-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  .beyond-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.beyond-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s var(--ease-apple);
+  height: 420px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.beyond-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(41, 151, 255, 0.3);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(41, 151, 255, 0.2);
+}
+
+.beyond-card-content {
+  padding: 2.25rem 2.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.beyond-card-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--blue);
+  background: var(--blue-dim);
+  border: 1px solid rgba(41, 151, 255, 0.2);
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.35rem;
+}
+
+.beyond-card-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.beyond-card-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.beyond-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: none;
+  color: var(--blue);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 0.5rem;
+  width: fit-content;
+  transition: gap 0.2s;
+}
+
+.beyond-card-link:hover {
+  gap: 0.55rem;
+}
+
+/* Visuals representing screenshots */
+.beyond-card-visual {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  margin: 0 1.5rem 1.5rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Card 1: Guidance Steps Visual */
+.guidance-visual {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.visual-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.5rem 0.85rem;
+  border-radius: 99px;
+}
+
+.visual-step-done {
+  background: rgba(46, 125, 50, 0.08);
+  border: 1px solid rgba(46, 125, 50, 0.22);
+  color: #a5d6a7;
+}
+
+.step-check {
+  font-weight: 900;
+}
+
+.visual-step-active {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+  position: relative;
+}
+
+.step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 8px var(--blue);
+}
+
+.step-link-icon {
+  margin-left: auto;
+  font-size: 0.75rem;
+}
+
+.visual-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.visual-skill-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.visual-skill-chip span {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+/* Card 2: AI Writes text editor Visual */
+.ai-writes-visual {
+  padding: 1.1rem;
+}
+
+.visual-editor-card {
+  background: #111112;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.85rem;
+  height: 100%;
+}
+
+.visual-editor-heading {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.15rem;
+}
+
+.visual-editor-sub {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  margin: 0 0 0.65rem;
+  line-height: 1.35;
+}
+
+.visual-editor-toolbar {
+  display: flex;
+  gap: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  font-weight: 700;
+}
+
+.visual-editor-text {
+  font-size: 0.74rem;
+  color: #ccc;
+  line-height: 1.45;
+}
+
+.visual-editor-text .text-highlight {
+  background: rgba(21, 101, 192, 0.2);
+  border-bottom: 1px solid var(--blue);
+  color: #e3f2fd;
+  font-weight: 600;
+}
+
+/* Card 3: Cover Letter Visual */
+.cover-letter-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.visual-cl-card {
+  width: 240px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.1rem;
+  box-shadow: var(--shadow-lg);
+  color: #111;
+}
+
+.visual-cl-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.cl-avatar-text {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  color: #111;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+}
+
+.cl-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.cl-role {
+  font-size: 0.68rem;
+  color: #666;
+}
+
+.cl-line {
+  height: 4px;
+  background: #eeeeee;
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+.cl-line-short {
+  height: 4px;
+  background: #eeeeee;
+  border-radius: 2px;
+  width: 60%;
+}
+
+/* Card 4: Paste Link Visual */
+.paste-link-visual {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visual-paste-panel {
+  width: 100%;
+  background: #111112;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.85rem;
+}
+
+.paste-input-container {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.74rem;
+  gap: 0.45rem;
+}
+
+.paste-search-icon {
+  font-size: 0.75rem;
+}
+
+.paste-url-text {
+  color: #ccc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.paste-check-icon {
+  color: var(--green);
+  font-weight: 900;
+}
+
+.paste-tip {
+  font-size: 0.62rem;
+  color: var(--text-tertiary);
+  margin-top: 0.35rem;
+}
+
+.paste-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.paste-btn-cancel,
+.paste-btn-continue {
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+.paste-btn-cancel {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.paste-btn-cancel:hover {
+  color: var(--text-primary);
+}
+
+.paste-btn-continue {
+  background: var(--blue);
+  color: #fff;
+}
+
+.paste-btn-continue:hover {
+  filter: brightness(1.1);
+}
+

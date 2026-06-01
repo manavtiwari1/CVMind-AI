@@ -283,6 +283,27 @@
   box-shadow: 0 0 16px rgba(191, 90, 242, 0.12);
 }
 
+.capability-icon-wrapper.builder-icon {
+  background: rgba(255, 45, 85, 0.1);
+  border: 1px solid rgba(255, 45, 85, 0.22);
+  color: #ff2d55;
+  box-shadow: 0 0 16px rgba(255, 45, 85, 0.12);
+}
+
+.capability-icon-wrapper.profile-icon {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid rgba(0, 245, 255, 0.22);
+  color: #00f5ff;
+  box-shadow: 0 0 16px rgba(0, 245, 255, 0.12);
+}
+
+.capability-icon-wrapper.admin-icon {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  color: #fbbf24;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.12);
+}
+
 .capability-card h4 {
   font-size: 1.1rem;
   font-weight: 700;

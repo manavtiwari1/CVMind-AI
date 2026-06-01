@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown, X } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown, X, Pencil } from 'lucide-react';
 import './Home.css';
 
 interface HomeProps {
@@ -385,6 +385,22 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
                         <div className="file-limits-info">
                           PDF, DOCX, or TXT up to 5MB
                         </div>
+
+                        {/* ── or divider ── */}
+                        <div className="upload-or-divider"><span>or</span></div>
+
+                        {/* ── Create Resume ── */}
+                        <button
+                          className="upload-cta create-resume-cta"
+                          id="home-create-resume-btn"
+                          type="button"
+                          onClick={e => { e.stopPropagation(); setCurrentPage('resume-builder'); }}
+                        >
+                          <Pencil size={16} /> Create Resume
+                        </button>
+                        <div className="file-limits-info">
+                          10 ATS templates &nbsp;·&nbsp; Word editor &nbsp;·&nbsp; AI Refine
+                        </div>
                       </div>
                     )}
                   </div>
@@ -397,6 +413,7 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
                   )}
                 </div>
               </div>
+
             </div>
           </div>
 
@@ -555,104 +572,115 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
         </div>
       </section>
 
-      {/* Premium Feature Highlight: AI Resume Tailor */}
-      <section className="tailor-highlight-section glass-card animate-fade-in-up">
-        <div className="tailor-highlight-content">
-          <div className="tailor-highlight-badge">
-            <Cpu size={14} /> NEW FEATURE RELEASE
-          </div>
-          <h2 className="tailor-highlight-title">Tailor Your Resume to Any Target Job Description (JD)</h2>
-          <p className="tailor-highlight-desc">
-            Stop applying with a generic resume. Paste the specific Job Description of the role you want, upload your CV, and let our corporate AI align your accomplishments, skills, and terminology to match recruiter expectations.
-          </p>
-          <div className="tailor-highlight-bullets">
-            <div className="tailor-bullet">
-              <CheckCircle2 size={16} className="tailor-bullet-icon" />
-              <span><strong>Recruiter Alignment:</strong> Injects target skills and keywords naturally.</span>
-            </div>
-            <div className="tailor-bullet">
-              <CheckCircle2 size={16} className="tailor-bullet-icon" />
-              <span><strong>Dynamic Match Score:</strong> Live circular matching progress gauge.</span>
-            </div>
-            <div className="tailor-bullet">
-              <CheckCircle2 size={16} className="tailor-bullet-icon" />
-              <span><strong>One-Click PDF/DOCX Download:</strong> Export professional ATS-styled resumes instantly.</span>
-            </div>
-          </div>
-          <button className="btn-primary tailor-cta-btn" onClick={() => setCurrentPage('tailor')}>
-            Try AI Resume Tailorer <ArrowRight size={16} />
-          </button>
-        </div>
-        <div className="tailor-highlight-preview">
-          <div className="tailor-preview-circle">
-            <span className="tailor-preview-number">95%</span>
-            <span className="tailor-preview-label">ATS MATCH</span>
-          </div>
-          <div className="tailor-preview-lines">
-            <div className="preview-line matched">
-              <CheckCircle2 size={12} />
-              <span>Matched: React.js & TypeScript</span>
-            </div>
-            <div className="preview-line matched">
-              <CheckCircle2 size={12} />
-              <span>Matched: RESTful APIs</span>
-            </div>
-            <div className="preview-line missing">
-              <Sparkles size={12} />
-              <span>Recommendation: AWS Cloud</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Way beyond a resume builder section */}
+      <section className="beyond-section animate-fade-in-up">
+        <h2 className="beyond-section-title">Way beyond a resume builder</h2>
+        <p className="beyond-section-subtitle">Discover powerful AI features that elevate your job search and guarantee recruiter callbacks.</p>
 
-      {/* Premium Feature Highlight: SmartPrep AI */}
-      <section className="tailor-highlight-section glass-card animate-fade-in-up" style={{ border: '1px solid rgba(168, 85, 247, 0.25)' }}>
-        <div className="tailor-highlight-preview" style={{ background: 'rgba(168, 85, 247, 0.02)', borderColor: 'rgba(168, 85, 247, 0.2)' }}>
-          <div className="tailor-preview-circle" style={{ background: 'conic-gradient(#a855f7 95%, rgba(255,255,255,0.06) 0)', boxShadow: '0 0 22px rgba(168, 85, 247, 0.35)' }}>
-            <span className="tailor-preview-number" style={{ fontSize: '1.4rem' }}>STAR</span>
-            <span className="tailor-preview-label">METHOD</span>
+        <div className="beyond-grid">
+          
+          {/* Card 1: Step-by-step guidance */}
+          <div className="beyond-card glass-card">
+            <div className="beyond-card-content">
+              <span className="beyond-card-badge">✦ AI-powered</span>
+              <h3 className="beyond-card-title">Step-by-step guidance</h3>
+              <p className="beyond-card-desc">No need to think much. We guide you through every step of the process. We show you what to add, and where to add it. It's clear and simple.</p>
+              <button className="beyond-card-link" onClick={() => setCurrentPage('resume-builder')}>
+                Create my resume <ArrowRight size={14} />
+              </button>
+            </div>
+            <div className="beyond-card-visual guidance-visual">
+              <div className="visual-step visual-step-done">
+                <span className="step-check">✓</span>
+                <span className="step-name">Step 1 • Personal Details</span>
+              </div>
+              <div className="visual-step visual-step-done">
+                <span className="step-check">✓</span>
+                <span className="step-name">Step 2 • Professional Summary</span>
+              </div>
+              <div className="visual-step visual-step-active">
+                <span className="step-dot"></span>
+                <span className="step-name">Step 3 • Skills</span>
+                <span className="step-link-icon">🔗</span>
+              </div>
+              <div className="visual-skills-list">
+                <span className="visual-skill-chip">Management Skills <span>+</span></span>
+                <span className="visual-skill-chip">Leadership and Team... <span>+</span></span>
+                <span className="visual-skill-chip">Computer Skills <span>+</span></span>
+                <span className="visual-skill-chip">Analytical Thinking <span>+</span></span>
+              </div>
+            </div>
           </div>
-          <div className="tailor-preview-lines">
-            <div className="preview-line matched" style={{ background: 'rgba(168, 85, 247, 0.08)', borderColor: 'rgba(168, 85, 247, 0.22)', color: '#e9d5ff' }}>
-              <CheckCircle2 size={12} style={{ color: '#a855f7' }} />
-              <span>Google & Amazon HR Sourced</span>
-            </div>
-            <div className="preview-line matched" style={{ background: 'rgba(168, 85, 247, 0.08)', borderColor: 'rgba(168, 85, 247, 0.22)', color: '#e9d5ff' }}>
-              <CheckCircle2 size={12} style={{ color: '#a855f7' }} />
-              <span>STAR Answers Generated</span>
-            </div>
-            <div className="preview-line missing" style={{ background: 'rgba(0, 245, 255, 0.08)', borderColor: 'rgba(0, 245, 255, 0.22)', color: '#a8fbff' }}>
-              <Sparkles size={12} style={{ color: '#00f5ff' }} />
-              <span>Collapsible Recruiter Tips</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="tailor-highlight-content">
-          <div className="tailor-highlight-badge" style={{ color: '#a855f7', borderColor: 'rgba(168, 85, 247, 0.24)', background: 'rgba(168, 85, 247, 0.08)' }}>
-            <Sparkles size={14} /> NEW PRODUCT PREP
-          </div>
-          <h2 className="tailor-highlight-title">Generate Sourced Big Tech & Big 4 Interview Questions</h2>
-          <p className="tailor-highlight-desc">
-            Acing interviews requires targeted preparation. Our corporate recruiter model will scan your CV achievements to construct personalized interview scorecards—featuring customized questions from top tech and advisory styles (Google, McKinsey, Amazon, PwC, Deloitte), model answers, and expert coaching tips.
-          </p>
-          <div className="tailor-highlight-bullets">
-            <div className="tailor-bullet">
-              <CheckCircle2 size={16} className="tailor-bullet-icon" style={{ color: '#a855f7' }} />
-              <span><strong>STAR Responses:</strong> Generates structured Situation-Task-Action-Result guides.</span>
+          {/* Card 2: AI writes for you */}
+          <div className="beyond-card glass-card">
+            <div className="beyond-card-content">
+              <span className="beyond-card-badge">✦ AI-powered</span>
+              <h3 className="beyond-card-title">AI writes for you</h3>
+              <p className="beyond-card-desc">Speak into the mic and the AI fixes mistakes. Stuck? Click to add phrases that sound professional.</p>
             </div>
-            <div className="tailor-bullet">
-              <CheckCircle2 size={16} className="tailor-bullet-icon" style={{ color: '#a855f7' }} />
-              <span><strong>Industry Sourcing:</strong> Real questions reflecting elite corporate HR pipelines.</span>
-            </div>
-            <div className="tailor-bullet">
-              <CheckCircle2 size={16} className="tailor-bullet-icon" style={{ color: '#a855f7' }} />
-              <span><strong>Insider Strategy:</strong> Expert feedback outlining exactly what recruiters focus on.</span>
+            <div className="beyond-card-visual ai-writes-visual">
+              <div className="visual-editor-card">
+                <h4 className="visual-editor-heading">Professional Summary</h4>
+                <p className="visual-editor-sub">Write 2-4 short sentences to interest the reader. Mention your role, experience & most importantly - your biggest achievements.</p>
+                <div className="visual-editor-toolbar">
+                  <span>B</span><span>I</span><span>U</span><span>S</span><span>≡</span><span>≡</span><span>🔗</span><span>A</span>
+                </div>
+                <div className="visual-editor-text">
+                  Experienced and effective Business Development Manager bringing a <span className="text-highlight">significant value and a genuine passion for management.</span> With a proven track record of driving growth and fostering strong client relationships...
+                </div>
+              </div>
             </div>
           </div>
-          <button className="btn-primary tailor-cta-btn" onClick={() => setCurrentPage('prep')} style={{ background: 'linear-gradient(135deg, #a855f7 0%, #00f5ff 100%)', boxShadow: '0 6px 20px rgba(168, 85, 247, 0.25)' }}>
-            Try SmartPrep AI <ArrowRight size={16} />
-          </button>
+
+          {/* Card 3: Instant cover letters */}
+          <div className="beyond-card glass-card">
+            <div className="beyond-card-content">
+              <span className="beyond-card-badge">✦ AI-powered</span>
+              <h3 className="beyond-card-title">Instant cover letters</h3>
+              <p className="beyond-card-desc">Just paste a job link. We create a matching cover letter, using your resume. You're done in 2 mins! Purpose built to impress recruiters.</p>
+            </div>
+            <div className="beyond-card-visual cover-letter-visual">
+              <div className="visual-cl-card">
+                <div className="visual-cl-header">
+                  <span className="cl-avatar-text">JS</span>
+                  <div>
+                    <h5 className="cl-name">JORGE SANDERS</h5>
+                    <span className="cl-role">Financial Analyst</span>
+                  </div>
+                </div>
+                <div className="visual-cl-body">
+                  <div className="cl-line" />
+                  <div className="cl-line" />
+                  <div className="cl-line" />
+                  <div className="cl-line-short" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4: Paste any job link */}
+          <div className="beyond-card glass-card">
+            <div className="beyond-card-content">
+              <h3 className="beyond-card-title">Paste any job link</h3>
+              <p className="beyond-card-desc">Simple and effective. We have the formula that works for recruiters. Just paste the job description and we pre-build your resume to match.</p>
+            </div>
+            <div className="beyond-card-visual paste-link-visual">
+              <div className="visual-paste-panel">
+                <div className="paste-input-container">
+                  <span className="paste-search-icon">🔍</span>
+                  <span className="paste-url-text">https://www.monster.com/product-designer-meta-2...</span>
+                  <span className="paste-check-icon">✓</span>
+                </div>
+                <div className="paste-tip">Example: https://www.ziprecruiter.com/jobs/company/position</div>
+                <div className="paste-buttons">
+                  <button className="paste-btn-cancel">Cancel</button>
+                  <button className="paste-btn-continue">Continue</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 

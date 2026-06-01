@@ -1,4 +1,4 @@
-import { Cpu, Eye, FileSearch, GraduationCap, Briefcase, Sparkles } from 'lucide-react';
+import { Cpu, Eye, FileSearch, Briefcase, Sparkles, FileText, Users } from 'lucide-react';
 import './About.css';
 
 export default function About() {
@@ -14,13 +14,8 @@ export default function About() {
       desc: "The system runs text vector matching against standard corporate role models to detect missing technologies, key tools, and structural keywords critical to passing automated screening audits."
     },
     {
-      icon: <GraduationCap className="step-icon" />,
-      title: "3. Gemini Cognitive Audit",
-      desc: "Our customized Gemini-2.5-Flash cognitive model plays the role of an elite HR director. It evaluates the impact score of each sentence, highlighting responsibility phrasing and rewriting weak descriptions."
-    },
-    {
       icon: <Eye className="step-icon" />,
-      title: "4. Multi-Layer Scorecard",
+      title: "3. Multi-Layer Scorecard",
       desc: "All extracted metrics are compiled into a comprehensive results dashboard detailing key strengths, weaknesses, line-by-line before/after recommendations, and downloadable PDF reports."
     }
   ];
@@ -84,6 +79,26 @@ export default function About() {
               Generates customized interview prep scorecards based on your CV history, featuring Big Tech and Big 4 style Q&As, STAR method answers, insider recruiter tips, and vector PDF exports.
             </p>
           </div>
+
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper builder-icon">
+              <FileText size={24} />
+            </div>
+            <h4>Interactive Document Builders</h4>
+            <p>
+              Draft resumes and cover letters in real time with our premium inline-editable builder. Select from elegant, ATS-friendly templates, set custom titles, and let AI refine drafts instantly.
+            </p>
+          </div>
+
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper profile-icon">
+              <Users size={24} />
+            </div>
+            <h4>Profile & Work Cloud Persistence</h4>
+            <p>
+              Sign up natively or via Google OAuth to access your central account. Upload profile avatars, edit biography fields, and sync all your resume and cover letter drafts securely across multiple devices.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -91,7 +106,7 @@ export default function About() {
       <section className="about-timeline-section">
         <h2 className="timeline-section-title">The Engineering Workflow</h2>
         <p className="timeline-section-subtitle">How our platform evaluates your career history:</p>
-
+ 
         <div className="timeline-wrapper">
           {steps.map((step, idx) => (
             <div key={idx} className="timeline-item glass-card animate-fade-in-up" style={{ animationDelay: `${idx * 0.15}s` }}>

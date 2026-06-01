@@ -124,10 +124,24 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   password: { type: String, required: true },
+  address: { type: String, default: '' },
+  avatar: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now }
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+const workSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  title: { type: String, required: true },
+  type: { type: String, required: true }, // 'resume' or 'cover-letter'
+  templateId: { type: String, required: true },
+  htmlContent: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const Work = mongoose.models.Work || mongoose.model('Work', workSchema);
 
 const loginLogSchema = new mongoose.Schema({
   email: { type: String, required: true },
@@ -419,6 +433,8 @@ export async function getAdminStats() {
       const tailorLogs = await TailorLog.find().sort({ createdAt: -1 }).limit(100);
       const prepLogs = await PrepLog.find().sort({ createdAt: -1 }).limit(100);
       const loginLogs = await LoginLog.find().sort({ createdAt: -1 }).limit(100);
+      const resumes = await Work.find({ type: 'resume' }).sort({ updatedAt: -1 }).limit(100);
+      const coverLetters = await Work.find({ type: 'cover-letter' }).sort({ updatedAt: -1 }).limit(100);
       
       const totalScans = await Scan.countDocuments();
       const totalContacts = await Contact.countDocuments();
@@ -426,6 +442,8 @@ export async function getAdminStats() {
       const totalTailors = await TailorLog.countDocuments();
       const totalPreps = await PrepLog.countDocuments();
       const totalLogins = await LoginLog.countDocuments();
+      const totalResumes = await Work.countDocuments({ type: 'resume' });
+      const totalCoverLetters = await Work.countDocuments({ type: 'cover-letter' });
       
       const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
       const averageScore = totalScans > 0 ? Number((totalScoreSum / Math.min(totalScans, 100)).toFixed(1)) : 0;
@@ -459,11 +477,20 @@ export async function getAdminStats() {
       ]);
       const keywordTrends = keywordTrendsAggregate;
 
+      const userIds = [...new Set([...resumes.map(r => r.userId), ...coverLetters.map(c => c.userId)])];
+      const users = await User.find({ _id: { $in: userIds } });
+      const userMap = {};
+      users.forEach(u => {
+        userMap[String(u._id)] = { name: u.name, email: u.email };
+      });
+
       return {
         totalScans,
         averageScore,
         scoreDistribution,
         keywordTrends,
+        totalResumes,
+        totalCoverLetters,
         recentScans: scans.slice(0, 8).map(s => ({
           id: s._id,
           fileName: s.fileName,
@@ -514,6 +541,22 @@ export async function getAdminStats() {
           createdAt: l.createdAt
         })),
         totalLogins,
+        recentResumes: resumes.map(r => ({
+          id: r._id,
+          title: r.title,
+          templateId: r.templateId,
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+          user: userMap[String(r.userId)] || { name: 'Unknown User', email: 'N/A' }
+        })),
+        recentCoverLetters: coverLetters.map(c => ({
+          id: c._id,
+          title: c.title,
+          templateId: c.templateId,
+          createdAt: c.createdAt,
+          updatedAt: c.updatedAt,
+          user: userMap[String(c.userId)] || { name: 'Unknown User', email: 'N/A' }
+        })),
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
           updatedAt: new Date().toISOString()
@@ -534,6 +577,19 @@ export async function getAdminStats() {
   const loginLogs = Array.isArray(db.loginLogs) ? db.loginLogs : [];
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
+
+  const works = Array.isArray(db.works) ? db.works : [];
+  const resumes = works.filter(w => w.type === 'resume');
+  const coverLetters = works.filter(w => w.type === 'cover-letter');
+  const totalResumes = resumes.length;
+  const totalCoverLetters = coverLetters.length;
+
+  const userMap = {};
+  const localUsers = Array.isArray(db.users) ? db.users : [];
+  localUsers.forEach(u => {
+    const id = String(u.id || u._id);
+    userMap[id] = { name: u.name, email: u.email };
+  });
 
   const scoreDistribution = scans.reduce(
     (acc, scan) => {
@@ -556,12 +612,30 @@ export async function getAdminStats() {
     averageScore: totalScans > 0 ? Number((totalScoreSum / totalScans).toFixed(1)) : 0,
     scoreDistribution,
     keywordTrends,
+    totalResumes,
+    totalCoverLetters,
     recentScans: scans.slice(0, 8),
     contactMessages: contacts.slice(0, 8),
     recentFixes: fixes.slice(0, 10),
     recentTailors: tailorLogs.slice(0, 15),
     recentPreps: prepLogs.slice(0, 15),
     recentLogins: loginLogs.slice(0, 20),
+    recentResumes: resumes.slice(0, 100).map(r => ({
+      id: r.id || r._id,
+      title: r.title,
+      templateId: r.templateId,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+      user: userMap[String(r.userId)] || { name: 'Unknown User', email: 'N/A' }
+    })),
+    recentCoverLetters: coverLetters.slice(0, 100).map(c => ({
+      id: c.id || c._id,
+      title: c.title,
+      templateId: c.templateId,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+      user: userMap[String(c.userId)] || { name: 'Unknown User', email: 'N/A' }
+    })),
     totalFixes: fixes.length,
     totalContacts: contacts.length,
     totalTailors: tailorLogs.length,
@@ -573,3 +647,149 @@ export async function getAdminStats() {
     }
   };
 }
+
+export async function saveWork({ userId, title, type, templateId, htmlContent, workId = null }) {
+  await ensureMongoConnection();
+  const cleanUserId = String(userId || '').trim();
+  const cleanTitle = String(title || 'Untitled Work').trim();
+  
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    if (workId) {
+      try {
+        const updated = await Work.findOneAndUpdate(
+          { _id: workId, userId: cleanUserId },
+          { title: cleanTitle, type, templateId, htmlContent, updatedAt: Date.now() },
+          { new: true }
+        );
+        if (updated) return updated;
+      } catch (err) {
+        console.error('MongoDB updateWork error, creating new:', err);
+      }
+    }
+    const newWork = new Work({ userId: cleanUserId, title: cleanTitle, type, templateId, htmlContent });
+    await newWork.save();
+    return newWork;
+  }
+
+  const db = readDb();
+  if (!db.works) db.works = [];
+  if (workId) {
+    const existing = db.works.find(w => w.id === workId && w.userId === cleanUserId);
+    if (existing) {
+      existing.title = cleanTitle;
+      existing.type = type;
+      existing.templateId = templateId;
+      existing.htmlContent = htmlContent;
+      existing.updatedAt = new Date().toISOString();
+      writeDb(db);
+      return existing;
+    }
+  }
+  const newWork = {
+    id: randomUUID(),
+    userId: cleanUserId,
+    title: cleanTitle,
+    type,
+    templateId,
+    htmlContent,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  db.works.unshift(newWork);
+  writeDb(db);
+  return newWork;
+}
+
+export async function getUserWorks(userId) {
+  await ensureMongoConnection();
+  const cleanUserId = String(userId || '').trim();
+  
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    return await Work.find({ userId: cleanUserId }).sort({ updatedAt: -1 });
+  }
+  const db = readDb();
+  if (!db.works) db.works = [];
+  return db.works.filter(w => w.userId === cleanUserId);
+}
+
+export async function deleteUserWork(workId, userId) {
+  await ensureMongoConnection();
+  const cleanUserId = String(userId || '').trim();
+  const cleanWorkId = String(workId || '').trim();
+  
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    return await Work.deleteOne({ _id: cleanWorkId, userId: cleanUserId });
+  }
+  const db = readDb();
+  if (!db.works) db.works = [];
+  db.works = db.works.filter(w => !(w.id === cleanWorkId && w.userId === cleanUserId));
+  writeDb(db);
+  return { deletedCount: 1 };
+}
+
+export async function updateUserProfile({ userId, name, email, address, avatar = null }) {
+  await ensureMongoConnection();
+  const cleanUserId = String(userId || '').trim();
+  const cleanName = String(name || '').trim();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  const cleanAddress = String(address || '').trim();
+  
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const user = await User.findById(cleanUserId);
+    if (!user) throw new Error('User not found');
+    user.name = cleanName;
+    user.email = cleanEmail;
+    user.address = cleanAddress;
+    if (avatar !== null) {
+      user.avatar = avatar;
+    }
+    await user.save();
+    return user;
+  }
+  
+  const db = readDb();
+  if (!db.users) db.users = [];
+  const u = db.users.find(x => x.id === cleanUserId || x._id === cleanUserId);
+  if (!u) throw new Error('User not found');
+  u.name = cleanName;
+  u.email = cleanEmail;
+  u.address = cleanAddress;
+  if (avatar !== null) {
+    u.avatar = avatar;
+  }
+  writeDb(db);
+  return u;
+}
+
+export async function updateUserPassword(userId, newPasswordHash) {
+  await ensureMongoConnection();
+  const cleanUserId = String(userId || '').trim();
+  
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const user = await User.findById(cleanUserId);
+    if (!user) throw new Error('User not found');
+    user.password = newPasswordHash;
+    await user.save();
+    return user;
+  }
+  
+  const db = readDb();
+  if (!db.users) db.users = [];
+  const u = db.users.find(x => x.id === cleanUserId || x._id === cleanUserId);
+  if (!u) throw new Error('User not found');
+  u.password = newPasswordHash;
+  writeDb(db);
+  return u;
+}
+
+export async function findUserById(userId) {
+  await ensureMongoConnection();
+  const searchId = String(userId || '').trim();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    return await User.findById(searchId);
+  }
+  const db = readDb();
+  if (!db.users) db.users = [];
+  return db.users.find(u => u.id === searchId || u._id === searchId) || null;
+}
+

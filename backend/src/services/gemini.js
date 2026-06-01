@@ -721,3 +721,106 @@ export async function generatePrepQuestionsWithGemini(resumeText, customApiKey =
   }
 }
 
+/**
+ * Refines a cover letter text using Gemini AI for ATS compliance, tone, and impact.
+ * @param {string} coverLetterText - The raw cover letter to be refined.
+ * @param {string} jobTitle - The target job title.
+ * @param {string} companyName - The target company name.
+ * @param {string} [customApiKey] - Optional user-supplied API key.
+ * @returns {Promise<string>} - The refined cover letter as plain text.
+ */
+export async function refineCoverLetterWithGemini(coverLetterText, jobTitle, companyName, customApiKey = null, userInstructions = null) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const systemPrompt = `You are an elite career coach, executive communication specialist, and Fortune 500 hiring expert.
+Your task is to refine the provided cover letter or resume to make it compelling, ATS-optimized, and highly professional.
+
+CRITICAL INSTRUCTIONS:
+1. The input content might be in raw HTML format. If the input is HTML, you MUST preserve all HTML tags, structure, CSS inline styles, and layout EXACTLY as they are. ONLY refine or rewrite the text content inside the HTML tags. Do NOT strip or replace the HTML tags.
+2. Return ONLY the refined content (HTML or plain text depending on input). Do NOT wrap in \`\`\`html or \`\`\` markdown code blocks. No explanations, no preamble, no markdown formatting.
+3. Preserve all factual information — do NOT invent new achievements, companies, or roles unless the user explicitly requests new content generation.
+4. Strengthen the opening hook and value propositions. Use powerful, active verbs.
+5. If user instructions/prompt are provided, prioritize adjusting the text according to those specific instructions (e.g., changing tone, highlighting skills, rewriting sections, or generating new details).
+6. Ensure the letter speaks directly to the role of "${jobTitle}" at "${companyName}" if provided.
+7. Keep tone professional but human — show genuine enthusiasm.
+8. Keep length appropriate (250–500 words maximum for letters).`;
+
+  let userPrompt = `Here is the document content to refine:
+"""
+${coverLetterText}
+"""`;
+
+  if (userInstructions) {
+    userPrompt += `\n\nUSER INSTRUCTIONS / PROMPT FOR REFINEMENT:\n"${userInstructions}"\n\nApply the above instructions carefully when refining the document.`;
+  } else {
+    userPrompt += `\n\nRefine it now for the ${jobTitle} role at ${companyName}. Make it polished, ATS-ready, and compelling.`;
+  }
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.35,
+          max_tokens: 2000
+        })
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+
+      const result = await response.json();
+      if (!result.choices || result.choices.length === 0) {
+        throw new Error('No choices returned by OpenRouter API.');
+      }
+
+      return result.choices[0].message.content.trim();
+    } catch (error) {
+      console.error('OpenRouter Cover Letter Refine Error:', error);
+      throw new Error('Cover letter refinement failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        temperature: 0.35,
+        maxOutputTokens: 4096
+      }
+    });
+
+    return result.response.text().trim();
+  } catch (error) {
+    console.error('Gemini Cover Letter Refine Error:', error);
+    if (error.status === 403 || error.message.includes('API key')) {
+      throw new Error('Invalid Gemini API Key.');
+    }
+    throw new Error('Cover letter refinement failed. ' + error.message);
+  }
+}

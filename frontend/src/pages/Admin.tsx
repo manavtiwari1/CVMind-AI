@@ -34,6 +34,8 @@ interface AdminStats {
   totalFixes?: number;
   totalTailors?: number;
   totalLogins?: number;
+  totalResumes?: number;
+  totalCoverLetters?: number;
   recentLogins?: Array<{
     id: string;
     email: string;
@@ -58,6 +60,22 @@ interface AdminStats {
   recentFixes?: Array<{ id: string; fileName: string; priorScore: number; createdAt: string }>;
   totalPreps?: number;
   recentPreps?: Array<{ id: string; fileName: string; fileSize: number; questionsCount: number; createdAt: string }>;
+  recentResumes?: Array<{
+    id: string;
+    title: string;
+    templateId: string;
+    createdAt: string;
+    updatedAt: string;
+    user: { name: string; email: string };
+  }>;
+  recentCoverLetters?: Array<{
+    id: string;
+    title: string;
+    templateId: string;
+    createdAt: string;
+    updatedAt: string;
+    user: { name: string; email: string };
+  }>;
   database: { path: string; updatedAt: string | null };
 }
 
@@ -309,6 +327,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
             <NavItem icon={<Sparkles size={15} />}        label="AI Tailor Logs"    active={activeSection === 'tailors'}    onClick={() => setActiveSection('tailors')} />
             <NavItem icon={<Sparkles size={15} />}        label="AI Prep Logs"      active={activeSection === 'preps'}      onClick={() => setActiveSection('preps')} />
             <NavItem icon={<LogIn size={15} />}           label="Login Logs"        active={activeSection === 'logins'}     onClick={() => setActiveSection('logins')} />
+            <NavItem icon={<FileText size={15} />}        label="Resume Builder Logs" active={activeSection === 'resume-logs'} onClick={() => setActiveSection('resume-logs')} />
+            <NavItem icon={<FileText size={15} />}        label="Cover Letter Logs"  active={activeSection === 'cl-logs'} onClick={() => setActiveSection('cl-logs')} />
             <NavItem icon={<Mail size={15} />}            label="Contact Leads"  active={activeSection === 'messages'}   onClick={() => setActiveSection('messages')} />
 
             <div className="admin-sidebar-section-label">System</div>
@@ -343,6 +363,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'tailors'    && 'AI Resume Tailoring Logs'}
                 {activeSection === 'preps'      && 'AI Interview Prep Scorecard Logs'}
                 {activeSection === 'logins'     && 'User Authentication & Login Activity Logs'}
+                {activeSection === 'resume-logs' && 'Resume Builder Saved Drafts'}
+                {activeSection === 'cl-logs'     && 'Cover Letter Builder Saved Drafts'}
                 {activeSection === 'messages'   && 'Incoming Contact Leads'}
                 {activeSection === 'database'   && 'System Architecture & Health'}
               </h1>
@@ -421,6 +443,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <StatCard icon={<BrainCircuit size={18} />} label="Resumes Auto-Fixed"     value={(stats.totalFixes ?? 0).toLocaleString()} caption="ATS-optimized by AI" trendCls="card-emerald" />
                       <StatCard icon={<Sparkles size={18} />}    label="Resumes Tailored"       value={(stats.totalTailors ?? 0).toLocaleString()} caption="Aligned to target JDs" trendCls="card-rose" />
                       <StatCard icon={<Sparkles size={18} />}    label="SmartPreps Generated"   value={(stats.totalPreps ?? 0).toLocaleString()} caption="Interview prep scorecards" trendCls="card-purple" />
+                      <StatCard icon={<FileText size={18} />}    label="Resumes Created"        value={(stats.totalResumes ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-cyan" />
+                      <StatCard icon={<FileText size={18} />}    label="Cover Letters Created"  value={(stats.totalCoverLetters ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-rose" />
                       <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact" trendCls="card-amber" />
                     </div>
 
@@ -973,6 +997,100 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                   </tr>
                                 );
                               })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ RESUME LOGS SECTION ─ */}
+                {activeSection === 'resume-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><FileText size={15} /> Resume Builder Saved Drafts</h2>
+                      <span className="panel-badge">{(stats.recentResumes || []).length} active drafts</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentResumes || (stats.recentResumes || []).length === 0 ? (
+                        <div className="panel-empty-state" style={{ padding: '3rem', textAlign: 'center' }}>
+                          <FileText size={28} style={{ color: 'var(--admin-cyan)', marginBottom: '1rem', opacity: 0.8 }} />
+                          <p style={{ color: 'var(--admin-text-secondary)' }}>No saved resumes in database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="table-responsive" style={{ marginTop: '1rem' }}>
+                          <table className="admin-table">
+                            <thead>
+                              <tr>
+                                <th>Draft Title</th>
+                                <th>Template</th>
+                                <th>Creator Name</th>
+                                <th>Creator Email</th>
+                                <th>Last Updated</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {(stats.recentResumes || []).map((work) => (
+                                <tr key={work.id}>
+                                  <td style={{ fontWeight: 600, color: '#fff' }}>{work.title}</td>
+                                  <td>
+                                    <span className="highlight-pill">{work.templateId}</span>
+                                  </td>
+                                  <td style={{ fontWeight: 600 }}>{work.user?.name || 'Unknown User'}</td>
+                                  <td style={{ color: 'var(--admin-text-secondary)' }}>{work.user?.email || 'N/A'}</td>
+                                  <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>
+                                    {new Date(work.updatedAt || work.createdAt).toLocaleString()}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ COVER LETTER LOGS SECTION ─ */}
+                {activeSection === 'cl-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><FileText size={15} /> Cover Letter Builder Saved Drafts</h2>
+                      <span className="panel-badge">{(stats.recentCoverLetters || []).length} active drafts</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentCoverLetters || (stats.recentCoverLetters || []).length === 0 ? (
+                        <div className="panel-empty-state" style={{ padding: '3rem', textAlign: 'center' }}>
+                          <FileText size={28} style={{ color: 'var(--admin-rose)', marginBottom: '1rem', opacity: 0.8 }} />
+                          <p style={{ color: 'var(--admin-text-secondary)' }}>No saved cover letters in database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="table-responsive" style={{ marginTop: '1rem' }}>
+                          <table className="admin-table">
+                            <thead>
+                              <tr>
+                                <th>Draft Title</th>
+                                <th>Template</th>
+                                <th>Creator Name</th>
+                                <th>Creator Email</th>
+                                <th>Last Updated</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {(stats.recentCoverLetters || []).map((work) => (
+                                <tr key={work.id}>
+                                  <td style={{ fontWeight: 600, color: '#fff' }}>{work.title}</td>
+                                  <td>
+                                    <span className="highlight-pill" style={{ color: '#fb7185', background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>{work.templateId}</span>
+                                  </td>
+                                  <td style={{ fontWeight: 600 }}>{work.user?.name || 'Unknown User'}</td>
+                                  <td style={{ color: 'var(--admin-text-secondary)' }}>{work.user?.email || 'N/A'}</td>
+                                  <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>
+                                    {new Date(work.updatedAt || work.createdAt).toLocaleString()}
+                                  </td>
+                                </tr>
+                              ))}
                             </tbody>
                           </table>
                         </div>

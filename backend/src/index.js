@@ -5,8 +5,8 @@ import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog } from './db.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini } from './services/gemini.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -264,7 +264,7 @@ apiRouter.post('/api/chat', async (req, res) => {
     });
   } catch (error) {
     return res.status(400).json({
-      error: error.message || 'Unable to answer right now.'
+      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -336,7 +336,7 @@ apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
 
     // Handle generic errors
     return res.status(500).json({ 
-      error: error.message || 'An error occurred during resume analysis.' 
+      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -373,7 +373,7 @@ apiRouter.post('/api/optimize', async (req, res) => {
   } catch (error) {
     console.error('Optimize API Error:', error);
     return res.status(500).json({
-      error: error.message || 'Resume optimization failed.'
+      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -427,7 +427,7 @@ apiRouter.post('/api/tailor', upload.single('resume'), async (req, res) => {
   } catch (error) {
     console.error('Tailor API Error:', error);
     return res.status(500).json({
-      error: error.message || 'Resume tailoring failed.'
+      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -486,11 +486,143 @@ apiRouter.post('/api/prep', upload.single('resume'), async (req, res) => {
   } catch (error) {
     console.error('Prep API Error:', error);
     return res.status(500).json({
-      error: error.message || 'Interview prep questions generation failed.'
+      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
 
+
+// AI Cover Letter Refine Endpoint
+apiRouter.post('/api/cover-letter/refine', async (req, res) => {
+  try {
+    const { coverLetterText, jobTitle, companyName, instructions } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!coverLetterText || typeof coverLetterText !== 'string' || coverLetterText.trim().length < 5) {
+      return res.status(400).json({ error: 'Document content is required and must be valid.' });
+    }
+
+    const refinedLetter = await refineCoverLetterWithGemini(
+      coverLetterText,
+      jobTitle || 'Professional',
+      companyName || 'Target Company',
+      customApiKey,
+      instructions
+    );
+
+    return res.json({
+      success: true,
+      data: { refinedLetter }
+    });
+  } catch (error) {
+    console.error('Cover Letter Refine API Error:', error);
+    return res.status(500).json({
+      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+    });
+  }
+});
+
+// ─── USER WORK & PROFILE ENDPOINTS ───────────────────────────────────────────
+apiRouter.post('/api/user/work', async (req, res) => {
+  const { userId, title, type, templateId, htmlContent, workId } = req.body || {};
+  if (!userId || !title || !type || !templateId || !htmlContent) {
+    return res.status(400).json({ error: 'Missing required work fields.' });
+  }
+  try {
+    const saved = await saveWork({ userId, title, type, templateId, htmlContent, workId });
+    return res.json({ success: true, data: saved });
+  } catch (error) {
+    console.error('Save work error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to save work.' });
+  }
+});
+
+apiRouter.get('/api/user/work/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const works = await getUserWorks(userId);
+    return res.json({ success: true, data: works });
+  } catch (error) {
+    console.error('Get user works error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to fetch works.' });
+  }
+});
+
+apiRouter.delete('/api/user/work/:userId/:workId', async (req, res) => {
+  const { userId, workId } = req.params;
+  try {
+    await deleteUserWork(workId, userId);
+    return res.json({ success: true, message: 'Work deleted successfully.' });
+  } catch (error) {
+    console.error('Delete work error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to delete work.' });
+  }
+});
+
+apiRouter.post('/api/user/profile', async (req, res) => {
+  const { userId, name, email, address, avatar } = req.body || {};
+  if (!userId || !name || !email) {
+    return res.status(400).json({ error: 'User ID, name, and email are required.' });
+  }
+  try {
+    const updated = await updateUserProfile({ userId, name, email, address, avatar });
+    return res.json({
+      success: true,
+      message: 'Profile updated successfully!',
+      user: {
+        id: updated.id || updated._id,
+        name: updated.name,
+        email: updated.email,
+        address: updated.address || '',
+        avatar: updated.avatar || ''
+      }
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to update profile.' });
+  }
+});
+
+apiRouter.post('/api/user/password', async (req, res) => {
+  const { userId, currentPassword, newPassword } = req.body || {};
+  if (!userId || !currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'User ID, current password, and new password are required.' });
+  }
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    
+    // Check if user is a Google auth user who doesn't have a normal password
+    if (user.password && user.password.startsWith('oauth-google-')) {
+      // Allow Google users to set password directly, or check if they want to proceed
+      // For Google users, currentPassword can be bypassed if they didn't have a real one, but to keep it simple,
+      // let's let them enter any currentPassword or check if password is correct.
+      // We will allow Google users to set password without verifying currentPassword if it starts with oauth-google-.
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      await updateUserPassword(userId, hashedPassword);
+      return res.json({ success: true, message: 'Password set successfully!' });
+    }
+
+    // Compare bcrypt hashes
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Incorrect current password.' });
+    }
+    
+    // Hash and update
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    await updateUserPassword(userId, hashedPassword);
+    
+    return res.json({ success: true, message: 'Password reset successfully!' });
+  } catch (error) {
+    console.error('Update password error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to reset password.' });
+  }
+});
 
 app.use('/_/backend', apiRouter);
 app.use('/', apiRouter);
