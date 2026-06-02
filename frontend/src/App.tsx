@@ -84,7 +84,7 @@ export default function App() {
 
   // Private route interceptor to enforce Sign In for product modules
   useEffect(() => {
-    const privatePages = ['dashboard', 'tailor', 'prep', 'resume-builder'];
+    const privatePages = ['tailor', 'prep', 'resume-builder'];
     if (privatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
       setShowAuthModal(true);
@@ -123,8 +123,6 @@ export default function App() {
             setAnalysisResult={setAnalysisResult}
             setResumeText={setResumeText}
             customApiKey={customApiKey}
-            isLoggedIn={isLoggedIn}
-            setShowAuthModal={setShowAuthModal}
           />
         );
       case 'about':
@@ -167,8 +165,6 @@ export default function App() {
             setAnalysisResult={setAnalysisResult}
             setResumeText={setResumeText}
             customApiKey={customApiKey}
-            isLoggedIn={isLoggedIn}
-            setShowAuthModal={setShowAuthModal}
           />
         );
     }

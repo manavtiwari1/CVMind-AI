@@ -7,11 +7,9 @@ interface HomeProps {
   setAnalysisResult: (result: any) => void;
   setResumeText: (text: string) => void;
   customApiKey: string;
-  isLoggedIn: boolean;
-  setShowAuthModal: (show: boolean) => void;
 }
 
-export default function Home({ setCurrentPage, setAnalysisResult, setResumeText, customApiKey, isLoggedIn, setShowAuthModal }: HomeProps) {
+export default function Home({ setCurrentPage, setAnalysisResult, setResumeText, customApiKey }: HomeProps) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -101,11 +99,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
     e.stopPropagation();
     setDragActive(false);
     
-    if (!isLoggedIn) {
-      setShowAuthModal(true);
-      return;
-    }
-    
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       validateAndSetFile(e.dataTransfer.files[0]);
     }
@@ -140,10 +133,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   };
 
   const onButtonClick = () => {
-    if (!isLoggedIn) {
-      setShowAuthModal(true);
-      return;
-    }
     fileInputRef.current?.click();
   };
 
