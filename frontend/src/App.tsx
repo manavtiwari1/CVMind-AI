@@ -91,6 +91,16 @@ export default function App() {
     }
   }, [currentPage, isLoggedIn]);
 
+  // Auto-detect resetToken in URL and trigger AuthModal password reset popup
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const token = searchParams.get('resetToken');
+    const email = searchParams.get('email');
+    if (token && email) {
+      setShowAuthModal(true);
+    }
+  }, []);
+
   const handleSignOut = () => {
     localStorage.removeItem('cvmind_logged_in');
     setIsLoggedIn(false);

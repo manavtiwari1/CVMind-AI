@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById } from './db.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -177,6 +177,9 @@ apiRouter.post('/api/auth/forgot-password', async (req, res) => {
     const host = req.headers.origin || 'http://localhost:5173';
     const resetLink = `${host}/?resetToken=${resetToken}&email=${encodeURIComponent(user.email)}`;
 
+    // Save reset token in DB with 1 hour expiration
+    await saveUserResetToken(user.email, resetToken, Date.now() + 3600000);
+
     // 2. Dispatch email using Resend and user's verified manavtiwari.in domain
     const { data, error } = await resend.emails.send({
       from: 'CVMind AI <no-reply@manavtiwari.in>',
@@ -217,6 +220,42 @@ apiRouter.post('/api/auth/forgot-password', async (req, res) => {
   } catch (err) {
     console.error('Forgot Password Error:', err);
     return res.status(500).json({ error: err.message || 'An error occurred while requesting password reset.' });
+  }
+});
+
+// User Password Reset via Token Route
+apiRouter.post('/api/auth/reset-password', async (req, res) => {
+  const { email, token, newPassword } = req.body || {};
+
+  if (!email || !token || !newPassword) {
+    return res.status(400).json({ error: 'Email, token, and new password are required.' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+  }
+
+  try {
+    const user = await findUserByResetToken(token);
+    if (!user || user.email.toLowerCase() !== email.toLowerCase()) {
+      return res.status(400).json({ error: 'Password reset link is invalid or has expired.' });
+    }
+
+    // Hash the new password securely
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Save the new password and clear the reset token fields
+    await updateUserPassword(user.id || user._id, hashedPassword);
+    await saveUserResetToken(user.email, '', null);
+
+    return res.json({
+      success: true,
+      message: 'Password reset successful! You can now sign in with your new password.'
+    });
+  } catch (err) {
+    console.error('Reset Password API Error:', err);
+    return res.status(500).json({ error: err.message || 'An error occurred while resetting password.' });
   }
 });
 

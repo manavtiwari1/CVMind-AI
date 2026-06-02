@@ -12,6 +12,8 @@ interface AuthModalProps {
 export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [resetToken, setResetToken] = useState('');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +24,20 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   // Reset state on modal open/close
   useEffect(() => {
     if (isOpen) {
-      setEmail('');
+      const searchParams = new URLSearchParams(window.location.search);
+      const tokenParam = searchParams.get('resetToken');
+      const emailParam = searchParams.get('email');
+
+      if (tokenParam && emailParam) {
+        setIsResettingPassword(true);
+        setResetToken(tokenParam);
+        setEmail(emailParam);
+      } else {
+        setIsResettingPassword(false);
+        setResetToken('');
+        setEmail('');
+      }
+
       setName('');
       setPassword('');
       setErrorMsg(null);
@@ -38,6 +53,51 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
+
+    if (isResettingPassword) {
+      if (!password) {
+        setErrorMsg('Please enter your new password.');
+        return;
+      }
+      if (password.length < 6) {
+        setErrorMsg('Password must be at least 6 characters long.');
+        return;
+      }
+      setLoading(true);
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+      try {
+        const response = await fetch(`${baseUrl}/api/auth/reset-password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, token: resetToken, newPassword: password })
+        });
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Password reset failed.');
+        }
+
+        setLoading(false);
+        setSuccessMsg(data.message || 'Password reset successful! Redirecting...');
+        
+        // Clear token from URL query parameters
+        window.history.pushState({}, '', window.location.pathname);
+
+        setTimeout(() => {
+          setIsResettingPassword(false);
+          setResetToken('');
+          setPassword('');
+          setErrorMsg(null);
+          setSuccessMsg(null);
+        }, 1500);
+      } catch (err: any) {
+        setLoading(false);
+        setErrorMsg(err.message || 'Connection to server failed.');
+      }
+      return;
+    }
 
     if (isForgotPassword) {
       if (!email) {
@@ -141,26 +201,30 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         {/* Header */}
         <div className="auth-header">
           <h2 className="auth-title">
-            {isForgotPassword 
-              ? 'Reset your password' 
-              : isSignUp 
-                ? 'Create your profile' 
-                : 'Sign in to CVMind AI'
+            {isResettingPassword
+              ? 'Choose a new password'
+              : isForgotPassword 
+                ? 'Reset your password' 
+                : isSignUp 
+                  ? 'Create your profile' 
+                  : 'Sign in to CVMind AI'
             }
           </h2>
           <p className="auth-subtitle">
-            {isForgotPassword
-              ? 'Enter the email address registered with your account and we will send you a secure link to change your password.'
-              : isSignUp 
-                ? 'Join professionals acing ATS & recruiting filters today.' 
-                : 'Unlock advanced ATS diagnostics, AI tailors, & prep panels.'
+            {isResettingPassword
+              ? 'Enter your new secure password below to complete your account recovery.'
+              : isForgotPassword
+                ? 'Enter the email address registered with your account and we will send you a secure link to change your password.'
+                : isSignUp 
+                  ? 'Join professionals acing ATS & recruiting filters today.' 
+                  : 'Unlock advanced ATS diagnostics, AI tailors, & prep panels.'
             }
           </p>
         </div>
 
         {/* Forms */}
         <form onSubmit={handleSubmit} className="auth-form">
-          {!isForgotPassword && isSignUp && (
+          {!isForgotPassword && !isResettingPassword && isSignUp && (
             <div className="form-group">
               <label className="form-label" htmlFor="auth-name-input">Full Name</label>
               <div className="auth-input-wrapper">
@@ -190,17 +254,19 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 placeholder="name@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
+                disabled={loading || isResettingPassword}
                 required
               />
             </div>
           </div>
 
-          {!isForgotPassword && (
+          {(!isForgotPassword || isResettingPassword) && (
             <div className="form-group">
               <div className="password-label-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                <label className="form-label" htmlFor="auth-pass-input" style={{ margin: 0 }}>Password</label>
-                {!isSignUp && (
+                <label className="form-label" htmlFor="auth-pass-input" style={{ margin: 0 }}>
+                  {isResettingPassword ? 'New Password' : 'Password'}
+                </label>
+                {!isSignUp && !isResettingPassword && (
                   <button 
                     type="button" 
                     className="auth-forgot-link" 
@@ -256,18 +322,20 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               <span className="auth-spinner"></span>
             ) : (
               <>
-                {isForgotPassword 
-                  ? 'Send Reset Link' 
-                  : isSignUp 
-                    ? 'Create Account' 
-                    : 'Sign In'
+                {isResettingPassword
+                  ? 'Save New Password'
+                  : isForgotPassword 
+                    ? 'Send Reset Link' 
+                    : isSignUp 
+                      ? 'Create Account' 
+                      : 'Sign In'
                 } <ArrowRight size={16} />
               </>
             )}
           </button>
         </form>
 
-        {!isForgotPassword && (
+        {!isForgotPassword && !isResettingPassword && (
           <>
             {/* Separator */}
             <div className="auth-divider">
@@ -325,14 +393,20 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
         {/* Toggle Panel Switcher */}
         <div className="auth-toggle-mode">
-          {isForgotPassword ? (
+          {isResettingPassword || isForgotPassword ? (
             <button 
               type="button" 
               className="auth-toggle-btn"
               onClick={() => {
                 setIsForgotPassword(false);
+                setIsResettingPassword(false);
+                setResetToken('');
+                setEmail('');
+                setPassword('');
                 setErrorMsg(null);
                 setSuccessMsg(null);
+                // Clear URL queries if present
+                window.history.pushState({}, '', window.location.pathname);
               }}
               disabled={loading}
               style={{ fontWeight: 600 }}

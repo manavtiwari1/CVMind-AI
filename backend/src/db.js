@@ -126,6 +126,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   address: { type: String, default: '' },
   avatar: { type: String, default: '' },
+  resetPasswordToken: { type: String, default: '' },
+  resetPasswordExpires: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -791,5 +793,55 @@ export async function findUserById(userId) {
   const db = readDb();
   if (!db.users) db.users = [];
   return db.users.find(u => u.id === searchId || u._id === searchId) || null;
+}
+
+export async function saveUserResetToken(email, token, expiresMs) {
+  await ensureMongoConnection();
+  const searchEmail = String(email || '').trim().toLowerCase();
+
+  // 1. MongoDB Mode
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const user = await User.findOne({ email: searchEmail });
+    if (!user) throw new Error('User not found');
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = new Date(expiresMs);
+    await user.save();
+    return user;
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  if (!db.users) db.users = [];
+  const u = db.users.find(x => x.email === searchEmail);
+  if (!u) throw new Error('User not found');
+  u.resetPasswordToken = token;
+  u.resetPasswordExpires = new Date(expiresMs).toISOString();
+  writeDb(db);
+  return u;
+}
+
+export async function findUserByResetToken(token) {
+  await ensureMongoConnection();
+  const searchToken = String(token || '').trim();
+
+  // 1. MongoDB Mode
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    return await User.findOne({
+      resetPasswordToken: searchToken,
+      resetPasswordExpires: { $gt: new Date() }
+    });
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  if (!db.users) db.users = [];
+  const u = db.users.find(x => x.resetPasswordToken === searchToken);
+  if (!u) return null;
+  
+  // Check expiry
+  const expires = new Date(u.resetPasswordExpires).getTime();
+  if (expires < Date.now()) return null;
+  
+  return u;
 }
 
