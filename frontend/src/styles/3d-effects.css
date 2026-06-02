@@ -6,9 +6,13 @@
    ════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. Global 3D Perspective Root ─────────────────────────────── */
+/* Canvas-based particle background (ParticleBackground.tsx) sits at z-index 0.
+   All UI content sits at z-index ≥ 1 via .main-content.
+   Perspective is kept for card tilt effects. */
 .main-content {
   perspective: 2200px;
   perspective-origin: 50% 0%;
+  /* z-index: 1 set in theme.css */
 }
 
 /* ── 2. Tilt-on-hover for all glass cards ───────────────────────── */

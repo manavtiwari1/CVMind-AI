@@ -188,6 +188,8 @@ a:hover { opacity: 0.75; }
   flex-direction: column;
   min-height: 100vh;
   background: var(--bg-primary);
+  position: relative;
+  isolation: isolate;
 }
 
 .main-content {
@@ -196,6 +198,8 @@ a:hover { opacity: 0.75; }
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 7rem 2rem 4rem;
+  position: relative;
+  z-index: 1;
 }
 
 /* ════ Glass Card ══════════════════════════════════════════════ */
