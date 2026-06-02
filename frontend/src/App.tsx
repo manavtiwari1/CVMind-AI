@@ -11,6 +11,7 @@ import Tailor from './pages/Tailor';
 import Prep from './pages/Prep';
 import CoverLetter from './pages/CoverLetter';
 import Privacy from './pages/Privacy';
+import FAQ from './pages/FAQ';
 import AuthModal from './components/AuthModal';
 import ParticleBackground from './components/ParticleBackground';
 import './styles/theme.css';
@@ -19,7 +20,7 @@ import './styles/3d-effects.css';
 export default function App() {
   const [currentPage, setCurrentPageState] = useState<string>(() => {
     const urlPage = window.location.pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'resume-builder', 'privacy'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'resume-builder', 'privacy', 'faq'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -122,6 +123,8 @@ export default function App() {
         return <Contact />;
       case 'privacy':
         return <Privacy />;
+      case 'faq':
+        return <FAQ setCurrentPage={setCurrentPage} />;
       case 'dashboard':
         return (
           <Dashboard 
