@@ -7,9 +7,13 @@ import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini } from './services/gemini.js';
 import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById } from './db.js';
+import { Resend } from 'resend';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Initialize Resend Client
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Enable CORS for all requests, allow credentials and specific headers
 app.use(cors({
@@ -168,8 +172,43 @@ apiRouter.post('/api/auth/forgot-password', async (req, res) => {
       });
     }
 
-    // Simulate sending a secure email and log the action
-    console.log(`[PASSWORD RESET] Secure password reset email dispatched to: ${email} for user: ${user.name}`);
+    // 1. Generate unique recovery token
+    const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const host = req.headers.origin || 'http://localhost:5173';
+    const resetLink = `${host}/?resetToken=${resetToken}&email=${encodeURIComponent(user.email)}`;
+
+    // 2. Dispatch email using Resend and user's verified manavtiwari.in domain
+    const { data, error } = await resend.emails.send({
+      from: 'CVMind AI <no-reply@manavtiwari.in>',
+      to: [email],
+      subject: 'Reset your CVMind AI Password',
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 25px; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h2 style="color: #2997ff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">CVMind AI</h2>
+            <span style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Password Recovery Portal</span>
+          </div>
+          <p style="font-size: 15px; line-height: 1.6; margin-bottom: 15px;">Hi <strong>${user.name}</strong>,</p>
+          <p style="font-size: 15px; line-height: 1.6; margin-bottom: 20px;">We received a secure request to reset your CVMind AI account password. Click the button below to set a new password. This link is valid for **1 hour**:</p>
+          <div style="margin: 30px 0; text-align: center;">
+            <a href="${resetLink}" style="background: linear-gradient(135deg, #2997ff 0%, #bf5af2 100%); color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 15px rgba(41, 151, 255, 0.25);">Reset My Password</a>
+          </div>
+          <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-top: 25px;">If you did not make this request, you can safely ignore this email. Your account credentials remain completely secure.</p>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0 20px 0;" />
+          <p style="font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; margin: 0;">
+            Designed & engineered by Manav Tiwari.<br />
+            © ${new Date().getFullYear()} CVMind AI. Secure applicant tracking systems and resume optimization.
+          </p>
+        </div>
+      `
+    });
+
+    if (error) {
+      console.error('Resend API Dispatch Error:', error);
+      return res.status(500).json({ error: 'Failed to send secure reset email. Please contact support.' });
+    }
+
+    console.log(`[PASSWORD RESET] Live email sent using Resend. ID: ${data?.id} for user: ${user.name}`);
 
     return res.json({
       success: true,
