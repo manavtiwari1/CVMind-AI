@@ -27,6 +27,19 @@ export default function App() {
     }
     return 'home';
   });
+
+  const [theme, setTheme] = useState<string>(() => {
+    return localStorage.getItem('cvmind_theme') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('cvmind_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
   const [customApiKey, setCustomApiKey] = useState<string>(() => {
     return localStorage.getItem('resumetrics_gemini_key') || '';
   });
@@ -160,6 +173,8 @@ export default function App() {
           setShowAuthModal={setShowAuthModal}
           handleSignOut={handleSignOut}
           setLoadedWork={setLoadedWork}
+          theme={theme}
+          toggleTheme={toggleTheme}
         />
       )}
 

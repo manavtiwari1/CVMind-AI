@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { 
   ChevronDown, Menu, X, User, Briefcase, Mail, Settings, 
-  LogOut, Loader2, Trash2, Edit3, Sparkles, MapPin, Key, Lock, AlertCircle, FileText, Camera 
+  LogOut, Loader2, Trash2, Edit3, Sparkles, MapPin, Key, Lock, AlertCircle, FileText, Camera,
+  Sun, Moon
 } from 'lucide-react';
 import cvmindLogo from '../assets/cvmind_logo_transparent.png';
 import './Navbar.css';
@@ -15,6 +16,8 @@ interface NavbarProps {
   setShowAuthModal: (show: boolean) => void;
   handleSignOut: () => void;
   setLoadedWork: (work: any) => void;
+  theme: string;
+  toggleTheme: () => void;
 }
 
 export default function Navbar({ 
@@ -23,7 +26,9 @@ export default function Navbar({
   isLoggedIn, 
   setShowAuthModal, 
   handleSignOut,
-  setLoadedWork
+  setLoadedWork,
+  theme,
+  toggleTheme
 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -300,6 +305,14 @@ export default function Navbar({
 
         {/* Right actions */}
         <div className="navbar-actions">
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
           <button
             className="navbar-cta"
             style={{ 

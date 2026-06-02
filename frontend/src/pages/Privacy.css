@@ -374,3 +374,27 @@
     padding: 1.75rem 1.5rem !important;
   }
 }
+
+/* ── Light Mode Overrides for Privacy Page ── */
+:root[data-theme='light'] .constitution-card {
+  background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e6 100%);
+  border-color: rgba(212, 175, 55, 0.45);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05), inset 0 0 20px rgba(212, 175, 55, 0.02);
+}
+
+:root[data-theme='light'] .constitution-quote-box {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+:root[data-theme='light'] .matrix-table th {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+:root[data-theme='light'] .summary-box {
+  background: rgba(0, 102, 204, 0.03) !important;
+  border-color: rgba(0, 102, 204, 0.15);
+}
+
+:root[data-theme='light'] .summary-box:hover {
+  border-color: rgba(0, 102, 204, 0.3);
+}
