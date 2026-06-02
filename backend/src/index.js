@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Initialize Resend Client
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || 're_ZUsGhSqZ_N1wr7tKSbze1ySxbbr66C4pg');
 
 // Enable CORS for all requests, allow credentials and specific headers
 app.use(cors({
