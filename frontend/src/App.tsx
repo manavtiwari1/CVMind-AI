@@ -10,13 +10,14 @@ import Admin from './pages/Admin';
 import Tailor from './pages/Tailor';
 import Prep from './pages/Prep';
 import CoverLetter from './pages/CoverLetter';
+import Privacy from './pages/Privacy';
 import AuthModal from './components/AuthModal';
 import './styles/theme.css';
 
 export default function App() {
   const [currentPage, setCurrentPageState] = useState<string>(() => {
     const urlPage = window.location.pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'resume-builder'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'resume-builder', 'privacy'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -104,6 +105,8 @@ export default function App() {
         return <About />;
       case 'contact':
         return <Contact />;
+      case 'privacy':
+        return <Privacy />;
       case 'dashboard':
         return (
           <Dashboard 
