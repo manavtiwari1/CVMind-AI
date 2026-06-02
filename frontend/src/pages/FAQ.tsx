@@ -165,7 +165,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
     {
       id: 'accounts',
       title: 'Accounts',
-      description: 'Articles regarding secure signups, LocalStorage API key configurations, rate limit bypasses, and privacy compliance.',
+      description: 'Articles regarding secure signups, multi-device cloud synchronization, usage limits, and privacy compliance.',
       articleCount: 5,
       articles: [
         {
@@ -192,42 +192,41 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
         },
         {
           id: 7,
-          question: 'How is my custom Gemini API key stored, and is it safe?',
-          title: 'Gemini API Key Local Storage Security & Sovereignty',
-          editedTime: 'Edited 6 months ago',
-          tags: ['api key', 'security', 'gemini', 'localstorage'],
+          question: 'How can I access my saved resumes on another device?',
+          title: 'Real-Time Cloud Synchronization & Multi-Device Access',
+          editedTime: 'Edited 1 month ago',
+          tags: ['sync', 'devices', 'login', 'storage', 'cloud'],
           content: (
             <div className="article-body">
-              <p>
-                We offer absolute key sovereignty. If you choose to supply your own Google Gemini API Key to enjoy unlimited premium analysis, your security is guaranteed.
+              <p className="lead-paragraph">
+                CVMind AI supports real-time cloud synchronization, allowing you to access, edit, and export your career documents from any device.
               </p>
-              <h3>Security Rules of Custom Keys</h3>
+              <h3>Multi-Device Editing & Sync Guidelines</h3>
               <ul>
-                <li><strong>Stored Locally:</strong> Your API Key is written directly into your browser\'s private `LocalStorage`.</li>
-                <li><strong>Zero Transmission:</strong> The key is **never** transmitted to CVMind AI backend servers and is never saved to a database.</li>
-                <li><strong>Direct Client Communication:</strong> AI requests are sent straight from your local client-side browser directly to Google\'s secure Gemini API endpoints.</li>
+                <li><strong>Secured to Your Account:</strong> All of your tailored resumes, custom cover letters, dashboard scorecards, and smart mock interviews are synced automatically to your encrypted account profile.</li>
+                <li><strong>Cross-Platform Fluidity:</strong> You can start parsing a resume on your desktop computer, make minor adjustments using the Resume Builder on your tablet, and download the clean PDF directly from your mobile phone while on the go.</li>
+                <li><strong>Instant Synchronization:</strong> Changes are saved to our databases as you type, ensuring that logging in on any other web browser immediately pulls your latest edits without manual backup exports.</li>
               </ul>
-              <div className="callout-info">
-                <strong>Note:</strong> You can clear your API Key at any time by simply clicking "Remove Key" inside the Navbar Settings window.
-              </div>
             </div>
           )
         },
         {
           id: 8,
-          question: 'What are the account rate limits and packages?',
-          title: 'Platform Usage Rate Limits & Bypasses',
-          editedTime: 'Edited 3 months ago',
-          tags: ['rate limit', 'limits', 'premium', 'credits'],
+          question: 'What are the account rate limits and credits?',
+          title: 'Daily Usage Quotas & Server Rate Limits',
+          editedTime: 'Edited 2 weeks ago',
+          tags: ['limits', 'credits', 'quota', 'free', 'usage'],
           content: (
             <div className="article-body">
               <p>
-                To maintain high speeds for all users and prevent backend server overloads, CVMind AI enforces standard daily limits on free accounts.
+                To guarantee high-speed responsiveness for all candidates and prevent AI server congestion, CVMind AI sets standard daily usage credits on free accounts.
               </p>
-              <h3>Bypassing Rate Limits</h3>
-              <p>
-                If you exceed the default hourly server limits during heavy job application preparation, you don\'t need to pay for a subscription. Simply obtain a free developer Gemini API Key from Google AI Studio, input it into your CVMind Settings panel, and bypass all limits immediately.
-              </p>
+              <h3>How Usage Credits Reset</h3>
+              <ul>
+                <li><strong>Daily Reset Timer:</strong> Your core credits for ATS checks, Job Description tailoring, cover letter drafting, and SmartPrep interview questions reset automatically every night at 12:00 AM UTC.</li>
+                <li><strong>Status Checks:</strong> You can view your current remaining credits and active history logs inside your personal Dashboard panel.</li>
+                <li><strong>Enterprise Scaling:</strong> For heavy job search pipelines requiring bulk tailoring and continuous prep sessions, we offer high-throughput tiers to keep your workflow uninterrupted.</li>
+              </ul>
             </div>
           )
         },
@@ -447,7 +446,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
               <Search className="faq-search-icon" size={18} />
               <input 
                 type="text" 
-                placeholder="Search articles by keywords (e.g. ATS, Gemini, Privacy...)"
+                placeholder="Search articles by keywords (e.g. ATS, Cloud Sync, Privacy...)"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
