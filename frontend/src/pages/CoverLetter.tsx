@@ -682,10 +682,20 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
   const [showTextColor, setShowTextColor] = useState(false);
   const [showHighlight, setShowHighlight] = useState(false);
 
+  // ── Image Properties Modal ──────────────────────────────────────
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [pendingImageBase64, setPendingImageBase64] = useState<string>('');
+  const [editingImageEl, setEditingImageEl] = useState<HTMLImageElement | null>(null);
+  const [imgWidth, setImgWidth] = useState('150');
+  const [imgHeight, setImgHeight] = useState('');
+  const [imgAlign, setImgAlign] = useState<'inline' | 'left' | 'center' | 'right'>('inline');
+  const [imgShape, setImgShape] = useState<'square' | 'rounded' | 'circle'>('square');
+
   // Hidden File Uploader & Link Handlers for rich text editor
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const triggerImageUploader = () => {
+    saveSelection();
     fileInputRef.current?.click();
   };
 
@@ -697,17 +707,51 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     reader.onload = (event) => {
       const base64 = event.target?.result as string;
       if (!base64) return;
-
-      restoreSelection();
-      editorRef.current?.focus();
-
-      const imgHtml = `<img src="${base64}" style="max-width:140px; max-height:140px; border-radius:4px; margin:8px; display:inline-block; vertical-align:middle;" alt="Inserted Resume Image" />`;
-      document.execCommand('insertHTML', false, imgHtml);
-      
+      // Show the image properties modal instead of immediately inserting
+      setPendingImageBase64(base64);
+      setEditingImageEl(null);
+      setImgWidth('150');
+      setImgHeight('');
+      setImgAlign('inline');
+      setImgShape('square');
+      setShowImageModal(true);
       if (fileInputRef.current) fileInputRef.current.value = '';
-      countWords();
     };
     reader.readAsDataURL(file);
+  };
+
+  // Build style string for image from modal state
+  const buildImgStyle = (w: string, h: string, align: string, shape: string): string => {
+    const width = w ? `width:${w}px;` : '';
+    const height = h ? `height:${h}px;` : '';
+    const borderRadius = shape === 'circle' ? 'border-radius:50%;' : shape === 'rounded' ? 'border-radius:8px;' : 'border-radius:0px;';
+    let display = 'display:inline-block;vertical-align:middle;margin:6px;';
+    let float = '';
+    if (align === 'left') { float = 'float:left;'; display = 'display:block;margin:6px 12px 6px 0;'; }
+    else if (align === 'right') { float = 'float:right;'; display = 'display:block;margin:6px 0 6px 12px;'; }
+    else if (align === 'center') { display = 'display:block;margin:8px auto;'; }
+    return `${float}${display}${width}${height}${borderRadius}max-width:100%;`;
+  };
+
+  // Insert or update the image from the properties modal
+  const insertImageFromModal = () => {
+    const style = buildImgStyle(imgWidth, imgHeight, imgAlign, imgShape);
+    if (editingImageEl) {
+      // Editing an existing image — update its style/src in place
+      editingImageEl.setAttribute('style', style);
+      if (pendingImageBase64) editingImageEl.setAttribute('src', pendingImageBase64);
+      setShowImageModal(false);
+      setEditingImageEl(null);
+      countWords();
+      return;
+    }
+    // Inserting a new image — restore cursor and use execCommand
+    restoreSelection();
+    editorRef.current?.focus();
+    const imgHtml = `<img src="${pendingImageBase64}" style="${style}" alt="Inserted image" />`;
+    document.execCommand('insertHTML', false, imgHtml);
+    setShowImageModal(false);
+    countWords();
   };
 
   const applyLink = () => {
@@ -748,9 +792,31 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     countWords();
   };
 
-  // Helper to open links if clicked inside editor
+  // Helper to open links or image editor if clicked inside editor
   const handleEditorClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
+    // Click on img → open image properties modal
+    if (target.tagName === 'IMG') {
+      e.preventDefault();
+      const imgEl = target as HTMLImageElement;
+      setEditingImageEl(imgEl);
+      setPendingImageBase64(imgEl.src);
+      // Parse existing style back to modal fields
+      const s = imgEl.getAttribute('style') || '';
+      const wMatch = s.match(/width:(\d+)px/);
+      const hMatch = s.match(/height:(\d+)px/);
+      setImgWidth(wMatch ? wMatch[1] : '150');
+      setImgHeight(hMatch ? hMatch[1] : '');
+      if (s.includes('float:left')) setImgAlign('left');
+      else if (s.includes('float:right')) setImgAlign('right');
+      else if (s.includes('margin:8px auto')) setImgAlign('center');
+      else setImgAlign('inline');
+      if (s.includes('border-radius:50%')) setImgShape('circle');
+      else if (s.includes('border-radius:8px')) setImgShape('rounded');
+      else setImgShape('square');
+      setShowImageModal(true);
+      return;
+    }
     const closestA = target.closest('a');
     if (closestA) {
       const href = closestA.getAttribute('href');
@@ -1518,6 +1584,120 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
               accept="image/*" 
               onChange={handleImageUpload} 
             />
+
+            {/* ── Image Properties Modal ────────────────────────── */}
+            {showImageModal && (
+              <div className="img-modal-overlay" onMouseDown={e => e.stopPropagation()}>
+                <div className="img-modal-card">
+                  <div className="img-modal-header">
+                    <span className="img-modal-title">
+                      <Image size={15} /> {editingImageEl ? 'Edit Image' : 'Insert Image'}
+                    </span>
+                    <button className="img-modal-close" onClick={() => { setShowImageModal(false); setEditingImageEl(null); }}>✕</button>
+                  </div>
+
+                  {/* Preview */}
+                  {pendingImageBase64 && (
+                    <div className="img-modal-preview">
+                      <img
+                        src={pendingImageBase64}
+                        alt="Preview"
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '120px',
+                          objectFit: 'contain',
+                          borderRadius: imgShape === 'circle' ? '50%' : imgShape === 'rounded' ? '8px' : '0',
+                          display: 'block',
+                          margin: '0 auto'
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Size Controls */}
+                  <div className="img-modal-row">
+                    <label className="img-modal-label">Width (px)</label>
+                    <input
+                      className="img-modal-input"
+                      type="number"
+                      min="20"
+                      max="720"
+                      placeholder="e.g. 150"
+                      value={imgWidth}
+                      onChange={e => setImgWidth(e.target.value)}
+                    />
+                  </div>
+                  <div className="img-modal-row">
+                    <label className="img-modal-label">Height (px) <span className="img-modal-optional">optional</span></label>
+                    <input
+                      className="img-modal-input"
+                      type="number"
+                      min="20"
+                      max="1000"
+                      placeholder="Auto"
+                      value={imgHeight}
+                      onChange={e => setImgHeight(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Alignment */}
+                  <div className="img-modal-row">
+                    <label className="img-modal-label">Alignment</label>
+                    <div className="img-modal-align-group">
+                      {(['inline','left','center','right'] as const).map(a => (
+                        <button
+                          key={a}
+                          className={`img-modal-align-btn${imgAlign === a ? ' active' : ''}`}
+                          onClick={() => setImgAlign(a)}
+                          title={a.charAt(0).toUpperCase() + a.slice(1)}
+                        >
+                          {a === 'inline' ? '⊡ Inline' : a === 'left' ? '◧ Left' : a === 'center' ? '◈ Center' : '◨ Right'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Shape */}
+                  <div className="img-modal-row">
+                    <label className="img-modal-label">Shape</label>
+                    <div className="img-modal-align-group">
+                      {(['square','rounded','circle'] as const).map(s => (
+                        <button
+                          key={s}
+                          className={`img-modal-align-btn${imgShape === s ? ' active' : ''}`}
+                          onClick={() => setImgShape(s)}
+                        >
+                          {s === 'square' ? '□ Square' : s === 'rounded' ? '▢ Rounded' : '○ Circle'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="img-modal-actions">
+                    {editingImageEl && (
+                      <button
+                        className="img-modal-btn-delete"
+                        onClick={() => {
+                          editingImageEl.remove();
+                          setShowImageModal(false);
+                          setEditingImageEl(null);
+                          countWords();
+                        }}
+                      >
+                        🗑 Remove
+                      </button>
+                    )}
+                    <button className="img-modal-btn-cancel" onClick={() => { setShowImageModal(false); setEditingImageEl(null); }}>
+                      Cancel
+                    </button>
+                    <button className="img-modal-btn-insert" onClick={insertImageFromModal}>
+                      {editingImageEl ? '✓ Update Image' : '✓ Insert Image'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
