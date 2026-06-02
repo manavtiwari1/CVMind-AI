@@ -1,24 +1,30 @@
 import { useState, useMemo } from 'react';
 import { 
-  HelpCircle, 
-  ChevronDown, 
+  Folder, 
   Search, 
-  Sparkles, 
-  ShieldCheck, 
-  Key, 
-  Layers, 
+  ChevronLeft, 
+  Clock, 
   ArrowRight,
-  BookOpen,
-  MessageSquare
+  Sparkles,
+  HelpCircle
 } from 'lucide-react';
 import './FAQ.css';
 
-interface FAQItem {
+interface FAQArticle {
   id: number;
   question: string;
-  answer: string;
-  category: 'general' | 'features' | 'privacy' | 'account';
+  title: string;
+  editedTime: string;
+  content: React.ReactNode;
   tags: string[];
+}
+
+interface FAQCategory {
+  id: 'resumes' | 'accounts' | 'tailor-prep';
+  title: string;
+  description: string;
+  articleCount: number;
+  articles: FAQArticle[];
 }
 
 interface FAQProps {
@@ -26,277 +32,575 @@ interface FAQProps {
 }
 
 export default function FAQ({ setCurrentPage }: FAQProps) {
+  const [selectedCategory, setSelectedCategory] = useState<'resumes' | 'accounts' | 'tailor-prep' | null>(null);
+  const [activeArticleId, setActiveArticleId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'all' | 'general' | 'features' | 'privacy' | 'account'>('all');
-  const [openFaqId, setOpenFaqId] = useState<number | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const faqData: FAQItem[] = [
+  // Highly detailed and structured Help Center articles mapped exactly to CVMind's core features
+  const faqCategories: FAQCategory[] = [
     {
-      id: 1,
-      category: 'general',
-      question: 'What is CVMind AI?',
-      answer: 'CVMind AI is an advanced, AI-powered resume intelligence platform designed for modern professionals. It offers comprehensive ATS compatibility scoring, in-depth keyword analysis, instant recruiter-focused bullet point editing, customized interview preparation (SmartPrep AI), and a sleek drag-and-drop Resume Builder. Our system acts as your personal career strategist, analyzing your technical background and structuring your achievements to make a striking impression on recruiters.',
-      tags: ['platform', 'about', 'introduction', 'ats']
+      id: 'resumes',
+      title: 'Resumes & Cover Letters',
+      description: 'Articles about uploading, scanning, ATS scores, formatting rules, and CVMind\'s built-in resume designer.',
+      articleCount: 5,
+      articles: [
+        {
+          id: 1,
+          question: 'How is the ATS compatibility score calculated?',
+          title: 'ATS Scoring Criteria & Calculation Methods',
+          editedTime: 'Edited 2 months ago',
+          tags: ['score', 'ats', 'audit', 'formatting', 'parsing'],
+          content: (
+            <div className="article-body">
+              <p className="lead-paragraph">
+                CVMind AI’s proprietary Applicant Tracking System (ATS) scoring engine evaluates your resume against standard filters used by fortune 500 recruiters.
+              </p>
+              <h3>Scoring Vectors & Criteria</h3>
+              <p>Your resume is audited across five fundamental categories:</p>
+              <ul>
+                <li><strong>Formatting & Layout (30%):</strong> Scans for complex layouts, invisible text, tables, columns, or graphic overlays that blind parsing engines.</li>
+                <li><strong>Contact Details & Metadata (15%):</strong> Verifies existence and structures of email addresses, contact numbers, LinkedIn links, and location keywords.</li>
+                <li><strong>Skills Density (25%):</strong> Measures concentrations of high-demand industry-specific keywords relative to your target role.</li>
+                <li><strong>Action Verbs Check (15%):</strong> Analyzes bullet points to ensure achievements are led by impactful action words rather than passive descriptions.</li>
+                <li><strong>Readability & Length (15%):</strong> Evaluates page ratios, word counts, paragraph margins, and semantic flow.</li>
+              </ul>
+              <div className="callout-info">
+                <strong>Pro-Tip:</strong> Resumes scoring above 80% generally pass standard corporate ATS gatekeepers and secure human recruiter reviews.
+              </div>
+            </div>
+          )
+        },
+        {
+          id: 2,
+          question: 'Can I design and build a resume from scratch?',
+          title: 'Building a Resume From Scratch in CVMind AI',
+          editedTime: 'Edited 1 month ago',
+          tags: ['builder', 'design', 'templates', 'resume'],
+          content: (
+            <div className="article-body">
+              <p>
+                Yes! CVMind AI includes an advanced, interactive <strong>Resume Builder</strong> designed strictly within ATS compliance guidelines.
+              </p>
+              <h3>Step-by-Step Resume Building Process:</h3>
+              <ol>
+                <li>Navigate to the <strong>Resume Builder</strong> from the top navbar or footer.</li>
+                <li>Choose from our curated collection of 10 modern, single-column corporate templates. These are pre-tested to pass ATS scanners.</li>
+                <li>Fill out your contact details, objective, experience, education, and skills in the guided sidebar editor.</li>
+                <li>Click the <strong>AI Assist</strong> button beside any text field to automatically draft and polish professional descriptions in real-time.</li>
+                <li>Preview your changes and adjust margins, typography, and accent colors instantly.</li>
+              </ol>
+            </div>
+          )
+        },
+        {
+          id: 3,
+          question: 'What export options do I have for my resume?',
+          title: 'Supported Resume Export Formats & Downloads',
+          editedTime: 'Edited 3 weeks ago',
+          tags: ['export', 'pdf', 'docx', 'download'],
+          content: (
+            <div className="article-body">
+              <p>
+                CVMind AI supports professional downloads optimized for standard recruitment systems and human resource pipelines.
+              </p>
+              <h3>Available Download Formats</h3>
+              <ul>
+                <li>
+                  <strong>PDF (Portable Document Format):</strong> Highly recommended for direct applications. Our PDF generator builds fully text-selectable documents, meaning ATS bots can easily read every word while ensuring formatting remains locked across all device sizes.
+                </li>
+                <li>
+                  <strong>DOCX (Microsoft Word format):</strong> Best if you need to perform additional offline custom adjustments or require editing via desktop word processing tools.
+                </li>
+              </ul>
+            </div>
+          )
+        },
+        {
+          id: 4,
+          question: 'What file formats are supported for resume scanning?',
+          title: 'Supported Upload File Formats & Scanning Limits',
+          editedTime: 'Edited 2 months ago',
+          tags: ['upload', 'pdf', 'docx', 'txt', 'size'],
+          content: (
+            <div className="article-body">
+              <p>
+                When uploading an existing resume to CVMind AI for quick ATS auditing, rating, and keyword scoring, our parser accepts the following formats:
+              </p>
+              <ul>
+                <li><strong>PDF Documents (.pdf)</strong></li>
+                <li><strong>Microsoft Word Documents (.docx)</strong></li>
+                <li><strong>Plain Text Files (.txt)</strong></li>
+              </ul>
+              <h3>Uploading Limits</h3>
+              <p>
+                The maximum allowed file size is <strong>5MB</strong>. To maintain absolute safety and user trust, files are processed **strictly in-memory** and immediately flushed. Your physical resume documents are never written to disk or stored on CVMind AI servers.
+              </p>
+            </div>
+          )
+        },
+        {
+          id: 5,
+          question: 'How do I ensure my resume formatting is ATS-friendly?',
+          title: 'Crucial ATS Formatting Best Practices',
+          editedTime: 'Edited 2 months ago',
+          tags: ['ats', 'formatting', 'margins', 'fonts'],
+          content: (
+            <div className="article-body">
+              <p>
+                Many highly qualified professionals are rejected solely because their resume formatting breaks standard parsing software.
+              </p>
+              <h3>Rules to Guarantee ATS Readability:</h3>
+              <ul>
+                <li><strong>Avoid Tables and Text Boxes:</strong> Scanners parse text left-to-right; text boxes and multi-nested tables scramble your sentences.</li>
+                <li><strong>Stick to Standard Fonts:</strong> Use clean, standard system fonts like Inter, Helvetica, Arial, Calibri, or Georgia. Avoid loading custom decorative fonts.</li>
+                <li><strong>Use Direct Section Titles:</strong> Standard titles like "Work Experience", "Education", and "Skills" are immediately indexable. Do not use creative titles like "Where I've Been" or "My Superpowers".</li>
+                <li><strong>No Icons, Charts, or Progress Bars:</strong> Scanners cannot decipher skills rated as "4 out of 5 stars" or styled inside colorful graphs. Use plain text lists instead.</li>
+              </ul>
+            </div>
+          )
+        }
+      ]
     },
     {
-      id: 2,
-      category: 'features',
-      question: 'How is the ATS compatibility score calculated?',
-      answer: 'Our proprietary ATS (Applicant Tracking System) auditing engine simulates top-tier corporate recruitment filters. It thoroughly scans your resume file across five key vectors: layout & formatting (avoiding tables/columns/charts that blind parsing software), contact detail validity, core professional skills density, usage of high-impact action verbs, and structural readability. The result is an actionable, percentage-based score coupled with line-by-line recommendations on exactly what to modify.',
-      tags: ['score', 'ats', 'audit', 'formatting']
+      id: 'accounts',
+      title: 'Accounts',
+      description: 'Articles regarding secure signups, LocalStorage API key configurations, rate limit bypasses, and privacy compliance.',
+      articleCount: 5,
+      articles: [
+        {
+          id: 6,
+          question: 'Do I need to sign up to use CVMind AI?',
+          title: 'Account Sign-Up Requirements & Benefits',
+          editedTime: 'Edited 4 months ago',
+          tags: ['signup', 'login', 'free', 'account'],
+          content: (
+            <div className="article-body">
+              <p className="lead-paragraph">
+                CVMind AI is built with user autonomy in mind. You can perform quick resume audits directly on the homepage without registering.
+              </p>
+              <h3>Why Create a Free Account?</h3>
+              <p>To access our advanced professional suites, a secure login is required. An account unlocks:</p>
+              <ul>
+                <li><strong>Saved History:</strong> Access and manage your previous ATS scoring sheets, tailored variations, and drafts.</li>
+                <li><strong>Resume Builder:</strong> Design, edit, and export corporate resumes using our interactive editor.</li>
+                <li><strong>Resume Tailoring & SmartPrep:</strong> Run high-performance semantic keyword gap audits and custom mock interviews.</li>
+                <li><strong>Dashboard Telemetry:</strong> Track your ATS progress score over time with graphical scorecards.</li>
+              </ul>
+            </div>
+          )
+        },
+        {
+          id: 7,
+          question: 'How is my custom Gemini API key stored, and is it safe?',
+          title: 'Gemini API Key Local Storage Security & Sovereignty',
+          editedTime: 'Edited 6 months ago',
+          tags: ['api key', 'security', 'gemini', 'localstorage'],
+          content: (
+            <div className="article-body">
+              <p>
+                We offer absolute key sovereignty. If you choose to supply your own Google Gemini API Key to enjoy unlimited premium analysis, your security is guaranteed.
+              </p>
+              <h3>Security Rules of Custom Keys</h3>
+              <ul>
+                <li><strong>Stored Locally:</strong> Your API Key is written directly into your browser\'s private `LocalStorage`.</li>
+                <li><strong>Zero Transmission:</strong> The key is **never** transmitted to CVMind AI backend servers and is never saved to a database.</li>
+                <li><strong>Direct Client Communication:</strong> AI requests are sent straight from your local client-side browser directly to Google\'s secure Gemini API endpoints.</li>
+              </ul>
+              <div className="callout-info">
+                <strong>Note:</strong> You can clear your API Key at any time by simply clicking "Remove Key" inside the Navbar Settings window.
+              </div>
+            </div>
+          )
+        },
+        {
+          id: 8,
+          question: 'What are the account rate limits and packages?',
+          title: 'Platform Usage Rate Limits & Bypasses',
+          editedTime: 'Edited 3 months ago',
+          tags: ['rate limit', 'limits', 'premium', 'credits'],
+          content: (
+            <div className="article-body">
+              <p>
+                To maintain high speeds for all users and prevent backend server overloads, CVMind AI enforces standard daily limits on free accounts.
+              </p>
+              <h3>Bypassing Rate Limits</h3>
+              <p>
+                If you exceed the default hourly server limits during heavy job application preparation, you don\'t need to pay for a subscription. Simply obtain a free developer Gemini API Key from Google AI Studio, input it into your CVMind Settings panel, and bypass all limits immediately.
+              </p>
+            </div>
+          )
+        },
+        {
+          id: 9,
+          question: 'How can I delete my account and saved resumes?',
+          title: 'Full Account Deletion & Permanent Data Purges',
+          editedTime: 'Edited 2 months ago',
+          tags: ['delete', 'remove', 'privacy', 'purge'],
+          content: (
+            <div className="article-body">
+              <p>
+                We believe you have complete ownership over your career data. If you decide to close your account, we ensure a clean, permanent wipe.
+              </p>
+              <h3>How Data is Purged</h3>
+              <p>When you trigger an account deletion request inside your profile:</p>
+              <ul>
+                <li>All of your saved resume drafts, cover letters, and scorecards are **permanently deleted** from our secure database.</li>
+                <li>We do not retain backup cache files of your career details.</li>
+                <li>Your account information, login profiles, and connection metrics are permanently scrubbed from our systems.</li>
+              </ul>
+            </div>
+          )
+        },
+        {
+          id: 10,
+          question: 'Is CVMind AI compliant with privacy laws?',
+          title: 'Privacy by Design Compliance & Article 21',
+          editedTime: 'Edited 2 months ago',
+          tags: ['legal', 'privacy', 'article 21', 'gdpr', 'constitution'],
+          content: (
+            <div className="article-body">
+              <p>
+                Yes. CVMind AI is engineered under "Privacy by Design" guidelines.
+              </p>
+              <h3>Constitutional Sovereignty</h3>
+              <p>
+                In alignment with <strong>Article 21 of the Constitution of India</strong>—which guarantees the Right to Life and Personal Liberty as containing the Sovereign Right to Privacy—our software enforces absolute boundaries on data visibility.
+              </p>
+              <h3>Data Visibility Breakdown</h3>
+              <ul>
+                <li><strong>Resumes:</strong> Never saved (parsed in-memory).</li>
+                <li><strong>Technical Logs:</strong> Anonymized backend metrics only (apki koi personal details nahi aati h).</li>
+                <li><strong>AI Assistant Conversations:</strong> Monitored solely for safety/QA audits and systematically purged.</li>
+              </ul>
+            </div>
+          )
+        }
+      ]
     },
     {
-      id: 3,
-      category: 'features',
-      question: 'What does the Resume Tailorer do?',
-      answer: 'The Resume Tailorer is designed to bridge the gap between your background and your dream job. By pasting a target Job Description alongside your resume, our AI parses the semantic requirements, uncovers missing keywords, and optimizes your existing experience. It carefully adapts your bullet points to align with the employer’s exact terminology while keeping your professional history accurate, legal, and authentic.',
-      tags: ['tailor', 'job description', 'optimization', 'keywords']
-    },
-    {
-      id: 4,
-      category: 'features',
-      question: 'What is SmartPrep AI and how does it help?',
-      answer: 'SmartPrep AI is a simulated technical and behavioral interview preparation tool. Using the details extracted from your resume history, the AI generates custom questions structured around real recruiter models (including the STAR method: Situation, Task, Action, Result). It allows you to simulate high-pressure interviews, provides sample answers, and gives you detailed scoring feedback to ensure you walk into your next interview completely prepared.',
-      tags: ['prep', 'interview', 'questions', 'scorecard']
-    },
-    {
-      id: 5,
-      category: 'privacy',
-      question: 'Is my uploaded resume saved or stored anywhere?',
-      answer: 'Absolutely not. At CVMind AI, privacy is a structural pillar. When you upload a PDF, DOCX, or TXT file for ATS checking, the file text is parsed in-memory, evaluated securely using official LLM API endpoints in a single temporary session, and immediately cleared. Your physical documents are never stored on a hard drive, never written to a persistent database, and never sold, shared, or distributed.',
-      tags: ['privacy', 'security', 'upload', 'data']
-    },
-    {
-      id: 6,
-      category: 'privacy',
-      question: 'What data does CVMind AI collect and monitor?',
-      answer: 'We believe in absolute transparency: 1) We cannot see your uploaded resumes. 2) We cannot see your saved works or custom-tailored outputs. 3) We do log system performance telemetries (API speeds, server errors), but these contain zero personally identifiable details (apki koi personal details nahi aati h). 4) We do monitor conversations between users and our AI chat assistant solely to ensure security, quality auditing, and API stability. These chat transcripts are periodically purged.',
-      tags: ['data', 'logs', 'chat', 'gdpr', 'transparency']
-    },
-    {
-      id: 7,
-      category: 'privacy',
-      question: 'Is CVMind AI compliant with privacy laws?',
-      answer: 'Yes. Our infrastructure is built using the principles of "Privacy by Design." In keeping with the spirit of Article 21 of the Constitution of India—which guarantees the Right to Life and Personal Liberty as inclusive of the Sovereign Right to Privacy—our software respects user autonomy, enforces strict sandboxing, and prevents any passive collection of user-identifiable data.',
-      tags: ['constitution', 'privacy', 'article 21', 'legal']
-    },
-    {
-      id: 8,
-      category: 'account',
-      question: 'Do I need to supply my own Gemini API Key?',
-      answer: 'No, CVMind AI works straight out of the box using our built-in servers! However, to prevent abuse and API exhaustion, a standard free account has reasonable hourly rate limits. If you are tailoring multiple resumes, practicing interview prepping extensively, or want unlimited high-speed bypass, you can choose to supply your own custom Gemini API Key in the navbar settings.',
-      tags: ['api key', 'gemini', 'rate limit', 'free']
-    },
-    {
-      id: 9,
-      category: 'account',
-      question: 'Are my custom Gemini API Keys secure?',
-      answer: 'Completely sovereign and safe. When you supply your own Gemini API Key, it is stored locally in your browser’s secure LocalStorage. It never touches CVMind AI servers. Requests are sent directly from your client-side browser to Google’s Gemini endpoints, keeping your key fully under your ownership and completely hidden from anyone else.',
-      tags: ['api key', 'security', 'storage', 'localstorage']
-    },
-    {
-      id: 10,
-      category: 'features',
-      question: 'Can I design and build a resume from scratch?',
-      answer: 'Yes, CVMind AI features a powerful Resume Builder equipped with 10 industry-standard, clean corporate layouts. The builder tracks ATS guidelines perfectly (avoiding non-standard section titles, tables, or columns that choke scanners) and offers inline AI assistance to draft bullets, restructure descriptions, and adjust text styling effortlessly.',
-      tags: ['builder', 'design', 'templates', 'resume']
-    },
-    {
-      id: 11,
-      category: 'features',
-      question: 'What export options do I have?',
-      answer: 'Once you are finished editing or building your resume in the Resume Builder, you can export your optimized document as a clean, pixel-perfect PDF (ideal for direct job submissions) or download it as an editable DOCX (Microsoft Word) file, making it highly customizable for any last-minute modifications.',
-      tags: ['export', 'pdf', 'docx', 'download']
-    },
-    {
-      id: 12,
-      category: 'account',
-      question: 'Do I need to sign up to use CVMind AI?',
-      answer: 'You can test your resume and get basic ATS scoring on the homepage without an account. However, to save your progress, access your personalized dashboard, manage tailored variations, write smart cover letters, and unlock advanced SmartPrep AI training sessions, you will need to create a free secure account.',
-      tags: ['signup', 'account', 'login', 'dashboard']
+      id: 'tailor-prep',
+      title: 'Job Description AI Tailor & SmartPrep AI',
+      description: 'Articles details regarding semantic gap keywords matching and interactive interviewer coaching.',
+      articleCount: 4,
+      articles: [
+        {
+          id: 11,
+          question: 'How does the Job Description AI Tailor work?',
+          title: 'Keyword Gap Analysis & Dynamic Resume Tailoring',
+          editedTime: 'Edited 2 months ago',
+          tags: ['tailor', 'job description', 'keywords', 'skills'],
+          content: (
+            <div className="article-body">
+              <p className="lead-paragraph">
+                The <strong>Resume Tailorer</strong> is built to adapt your current resume to align perfectly with the target role you are applying for.
+              </p>
+              <h3>How Tailoring works:</h3>
+              <ol>
+                <li>Paste the complete Job Description (JD) text into the Tailoring console.</li>
+                <li>Our AI performs a semantic keywords gap audit, checking what skills, qualifications, and action verbs the job description expects.</li>
+                <li>The engine uncovers key phrases present in the JD but missing in your resume.</li>
+                <li>It outputs precise inline rewrites for your experience section, adapting sentences to highlight relevant skills while preserving factual career history.</li>
+              </ol>
+            </div>
+          )
+        },
+        {
+          id: 12,
+          question: 'What is SmartPrep AI and how does it help?',
+          title: 'SmartPrep AI - Customized Interview Coaching',
+          editedTime: 'Edited 1 month ago',
+          tags: ['prep', 'interview', 'coach', 'questions'],
+          content: (
+            <div className="article-body">
+              <p>
+                <strong>SmartPrep AI</strong> is our interactive, resume-driven mock interview simulator.
+              </p>
+              <h3>Personalized Interview Simulation</h3>
+              <p>
+                Unlike generic online interview lists, SmartPrep parses the exact experience on your resume to generate a customized set of high-impact behavioral, situational, and technical questions you are highly likely to face from recruiters.
+              </p>
+              <div className="callout-info">
+                <strong>Behavioral Checks:</strong> SmartPrep analyzes your mock answers to evaluate STAR compliance (Situation, Task, Action, Result) to make sure your storytelling structure is correct.
+              </div>
+            </div>
+          )
+        },
+        {
+          id: 13,
+          question: 'How is the interview scorecard calculated?',
+          title: 'Interview Evaluation Scorecards & Feedback Criteria',
+          editedTime: 'Edited 3 weeks ago',
+          tags: ['scorecard', 'interview', 'feedback', 'grading'],
+          content: (
+            <div className="article-body">
+              <p>
+                When you complete a SmartPrep mock interview session, the AI compiles a detailed performance scorecard.
+              </p>
+              <h3>Grading Elements</h3>
+              <ul>
+                <li><strong>STAR Method Alignment:</strong> Evaluates if you clearly defined the context, your task, the active steps you took, and final quantitative results.</li>
+                <li><strong>Grammar & Professional Tone:</strong> Scores sentence clarity, vocabulary impact, and professionalism.</li>
+                <li><strong>Competency Alignment:</strong> Checks if your answers successfully demoed the specific technical skills claimed in your CV.</li>
+                <li><strong>Actionable Fixes:</strong> Provides model answers showing exactly how to reword weaker portions.</li>
+              </ul>
+            </div>
+          )
+        },
+        {
+          id: 14,
+          question: 'Are my mock interview answers recorded or shared?',
+          title: 'Mock Interview Privacy & AI Chat Auditing',
+          editedTime: 'Edited 2 months ago',
+          tags: ['privacy', 'chat', 'logs', 'purges'],
+          content: (
+            <div className="article-body">
+              <p>
+                We protect your vulnerability during interview practices.
+              </p>
+              <h3>Strict Session Policies</h3>
+              <ul>
+                <li><strong>Zero Machine Learning Training:</strong> Your mock answers and conversational inputs are never uploaded to train public LLM models.</li>
+                <li><strong>QA Logs Isolation:</strong> Conversation dialogue metrics are logged securely strictly for development error checks and chatbot behavior audits, and are periodically purged completely.</li>
+              </ul>
+            </div>
+          )
+        }
+      ]
     }
   ];
 
-  // Filter and search FAQs
-  const filteredFaqs = useMemo(() => {
-    return faqData.filter(item => {
-      const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
-      const matchesSearch = 
-        item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      return matchesCategory && matchesSearch;
+  // Helper to resolve all articles into a flat list for global search filtering
+  const allArticles = useMemo(() => {
+    const list: { catId: 'resumes' | 'accounts' | 'tailor-prep'; article: FAQArticle }[] = [];
+    faqCategories.forEach(category => {
+      category.articles.forEach(article => {
+        list.push({ catId: category.id, article });
+      });
     });
-  }, [searchQuery, activeCategory]);
+    return list;
+  }, []);
 
-  const toggleFaq = (id: number) => {
-    setOpenFaqId(prevId => (prevId === id ? null : id));
-  };
+  // Filtered autocomplete search suggestions
+  const filteredSuggestions = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    return allArticles.filter(item => {
+      return (
+        item.article.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.article.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    });
+  }, [searchQuery, allArticles]);
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'general': return <BookOpen size={16} />;
-      case 'features': return <Sparkles size={16} />;
-      case 'privacy': return <ShieldCheck size={16} />;
-      case 'account': return <Key size={16} />;
-      default: return <HelpCircle size={16} />;
+  // Navigate to split view from categories dashboard
+  const handleCategoryClick = (catId: 'resumes' | 'accounts' | 'tailor-prep') => {
+    setSelectedCategory(catId);
+    const category = faqCategories.find(c => c.id === catId);
+    if (category && category.articles.length > 0) {
+      setActiveArticleId(category.articles[0].id);
     }
   };
 
+  // Jump to specific article directly (e.g. from search click)
+  const handleArticleJump = (catId: 'resumes' | 'accounts' | 'tailor-prep', articleId: number) => {
+    setSelectedCategory(catId);
+    setActiveArticleId(articleId);
+    setSearchQuery('');
+    setShowSuggestions(false);
+  };
+
+  // Reset to categories dashboard view
+  const handleBackToHome = () => {
+    setSelectedCategory(null);
+    setActiveArticleId(null);
+    setSearchQuery('');
+  };
+
+  // Active category object
+  const activeCategoryObject = faqCategories.find(c => c.id === selectedCategory);
+
+  // Active article object
+  const activeArticleObject = activeCategoryObject?.articles.find(a => a.id === activeArticleId);
+
   return (
     <div className="faq-container animate-fade-in-up">
-      {/* Ambient background glow elements */}
+      {/* Background ambient glow nodes */}
       <div className="faq-glow faq-glow-left"></div>
       <div className="faq-glow faq-glow-right"></div>
 
-      <section className="faq-hero">
-        <div className="faq-hero-badge">
-          <span className="badge badge-purple">
-            <HelpCircle size={12} style={{ marginRight: '4px' }} /> Support Center
-          </span>
-        </div>
-        <h1 className="faq-title">Frequently Asked Questions</h1>
-        <p className="faq-subtitle">
-          Got questions? We have answers. Learn about CVMind AI’s algorithms, state-of-the-art privacy design, and professional developer tools.
-        </p>
-      </section>
+      {/* Main dashboard view (Category Folder Selection Grid) */}
+      {selectedCategory === null ? (
+        <div className="faq-dashboard-view">
+          <section className="faq-hero">
+            <div className="faq-hero-badge">
+              <span className="badge badge-purple">
+                <HelpCircle size={12} style={{ marginRight: '4px' }} /> Support Center
+              </span>
+            </div>
+            <h1 className="faq-title">How can we help you?</h1>
+          </section>
 
-      {/* Search and Filters panel */}
-      <div className="faq-controls glass-card">
-        <div className="faq-search-wrapper">
-          <Search className="faq-search-icon" size={18} />
-          <input 
-            type="text" 
-            placeholder="Search FAQs by keywords (e.g. ATS, Gemini, Privacy...)"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="faq-search-input"
-          />
-          {searchQuery && (
-            <button 
-              className="faq-clear-btn" 
-              onClick={() => setSearchQuery('')}
-            >
-              Clear
-            </button>
-          )}
-        </div>
-
-        <div className="faq-tabs">
-          <button 
-            className={`faq-tab ${activeCategory === 'all' ? 'active' : ''}`}
-            onClick={() => setActiveCategory('all')}
-          >
-            <Layers size={14} /> All FAQs
-          </button>
-          <button 
-            className={`faq-tab ${activeCategory === 'general' ? 'active' : ''}`}
-            onClick={() => setActiveCategory('general')}
-          >
-            <BookOpen size={14} /> General
-          </button>
-          <button 
-            className={`faq-tab ${activeCategory === 'features' ? 'active' : ''}`}
-            onClick={() => setActiveCategory('features')}
-          >
-            <Sparkles size={14} /> AI Features
-          </button>
-          <button 
-            className={`faq-tab ${activeCategory === 'privacy' ? 'active' : ''}`}
-            onClick={() => setActiveCategory('privacy')}
-          >
-            <ShieldCheck size={14} /> Privacy & Trust
-          </button>
-          <button 
-            className={`faq-tab ${activeCategory === 'account' ? 'active' : ''}`}
-            onClick={() => setActiveCategory('account')}
-          >
-            <Key size={14} /> Keys & Account
-          </button>
-        </div>
-      </div>
-
-      {/* FAQs List Accordion */}
-      <div className="faq-list-section">
-        {filteredFaqs.length > 0 ? (
-          <div className="faq-accordion-group">
-            {filteredFaqs.map((faq) => {
-              const isOpen = openFaqId === faq.id;
-              return (
-                <div 
-                  key={faq.id} 
-                  className={`faq-item-card glass-card ${isOpen ? 'expanded' : ''}`}
+          {/* Centered Global Search with suggestions */}
+          <div className="faq-search-section">
+            <div className="faq-search-wrapper glass-card">
+              <Search className="faq-search-icon" size={18} />
+              <input 
+                type="text" 
+                placeholder="Search articles by keywords (e.g. ATS, Gemini, Privacy...)"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                className="faq-search-input"
+              />
+              {searchQuery && (
+                <button 
+                  className="faq-clear-btn" 
+                  onClick={() => { setSearchQuery(''); setShowSuggestions(false); }}
                 >
-                  <button 
-                    className="faq-trigger"
-                    onClick={() => toggleFaq(faq.id)}
-                    aria-expanded={isOpen}
-                  >
-                    <div className="faq-question-content">
-                      <span className={`faq-category-indicator ${faq.category}`}>
-                        {getCategoryIcon(faq.category)}
-                        <span className="indicator-text">{faq.category}</span>
-                      </span>
-                      <h3 className="faq-question-text">{faq.question}</h3>
-                    </div>
-                    <div className={`faq-chevron-wrapper ${isOpen ? 'rotated' : ''}`}>
-                      <ChevronDown size={18} />
-                    </div>
-                  </button>
-                  
-                  <div className={`faq-answer-panel ${isOpen ? 'open' : 'collapsed'}`}>
-                    <div className="faq-answer-content">
-                      <p>{faq.answer}</p>
-                      <div className="faq-tags-row">
-                        {faq.tags.map((tag, tIdx) => (
-                          <span key={tIdx} className="faq-tag">#{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="faq-empty-state glass-card">
-            <MessageSquare size={48} className="empty-icon" />
-            <h3>No Questions Found</h3>
-            <p>We couldn't find any FAQs matching "{searchQuery}". Try searching for something else or browse categories.</p>
-            <button className="reset-search-btn" onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}>
-              Reset Filters
-            </button>
-          </div>
-        )}
-      </div>
+                  Clear
+                </button>
+              )}
 
-      {/* Premium Help CTA Card */}
-      <section className="faq-cta-card glass-card">
-        <div className="faq-cta-glow"></div>
-        <div className="faq-cta-content">
-          <div className="faq-cta-header">
-            <Sparkles size={24} className="cta-icon" />
-            <h2>Ready to Optimize Your Resume?</h2>
+              {/* Autocomplete Dropdown Panel */}
+              {showSuggestions && searchQuery.trim() && (
+                <div className="faq-search-dropdown glass-card">
+                  {filteredSuggestions.length > 0 ? (
+                    filteredSuggestions.map((item) => (
+                      <button 
+                        key={item.article.id}
+                        className="suggestion-row"
+                        onClick={() => handleArticleJump(item.catId, item.article.id)}
+                      >
+                        <div className="suggestion-info">
+                          <span className="suggestion-category-tag">{item.catId === 'resumes' ? 'Resumes & Cover Letters' : item.catId === 'accounts' ? 'Accounts' : 'AI Tailor & SmartPrep'}</span>
+                          <span className="suggestion-question">{item.article.question}</span>
+                        </div>
+                        <ArrowRight size={14} className="suggestion-arrow" />
+                      </button>
+                    ))
+                  ) : (
+                    <div className="suggestion-empty">
+                      No articles found matching "{searchQuery}"
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-          <p>
-            Put these FAQs to the test. Let our AI audits grade your resume and optimize your professional outline in seconds.
-          </p>
-          <div className="faq-cta-actions">
-            <button 
-              className="btn-primary" 
-              onClick={() => { setCurrentPage('home'); window.scrollTo(0,0); }}
-            >
-              Analyze Your Resume <ArrowRight size={16} />
+
+          {/* Grid of Folders */}
+          <div className="faq-folders-grid">
+            {faqCategories.map((cat) => (
+              <button 
+                key={cat.id} 
+                className="folder-card glass-card animate-hover"
+                onClick={() => handleCategoryClick(cat.id)}
+              >
+                <div className="folder-icon-box">
+                  <Folder size={32} className="folder-icon" />
+                </div>
+                <h3 className="folder-title">{cat.title}</h3>
+                <p className="folder-articles-count">{cat.articleCount} articles</p>
+              </button>
+            ))}
+          </div>
+
+          {/* Premium Bottom Callout */}
+          <section className="faq-cta-card glass-card">
+            <div className="faq-cta-glow"></div>
+            <div className="faq-cta-content">
+              <div className="faq-cta-header">
+                <Sparkles size={24} className="cta-icon" />
+                <h2>Ready to Optimize Your Resume?</h2>
+              </div>
+              <p>
+                Put these guides to the test. Let our AI audits grade your resume and optimize your professional outline in seconds.
+              </p>
+              <div className="faq-cta-actions">
+                <button 
+                  className="btn-primary" 
+                  onClick={() => { setCurrentPage('home'); window.scrollTo(0,0); }}
+                >
+                  Analyze Your Resume <ArrowRight size={16} />
+                </button>
+                <button 
+                  className="btn-secondary" 
+                  onClick={() => { setCurrentPage('resume-builder'); window.scrollTo(0,0); }}
+                >
+                  Build from Scratch
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : (
+        /* Split-Screen Article Reader View */
+        <div className="faq-reader-view">
+          {/* Top Breadcrumb Navigation */}
+          <div className="faq-breadcrumb">
+            <button className="breadcrumb-back-btn" onClick={handleBackToHome}>
+              <ChevronLeft size={16} /> FAQ Home
             </button>
-            <button 
-              className="btn-secondary" 
-              onClick={() => { setCurrentPage('resume-builder'); window.scrollTo(0,0); }}
-            >
-              Build from Scratch
-            </button>
+            <span className="breadcrumb-separator">/</span>
+            <span className="breadcrumb-current-category">{activeCategoryObject?.title}</span>
+          </div>
+
+          <div className="faq-split-layout">
+            {/* Left Sidebar - Article Links List */}
+            <aside className="faq-sidebar">
+              <h4 className="sidebar-heading">In this article</h4>
+              <div className="sidebar-links-list">
+                {activeCategoryObject?.articles.map((art) => {
+                  const isActive = art.id === activeArticleId;
+                  return (
+                    <button 
+                      key={art.id} 
+                      className={`sidebar-article-link ${isActive ? 'active' : ''}`}
+                      onClick={() => setActiveArticleId(art.id)}
+                    >
+                      <span className="bullet-dot"></span>
+                      <span className="link-text">{art.question}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </aside>
+
+            {/* Right Panel - Detailed Article Content */}
+            <main className="faq-article-container glass-card">
+              {activeArticleObject ? (
+                <article className="faq-main-article">
+                  <header className="article-header">
+                    <h1 className="article-main-title">{activeArticleObject.title}</h1>
+                    <div className="article-meta">
+                      <Clock size={14} className="meta-icon" />
+                      <span className="meta-text">{activeArticleObject.editedTime}</span>
+                    </div>
+                  </header>
+                  <div className="article-content-body">
+                    {activeArticleObject.content}
+                  </div>
+                  <div className="article-footer-tags">
+                    {activeArticleObject.tags.map((tag, idx) => (
+                      <span key={idx} className="article-tag">#{tag}</span>
+                    ))}
+                  </div>
+                </article>
+              ) : (
+                <div className="article-placeholder">
+                  <HelpCircle size={48} className="placeholder-icon animate-pulse" />
+                  <h3>Select an article</h3>
+                  <p>Choose one of the questions on the left to read its full help documentation.</p>
+                </div>
+              )}
+            </main>
           </div>
         </div>
-      </section>
+      )}
     </div>
   );
 }
