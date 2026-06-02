@@ -249,6 +249,9 @@ apiRouter.post('/api/auth/reset-password', async (req, res) => {
     await updateUserPassword(user.id || user._id, hashedPassword);
     await saveUserResetToken(user.email, '', null);
 
+    // Save password-reset audit log to backend database
+    await saveLoginLog({ email: user.email, name: user.name, provider: 'password-reset' });
+
     return res.json({
       success: true,
       message: 'Password reset successful! You can now sign in with your new password.'

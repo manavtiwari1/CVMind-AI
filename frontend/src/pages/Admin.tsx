@@ -980,6 +980,9 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                 } else if (login.provider === 'signup') {
                                   providerBadgeCls = "badge-signup";
                                   providerLabel = "New Sign Up";
+                                } else if (login.provider === 'password-reset') {
+                                  providerBadgeCls = "badge-reset";
+                                  providerLabel = "Password Reset";
                                 }
 
                                 return (

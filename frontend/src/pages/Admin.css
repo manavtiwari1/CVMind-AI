@@ -1431,3 +1431,10 @@
   color: var(--admin-emerald);
 }
 
+.provider-badge.badge-reset {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--admin-amber);
+}
+
+
