@@ -13,6 +13,7 @@ import CoverLetter from './pages/CoverLetter';
 import Privacy from './pages/Privacy';
 import AuthModal from './components/AuthModal';
 import './styles/theme.css';
+import './styles/3d-effects.css';
 
 export default function App() {
   const [currentPage, setCurrentPageState] = useState<string>(() => {
@@ -163,6 +164,17 @@ export default function App() {
 
   return (
     <div className={`app-container ${isAdminPage ? 'admin-shell' : ''}`}>
+
+      {/* ── Global 3D Ambient Depth Layer ───────────────────── */}
+      {!isAdminPage && (
+        <div className="global-depth-layer" aria-hidden="true">
+          <div className="depth-orb depth-orb-1" />
+          <div className="depth-orb depth-orb-2" />
+          <div className="depth-orb depth-orb-3" />
+          <div className="depth-grid" />
+        </div>
+      )}
+
       {!isAdminPage && (
         <Navbar 
           currentPage={currentPage} 
