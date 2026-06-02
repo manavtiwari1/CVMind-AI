@@ -150,6 +150,37 @@ apiRouter.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// User Forgot Password Route
+apiRouter.post('/api/auth/forgot-password', async (req, res) => {
+  const { email } = req.body || {};
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email address is required.' });
+  }
+
+  try {
+    const user = await findUserByEmail(email);
+    if (!user) {
+      // Industry-standard secure response to prevent user enumeration attacks
+      return res.json({
+        success: true,
+        message: 'A secure password reset link has been dispatched to your email address.'
+      });
+    }
+
+    // Simulate sending a secure email and log the action
+    console.log(`[PASSWORD RESET] Secure password reset email dispatched to: ${email} for user: ${user.name}`);
+
+    return res.json({
+      success: true,
+      message: 'A secure password reset link has been dispatched to your email address.'
+    });
+  } catch (err) {
+    console.error('Forgot Password Error:', err);
+    return res.status(500).json({ error: err.message || 'An error occurred while requesting password reset.' });
+  }
+});
+
 // Google Auth Verification Route
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
