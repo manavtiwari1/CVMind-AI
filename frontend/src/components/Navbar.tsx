@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   ChevronDown, Menu, X, User, Briefcase, Mail, Settings, 
   LogOut, Loader2, Trash2, Edit3, Sparkles, MapPin, Key, Lock, AlertCircle, FileText, Camera,
-  Sun, Moon
+  Sun, Moon, Globe
 } from 'lucide-react';
 import cvmindLogo from '../assets/cvmind_logo_transparent.png';
 import './Navbar.css';
@@ -85,6 +85,12 @@ export default function Navbar({
   const go = (page: string) => {
     setCurrentPage(page);
     setMobileOpen(false);
+  };
+
+  const handleShareLink = (workId: string) => {
+    const shareUrl = `${window.location.origin}/portfolio/${workId}`;
+    navigator.clipboard.writeText(shareUrl);
+    alert(`Portfolio link copied to clipboard:\n${shareUrl}`);
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -274,9 +280,11 @@ export default function Navbar({
             </button>
             <div className="nav-dropdown-menu">
               {[
-                { label: 'AI Analyzer', page: 'home' },
-                { label: 'Resume Tailorer', page: 'tailor' },
-                { label: 'SmartPrep AI', page: 'prep' },
+                { label: 'AI Resume Analyzer', page: 'home' },
+                { label: 'AI Resume Tailorer', page: 'tailor' },
+                { label: 'SmartPrep AI (Prep)', page: 'prep' },
+                { label: 'LinkedIn Optimizer', page: 'linkedin' },
+                { label: 'Resume Builder', page: 'resume-builder' },
               ].map(({ label, page }) => (
                 <button
                   key={page}
@@ -401,6 +409,7 @@ export default function Navbar({
           { label: 'Dashboard', page: 'dashboard' },
           { label: 'Resume Builder', page: 'resume-builder' },
           { label: 'Resume Tailor', page: 'tailor' },
+          { label: 'LinkedIn Optimizer', page: 'linkedin' },
           { label: 'Interview Prep AI', page: 'prep' },
           { label: 'About CVMind AI', page: 'about' },
           { label: 'Contact Support', page: 'contact' }
@@ -679,7 +688,7 @@ export default function Navbar({
                     <div key={w.id || w._id} className="work-item-card">
                       <div className="work-card-top">
                         <span className={`work-type-badge ${w.type}`}>
-                          {w.type === 'cover-letter' ? 'Cover Letter' : 'Resume'}
+                          {w.type === 'cover-letter' ? 'Cover Letter' : w.type === 'linkedin' ? 'LinkedIn' : 'Resume'}
                         </span>
                         <span className="work-date">
                           {new Date(w.updatedAt || w.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -693,11 +702,26 @@ export default function Navbar({
                         <button className="work-action-btn edit-btn" title="Open in Editor" onClick={() => {
                           setActiveModal(null);
                           setLoadedWork(w);
-                          go('resume-builder');
+                          if (w.type === 'linkedin') {
+                            go('linkedin');
+                          } else {
+                            go('resume-builder');
+                          }
                         }}>
                           <Edit3 size={13} /> Open
                         </button>
                         
+                        {w.type === 'resume' && (
+                          <button 
+                            className="work-action-btn share-btn" 
+                            style={{ background: 'rgba(41,151,255,0.1)', color: 'var(--blue)', border: '1px solid rgba(41,151,255,0.2)' }}
+                            title="Share Portfolio URL" 
+                            onClick={() => handleShareLink(w.id || w._id)}
+                          >
+                            <Globe size={13} /> Share
+                          </button>
+                        )}
+
                         <button className="work-action-btn delete-btn" title="Delete Permanent" onClick={() => handleDeleteWork(w.id || w._id)}>
                           <Trash2 size={13} /> Delete
                         </button>

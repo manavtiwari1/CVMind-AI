@@ -824,3 +824,178 @@ ${coverLetterText}
     throw new Error('Cover letter refinement failed. ' + error.message);
   }
 }
+
+// JSON Schema for structured LinkedIn profile evaluation output
+const linkedinSchema = {
+  type: 'object',
+  properties: {
+    score: { 
+      type: 'integer', 
+      description: 'Overall LinkedIn profile optimization score from 0 to 100.' 
+    },
+    summary: { 
+      type: 'string', 
+      description: 'A concise summary of profile strengths, formatting, and overall impression.' 
+    },
+    headline: {
+      type: 'object',
+      properties: {
+        current: { type: 'string', description: 'The current headline detected from the input profile.' },
+        feedback: { type: 'string', description: 'Constructive feedback on how to improve the headline for recruiter searches.' },
+        suggestions: { 
+          type: 'array', 
+          items: { type: 'string' }, 
+          description: '3 optimized headline suggestions tailored to their target role and industry.' 
+        }
+      },
+      required: ['current', 'feedback', 'suggestions']
+    },
+    about: {
+      type: 'object',
+      properties: {
+        feedback: { type: 'string', description: 'Detailed feedback on the current About/Summary section.' },
+        improvedText: { type: 'string', description: 'A fully written, high-impact, professionally formatted About section in first-person.' }
+      },
+      required: ['feedback', 'improvedText']
+    },
+    experience: {
+      type: 'object',
+      properties: {
+        feedback: { type: 'string', description: 'Feedback on the experience description (formatting, action verbs, achievements).' },
+        tips: { 
+          type: 'array', 
+          items: { type: 'string' }, 
+          description: '3 specific tips to rewrite experience bullets with quantified metrics.' 
+        }
+      },
+      required: ['feedback', 'tips']
+    },
+    skillsAndKeywords: {
+      type: 'object',
+      properties: {
+        matched: { type: 'array', items: { type: 'string' }, description: 'Relevant industry skills/keywords found in the profile text.' },
+        missing: { type: 'array', items: { type: 'string' }, description: 'Highly recommended skills/keywords missing for their target role.' }
+      },
+      required: ['matched', 'missing']
+    },
+    generalTips: {
+      type: 'array',
+      items: { type: 'string' },
+      description: '3-4 actionable tips regarding profile/banner images, custom URLs, active engagement, or networking.'
+    }
+  },
+  required: ['score', 'summary', 'headline', 'about', 'experience', 'skillsAndKeywords', 'generalTips']
+};
+
+/**
+ * Uses Gemini API to analyze a LinkedIn profile's text.
+ * @param {string} profileText - Raw text copied from the LinkedIn profile.
+ * @param {string} [customApiKey] - Optional user-supplied API key.
+ * @returns {Promise<object>} - Parsed structured JSON feedback matching linkedinSchema.
+ */
+export async function analyzeLinkedInProfileWithGemini(profileText, customApiKey = null) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error(
+      'Gemini API key is not configured. Please supply an API key in your request header or ask the administrator to configure the server environment variable.'
+    );
+  }
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+
+  if (isOpenRouter) {
+    try {
+      const messages = [
+        {
+          role: 'system',
+          content: `You are an elite corporate Recruiter, LinkedIn Profile Branding Consultant, and social recruiting optimization specialist.
+          Your task is to conduct an extremely thorough, candid, and high-value assessment of the candidate's LinkedIn profile text.
+          Provide realistic scores out of 100.
+          You MUST strictly respond with a JSON object that conforms to this JSON schema:
+          ${JSON.stringify(linkedinSchema, null, 2)}
+          Make sure you return valid, parsable JSON. Do not wrap it in any HTML or markdown backticks, only return raw JSON matching the schema structure.`
+        },
+        {
+          role: 'user',
+          content: `Analyze this LinkedIn profile and provide optimization feedback. Measure its searchability, look for headline gaps, evaluate the summary hook, and suggest improvements.
+          
+          LinkedIn Profile Text:
+          """
+          ${profileText}
+          """`
+        }
+      ];
+
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: messages,
+          temperature: 0.25,
+          max_tokens: 3000,
+          response_format: { type: 'json_object' }
+        })
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+
+      const result = await response.json();
+      if (!result.choices || result.choices.length === 0) {
+        throw new Error('No choices returned by OpenRouter API.');
+      }
+
+      const responseText = result.choices[0].message.content.trim();
+      return JSON.parse(responseText);
+    } catch (error) {
+      console.error('OpenRouter LinkedIn Analysis Error:', error);
+      throw new Error('LinkedIn analysis failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: `You are an elite corporate Recruiter, LinkedIn Profile Branding Consultant, and social recruiting optimization specialist.
+      Your task is to conduct an extremely thorough, candid, and high-value assessment of the candidate's LinkedIn profile text.
+      Provide realistic scores out of 100.
+      You MUST strictly return your response in the specified JSON structure. Do not wrap it in any HTML or markdown, only raw JSON matching the schema.`
+    });
+
+    const prompt = `Analyze this LinkedIn profile and provide optimization feedback. Measure its searchability, look for headline gaps, evaluate the summary hook, and suggest improvements.
+    
+    LinkedIn Profile Text:
+    """
+    ${profileText}
+    """`;
+
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: linkedinSchema,
+        temperature: 0.25
+      }
+    });
+
+    const responseText = result.response.text();
+    return JSON.parse(responseText);
+  } catch (error) {
+    console.error('Gemini LinkedIn Analysis Error:', error);
+    if (error.status === 403 || error.message.includes('API key')) {
+      throw new Error('Invalid Gemini API Key. Please verify your API key and try again.');
+    }
+    throw new Error('LinkedIn analysis failed. ' + error.message);
+  }
+}
+

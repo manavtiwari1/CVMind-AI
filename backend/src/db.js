@@ -120,6 +120,14 @@ const prepLogSchema = new mongoose.Schema({
 
 const PrepLog = mongoose.models.PrepLog || mongoose.model('PrepLog', prepLogSchema);
 
+const linkedinLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  score: { type: Number, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const LinkedinLog = mongoose.models.LinkedinLog || mongoose.model('LinkedinLog', linkedinLogSchema);
+
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -423,6 +431,47 @@ export async function savePrepLog({ fileName, fileSize, questionsCount }) {
   writeDb(db);
 }
 
+export async function saveLinkedinLog({ email, score }) {
+  await ensureMongoConnection();
+  const scoreVal = Number(score || 0);
+
+  // 1. MongoDB Mode (Non-blocking)
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    LinkedinLog.create({
+      email: email || '',
+      score: scoreVal
+    }).catch(err => console.error('MongoDB saveLinkedinLog error:', err));
+    return;
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  if (!db.linkedinLogs) db.linkedinLogs = [];
+  db.linkedinLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    score: scoreVal,
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
+export async function getWorkById(workId) {
+  await ensureMongoConnection();
+  const cleanWorkId = String(workId || '').trim();
+
+  // 1. MongoDB Mode
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    return await Work.findById(cleanWorkId);
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  if (!db.works) db.works = [];
+  return db.works.find(w => w.id === cleanWorkId || w._id === cleanWorkId) || null;
+}
+
+
 
 export async function getAdminStats() {
   await ensureMongoConnection();
@@ -435,6 +484,7 @@ export async function getAdminStats() {
       const tailorLogs = await TailorLog.find().sort({ createdAt: -1 }).limit(100);
       const prepLogs = await PrepLog.find().sort({ createdAt: -1 }).limit(100);
       const loginLogs = await LoginLog.find().sort({ createdAt: -1 }).limit(100);
+      const linkedinLogs = await LinkedinLog.find().sort({ createdAt: -1 }).limit(100);
       const resumes = await Work.find({ type: 'resume' }).sort({ updatedAt: -1 }).limit(100);
       const coverLetters = await Work.find({ type: 'cover-letter' }).sort({ updatedAt: -1 }).limit(100);
       
@@ -444,6 +494,7 @@ export async function getAdminStats() {
       const totalTailors = await TailorLog.countDocuments();
       const totalPreps = await PrepLog.countDocuments();
       const totalLogins = await LoginLog.countDocuments();
+      const totalLinkedins = await LinkedinLog.countDocuments();
       const totalResumes = await Work.countDocuments({ type: 'resume' });
       const totalCoverLetters = await Work.countDocuments({ type: 'cover-letter' });
       
@@ -493,6 +544,13 @@ export async function getAdminStats() {
         keywordTrends,
         totalResumes,
         totalCoverLetters,
+        totalLinkedins,
+        recentLinkedins: linkedinLogs.slice(0, 15).map(l => ({
+          id: l._id,
+          email: l.email,
+          score: l.score,
+          createdAt: l.createdAt
+        })),
         recentScans: scans.slice(0, 8).map(s => ({
           id: s._id,
           fileName: s.fileName,
@@ -577,8 +635,10 @@ export async function getAdminStats() {
   const tailorLogs = Array.isArray(db.tailorLogs) ? db.tailorLogs : [];
   const prepLogs = Array.isArray(db.prepLogs) ? db.prepLogs : [];
   const loginLogs = Array.isArray(db.loginLogs) ? db.loginLogs : [];
+  const linkedinLogs = Array.isArray(db.linkedinLogs) ? db.linkedinLogs : [];
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
+  const totalLinkedins = linkedinLogs.length;
 
   const works = Array.isArray(db.works) ? db.works : [];
   const resumes = works.filter(w => w.type === 'resume');
@@ -616,6 +676,8 @@ export async function getAdminStats() {
     keywordTrends,
     totalResumes,
     totalCoverLetters,
+    totalLinkedins,
+    recentLinkedins: linkedinLogs.slice(0, 15),
     recentScans: scans.slice(0, 8),
     contactMessages: contacts.slice(0, 8),
     recentFixes: fixes.slice(0, 10),

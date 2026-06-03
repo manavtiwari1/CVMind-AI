@@ -6,7 +6,7 @@ import {
   Sparkles, Copy, Check, Download, RotateCcw, ArrowLeft,
   Loader2, AlertTriangle, Eraser, Highlighter,
   ChevronDown, ChevronRight, FileText, CheckCircle2,
-  Image, Link, Pencil
+  Image, Link, Pencil, Globe
 } from 'lucide-react';
 import './CoverLetter.css';
 
@@ -910,6 +910,71 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     }
   };
 
+  const handleSharePortfolio = async () => {
+    if (selectedTemplate?.type === 'cover-letter') {
+      alert('Sharing is currently only supported for Resumes.');
+      return;
+    }
+
+    if (activeWorkId) {
+      const shareUrl = `${window.location.origin}/portfolio/${activeWorkId}`;
+      navigator.clipboard.writeText(shareUrl);
+      alert(`Portfolio link copied to clipboard:\n${shareUrl}`);
+      return;
+    }
+
+    const htmlContent = editorRef.current?.innerHTML || '';
+    if (!htmlContent.trim()) return;
+
+    const userStr = localStorage.getItem('cvmind_user');
+    if (!userStr) {
+      alert('Please sign in to save and share your portfolio.');
+      return;
+    }
+
+    let userId = '';
+    try {
+      const user = JSON.parse(userStr);
+      userId = user.id || user._id;
+    } catch {
+      alert('Session invalid. Please sign in again.');
+      return;
+    }
+
+    setSaving(true);
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
+      || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+
+    try {
+      const response = await fetch(`${baseUrl}/api/user/work`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          title: activeWorkTitle.trim() || `Untitled Resume`,
+          type: activeTab,
+          templateId: selectedTemplate?.id || 'classic-pro',
+          htmlContent,
+          workId: activeWorkId
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to save');
+
+      if (data.data) {
+        const newId = data.data.id || data.data._id;
+        setActiveWorkId(newId);
+        const shareUrl = `${window.location.origin}/portfolio/${newId}`;
+        navigator.clipboard.writeText(shareUrl);
+        alert(`Resume saved and portfolio link copied to clipboard:\n${shareUrl}`);
+      }
+    } catch (err: any) {
+      alert(err.message || 'An error occurred while preparing your portfolio.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const countWords = () => {
     const t = editorRef.current?.innerText || '';
     setWordCount(t.trim().split(/\s+/).filter(Boolean).length);
@@ -1379,6 +1444,9 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
           </button>
           <button className="cl-top-btn" onClick={handleDownloadPDF}><Download size={13} /> PDF</button>
           <button className="cl-top-btn" onClick={handleDownloadDOCX}><Download size={13} /> DOCX</button>
+          {selectedTemplate?.type !== 'cover-letter' && (
+            <button className="cl-top-btn" onClick={handleSharePortfolio}><Globe size={13} /> Share</button>
+          )}
           <button className="cl-top-btn" style={{ background: 'var(--blue)', color: '#fff', border: 'none' }} onClick={handleSaveDraft} disabled={saving}>
             {saving ? (
               <><Loader2 size={13} className="cl-spin" /> Saving...</>

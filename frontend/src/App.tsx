@@ -10,6 +10,8 @@ import Admin from './pages/Admin';
 import Tailor from './pages/Tailor';
 import Prep from './pages/Prep';
 import CoverLetter from './pages/CoverLetter';
+import LinkedIn from './pages/LinkedIn';
+import Portfolio from './pages/Portfolio';
 import Privacy from './pages/Privacy';
 import FAQ from './pages/FAQ';
 import AuthModal from './components/AuthModal';
@@ -19,8 +21,12 @@ import './styles/3d-effects.css';
 
 export default function App() {
   const [currentPage, setCurrentPageState] = useState<string>(() => {
-    const urlPage = window.location.pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'resume-builder', 'privacy', 'faq'];
+    const pathname = window.location.pathname;
+    if (pathname.startsWith('/portfolio/')) {
+      return 'portfolio';
+    }
+    const urlPage = pathname.replace(/^\//, '');
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'resume-builder', 'privacy', 'faq'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -65,7 +71,12 @@ export default function App() {
 
   useEffect(() => {
     const handlePopState = () => {
-      const page = window.location.pathname.replace(/^\//, '') || 'home';
+      const pathname = window.location.pathname;
+      if (pathname.startsWith('/portfolio/')) {
+        setCurrentPageState('portfolio');
+        return;
+      }
+      const page = pathname.replace(/^\//, '') || 'home';
       setCurrentPageState(page);
       localStorage.setItem('cvmind_current_page', page);
     };
@@ -84,7 +95,7 @@ export default function App() {
 
   // Private route interceptor to enforce Sign In for product modules
   useEffect(() => {
-    const privatePages = ['tailor', 'prep', 'resume-builder'];
+    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin'];
     if (privatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
       setShowAuthModal(true);
@@ -156,6 +167,17 @@ export default function App() {
             setCurrentPage={setCurrentPage}
           />
         );
+      case 'linkedin':
+        return (
+          <LinkedIn 
+            customApiKey={customApiKey}
+            loadedWork={loadedWork}
+            setLoadedWork={setLoadedWork}
+          />
+        );
+      case 'portfolio':
+        const wId = window.location.pathname.split('/').pop();
+        return <Portfolio workId={wId} />;
       case 'resume-builder':
         return <CoverLetter customApiKey={customApiKey} loadedWork={loadedWork} setLoadedWork={setLoadedWork} />;
       default:
@@ -171,14 +193,15 @@ export default function App() {
   };
 
   const isAdminPage = currentPage === 'admin';
+  const isMinimalPage = currentPage === 'admin' || currentPage === 'portfolio';
 
   return (
     <div className={`app-container ${isAdminPage ? 'admin-shell' : ''}`}>
 
       {/* ── Global Animated 3D Particle Background ──────────── */}
-      {!isAdminPage && <ParticleBackground theme={theme} />}
+      {!isMinimalPage && <ParticleBackground theme={theme} />}
 
-      {!isAdminPage && (
+      {!isMinimalPage && (
         <Navbar 
           currentPage={currentPage} 
           setCurrentPage={setCurrentPage} 
@@ -197,8 +220,8 @@ export default function App() {
         {renderPage()}
       </main>
 
-      {!isAdminPage && <Footer setCurrentPage={setCurrentPage} />}
-      {!isAdminPage && <Chatbot customApiKey={customApiKey} />}
+      {!isMinimalPage && <Footer setCurrentPage={setCurrentPage} />}
+      {!isMinimalPage && <Chatbot customApiKey={customApiKey} />}
 
       <AuthModal 
         isOpen={showAuthModal} 

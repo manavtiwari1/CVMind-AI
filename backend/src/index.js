@@ -5,8 +5,8 @@ import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken } from './db.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini } from './services/gemini.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, getWorkById } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -633,6 +633,76 @@ apiRouter.post('/api/cover-letter/refine', async (req, res) => {
     });
   }
 });
+
+// LinkedIn Profile Optimizer Endpoint
+apiRouter.post('/api/linkedin/analyze', async (req, res) => {
+  try {
+    const { profileText, email, userId } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!profileText || typeof profileText !== 'string' || profileText.trim().length < 20) {
+      return res.status(400).json({ error: 'LinkedIn profile content is required and must be at least 20 characters.' });
+    }
+
+    const evaluation = await analyzeLinkedInProfileWithGemini(profileText, customApiKey);
+
+    // Save logs to MongoDB / Local JSON DB
+    if (evaluation && evaluation.score !== undefined) {
+      await saveLinkedinLog({ email: email || '', score: evaluation.score });
+    }
+
+    let savedWork = null;
+    if (userId) {
+      const payload = {
+        profileText,
+        evaluation
+      };
+      savedWork = await saveWork({
+        userId,
+        title: `LinkedIn Optimizer - ${new Date().toLocaleDateString()}`,
+        type: 'linkedin',
+        templateId: 'linkedin-opt',
+        htmlContent: JSON.stringify(payload)
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: evaluation,
+      work: savedWork
+    });
+  } catch (error) {
+    console.error('LinkedIn Optimize API Error:', error);
+    return res.status(500).json({
+      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+    });
+  }
+});
+
+// Public Shareable Resume Portfolio Endpoint
+apiRouter.get('/api/portfolio/:workId', async (req, res) => {
+  const { workId } = req.params;
+  try {
+    const work = await getWorkById(workId);
+    if (!work) {
+      return res.status(404).json({ error: 'Portfolio resume not found.' });
+    }
+    return res.json({
+      success: true,
+      data: {
+        title: work.title,
+        type: work.type,
+        templateId: work.templateId,
+        htmlContent: work.htmlContent,
+        updatedAt: work.updatedAt || work.createdAt
+      }
+    });
+  } catch (error) {
+    console.error('Get portfolio error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to fetch portfolio.' });
+  }
+});
+
 
 // ─── USER WORK & PROFILE ENDPOINTS ───────────────────────────────────────────
 apiRouter.post('/api/user/work', async (req, res) => {
