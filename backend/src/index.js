@@ -375,8 +375,9 @@ apiRouter.post('/api/chat', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Chat API Error:', error);
     return res.status(400).json({
-      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -442,13 +443,13 @@ apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
     console.error('API Error during analysis:', error);
     
     // Handle Multer limits or file type errors specifically
-    if (error.message.includes('Limit') || error.message.includes('file type')) {
+    if (error.message && (error.message.includes('Limit') || error.message.includes('file type'))) {
       return res.status(400).json({ error: error.message });
     }
 
     // Handle generic errors
     return res.status(500).json({ 
-      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -485,7 +486,7 @@ apiRouter.post('/api/optimize', async (req, res) => {
   } catch (error) {
     console.error('Optimize API Error:', error);
     return res.status(500).json({
-      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -539,7 +540,7 @@ apiRouter.post('/api/tailor', upload.single('resume'), async (req, res) => {
   } catch (error) {
     console.error('Tailor API Error:', error);
     return res.status(500).json({
-      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -598,7 +599,7 @@ apiRouter.post('/api/prep', upload.single('resume'), async (req, res) => {
   } catch (error) {
     console.error('Prep API Error:', error);
     return res.status(500).json({
-      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -658,7 +659,7 @@ apiRouter.post('/api/cover-letter/refine', async (req, res) => {
   } catch (error) {
     console.error('Cover Letter Refine API Error:', error);
     return res.status(500).json({
-      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
@@ -715,7 +716,7 @@ apiRouter.post('/api/linkedin/analyze', upload.single('linkedinPdf'), async (req
   } catch (error) {
     console.error('LinkedIn Optimize API Error:', error);
     return res.status(500).json({
-      error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });
