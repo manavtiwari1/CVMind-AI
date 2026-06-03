@@ -281,7 +281,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
       id: 'tailor-prep',
       title: 'AI Career Suite, LinkedIn & SmartPrep',
       description: 'Articles details regarding resume tailoring, interview coaching, LinkedIn optimization, and Career Path builders.',
-      articleCount: 7,
+      articleCount: 8,
       articles: [
         {
           id: 11,
@@ -318,6 +318,10 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
               <h3>Personalized Interview Simulation</h3>
               <p>
                 Unlike generic online interview lists, SmartPrep parses the exact experience on your resume to generate a customized set of high-impact behavioral, situational, and technical questions you are highly likely to face from recruiters.
+              </p>
+              <h3>Voice Interview Practice 🎙️</h3>
+              <p>
+                You can now practice your answers aloud! Using our Web Speech API integration, the system records your voice, transcribes it in real-time, and scores your vocal confidence, clarity, and filler words exactly like a human interviewer.
               </p>
               <div className="callout-info">
                 <strong>Behavioral Checks:</strong> SmartPrep analyzes your mock answers to evaluate STAR compliance (Situation, Task, Action, Result) to make sure your storytelling structure is correct.
@@ -381,6 +385,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
                 <li><strong>Profile PDF Audit:</strong> Download your LinkedIn profile in PDF format, upload it directly to CVMind, and receive an instant scoring breakdown analyzing your searchability, headline, and bio.</li>
                 <li><strong>Bio & Banner Generator:</strong> Automatically generates catchyheadlines separated by | and compelling, narrative About summaries. It also shares visual direction layout copy to design custom profile banners.</li>
                 <li><strong>Outreach & DM Writer:</strong> Automatically drafts recruiter DMs (under 150 words) and warm connection request messages (under 300 characters) to boost response rates.</li>
+                <li><strong>Viral Post Generator:</strong> Generate 3 styles of highly-engaging LinkedIn posts (Professional, Storytelling, and Punchy) complete with viral hooks and trending hashtags based on your resume achievements.</li>
               </ul>
             </div>
           )
@@ -421,6 +426,26 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
                 <li><strong>Silent Background Saves:</strong> Cover letters, resumes, and interview mock sandbox answers are saved automatically every 4 seconds in the background without disturbing your active keyboard state or cursor.</li>
                 <li><strong>Automatic Badges:</strong> The page displays a subtle `✓ Saved automatically to My Works` status badge instead of manual save buttons.</li>
                 <li><strong>Deletion Sync:</strong> When deleting a file from the navbar dashboard modal, the platform instantly clears current state variables and returns you to the home gallery so that stale, deleted files are not auto-saved back to the database.</li>
+              </ul>
+            </div>
+          )
+        },
+        {
+          id: 18,
+          question: 'Can I generate a personal portfolio website from my resume?',
+          title: '1-Click Portfolio Website Generator',
+          editedTime: 'Edited just now',
+          tags: ['portfolio', 'website', 'generator', 'html', 'theme'],
+          content: (
+            <div className="article-body">
+              <p className="lead-paragraph">
+                Yes! The Portfolio Generator instantly converts your static resume text into a fully responsive, interactive HTML/CSS personal website.
+              </p>
+              <h3>Portfolio Features:</h3>
+              <ul>
+                <li><strong>Premium Themes:</strong> Choose from 5 beautiful aesthetics (Dark Pro, Ocean, Emerald, Purple, Minimal).</li>
+                <li><strong>Device Preview:</strong> Preview exactly how your portfolio will look on Desktop, Tablet, and Mobile devices natively in your browser.</li>
+                <li><strong>1-Click Export:</strong> Download your generated portfolio as a ready-to-host <code>.html</code> file instantly, with no coding required.</li>
               </ul>
             </div>
           )
