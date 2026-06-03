@@ -625,3 +625,146 @@
 .li-tip-item span {
   font-weight: 500;
 }
+
+/* LinkedIn Optimizer PDF Uploader Styling */
+.li-file-input-hidden {
+  display: none;
+}
+
+.li-upload-zone {
+  min-height: 280px;
+  border: 1.5px dashed rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg, 16px);
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  transition: all var(--t-base, 0.2s ease);
+  cursor: pointer;
+  text-align: center;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.li-upload-zone:hover {
+  border-color: rgba(41, 151, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.li-upload-zone.drag-active {
+  border-color: var(--blue);
+  border-style: solid;
+  background: rgba(41, 151, 255, 0.07);
+}
+
+.li-upload-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--text-tertiary);
+  margin-bottom: 1rem;
+  transition: color var(--t-fast, 0.15s ease);
+}
+
+.li-upload-zone:hover .li-upload-icon {
+  color: var(--blue);
+}
+
+.li-upload-cta {
+  background: var(--blue);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.65rem 1.8rem;
+  border: none;
+  border-radius: 980px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  transition: all var(--t-fast, 0.15s ease);
+  box-shadow: 0 4px 16px rgba(41, 151, 255, 0.25);
+}
+
+.li-upload-zone:hover .li-upload-cta {
+  background: #3aa5ff;
+  box-shadow: 0 6px 24px rgba(41, 151, 255, 0.4);
+  transform: scale(1.02);
+}
+
+.li-privacy-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-tertiary);
+  font-size: 0.76rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+}
+
+.li-file-limits-info {
+  color: var(--text-tertiary);
+  font-size: 0.76rem;
+  margin-top: 0.25rem;
+}
+
+/* File Selected State */
+.li-file-selected-state {
+  min-height: 280px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg, 16px);
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+.li-file-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--blue-dim);
+  color: var(--blue);
+  margin-bottom: 1rem;
+}
+
+.li-file-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.li-file-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.li-file-name {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.li-file-size {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+}
+
+.li-file-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+

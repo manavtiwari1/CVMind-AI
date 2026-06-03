@@ -635,16 +635,28 @@ apiRouter.post('/api/cover-letter/refine', async (req, res) => {
 });
 
 // LinkedIn Profile Optimizer Endpoint
-apiRouter.post('/api/linkedin/analyze', async (req, res) => {
+apiRouter.post('/api/linkedin/analyze', upload.single('linkedinPdf'), async (req, res) => {
   try {
-    const { profileText, email, userId } = req.body || {};
+    const { file } = req;
+    const { email, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
 
-    if (!profileText || typeof profileText !== 'string' || profileText.trim().length < 20) {
-      return res.status(400).json({ error: 'LinkedIn profile content is required and must be at least 20 characters.' });
+    if (!file) {
+      return res.status(400).json({ error: 'No LinkedIn PDF file uploaded. Please upload a PDF file.' });
     }
 
-    const evaluation = await analyzeLinkedInProfileWithGemini(profileText, customApiKey);
+    let extractedText = '';
+    if (file.mimetype === 'application/pdf') {
+      extractedText = await parsePdf(file.buffer);
+    } else {
+      return res.status(400).json({ error: 'Unsupported file format. Please upload a PDF exported from LinkedIn.' });
+    }
+
+    if (!extractedText || extractedText.trim().length < 50) {
+      return res.status(400).json({ error: 'Unable to extract text from the uploaded PDF. Please make sure the PDF has readable text.' });
+    }
+
+    const evaluation = await analyzeLinkedInProfileWithGemini(extractedText, customApiKey);
 
     // Save logs to MongoDB / Local JSON DB
     if (evaluation && evaluation.score !== undefined) {
@@ -654,7 +666,7 @@ apiRouter.post('/api/linkedin/analyze', async (req, res) => {
     let savedWork = null;
     if (userId) {
       const payload = {
-        profileText,
+        profileText: extractedText,
         evaluation
       };
       savedWork = await saveWork({

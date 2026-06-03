@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
-  Sparkles, ShieldCheck, AlertCircle, Copy, Check, Loader2, ArrowRight, 
-  Linkedin, Award, Star, Compass, Terminal, FileText, CheckCircle2, ChevronRight 
+  Sparkles, ShieldCheck, AlertCircle, Copy, Check, ArrowRight, 
+  Linkedin, Award, Star, Compass, Terminal, FileText, CheckCircle2, ChevronRight,
+  Upload, Lock
 } from 'lucide-react';
 import './LinkedIn.css';
 
@@ -12,7 +13,6 @@ interface LinkedInProps {
 }
 
 export default function LinkedIn({ customApiKey, loadedWork, setLoadedWork }: LinkedInProps) {
-  const [profileText, setProfileText] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [result, setResult] = useState<any>(null);
@@ -20,8 +20,12 @@ export default function LinkedIn({ customApiKey, loadedWork, setLoadedWork }: Li
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
   const [saveIndicator, setSaveIndicator] = useState(false);
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const loaderSteps = [
-    'Parsing profile structure...',
+    'Parsing profile PDF structure...',
     'Analyzing headline impact & SEO compatibility...',
     'Evaluating about section hooks & storytelling...',
     'Scrutinizing experience bullet points for action verbs...',
@@ -36,7 +40,6 @@ export default function LinkedIn({ customApiKey, loadedWork, setLoadedWork }: Li
         const parsed = JSON.parse(loadedWork.htmlContent);
         if (parsed && parsed.evaluation) {
           setResult(parsed.evaluation);
-          setProfileText(parsed.profileText || '');
         }
       } catch (e) {
         console.error('Error parsing loaded LinkedIn work:', e);
@@ -50,8 +53,72 @@ export default function LinkedIn({ customApiKey, loadedWork, setLoadedWork }: Li
     setTimeout(() => setCopiedSection(null), 2000);
   };
 
+  const validateAndSetFile = (file: File) => {
+    setErrorMsg(null);
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    
+    if (fileExtension !== 'pdf') {
+      setErrorMsg('Please upload a PDF file exported from LinkedIn.');
+      setSelectedFile(null);
+      return;
+    }
+    
+    // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg('File is too large. Maximum size is 5MB.');
+      setSelectedFile(null);
+      return;
+    }
+
+    setSelectedFile(file);
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      validateAndSetFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      validateAndSetFile(e.target.files[0]);
+    }
+  };
+
+  const onButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    setErrorMsg(null);
+    setResult(null);
+    setSaveIndicator(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    if (setLoadedWork) {
+      setLoadedWork(null);
+    }
+  };
+
   const handleAnalyze = async () => {
-    if (!profileText.trim()) return;
+    if (!selectedFile) return;
     setLoading(true);
     setLoadingStep(0);
     setErrorMsg(null);
@@ -87,15 +154,20 @@ export default function LinkedIn({ customApiKey, loadedWork, setLoadedWork }: Li
         }
       }
 
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      const headers: Record<string, string> = {};
       if (customApiKey) {
         headers['x-gemini-key'] = customApiKey;
       }
 
+      const formData = new FormData();
+      formData.append('linkedinPdf', selectedFile);
+      formData.append('email', email);
+      formData.append('userId', userId);
+
       const response = await fetch(`${baseUrl}/api/linkedin/analyze`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ profileText, email, userId })
+        body: formData
       });
 
       const resData = await response.json();
@@ -144,7 +216,7 @@ export default function LinkedIn({ customApiKey, loadedWork, setLoadedWork }: Li
           <span className="gradient-word">Recruiter Search</span>
         </h1>
         <p className="li-subtitle">
-          Paste your LinkedIn profile text below. Our AI scans your content for search visibility, headline strength, and hook conversion, giving you customized copy-paste improvements in seconds.
+          Export your LinkedIn profile as a PDF and upload it below. Our AI scans your content for search visibility, headline strength, and hook conversion, giving you customized copy-paste improvements in seconds.
         </p>
 
         <div className="li-row-layout">
@@ -152,30 +224,62 @@ export default function LinkedIn({ customApiKey, loadedWork, setLoadedWork }: Li
           <div className="li-input-card glass-card">
             <div className="li-input-header">
               <Terminal size={16} className="text-blue" />
-              <span>Paste Profile Content</span>
+              <span>Upload LinkedIn PDF Profile</span>
             </div>
             
-            <textarea
-              className="li-textarea"
-              placeholder="Tip: Open your LinkedIn Profile -> Click 'More' -> Click 'Save to PDF' and copy the text OR simply select all text (Headline, About, Experience) from your profile and paste it here..."
-              value={profileText}
-              onChange={(e) => setProfileText(e.target.value)}
-              disabled={loading}
-            />
-
-            <div className="li-actions">
-              <button 
-                className="btn-primary li-submit-btn" 
-                onClick={handleAnalyze} 
-                disabled={loading || !profileText.trim()}
+            {selectedFile || (loadedWork && loadedWork.type === 'linkedin') ? (
+              <div className="li-file-selected-state">
+                <div className="li-file-icon-wrapper">
+                  <FileText className="li-file-icon" />
+                </div>
+                <div className="li-file-details">
+                  <span className="li-file-name">
+                    {selectedFile ? selectedFile.name : (loadedWork ? loadedWork.title : 'LinkedIn Profile PDF')}
+                  </span>
+                  {selectedFile && (
+                    <span className="li-file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                  )}
+                </div>
+                <div className="li-file-actions">
+                  <button className="btn-secondary" onClick={removeFile}>
+                    Remove / Clear
+                  </button>
+                  {selectedFile && (
+                    <button className="btn-primary" onClick={handleAnalyze} disabled={loading}>
+                      Analyze Profile <ArrowRight size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div 
+                className={`li-upload-zone ${dragActive ? 'drag-active' : ''}`}
+                onDragEnter={handleDrag}
+                onDragOver={handleDrag}
+                onDragLeave={handleDrag}
+                onDrop={handleDrop}
+                onClick={onButtonClick}
               >
-                {loading ? (
-                  <><Loader2 size={16} className="cl-spin" /> Analyzing...</>
-                ) : (
-                  <>Optimize Profile <ArrowRight size={16} /></>
-                )}
-              </button>
-            </div>
+                <input 
+                  ref={fileInputRef}
+                  type="file"
+                  className="li-file-input-hidden"
+                  accept=".pdf"
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+                <Upload className="li-upload-icon" />
+                <button className="li-upload-cta" type="button">
+                  Upload LinkedIn PDF
+                </button>
+                <div className="li-privacy-note">
+                  <Lock size={14} /> Anonymized & secure data parsing
+                </div>
+                <div className="li-file-limits-info">
+                  PDF format up to 5MB
+                </div>
+              </div>
+            )}
 
             {errorMsg && (
               <div className="error-message-bar animate-fade-in-up" style={{ marginTop: '1rem' }}>
