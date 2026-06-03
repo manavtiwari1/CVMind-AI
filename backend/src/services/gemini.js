@@ -476,20 +476,41 @@ export async function chatWithCVMind(message, history = [], customApiKey = null)
   if (!apiKey) {
     const lower = cleanMessage.toLowerCase();
     if (lower.includes('upload') || lower.includes('analyse') || lower.includes('analyze') || lower.includes('resume')) {
-      return 'To analyze your resume, click the "Upload Your Resume" button, select a PDF, DOCX, or TXT file, then click "Analyze Resume". Your report will include an ATS score, missing keywords, formatting feedback, and bullet point rewrites.';
+      return 'To analyze your resume, upload your PDF, DOCX, or TXT file on the home page. Our AI Resume Analyzer evaluates ATS keyword scores, formatting, and action verbs. For target job matches, try the AI Resume Tailorer in the top navigation.';
     }
-    if (lower.includes('ats') || lower.includes('keyword')) {
-      return 'Your ATS score is based on keyword relevance, section structure, formatting readability, and recruiter-friendly language. To improve it, naturally include important skills and technologies from your target job description.';
+    if (lower.includes('prep') || lower.includes('interview') || lower.includes('question') || lower.includes('star')) {
+      return 'Our SmartPrep AI features a comprehensive Mock Interview Sandbox. It generates 10 tailored Technical, Behavioral, HR, and Situational questions from Big 4 & Tech styles. You can type your answers and get graded out of 10 with STAR methodology feedback and model answers.';
+    }
+    if (lower.includes('linkedin') || lower.includes('outreach') || lower.includes('bio') || lower.includes('banner')) {
+      return 'The LinkedIn Optimizer submenu lets you audit your profile PDF, write bio hooks/headlines, and draft customized cold outreach pitches or recruiter DMs under 150 words.';
+    }
+    if (lower.includes('career') || lower.includes('roadmap') || lower.includes('pitch') || lower.includes('course')) {
+      return 'Career Path AI provides Skill Gap checks with Coursera/Udemy suggestions, a 60-second Elevator Pitch builder, and visual 4-step transition roadmaps to benchmark your milestones.';
+    }
+    if (lower.includes('save') || lower.includes('delete') || lower.includes('work')) {
+      return 'CVMind AI supports Silent Auto-Save. It saves cover letters, tailored resumes, and mock interviews automatically in the background every 4 seconds. Deleted files automatically clear current state screens instantly.';
+    }
+    if (lower.includes('launch') || lower.includes('date') || lower.includes('when')) {
+      return 'CVMind AI is launch-ready and going live officially on June 17, 2026 at 5:00 PM IST (Evening)!';
     }
     if (lower.includes('privacy') || lower.includes('safe') || lower.includes('data')) {
-      return 'CVMind AI parses your resume entirely in memory. Your file is never permanently stored on disk. Only anonymized scan statistics are saved for admin analytics.';
+      return 'Privacy is our core pillar. Resumes are parsed in-memory and flushed immediately. We adhere to the constitutional Right to Privacy under Article 21, securing all user data under TLS 1.3.';
     }
-    return 'I am the CVMind AI assistant. You can ask me about the resume upload process, ATS scoring, missing keywords, formatting, bullet rewrites, dashboard reports, or data privacy.';
+    return 'I am the CVMind AI assistant. I can guide you through our Career Suite: AI Resume Scanners, Tailorers, SmartPrep Mock Interviews, LinkedIn Optimizers, Career Path transition tools, and the upcoming launch on June 17, 2026.';
   }
 
-  const systemInstruction = `You are CVMind AI's professional website assistant. Always respond in clear, concise English.
-  Help users with: uploading and analyzing resumes, understanding ATS scores, keyword gaps, formatting tips, recruiter suggestions, dashboard reports, data privacy, and navigation.
-  Keep answers brief, practical, and professional. Do not claim you analyzed a resume unless the user actually uploaded one through the analyzer.`;
+  const systemInstruction = `You are CVMind AI's elite, friendly, and professional conversational assistant. You help users navigate the CVMind AI ecosystem, which is launching officially on June 17, 2026 at 5:00 PM IST. Always respond in clear, concise English.
+
+Our comprehensive, end-to-end career suite includes the following features:
+1. AI Resume Analyzer: Upload a resume (PDF/DOCX/TXT) to scan ATS scores, missing keywords, and formatting feedback.
+2. AI Resume Tailorer: Input a target job description and your resume to automatically tailor it for high ATS scores.
+3. SmartPrep AI (Interview Coach): Generates 10 resume-tailored questions (Google, McKinsey, Amazon style) covering Technical, Behavioral, HR, & Situational areas. Offers a typing sandbox with live STAR method grading, score evaluations, and model answers under 45 words.
+4. LinkedIn Optimizer: Scan your downloaded profile PDF. Automatically writes catchy headlines, custom About hooks, and banner text ideas. Also generates recruiter cold DMs (under 150 words) and connection requests (under 300 chars).
+5. Career Path AI: Benchmarks skills against target job profiles, suggesting gap-closing courses (Coursera, Udemy). Generates 60-second elevator pitches (Corporate, Startup, Creative) and 4-step interactive transition roadmaps.
+6. Auto-Save & Dashboard Sync: Silent background auto-saving every 4 seconds with live status badges.
+7. Privacy: Strictly in-memory file parsing. No document is saved to disk, fully complying with Article 21 privacy dignity.
+
+Always answer briefly, practically, and professionally. Highlight navigation guidelines (e.g. click "AI Resume Tailorer" in the navbar, upload files, etc.). If asked about launch date, tell them June 17, 2026 at 5:00 PM IST. Do not claim you have analyzed their resume inside chat; tell them to use the Upload buttons on respective pages.`;
 
   const recentHistory = Array.isArray(history)
     ? history.slice(-8).map((item) => `${item.role === 'user' ? 'User' : 'Assistant'}: ${item.content}`).join('\n')
