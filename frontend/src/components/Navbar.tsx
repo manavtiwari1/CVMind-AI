@@ -293,7 +293,6 @@ export default function Navbar({
                     { label: 'Bio & Banner Generator', page: 'linkedin-bio' }
                   ]
                 },
-                { label: 'Resume Builder', page: 'resume-builder' },
               ].map((item: any, idx: number) => {
                 if (item.subItems) {
                   const isOpen = activeSubmenu === 'linkedin';
