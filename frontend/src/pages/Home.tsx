@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown, X, Pencil } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown, Pencil } from 'lucide-react';
 import './Home.css';
 
 interface HomeProps {
@@ -15,7 +15,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -44,28 +43,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       transform: 'rotateY(-14deg) rotateX(8deg)'
     });
   };
-
-  useEffect(() => {
-    const hasSeen = localStorage.getItem('cvmind_tailor_welcome_seen');
-    if (!hasSeen) {
-      const timer = setTimeout(() => {
-        setShowWelcomeModal(true);
-      }, 1200);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  // Listen for Escape key to close the welcome popup modal
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && showWelcomeModal) {
-        localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
-        setShowWelcomeModal(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showWelcomeModal]);
 
   // Steps to display in sequence during analysis to keep the user engaged
   const analysisSteps = [
@@ -210,73 +187,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
 
   return (
     <div className="home-container animate-fade-in-up">
-      {showWelcomeModal && (
-        <div 
-          className="welcome-modal-overlay animate-fade-in"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
-              setShowWelcomeModal(false);
-            }
-          }}
-          title="Click outside to close"
-        >
-          <div className="welcome-modal-card glass-card animate-scale-up">
-            <button 
-              className="modal-close-icon-btn" 
-              onClick={() => {
-                localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
-                setShowWelcomeModal(false);
-              }}
-              title="Close announcement (Esc)"
-              aria-label="Close"
-            >
-              <X size={18} />
-            </button>
-            <div className="modal-badge">
-              <Sparkles size={14} className="animate-pulse" /> Platform Upgrade
-            </div>
-            <h2 className="modal-title">Major AI Platform Upgrades Released!</h2>
-            <p className="modal-desc">
-              We have launched two powerful, premium corporate-hiring features to make your resume completely job-ready and help you ace your interview panels.
-            </p>
-            <div className="modal-feature-list">
-              <div className="modal-feature-item">
-                <CheckCircle2 size={16} className="modal-feature-icon" />
-                <span><strong>AI Resume Tailorer:</strong> Align and optimize CV accomplishments to any target Job Description (JD) to pass ATS checks.</span>
-              </div>
-              <div className="modal-feature-item">
-                <CheckCircle2 size={16} className="modal-feature-icon" style={{ color: '#a855f7' }} />
-                <span><strong>SmartPrep AI:</strong> Scan your CV history to generate targeted interview prep scorecards with STAR answers and expert recruiter tips.</span>
-              </div>
-            </div>
-            <div className="modal-actions">
-              <button 
-                className="btn-primary modal-cta-btn" 
-                style={{ background: 'linear-gradient(135deg, #a855f7, #00f5ff)', boxShadow: '0 0 16px rgba(168,85,247,0.3)' }}
-                onClick={() => {
-                  localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
-                  setShowWelcomeModal(false);
-                  setCurrentPage('prep');
-                }}
-              >
-                Try SmartPrep AI <ArrowRight size={16} />
-              </button>
-              <button 
-                className="btn-secondary modal-close-btn" 
-                onClick={() => {
-                  localStorage.setItem('cvmind_tailor_welcome_seen', 'true');
-                  setShowWelcomeModal(false);
-                  setCurrentPage('tailor');
-                }}
-              >
-                Resume Tailorer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="cyber-stage" aria-hidden="true">
         <div className="neon-orbit"></div>
         <div className="scan-beam"></div>
