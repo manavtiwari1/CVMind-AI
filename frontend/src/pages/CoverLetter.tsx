@@ -919,7 +919,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     if (activeWorkId) {
       const shareUrl = `${window.location.origin}/portfolio/${activeWorkId}`;
       navigator.clipboard.writeText(shareUrl);
-      alert(`Portfolio link copied to clipboard:\n${shareUrl}`);
+      window.open(shareUrl, '_blank');
       return;
     }
 
@@ -966,7 +966,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
         setActiveWorkId(newId);
         const shareUrl = `${window.location.origin}/portfolio/${newId}`;
         navigator.clipboard.writeText(shareUrl);
-        alert(`Resume saved and portfolio link copied to clipboard:\n${shareUrl}`);
+        window.open(shareUrl, '_blank');
       }
     } catch (err: any) {
       alert(err.message || 'An error occurred while preparing your portfolio.');

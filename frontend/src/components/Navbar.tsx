@@ -90,7 +90,7 @@ export default function Navbar({
   const handleShareLink = (workId: string) => {
     const shareUrl = `${window.location.origin}/portfolio/${workId}`;
     navigator.clipboard.writeText(shareUrl);
-    alert(`Portfolio link copied to clipboard:\n${shareUrl}`);
+    window.open(shareUrl, '_blank');
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
