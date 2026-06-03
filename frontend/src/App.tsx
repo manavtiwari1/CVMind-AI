@@ -19,6 +19,7 @@ import CareerRoadmap from './pages/CareerRoadmap';
 import Portfolio from './pages/Portfolio';
 import Privacy from './pages/Privacy';
 import FAQ from './pages/FAQ';
+import Blog from './pages/Blog';
 import AuthModal from './components/AuthModal';
 import ParticleBackground from './components/ParticleBackground';
 import './styles/theme.css';
@@ -31,7 +32,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq', 'blog'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -149,6 +150,8 @@ export default function App() {
         return <Privacy />;
       case 'faq':
         return <FAQ setCurrentPage={setCurrentPage} />;
+      case 'blog':
+        return <Blog setCurrentPage={setCurrentPage} />;
       case 'dashboard':
         return (
           <Dashboard 
