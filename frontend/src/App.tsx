@@ -20,6 +20,9 @@ import Portfolio from './pages/Portfolio';
 import Privacy from './pages/Privacy';
 import FAQ from './pages/FAQ';
 import Blog from './pages/Blog';
+import LinkedInPost from './pages/linkedin/LinkedInPost';
+import VoicePrep from './pages/VoicePrep';
+import PortfolioGen from './pages/PortfolioGen';
 import AuthModal from './components/AuthModal';
 import ParticleBackground from './components/ParticleBackground';
 import './styles/theme.css';
@@ -32,7 +35,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq', 'blog'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -145,6 +148,21 @@ export default function App() {
         description: "Build a professionally formatted resume in minutes with our free AI Resume Builder. Choose from 10+ ATS-compliant templates and get AI-powered text refining.",
         keywords: "AI Resume Builder, ATS Templates, Free Resume Maker, Resume Generator"
       },
+      'linkedin-post': {
+        title: "AI LinkedIn Post Generator | Viral Posts - CVMind AI",
+        description: "Generate 3 viral LinkedIn post styles in seconds. AI writes professional, storytelling & bold posts with hooks, emojis, and optimized hashtags.",
+        keywords: "LinkedIn Post Generator, Viral LinkedIn Posts, AI Content Writer, LinkedIn Growth"
+      },
+      'voice-prep': {
+        title: "Voice Interview Practice | AI Coaching - CVMind AI",
+        description: "Practice interviews by speaking your answers aloud. AI transcribes, analyzes confidence, detects filler words, and gives real-time coaching feedback.",
+        keywords: "Voice Interview Practice, AI Interview Coach, Mock Interview, Speech Analysis"
+      },
+      'portfolio-gen': {
+        title: "AI Portfolio Website Generator | Free - CVMind AI",
+        description: "Generate a stunning, responsive portfolio website from your resume in seconds. Choose themes, preview live, and download the HTML file instantly.",
+        keywords: "Portfolio Website Generator, AI Portfolio Builder, Resume to Portfolio, HTML Portfolio"
+      },
       portfolio: {
         title: "Developer Portfolio Showcase | CVMind AI",
         description: "Interactive professional portfolio showcasing developer projects, skills, and work achievements powered by CVMind AI.",
@@ -248,7 +266,7 @@ export default function App() {
 
   // Private route interceptor to enforce Sign In for product modules
   useEffect(() => {
-    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'career-courses', 'elevator-pitch', 'career-roadmap'];
+    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'voice-prep', 'portfolio-gen'];
     if (privatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
       setShowAuthModal(true);
@@ -375,6 +393,30 @@ export default function App() {
             resumeText={resumeText}
             loadedWork={loadedWork}
             setLoadedWork={setLoadedWork}
+          />
+        );
+      case 'linkedin-post':
+        return (
+          <LinkedInPost
+            customApiKey={customApiKey}
+            resumeText={resumeText}
+            loadedWork={loadedWork}
+            setLoadedWork={setLoadedWork}
+          />
+        );
+      case 'voice-prep':
+        return (
+          <VoicePrep
+            customApiKey={customApiKey}
+            resumeText={resumeText}
+          />
+        );
+      case 'portfolio-gen':
+        return (
+          <PortfolioGen
+            customApiKey={customApiKey}
+            resumeText={resumeText}
+            setCurrentPage={setCurrentPage}
           />
         );
       case 'portfolio':

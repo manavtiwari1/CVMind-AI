@@ -280,7 +280,7 @@ export default function Navbar({
           {/* Products Dropdown */}
           <div className="nav-dropdown-container">
             <button
-              className={`nav-link dropdown-toggle${['tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'career-courses', 'elevator-pitch', 'career-roadmap'].includes(currentPage) ? ' active' : ''}`}
+              className={`nav-link dropdown-toggle${['tailor', 'prep', 'voice-prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'portfolio-gen'].includes(currentPage) ? ' active' : ''}`}
             >
               Products <ChevronDown size={12} className="dropdown-arrow" />
             </button>
@@ -288,14 +288,22 @@ export default function Navbar({
               {[
                 { label: 'AI Resume Analyzer', page: 'home' },
                 { label: 'AI Resume Tailorer', page: 'tailor' },
-                { label: 'SmartPrep AI (Prep)', page: 'prep' },
+                { 
+                  label: 'SmartPrep AI',
+                  submenuKey: 'smartprep',
+                  subItems: [
+                    { label: 'Interview Prep AI', page: 'prep' },
+                    { label: 'Voice Practice AI', page: 'voice-prep' }
+                  ]
+                },
                 { 
                   label: 'LinkedIn Optimizer',
                   submenuKey: 'linkedin',
                   subItems: [
                     { label: 'Profile PDF Audit', page: 'linkedin' },
                     { label: 'Bio & Banner Generator', page: 'linkedin-bio' },
-                    { label: 'Outreach & DM Writer', page: 'linkedin-outreach' }
+                    { label: 'Outreach & DM Writer', page: 'linkedin-outreach' },
+                    { label: 'Post Generator', page: 'linkedin-post' }
                   ]
                 },
                 { 
@@ -307,6 +315,7 @@ export default function Navbar({
                     { label: 'Interactive Career Roadmap', page: 'career-roadmap' }
                   ]
                 },
+                { label: 'Portfolio Generator', page: 'portfolio-gen' },
               ].map((item: any, idx: number) => {
                 if (item.subItems) {
                   const isOpen = activeSubmenu === item.submenuKey;
@@ -502,22 +511,43 @@ export default function Navbar({
                 AI Resume Tailorer
               </button>
               <button
-                className={`mobile-drawer-link mobile-sub-link${currentPage === 'prep' ? ' active' : ''}`}
-                onClick={() => go('prep')}
+                className={`mobile-drawer-link mobile-sub-link${currentPage === 'portfolio-gen' ? ' active' : ''}`}
+                onClick={() => go('portfolio-gen')}
               >
-                SmartPrep AI (Prep)
+                🌐 Portfolio Generator
               </button>
+
+              {/* SmartPrep AI sub-accordion */}
+              <div className="mobile-sub-accordion">
+                <button
+                  className={`mobile-sub-accordion-trigger${['prep','voice-prep'].includes(currentPage) ? ' open' : ''}`}
+                  onClick={() => setMobileLinkedInOpen(v => !v)}
+                >
+                  <span>SmartPrep AI</span>
+                  <ChevronDown size={12} className={`mobile-accordion-arrow${mobileLinkedInOpen ? ' rotated' : ''}`} />
+                </button>
+                {mobileLinkedInOpen && (
+                  <div className="mobile-sub-accordion-content">
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'prep' ? ' active' : ''}`} onClick={() => go('prep')}>
+                      Interview Prep AI
+                    </button>
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'voice-prep' ? ' active' : ''}`} onClick={() => go('voice-prep')}>
+                      🎤 Voice Practice AI
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {/* LinkedIn Optimizer sub-accordion */}
               <div className="mobile-sub-accordion">
                 <button
-                  className={`mobile-sub-accordion-trigger${mobileLinkedInOpen ? ' open' : ''}`}
-                  onClick={() => setMobileLinkedInOpen(v => !v)}
+                  className={`mobile-sub-accordion-trigger${['linkedin','linkedin-bio','linkedin-outreach','linkedin-post'].includes(currentPage) ? ' open' : ''}`}
+                  onClick={() => setMobileCareerOpen(v => !v)}
                 >
                   <span>LinkedIn Optimizer</span>
-                  <ChevronDown size={12} className={`mobile-accordion-arrow${mobileLinkedInOpen ? ' rotated' : ''}`} />
+                  <ChevronDown size={12} className={`mobile-accordion-arrow${mobileCareerOpen ? ' rotated' : ''}`} />
                 </button>
-                {mobileLinkedInOpen && (
+                {mobileCareerOpen && (
                   <div className="mobile-sub-accordion-content">
                     <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'linkedin' ? ' active' : ''}`} onClick={() => go('linkedin')}>
                       Profile PDF Audit
@@ -527,6 +557,9 @@ export default function Navbar({
                     </button>
                     <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'linkedin-outreach' ? ' active' : ''}`} onClick={() => go('linkedin-outreach')}>
                       Outreach &amp; DM Writer
+                    </button>
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'linkedin-post' ? ' active' : ''}`} onClick={() => go('linkedin-post')}>
+                      📝 Post Generator
                     </button>
                   </div>
                 )}
