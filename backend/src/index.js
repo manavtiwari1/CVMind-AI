@@ -18,7 +18,7 @@ const resend = new Resend(process.env.RESEND_API_KEY || 're_ZUsGhSqZ_N1wr7tKSbze
 // Enable CORS for all requests, allow credentials and specific headers
 app.use(cors({
   origin: '*', 
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'OPTIONS', 'DELETE'],
   allowedHeaders: ['Content-Type', 'x-gemini-key', 'x-admin-secret']
 }));
 
