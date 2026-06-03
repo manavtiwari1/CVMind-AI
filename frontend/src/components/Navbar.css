@@ -808,3 +808,123 @@
   width: 12px;
   background: transparent;
 }
+
+/* ── Mobile Accordion (Products Dropdown) ────────────────── */
+.mobile-accordion {
+  width: 100%;
+}
+
+.mobile-accordion-trigger {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-accordion-trigger:hover,
+.mobile-accordion-trigger.open {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mobile-accordion-arrow {
+  transition: transform 0.25s var(--ease-out);
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.mobile-accordion-arrow.rotated {
+  transform: rotate(180deg);
+  color: var(--blue);
+}
+
+.mobile-accordion-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 0.5rem;
+  margin-top: 2px;
+  border-left: 2px solid rgba(41, 151, 255, 0.2);
+  margin-left: 1rem;
+  animation: mobileAccordionIn 0.22s var(--ease-out) both;
+}
+
+@keyframes mobileAccordionIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Sub-level items */
+.mobile-sub-link {
+  font-size: 0.9rem !important;
+  padding: 0.55rem 0.85rem !important;
+}
+
+/* Sub-accordion (LinkedIn / Career) */
+.mobile-sub-accordion {
+  width: 100%;
+}
+
+.mobile-sub-accordion-trigger {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.5rem 0.85rem;
+  text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  letter-spacing: 0.01em;
+}
+
+.mobile-sub-accordion-trigger:hover,
+.mobile-sub-accordion-trigger.open {
+  color: var(--blue);
+  background: var(--blue-dim);
+}
+
+.mobile-sub-accordion-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 0.5rem;
+  margin-top: 2px;
+  border-left: 2px solid rgba(41, 151, 255, 0.1);
+  margin-left: 1rem;
+  animation: mobileAccordionIn 0.2s var(--ease-out) both;
+}
+
+/* Sub-sub level items */
+.mobile-sub-sub-link {
+  font-size: 0.83rem !important;
+  padding: 0.5rem 0.85rem !important;
+  color: var(--text-tertiary) !important;
+}
+
+.mobile-sub-sub-link:hover {
+  color: var(--text-primary) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.mobile-sub-sub-link.active {
+  color: var(--blue) !important;
+  background: var(--blue-dim) !important;
+}

@@ -32,6 +32,9 @@ export default function Navbar({
 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [mobileLinkedInOpen, setMobileLinkedInOpen] = useState(false);
+  const [mobileCareerOpen, setMobileCareerOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'profile' | 'works' | 'settings' | null>(null);
   const [user, setUser] = useState<any>(null);
 
@@ -458,20 +461,108 @@ export default function Navbar({
 
       {/* Premium Sliding Frosted Glass Mobile Menu Drawer */}
       <div className={`navbar-mobile-drawer ${mobileOpen ? 'open' : ''}`}>
+        {/* Static nav links */}
         {[
           { label: 'Home', page: 'home' },
           { label: 'Dashboard', page: 'dashboard' },
           { label: 'Resume Builder', page: 'resume-builder' },
-          { label: 'Resume Tailor', page: 'tailor' },
-          { label: 'LinkedIn Profile Audit', page: 'linkedin' },
-          { label: 'LinkedIn Bio & Banner AI', page: 'linkedin-bio' },
-          { label: 'LinkedIn Outreach DMs', page: 'linkedin-outreach' },
-          { label: 'Career Skill Gaps', page: 'career-courses' },
-          { label: 'AI Elevator Pitch', page: 'elevator-pitch' },
-          { label: 'Career Roadmap AI', page: 'career-roadmap' },
-          { label: 'Interview Prep AI', page: 'prep' },
+        ].map(({ label, page }) => (
+          <button
+            key={label}
+            className={`mobile-drawer-link${currentPage === page ? ' active' : ''}`}
+            onClick={() => go(page)}
+          >
+            {label}
+          </button>
+        ))}
+
+        {/* Products Accordion */}
+        <div className="mobile-accordion">
+          <button
+            className={`mobile-accordion-trigger${mobileProductsOpen ? ' open' : ''}`}
+            onClick={() => setMobileProductsOpen(v => !v)}
+          >
+            <span>Products</span>
+            <ChevronDown size={14} className={`mobile-accordion-arrow${mobileProductsOpen ? ' rotated' : ''}`} />
+          </button>
+
+          {mobileProductsOpen && (
+            <div className="mobile-accordion-content">
+              {/* Direct items */}
+              <button
+                className={`mobile-drawer-link mobile-sub-link${currentPage === 'home' ? ' active' : ''}`}
+                onClick={() => go('home')}
+              >
+                AI Resume Analyzer
+              </button>
+              <button
+                className={`mobile-drawer-link mobile-sub-link${currentPage === 'tailor' ? ' active' : ''}`}
+                onClick={() => go('tailor')}
+              >
+                AI Resume Tailorer
+              </button>
+              <button
+                className={`mobile-drawer-link mobile-sub-link${currentPage === 'prep' ? ' active' : ''}`}
+                onClick={() => go('prep')}
+              >
+                SmartPrep AI (Prep)
+              </button>
+
+              {/* LinkedIn Optimizer sub-accordion */}
+              <div className="mobile-sub-accordion">
+                <button
+                  className={`mobile-sub-accordion-trigger${mobileLinkedInOpen ? ' open' : ''}`}
+                  onClick={() => setMobileLinkedInOpen(v => !v)}
+                >
+                  <span>LinkedIn Optimizer</span>
+                  <ChevronDown size={12} className={`mobile-accordion-arrow${mobileLinkedInOpen ? ' rotated' : ''}`} />
+                </button>
+                {mobileLinkedInOpen && (
+                  <div className="mobile-sub-accordion-content">
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'linkedin' ? ' active' : ''}`} onClick={() => go('linkedin')}>
+                      Profile PDF Audit
+                    </button>
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'linkedin-bio' ? ' active' : ''}`} onClick={() => go('linkedin-bio')}>
+                      Bio &amp; Banner Generator
+                    </button>
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'linkedin-outreach' ? ' active' : ''}`} onClick={() => go('linkedin-outreach')}>
+                      Outreach &amp; DM Writer
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Career Path AI sub-accordion */}
+              <div className="mobile-sub-accordion">
+                <button
+                  className={`mobile-sub-accordion-trigger${mobileCareerOpen ? ' open' : ''}`}
+                  onClick={() => setMobileCareerOpen(v => !v)}
+                >
+                  <span>Career Path AI</span>
+                  <ChevronDown size={12} className={`mobile-accordion-arrow${mobileCareerOpen ? ' rotated' : ''}`} />
+                </button>
+                {mobileCareerOpen && (
+                  <div className="mobile-sub-accordion-content">
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'career-courses' ? ' active' : ''}`} onClick={() => go('career-courses')}>
+                      Skill Gaps &amp; Courses
+                    </button>
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'elevator-pitch' ? ' active' : ''}`} onClick={() => go('elevator-pitch')}>
+                      Elevator Pitch Builder
+                    </button>
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'career-roadmap' ? ' active' : ''}`} onClick={() => go('career-roadmap')}>
+                      Interactive Career Roadmap
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Remaining links */}
+        {[
           { label: 'About CVMind AI', page: 'about' },
-          { label: 'Contact Support', page: 'contact' }
+          { label: 'Contact Support', page: 'contact' },
         ].map(({ label, page }) => (
           <button
             key={label}
