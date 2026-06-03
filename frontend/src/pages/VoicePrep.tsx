@@ -64,6 +64,7 @@ export default function VoicePrep({ customApiKey, resumeText }: VoicePrepProps) 
       setErrorMsg('Your browser does not support voice recognition. Please use Chrome or Edge.');
       return;
     }
+    setErrorMsg(null);
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
@@ -81,9 +82,11 @@ export default function VoicePrep({ customApiKey, resumeText }: VoicePrepProps) 
     };
 
     recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
       if (event.error !== 'no-speech') {
         if (timerRef.current) clearInterval(timerRef.current);
         isRecordingRef.current = false;
+        setErrorMsg(`Microphone error: ${event.error}. Make sure mic permissions are allowed.`);
         setStep('question');
       }
     };
@@ -293,6 +296,8 @@ export default function VoicePrep({ customApiKey, resumeText }: VoicePrepProps) 
                 </button>
               )}
             </div>
+
+            {errorMsg && <div className="vp-error" style={{ marginTop: '1rem' }}>⚠️ {errorMsg}</div>}
 
             {!isSpeechSupported() && step === 'question' && (
               <div style={{ marginTop: '0.75rem' }}>
