@@ -110,14 +110,14 @@ export default function CareerCourses({ customApiKey, resumeText, loadedWork, se
     }
   };
 
-  const removeState = () => {
+  function removeState() {
     setResult(null);
     setTargetJob('');
     setSkills('');
     if (setLoadedWork) {
       setLoadedWork(null);
     }
-  };
+  }
 
   return (
     <div className="career-courses-container animate-fade-in-up">

@@ -121,14 +121,14 @@ export default function ElevatorPitch({ customApiKey, resumeText, loadedWork, se
 
 
 
-  const removeState = () => {
+  function removeState() {
     setResult(null);
     setJobTitle('');
     setDetails('');
     if (setLoadedWork) {
       setLoadedWork(null);
     }
-  };
+  }
 
   return (
     <div className="elevator-pitch-container animate-fade-in-up">

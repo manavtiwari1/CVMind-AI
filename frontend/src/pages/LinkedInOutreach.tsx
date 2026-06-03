@@ -127,7 +127,7 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
 
 
 
-  const removeState = () => {
+  function removeState() {
     setResult(null);
     setJobTitle('');
     setCompanyName('');
@@ -136,7 +136,7 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
     if (setLoadedWork) {
       setLoadedWork(null);
     }
-  };
+  }
 
   return (
     <div className="li-outreach-container animate-fade-in-up">

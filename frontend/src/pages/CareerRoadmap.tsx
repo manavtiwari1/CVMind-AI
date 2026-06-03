@@ -116,7 +116,7 @@ export default function CareerRoadmap({ customApiKey, resumeText, loadedWork, se
 
 
 
-  const removeState = () => {
+  function removeState() {
     setResult(null);
     setCurrentRole('');
     setTargetRole('');
@@ -124,7 +124,7 @@ export default function CareerRoadmap({ customApiKey, resumeText, loadedWork, se
     if (setLoadedWork) {
       setLoadedWork(null);
     }
-  };
+  }
 
   return (
     <div className="career-roadmap-container animate-fade-in-up">

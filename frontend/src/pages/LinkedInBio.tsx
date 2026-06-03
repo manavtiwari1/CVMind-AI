@@ -120,14 +120,14 @@ export default function LinkedInBio({ customApiKey, resumeText, loadedWork, setL
 
 
 
-  const removeState = () => {
+  function removeState() {
     setResult(null);
     setJobTitle('');
     setSkills('');
     if (setLoadedWork) {
       setLoadedWork(null);
     }
-  };
+  }
 
   return (
     <div className="li-bio-container animate-fade-in-up">

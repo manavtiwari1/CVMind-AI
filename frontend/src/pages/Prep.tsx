@@ -129,13 +129,15 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
     const userStr = localStorage.getItem('cvmind_user');
     if (!userStr) return;
 
-    let userId = '';
-    try {
-      const user = JSON.parse(userStr);
-      userId = user.id || user._id;
-    } catch {
-      return;
-    }
+    const getUserId = () => {
+      try {
+        const user = JSON.parse(userStr);
+        return user.id || user._id || '';
+      } catch {
+        return '';
+      }
+    };
+    const userId = getUserId();
     if (!userId) return;
 
     setSavingPrep(true);

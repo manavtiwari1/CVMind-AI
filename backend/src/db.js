@@ -914,7 +914,7 @@ export async function saveWork({ userId, title, type, templateId, htmlContent, w
         const updated = await Work.findOneAndUpdate(
           { _id: workId, userId: cleanUserId },
           { title: cleanTitle, type, templateId, htmlContent, updatedAt: Date.now() },
-          { new: true }
+          { returnDocument: 'after' }
         );
         if (updated) return updated;
       } catch (err) {
