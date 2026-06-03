@@ -21,8 +21,7 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
   const [result, setResult] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [savingWork, setSavingWork] = useState(false);
+
   const [activeTab, setActiveTab] = useState<'connect' | 'referral' | 'recruiter'>('connect');
 
   // Load saved work if opened from My Works
@@ -58,7 +57,6 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
     setLoading(true);
     setErrorMsg(null);
     setResult(null);
-    setSaveSuccess(false);
 
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL 
@@ -121,61 +119,7 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
     }
   };
 
-  const handleSaveSession = async () => {
-    if (!result) return;
-    const userStr = localStorage.getItem('cvmind_user');
-    if (!userStr) {
-      alert('Please sign in to save your LinkedIn outreach.');
-      return;
-    }
 
-    let userId = '';
-    try {
-      const user = JSON.parse(userStr);
-      userId = user.id || user._id;
-    } catch {
-      alert('Session invalid. Please sign in again.');
-      return;
-    }
-
-    setSavingWork(true);
-    try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL 
-        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
-
-      const response = await fetch(`${baseUrl}/api/user/work`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          title: `LinkedIn Outreach - ${jobTitle} (${companyName || 'General'})`,
-          type: 'linkedin-outreach',
-          templateId: 'linkedin-outreach-gen',
-          htmlContent: JSON.stringify({
-            jobTitle,
-            companyName,
-            context,
-            targetName,
-            result
-          }),
-          workId: loadedWork?.id || loadedWork?._id || undefined
-        })
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to save');
-
-      setSaveSuccess(true);
-      if (data.data && setLoadedWork) {
-        setLoadedWork(data.data);
-      }
-      setTimeout(() => setSaveSuccess(false), 2000);
-    } catch (err: any) {
-      alert(err.message || 'An error occurred while saving your session.');
-    } finally {
-      setSavingWork(false);
-    }
-  };
 
   const removeState = () => {
     setResult(null);
@@ -183,7 +127,6 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
     setCompanyName('');
     setTargetName('');
     setContext('');
-    setSaveSuccess(false);
     if (setLoadedWork) {
       setLoadedWork(null);
     }
@@ -330,14 +273,16 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
               )}
 
               <div className="sidebar-actions" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1.5rem' }}>
-                <button 
-                  className="btn-primary" 
-                  style={{ background: 'var(--color-emerald)', borderColor: 'var(--color-emerald)', width: '100%', justifyContent: 'center', display: 'flex' }}
-                  onClick={handleSaveSession}
-                  disabled={savingWork}
-                >
-                  {savingWork ? 'Saving...' : saveSuccess ? 'Saved to Works!' : 'Save Outreach Kit'}
-                </button>
+                {localStorage.getItem('cvmind_user') ? (
+                  <div className="li-autosave-status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--text-secondary)', padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                    <Check size={14} className="text-success" />
+                    <span>Saved automatically to My Works</span>
+                  </div>
+                ) : (
+                  <div className="li-autosave-status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--text-warning)', padding: '0.5rem', background: 'rgba(251,146,60,0.05)', borderRadius: '6px', border: '1px solid rgba(251,146,60,0.2)' }}>
+                    <span>Sign in to auto-save</span>
+                  </div>
+                )}
               </div>
             </div>
 

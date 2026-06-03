@@ -640,7 +640,6 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
   const [activeWorkId, setActiveWorkId] = useState<string | null>(null);
   const [activeWorkTitle, setActiveWorkTitle] = useState<string>('');
   const [saving, setSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     const handleHash = () => {
@@ -841,6 +840,61 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     }
   }, [step, selectedTemplate, activeWorkId]);
 
+  // Background auto-save effect
+  useEffect(() => {
+    if (step !== 'editor') return;
+
+    let lastSavedContent = editorRef.current?.innerHTML || '';
+
+    const interval = setInterval(async () => {
+      const currentContent = editorRef.current?.innerHTML || '';
+      if (currentContent && currentContent.trim() && currentContent !== lastSavedContent) {
+        const userStr = localStorage.getItem('cvmind_user');
+        if (!userStr) return;
+
+        let userId = '';
+        try {
+          const user = JSON.parse(userStr);
+          userId = user.id || user._id;
+        } catch {
+          return;
+        }
+        if (!userId) return;
+
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
+          || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+
+        try {
+          setSaving(true);
+          const response = await fetch(`${baseUrl}/api/user/work`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId,
+              title: activeWorkTitle.trim() || `Untitled ${activeTab === 'cover-letter' ? 'Cover Letter' : 'Resume'}`,
+              type: activeTab,
+              templateId: selectedTemplate?.id || 'classic-pro',
+              htmlContent: currentContent,
+              workId: activeWorkId
+            })
+          });
+          const data = await response.json();
+          if (response.ok && data.data) {
+            lastSavedContent = currentContent;
+            const newId = data.data.id || data.data._id;
+            setActiveWorkId(newId);
+          }
+        } catch (e) {
+          console.error("Auto-save error:", e);
+        } finally {
+          setSaving(false);
+        }
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [step, activeWorkId, activeWorkTitle, activeTab, selectedTemplate]);
+
   const handleSelectTemplate = (template: Template) => {
     setSelectedTemplate(template);
     setActiveWorkId(null);
@@ -848,67 +902,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     setStep('editor');
   };
 
-  const handleSaveDraft = async () => {
-    const htmlContent = editorRef.current?.innerHTML || '';
-    if (!htmlContent.trim()) return;
 
-    const userStr = localStorage.getItem('cvmind_user');
-    if (!userStr) {
-      setRefineError('Please sign in to save your draft.');
-      return;
-    }
-
-    let userId = '';
-    try {
-      const user = JSON.parse(userStr);
-      userId = user.id || user._id;
-    } catch {
-      setRefineError('Failed to parse user session. Please sign in again.');
-      return;
-    }
-
-    if (!userId) {
-      setRefineError('User session invalid. Please sign in again.');
-      return;
-    }
-
-    setSaving(true);
-    setRefineError('');
-
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
-      || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
-
-    try {
-      const response = await fetch(`${baseUrl}/api/user/work`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          title: activeWorkTitle.trim() || `Untitled ${activeTab === 'cover-letter' ? 'Cover Letter' : 'Resume'}`,
-          type: activeTab,
-          templateId: selectedTemplate?.id || 'classic-pro',
-          htmlContent,
-          workId: activeWorkId
-        })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to save work');
-
-      if (data.data) {
-        setActiveWorkId(data.data.id || data.data._id);
-        if (data.data.title) {
-          setActiveWorkTitle(data.data.title);
-        }
-      }
-
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2000);
-    } catch (err: any) {
-      setRefineError(err.message || 'An error occurred while saving your draft.');
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const handleSharePortfolio = async () => {
     if (selectedTemplate?.type === 'cover-letter') {
@@ -1447,15 +1441,19 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
           {selectedTemplate?.type !== 'cover-letter' && (
             <button className="cl-top-btn" onClick={handleSharePortfolio}><Globe size={13} /> Share</button>
           )}
-          <button className="cl-top-btn" style={{ background: 'var(--blue)', color: '#fff', border: 'none' }} onClick={handleSaveDraft} disabled={saving}>
-            {saving ? (
-              <><Loader2 size={13} className="cl-spin" /> Saving...</>
-            ) : saveSuccess ? (
-              <><Check size={13} className="text-success" /> Saved!</>
-            ) : (
-              <><FileText size={13} /> Save Draft</>
-            )}
-          </button>
+          {localStorage.getItem('cvmind_user') ? (
+            <div className="cl-autosave-status" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)', padding: '0.35rem 0.75rem', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+              {saving ? (
+                <><Loader2 size={12} className="cl-spin text-blue" /> Saving...</>
+              ) : (
+                <><Check size={12} className="text-success" /> Saved automatically</>
+              )}
+            </div>
+          ) : (
+            <div className="cl-autosave-status" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-warning)', padding: '0.35rem 0.75rem', background: 'rgba(251,146,60,0.05)', borderRadius: '6px', border: '1px solid rgba(251,146,60,0.2)' }}>
+              <AlertTriangle size={12} /> Sign in to save
+            </div>
+          )}
           <button className="cl-ai-btn" disabled={refining} onClick={handleRefine}
             style={{ '--ac': selectedTemplate?.color || '#2997ff' } as React.CSSProperties}>
             {refining ? <><Loader2 size={14} className="cl-spin" /> Refining…</> : <><Sparkles size={14} /> AI Refine</>}

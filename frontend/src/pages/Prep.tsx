@@ -3,7 +3,7 @@ import {
   Sparkles, FileText, Upload, Lock, ShieldAlert, ArrowRight,
   ChevronDown, ChevronUp, Copy, Check, CheckCircle2,
   Building2, HelpCircle, Lightbulb, RefreshCw, FileDown,
-  Briefcase, Cpu
+  Briefcase, Cpu, Loader2, AlertCircle
 } from 'lucide-react';
 import './Prep.css';
 
@@ -41,7 +41,7 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
   const [evaluations, setEvaluations] = useState<Record<number, any>>({});
   const [evaluatingIndex, setEvaluatingIndex] = useState<number | null>(null);
   const [savingPrep, setSavingPrep] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,10 +94,12 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
       }
 
       if (resData.success && resData.data) {
-        setEvaluations(prev => ({
-          ...prev,
+        const nextEvaluations = {
+          ...evaluations,
           [idx]: resData.data
-        }));
+        };
+        setEvaluations(nextEvaluations);
+        await autoSavePrepSession(questions, userAnswers, nextEvaluations);
       }
     } catch (err: any) {
       alert(err.message || 'Evaluation failed. Make sure the backend server is running.');
@@ -106,30 +108,33 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
     }
   };
 
-  const handleSavePrepSession = async () => {
+  const autoSavePrepSession = async (
+    currentQuestions = questions,
+    currentAnswers = userAnswers,
+    currentEvaluations = evaluations,
+    currentWorkId = loadedWork?.id || loadedWork?._id
+  ) => {
+    if (currentQuestions.length === 0) return;
     const userStr = localStorage.getItem('cvmind_user');
-    if (!userStr) {
-      alert('Please sign in to save your interview prep scorecard.');
-      return;
-    }
+    if (!userStr) return;
 
     let userId = '';
     try {
       const user = JSON.parse(userStr);
       userId = user.id || user._id;
     } catch {
-      alert('Session invalid. Please sign in again.');
       return;
     }
+    if (!userId) return;
 
     setSavingPrep(true);
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
       const payload = {
         resumeText,
-        questions,
-        userAnswers,
-        evaluations
+        questions: currentQuestions,
+        userAnswers: currentAnswers,
+        evaluations: currentEvaluations
       };
 
       const response = await fetch(`${baseUrl}/api/user/work`, {
@@ -137,28 +142,40 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId,
-          title: `Interview Prep - ${questions[0]?.question?.slice(0, 25) || 'Session'}...`,
+          title: `Interview Prep - ${currentQuestions[0]?.question?.slice(0, 25) || 'Session'}...`,
           type: 'prep',
           templateId: 'interview-prep',
           htmlContent: JSON.stringify(payload),
-          workId: loadedWork?.id || loadedWork?._id || undefined
+          workId: currentWorkId || undefined
         })
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to save');
-
-      setSaveSuccess(true);
-      if (data.data && setLoadedWork) {
-        setLoadedWork(data.data);
+      if (response.ok && data.data) {
+        if (setLoadedWork) {
+          setLoadedWork(data.data);
+        }
       }
-      setTimeout(() => setSaveSuccess(false), 2000);
-    } catch (err: any) {
-      alert(err.message || 'An error occurred while saving your session.');
+    } catch (err) {
+      console.error('Auto-save prep failed:', err);
     } finally {
       setSavingPrep(false);
     }
   };
+
+  // Debounced effect for auto-saving when userAnswers change
+  useEffect(() => {
+    if (questions.length === 0) return;
+
+    const userStr = localStorage.getItem('cvmind_user');
+    if (!userStr) return;
+
+    const timer = setTimeout(() => {
+      autoSavePrepSession(questions, userAnswers, evaluations);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [userAnswers]);
 
   const loaderSteps = [
     'Scanning CV professional history...',
@@ -284,6 +301,7 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
         if (resData.resumeText) {
           setResumeText(resData.resumeText);
         }
+        await autoSavePrepSession(resData.data.questions, {}, {});
       } else {
         throw new Error('Failed to generate interview questions. Please try again.');
       }
@@ -494,14 +512,19 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
                 <button className="btn-primary btn-sm" onClick={downloadPrepPDF}>
                   <FileDown size={14} /> Download PDF
                 </button>
-                <button 
-                  className="btn-primary btn-sm" 
-                  style={{ background: 'var(--color-emerald)', borderColor: 'var(--color-emerald)' }} 
-                  onClick={handleSavePrepSession}
-                  disabled={savingPrep}
-                >
-                  {savingPrep ? 'Saving...' : saveSuccess ? 'Saved to Works!' : 'Save Session'}
-                </button>
+                {localStorage.getItem('cvmind_user') ? (
+                  <div className="prep-autosave-status" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)', padding: '0.35rem 0.75rem', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                    {savingPrep ? (
+                      <><Loader2 size={12} className="cl-spin text-blue" /> Saving...</>
+                    ) : (
+                      <><Check size={12} className="text-success" /> Saved automatically</>
+                    )}
+                  </div>
+                ) : (
+                  <div className="prep-autosave-status" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-warning)', padding: '0.35rem 0.75rem', background: 'rgba(251,146,60,0.05)', borderRadius: '6px', border: '1px solid rgba(251,146,60,0.2)' }}>
+                    <AlertCircle size={12} /> Sign in to save
+                  </div>
+                )}
               </div>
             </div>
 
@@ -596,6 +619,7 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
                                 placeholder="Type your personal mock answer here... try to use the STAR method."
                                 value={userAnswers[idx] || ''}
                                 onChange={(e) => setUserAnswers(prev => ({ ...prev, [idx]: e.target.value }))}
+                                onBlur={() => autoSavePrepSession(questions, userAnswers, evaluations)}
                               />
                               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <button 

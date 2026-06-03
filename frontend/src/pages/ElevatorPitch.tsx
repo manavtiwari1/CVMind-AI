@@ -19,8 +19,7 @@ export default function ElevatorPitch({ customApiKey, resumeText, loadedWork, se
   const [result, setResult] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [savingWork, setSavingWork] = useState(false);
+
   const [activeTab, setActiveTab] = useState<'corporate' | 'startup' | 'creative'>('corporate');
 
   // Load saved work if opened from My Works
@@ -54,7 +53,6 @@ export default function ElevatorPitch({ customApiKey, resumeText, loadedWork, se
     setLoading(true);
     setErrorMsg(null);
     setResult(null);
-    setSaveSuccess(false);
 
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL 
@@ -115,66 +113,12 @@ export default function ElevatorPitch({ customApiKey, resumeText, loadedWork, se
     }
   };
 
-  const handleSaveSession = async () => {
-    if (!result) return;
-    const userStr = localStorage.getItem('cvmind_user');
-    if (!userStr) {
-      alert('Please sign in to save your pitches.');
-      return;
-    }
 
-    let userId = '';
-    try {
-      const user = JSON.parse(userStr);
-      userId = user.id || user._id;
-    } catch {
-      alert('Session invalid. Please sign in again.');
-      return;
-    }
-
-    setSavingWork(true);
-    try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL 
-        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
-
-      const response = await fetch(`${baseUrl}/api/user/work`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          title: `Elevator Pitch - ${jobTitle}`,
-          type: 'elevator-pitch',
-          templateId: 'elevator-pitch-gen',
-          htmlContent: JSON.stringify({
-            jobTitle,
-            details,
-            resumeText: useResumeText ? resumeText : '',
-            result
-          }),
-          workId: loadedWork?.id || loadedWork?._id || undefined
-        })
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to save');
-
-      setSaveSuccess(true);
-      if (data.data && setLoadedWork) {
-        setLoadedWork(data.data);
-      }
-      setTimeout(() => setSaveSuccess(false), 2000);
-    } catch (err: any) {
-      alert(err.message || 'An error occurred while saving your session.');
-    } finally {
-      setSavingWork(false);
-    }
-  };
 
   const removeState = () => {
     setResult(null);
     setJobTitle('');
     setDetails('');
-    setSaveSuccess(false);
     if (setLoadedWork) {
       setLoadedWork(null);
     }
@@ -288,14 +232,16 @@ export default function ElevatorPitch({ customApiKey, resumeText, loadedWork, se
                 <strong>~120 words per pitch</strong>
               </div>
 
-              <button 
-                className="btn-primary" 
-                style={{ background: 'var(--color-emerald)', borderColor: 'var(--color-emerald)', width: '100%', justifyContent: 'center', display: 'flex', marginTop: '1rem' }}
-                onClick={handleSaveSession}
-                disabled={savingWork}
-              >
-                {savingWork ? 'Saving...' : saveSuccess ? 'Saved to Works!' : 'Save Pitches'}
-              </button>
+              {localStorage.getItem('cvmind_user') ? (
+                <div className="pitch-autosave-status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--text-secondary)', padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', border: '1px solid var(--border)', marginTop: '1rem' }}>
+                  <Check size={14} className="text-success" />
+                  <span>Saved automatically to My Works</span>
+                </div>
+              ) : (
+                <div className="pitch-autosave-status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--text-warning)', padding: '0.5rem', background: 'rgba(251,146,60,0.05)', borderRadius: '6px', border: '1px solid rgba(251,146,60,0.2)', marginTop: '1rem' }}>
+                  <span>Sign in to auto-save</span>
+                </div>
+              )}
             </div>
 
             {/* Main suggestion panels */}
