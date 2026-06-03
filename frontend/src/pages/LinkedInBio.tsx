@@ -23,19 +23,25 @@ export default function LinkedInBio({ customApiKey, resumeText, loadedWork, setL
 
   // Load saved work if opened from My Works
   useEffect(() => {
-    if (loadedWork && loadedWork.type === 'linkedin-bio') {
-      try {
-        const parsed = JSON.parse(loadedWork.htmlContent);
-        if (parsed) {
-          setJobTitle(parsed.jobTitle || '');
-          setSkills(parsed.skills || '');
-          setResult(parsed.result || null);
+    if (loadedWork) {
+      if (loadedWork.deleted) {
+        removeState();
+        return;
+      }
+      if (loadedWork.type === 'linkedin-bio') {
+        try {
+          const parsed = JSON.parse(loadedWork.htmlContent);
+          if (parsed) {
+            setJobTitle(parsed.jobTitle || '');
+            setSkills(parsed.skills || '');
+            setResult(parsed.result || null);
+          }
+        } catch (e) {
+          console.error('Error parsing loaded LinkedIn bio work:', e);
         }
-      } catch (e) {
-        console.error('Error parsing loaded LinkedIn bio work:', e);
       }
     }
-  }, [loadedWork]);
+  }, [loadedWork, setLoadedWork]);
 
   const handleCopy = (text: string, sectionId: string) => {
     navigator.clipboard.writeText(text);

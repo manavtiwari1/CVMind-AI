@@ -47,21 +47,32 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
 
   // Load from database if loadedWork is present
   useEffect(() => {
-    if (loadedWork && loadedWork.type === 'prep') {
-      try {
-        const payload = JSON.parse(loadedWork.htmlContent);
-        if (payload.questions) {
-          setQuestions(payload.questions);
-          if (payload.resumeText) setResumeText(payload.resumeText);
-          if (payload.userAnswers) setUserAnswers(payload.userAnswers);
-          if (payload.evaluations) setEvaluations(payload.evaluations);
-          setExpandedIndex(0);
+    if (loadedWork) {
+      if (loadedWork.deleted) {
+        setQuestions([]);
+        setUserAnswers({});
+        setEvaluations({});
+        if (setLoadedWork) {
+          setLoadedWork(null);
         }
-      } catch (err) {
-        console.error('Failed to parse loaded prep session:', err);
+        return;
+      }
+      if (loadedWork.type === 'prep') {
+        try {
+          const payload = JSON.parse(loadedWork.htmlContent);
+          if (payload.questions) {
+            setQuestions(payload.questions);
+            if (payload.resumeText) setResumeText(payload.resumeText);
+            if (payload.userAnswers) setUserAnswers(payload.userAnswers);
+            if (payload.evaluations) setEvaluations(payload.evaluations);
+            setExpandedIndex(0);
+          }
+        } catch (err) {
+          console.error('Failed to parse loaded prep session:', err);
+        }
       }
     }
-  }, [loadedWork]);
+  }, [loadedWork, setLoadedWork, setResumeText]);
 
   const handleEvaluateAnswer = async (idx: number) => {
     const answer = userAnswers[idx];

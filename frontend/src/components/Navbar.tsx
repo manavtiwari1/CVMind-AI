@@ -235,6 +235,9 @@ export default function Navbar({
       if (!response.ok) throw new Error(data.error || 'Failed to delete work');
 
       setWorks(prev => prev.filter(w => (w.id || w._id) !== workId));
+      if (setLoadedWork) {
+        setLoadedWork({ deleted: true, workId });
+      }
     } catch (err: any) {
       alert(err.message || 'Failed to delete work.');
     }

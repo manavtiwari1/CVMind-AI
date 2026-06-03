@@ -21,19 +21,25 @@ export default function CareerCourses({ customApiKey, resumeText, loadedWork, se
 
   // Load saved work if opened from My Works
   useEffect(() => {
-    if (loadedWork && loadedWork.type === 'career-courses') {
-      try {
-        const parsed = JSON.parse(loadedWork.htmlContent);
-        if (parsed) {
-          setTargetJob(parsed.targetJob || '');
-          setSkills(parsed.skills || '');
-          setResult(parsed.result || null);
+    if (loadedWork) {
+      if (loadedWork.deleted) {
+        removeState();
+        return;
+      }
+      if (loadedWork.type === 'career-courses') {
+        try {
+          const parsed = JSON.parse(loadedWork.htmlContent);
+          if (parsed) {
+            setTargetJob(parsed.targetJob || '');
+            setSkills(parsed.skills || '');
+            setResult(parsed.result || null);
+          }
+        } catch (e) {
+          console.error('Error parsing loaded career courses work:', e);
         }
-      } catch (e) {
-        console.error('Error parsing loaded career courses work:', e);
       }
     }
-  }, [loadedWork]);
+  }, [loadedWork, setLoadedWork]);
 
   const handleGenerate = async () => {
     if (!targetJob.trim()) {

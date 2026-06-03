@@ -26,21 +26,27 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
 
   // Load saved work if opened from My Works
   useEffect(() => {
-    if (loadedWork && loadedWork.type === 'linkedin-outreach') {
-      try {
-        const parsed = JSON.parse(loadedWork.htmlContent);
-        if (parsed) {
-          setJobTitle(parsed.jobTitle || '');
-          setCompanyName(parsed.companyName || '');
-          setTargetName(parsed.targetName || '');
-          setContext(parsed.context || '');
-          setResult(parsed.result || null);
+    if (loadedWork) {
+      if (loadedWork.deleted) {
+        removeState();
+        return;
+      }
+      if (loadedWork.type === 'linkedin-outreach') {
+        try {
+          const parsed = JSON.parse(loadedWork.htmlContent);
+          if (parsed) {
+            setJobTitle(parsed.jobTitle || '');
+            setCompanyName(parsed.companyName || '');
+            setTargetName(parsed.targetName || '');
+            setContext(parsed.context || '');
+            setResult(parsed.result || null);
+          }
+        } catch (e) {
+          console.error('Error parsing loaded LinkedIn outreach work:', e);
         }
-      } catch (e) {
-        console.error('Error parsing loaded LinkedIn outreach work:', e);
       }
     }
-  }, [loadedWork]);
+  }, [loadedWork, setLoadedWork]);
 
   const handleCopy = (text: string, sectionId: string) => {
     navigator.clipboard.writeText(text);

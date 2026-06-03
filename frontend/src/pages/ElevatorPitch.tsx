@@ -24,19 +24,25 @@ export default function ElevatorPitch({ customApiKey, resumeText, loadedWork, se
 
   // Load saved work if opened from My Works
   useEffect(() => {
-    if (loadedWork && loadedWork.type === 'elevator-pitch') {
-      try {
-        const parsed = JSON.parse(loadedWork.htmlContent);
-        if (parsed) {
-          setJobTitle(parsed.jobTitle || '');
-          setDetails(parsed.details || '');
-          setResult(parsed.result || null);
+    if (loadedWork) {
+      if (loadedWork.deleted) {
+        removeState();
+        return;
+      }
+      if (loadedWork.type === 'elevator-pitch') {
+        try {
+          const parsed = JSON.parse(loadedWork.htmlContent);
+          if (parsed) {
+            setJobTitle(parsed.jobTitle || '');
+            setDetails(parsed.details || '');
+            setResult(parsed.result || null);
+          }
+        } catch (e) {
+          console.error('Error parsing loaded elevator pitch work:', e);
         }
-      } catch (e) {
-        console.error('Error parsing loaded elevator pitch work:', e);
       }
     }
-  }, [loadedWork]);
+  }, [loadedWork, setLoadedWork]);
 
   const handleCopy = (text: string, sectionId: string) => {
     navigator.clipboard.writeText(text);

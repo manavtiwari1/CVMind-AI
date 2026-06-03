@@ -652,6 +652,17 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
   // Handle Loading Work from Dashboard / Global Modals
   useEffect(() => {
     if (loadedWork) {
+      if (loadedWork.deleted) {
+        if (activeWorkId === loadedWork.workId) {
+          setActiveWorkId(null);
+          setActiveWorkTitle('');
+          setStep('gallery');
+        }
+        if (setLoadedWork) {
+          setLoadedWork(null);
+        }
+        return;
+      }
       const template = TEMPLATES.find(t => t.id === loadedWork.templateId) || TEMPLATES[0];
       setSelectedTemplate(template);
       setActiveWorkId(loadedWork.id || loadedWork._id);
@@ -670,7 +681,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
         setLoadedWork(null);
       }
     }
-  }, [loadedWork, setLoadedWork]);
+  }, [loadedWork, setLoadedWork, activeWorkId]);
 
   const [showTableDialog, setShowTableDialog] = useState(false);
   const [tableRows, setTableRows] = useState(3);

@@ -23,20 +23,26 @@ export default function CareerRoadmap({ customApiKey, resumeText, loadedWork, se
 
   // Load saved work if opened from My Works
   useEffect(() => {
-    if (loadedWork && loadedWork.type === 'career-roadmap') {
-      try {
-        const parsed = JSON.parse(loadedWork.htmlContent);
-        if (parsed) {
-          setCurrentRole(parsed.currentRole || '');
-          setTargetRole(parsed.targetRole || '');
-          setYears(parsed.years || '2 Years');
-          setResult(parsed.result || null);
+    if (loadedWork) {
+      if (loadedWork.deleted) {
+        removeState();
+        return;
+      }
+      if (loadedWork.type === 'career-roadmap') {
+        try {
+          const parsed = JSON.parse(loadedWork.htmlContent);
+          if (parsed) {
+            setCurrentRole(parsed.currentRole || '');
+            setTargetRole(parsed.targetRole || '');
+            setYears(parsed.years || '2 Years');
+            setResult(parsed.result || null);
+          }
+        } catch (e) {
+          console.error('Error parsing loaded career roadmap work:', e);
         }
-      } catch (e) {
-        console.error('Error parsing loaded career roadmap work:', e);
       }
     }
-  }, [loadedWork]);
+  }, [loadedWork, setLoadedWork]);
 
   const handleGenerate = async () => {
     if (!targetRole.trim()) {
