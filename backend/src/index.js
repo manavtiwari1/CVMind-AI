@@ -1017,10 +1017,8 @@ apiRouter.post('/api/linkedin/post', async (req, res) => {
       return res.status(400).json({ error: 'Topic and Job Title are required.' });
     }
 
-    const { GoogleGenerativeAI } = await import('@google/generative-ai');
-    const apiKey = customApiKey || process.env.GEMINI_API_KEY;
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error('API key is not configured.');
 
     const prompt = `You are a LinkedIn content strategist. Generate 3 high-engagement LinkedIn posts for a ${jobTitle} professional.
 
@@ -1056,8 +1054,14 @@ Generate exactly 3 LinkedIn posts in this JSON format:
 
 Return ONLY valid JSON.`;
 
-    const result = await model.generateContent(prompt);
-    let text = result.response.text().trim();
+    const dsRes = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: 'deepseek-chat', messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }, temperature: 0.5, max_tokens: 2000 })
+    });
+    if (!dsRes.ok) throw new Error(`DeepSeek error: ${dsRes.status}`);
+    const dsJson = await dsRes.json();
+    let text = dsJson.choices[0].message.content.trim();
     if (text.startsWith('```')) text = text.replace(/```json\n?|```\n?/g, '').trim();
     const data = JSON.parse(text);
 
@@ -1087,10 +1091,8 @@ apiRouter.post('/api/voice-prep/question', async (req, res) => {
 
     if (!jobTitle) return res.status(400).json({ error: 'Job Title is required.' });
 
-    const { GoogleGenerativeAI } = await import('@google/generative-ai');
-    const apiKey = customApiKey || process.env.GEMINI_API_KEY;
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error('API key is not configured.');
 
     const prompt = `Generate ONE realistic interview question for a ${level || 'Mid-level'} ${jobTitle} role.
 Category: ${category || 'Behavioral'}
@@ -1104,8 +1106,14 @@ Return ONLY this JSON:
   "what_interviewer_wants": "2 sentence explanation of what a good answer should cover"
 }`;
 
-    const result = await model.generateContent(prompt);
-    let text = result.response.text().trim();
+    const dsRes = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: 'deepseek-chat', messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }, temperature: 0.4, max_tokens: 400 })
+    });
+    if (!dsRes.ok) throw new Error(`DeepSeek error: ${dsRes.status}`);
+    const dsJson = await dsRes.json();
+    let text = dsJson.choices[0].message.content.trim();
     if (text.startsWith('```')) text = text.replace(/```json\n?|```\n?/g, '').trim();
     const data = JSON.parse(text);
     return res.json({ success: true, data });
@@ -1123,10 +1131,8 @@ apiRouter.post('/api/voice-prep/analyze', async (req, res) => {
 
     if (!question || !transcript) return res.status(400).json({ error: 'Question and transcript are required.' });
 
-    const { GoogleGenerativeAI } = await import('@google/generative-ai');
-    const apiKey = customApiKey || process.env.GEMINI_API_KEY;
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error('API key is not configured.');
 
     const prompt = `You are a senior interviewer. Analyze this interview answer:
 
@@ -1154,11 +1160,17 @@ Return ONLY this JSON:
     "action": "What actions to highlight",
     "result": "What result to quantify"
   },
-  "verdict": "Good / Needs Work / Excellent"
+  "verdict": "Good"
 }`;
 
-    const result = await model.generateContent(prompt);
-    let text = result.response.text().trim();
+    const dsRes = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: 'deepseek-chat', messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }, temperature: 0.3, max_tokens: 1000 })
+    });
+    if (!dsRes.ok) throw new Error(`DeepSeek error: ${dsRes.status}`);
+    const dsJson = await dsRes.json();
+    let text = dsJson.choices[0].message.content.trim();
     if (text.startsWith('```')) text = text.replace(/```json\n?|```\n?/g, '').trim();
     const data = JSON.parse(text);
     return res.json({ success: true, data });
@@ -1178,10 +1190,8 @@ apiRouter.post('/api/portfolio/generate-site', async (req, res) => {
       return res.status(400).json({ error: 'Resume text is required (minimum 50 characters).' });
     }
 
-    const { GoogleGenerativeAI } = await import('@google/generative-ai');
-    const apiKey = customApiKey || process.env.GEMINI_API_KEY;
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error('API key is not configured.');
 
     const themeColors = {
       'dark-pro': { bg: '#0a0a0f', card: '#12121a', accent: '#6366f1', text: '#e2e8f0', secondary: '#94a3b8' },
@@ -1202,11 +1212,11 @@ Return this exact JSON structure:
   "name": "Full Name",
   "title": "Professional Title",
   "summary": "2-3 sentence professional summary",
-  "email": "email if found",
-  "phone": "phone if found",
-  "location": "city, country if found",
-  "linkedin": "linkedin url if found",
-  "github": "github url if found",
+  "email": "email if found else empty string",
+  "phone": "phone if found else empty string",
+  "location": "city, country if found else empty string",
+  "linkedin": "linkedin url if found else empty string",
+  "github": "github url if found else empty string",
   "skills": ["skill1", "skill2", "skill3", "skill4", "skill5", "skill6", "skill7", "skill8"],
   "experience": [
     {
@@ -1232,8 +1242,14 @@ Return this exact JSON structure:
   ]
 }`;
 
-    const result = await model.generateContent(prompt);
-    let text = result.response.text().trim();
+    const dsRes = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: 'deepseek-chat', messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }, temperature: 0.2, max_tokens: 2000 })
+    });
+    if (!dsRes.ok) throw new Error(`DeepSeek error: ${dsRes.status}`);
+    const dsJson = await dsRes.json();
+    let text = dsJson.choices[0].message.content.trim();
     if (text.startsWith('```')) text = text.replace(/```json\n?|```\n?/g, '').trim();
     const portfolioData = JSON.parse(text);
 

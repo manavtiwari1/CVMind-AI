@@ -31,6 +31,7 @@ export default function VoicePrep({ customApiKey, resumeText }: VoicePrepProps) 
   const [sessionCount, setSessionCount] = useState(0);
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<any>(null);
+  const isRecordingRef = useRef(false);
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
     || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
@@ -79,10 +80,21 @@ export default function VoicePrep({ customApiKey, resumeText }: VoicePrepProps) 
       setTranscript(finalTranscript + interim);
     };
 
-    recognition.onerror = () => {
-      setStep('question');
+    recognition.onerror = (event: any) => {
+      if (event.error !== 'no-speech') {
+        if (timerRef.current) clearInterval(timerRef.current);
+        isRecordingRef.current = false;
+        setStep('question');
+      }
     };
 
+    recognition.onend = () => {
+      if (isRecordingRef.current) {
+        try { recognition.start(); } catch (e) {}
+      }
+    };
+
+    isRecordingRef.current = true;
     recognition.start();
     recognitionRef.current = recognition;
     setStep('recording');
@@ -91,6 +103,7 @@ export default function VoicePrep({ customApiKey, resumeText }: VoicePrepProps) 
   };
 
   const stopRecording = () => {
+    isRecordingRef.current = false;
     if (recognitionRef.current) { recognitionRef.current.stop(); recognitionRef.current = null; }
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     setStep('question');
