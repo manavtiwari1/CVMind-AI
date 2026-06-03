@@ -57,6 +57,148 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
+  // Dynamically update SEO Metadata based on the active page
+  useEffect(() => {
+    const metaData: Record<string, { title: string; description: string; keywords: string }> = {
+      home: {
+        title: "CVMind AI - Free AI Resume Checker & ATS Optimization Tool",
+        description: "Optimize your resume instantly with CVMind AI. Our corporate AI recruiter audits formatting, structural weaknesses, missing keywords, and provides professional before-and-after experience rewrites.",
+        keywords: "AI Resume Checker, ATS Optimizer, Resume Audit, Free Resume Review, Career Optimization, Bullet Rewriter, Resume Rating"
+      },
+      about: {
+        title: "About Us | CVMind AI Resume Intelligence",
+        description: "Learn about CVMind AI, our mission to democratize recruitment technology, and how our corporate AI resume scanner helps candidates beat applicant tracking systems.",
+        keywords: "About CVMind AI, AI resume scanner, ATS technology, resume optimization mission, career tech"
+      },
+      contact: {
+        title: "Contact Us | Support & Feedback - CVMind AI",
+        description: "Get in touch with the CVMind AI team. We welcome your feedback, partnership inquiries, and questions about our AI resume checker and ATS optimization tools.",
+        keywords: "Contact CVMind AI, resume checker support, career tool help, feedback, partnership"
+      },
+      privacy: {
+        title: "Privacy Policy | Secure & Anonymous Resume Parsing - CVMind AI",
+        description: "Your privacy is our priority. CVMind AI parses your resume entirely in memory. Read our Privacy Policy to understand how we protect your document and data.",
+        keywords: "Privacy Policy, secure resume parsing, data privacy, resume builder terms"
+      },
+      faq: {
+        title: "Frequently Asked Questions (FAQ) | CVMind AI",
+        description: "Find answers to common questions about CVMind AI, ATS resume scoring, keyword optimization, privacy, and how to download your recruiter-ready resume.",
+        keywords: "FAQ, CVMind AI questions, ATS help, resume builder help, how to write resume"
+      },
+      blog: {
+        title: "Career Advice & Resume Optimization Blog | CVMind AI",
+        description: "Explore expert tips, resume writing guides, career strategies, and ATS secrets from recruiters to help you land your dream job.",
+        keywords: "Resume Blog, Career Advice, Resume Writing Guides, Job Search Tips, Recruiter Secrets, ATS Optimization"
+      },
+      dashboard: {
+        title: "Resume Audit Scorecard & ATS Analytics | CVMind AI",
+        description: "View your detailed AI resume analysis score, structural formatting alerts, keyword matches, and recruiter insights on your personalized CVMind dashboard.",
+        keywords: "Resume Dashboard, Resume Scorecard, ATS Score, Keyword Match, Resume Analysis"
+      },
+      admin: {
+        title: "Admin Dashboard | CVMind AI",
+        description: "Secure administrator console for CVMind AI system health, user analytics, and database telemetry.",
+        keywords: "Admin, CVMind Admin, DB Telemetry"
+      },
+      tailor: {
+        title: "AI Resume Tailoring Tool | Match Job Descriptions - CVMind AI",
+        description: "Tailor your resume to any job description instantly. Our AI matches keywords, optimizes achievements, and aligns your experience for maximum ATS compatibility.",
+        keywords: "Resume Tailorer, Job Matching, Resume Alignment, ATS Keyword Match"
+      },
+      prep: {
+        title: "AI Interview Preparation & Mock Interviews | CVMind AI",
+        description: "Prepare for interviews with personalized AI coaching. Get simulated behavioral questions, instant answers assessment, and industry-specific prep tips based on your resume.",
+        keywords: "AI Interview Prep, Mock Interview, Interview Coaching, Behavioral Questions"
+      },
+      linkedin: {
+        title: "LinkedIn Profile Optimizer | CVMind AI",
+        description: "Optimize your LinkedIn profile to get noticed by recruiters. Learn how to align your experience, headline, and skills with AI-driven recommendations.",
+        keywords: "LinkedIn Optimizer, LinkedIn SEO, Profile Optimization, Recruiter Attraction"
+      },
+      'linkedin-bio': {
+        title: "AI LinkedIn Bio Generator | Headline & Summary - CVMind AI",
+        description: "Create a compelling LinkedIn bio and headline in seconds. Our AI generates professional summaries that align with your industry, resume, and target roles.",
+        keywords: "LinkedIn Bio Generator, Professional Headline, LinkedIn Summary AI"
+      },
+      'linkedin-outreach': {
+        title: "AI LinkedIn Outreach Message Generator | CVMind AI",
+        description: "Generate personalized LinkedIn outreach messages to connect with recruiters, hiring managers, and industry peers to accelerate your job search.",
+        keywords: "LinkedIn Outreach, Networking Messages, Recruiter Outreach AI"
+      },
+      'career-courses': {
+        title: "AI-Recommended Career & Skill Development Courses | CVMind AI",
+        description: "Discover online courses curated by AI to fill your skill gaps. Advance your career with targeted learning options based on your resume analysis.",
+        keywords: "Career Development Courses, Skill Gap, Professional Learning, Online Courses"
+      },
+      'elevator-pitch': {
+        title: "AI Elevator Pitch Generator | Self-Introduction - CVMind AI",
+        description: "Generate a high-impact professional elevator pitch for networking events, job interviews, and cold outreach. Sound confident, clear, and recruiter-ready.",
+        keywords: "Elevator Pitch Generator, Self-Introduction, Job Interview Pitch"
+      },
+      'career-roadmap': {
+        title: "AI Career Path Roadmap Generator | Career Planning - CVMind AI",
+        description: "Map out your long-term career growth with our AI Career Roadmap generator. Get step-by-step career milestones, certification paths, and skill progression plans.",
+        keywords: "Career Roadmap Generator, Career Path Planner, Skill Progression, Career Strategy"
+      },
+      'resume-builder': {
+        title: "AI Resume Builder & Free ATS Templates | CVMind AI",
+        description: "Build a professionally formatted resume in minutes with our free AI Resume Builder. Choose from 10+ ATS-compliant templates and get AI-powered text refining.",
+        keywords: "AI Resume Builder, ATS Templates, Free Resume Maker, Resume Generator"
+      },
+      portfolio: {
+        title: "Developer Portfolio Showcase | CVMind AI",
+        description: "Interactive professional portfolio showcasing developer projects, skills, and work achievements powered by CVMind AI.",
+        keywords: "Developer Portfolio, Interactive CV, Project Showcase"
+      }
+    };
+
+    const currentMeta = metaData[currentPage] || metaData.home;
+    document.title = currentMeta.title;
+
+    // Update description meta tag
+    let descMeta = document.querySelector('meta[name="description"]');
+    if (!descMeta) {
+      descMeta = document.createElement('meta');
+      descMeta.setAttribute('name', 'description');
+      document.head.appendChild(descMeta);
+    }
+    descMeta.setAttribute('content', currentMeta.description);
+
+    // Update keywords meta tag
+    let keywordsMeta = document.querySelector('meta[name="keywords"]');
+    if (!keywordsMeta) {
+      keywordsMeta = document.createElement('meta');
+      keywordsMeta.setAttribute('name', 'keywords');
+      document.head.appendChild(keywordsMeta);
+    }
+    keywordsMeta.setAttribute('content', currentMeta.keywords);
+
+    // Update Open Graph tags (dynamic matching)
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', currentMeta.title);
+
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', currentMeta.description);
+
+    // Update Twitter Card tags (dynamic matching)
+    const twitterTitle = document.querySelector('meta[property="twitter:title"]');
+    if (twitterTitle) twitterTitle.setAttribute('content', currentMeta.title);
+
+    const twitterDesc = document.querySelector('meta[property="twitter:description"]');
+    if (twitterDesc) twitterDesc.setAttribute('content', currentMeta.description);
+
+    // Update canonical link
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalLink);
+    }
+    const domain = window.location.origin;
+    const path = currentPage === 'home' ? '' : `/${currentPage}`;
+    canonicalLink.setAttribute('href', `${domain}${path}`);
+  }, [currentPage]);
+
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
