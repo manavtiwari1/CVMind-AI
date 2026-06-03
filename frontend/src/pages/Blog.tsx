@@ -21,7 +21,6 @@ export default function Blog({ setCurrentPage }: BlogProps) {
         '<strong>🎙️ Voice Interview Practice:</strong> Built an interactive mock interview sandbox utilizing the Web Speech API. Candidates can now speak their answers aloud, and the AI will analyze transcripts for STAR alignment, confidence, and filler words.',
         '<strong>🌐 Portfolio Website Generator:</strong> Instantly convert a resume into a responsive HTML/CSS portfolio website. Features 5 premium themes, an interactive device preview frame, and a direct .html download option.',
         '<strong>📝 LinkedIn Post Generator:</strong> Generates 3 styles of viral LinkedIn posts (Professional, Storytelling, Punchy) with hooks and hashtags based on your resume achievements and target topic.',
-        '<strong>⚙️ DeepSeek API Migration:</strong> Fully migrated all newly introduced generative features away from the Gemini SDK to direct DeepSeek API fetches, ensuring consistent JSON output schemas and API key environments.',
         '<strong>🎤 Microphone Auto-Recovery:</strong> Implemented silent auto-restart logic to prevent the Web Speech API from abruptly stopping during long pauses or browser network timeouts.'
       ],
       icon: Sparkles,
