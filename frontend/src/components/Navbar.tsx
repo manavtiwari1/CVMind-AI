@@ -73,10 +73,13 @@ export default function Navbar({
     }
   }, [isLoggedIn]);
 
-  // Click outside listener for the profile dropdown
+  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
+
+  // Click outside listener for dropdowns
   useEffect(() => {
     const handleOutsideClick = () => {
       setShowDropdown(false);
+      setActiveSubmenu(null);
     };
     window.addEventListener('click', handleOutsideClick);
     return () => window.removeEventListener('click', handleOutsideClick);
@@ -293,9 +296,18 @@ export default function Navbar({
                 { label: 'Resume Builder', page: 'resume-builder' },
               ].map((item: any, idx: number) => {
                 if (item.subItems) {
+                  const isOpen = activeSubmenu === 'linkedin';
                   return (
-                    <div className="nav-subdropdown-container" key={idx}>
-                      <button className="dropdown-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div className={`nav-subdropdown-container${isOpen ? ' open' : ''}`} key={idx}>
+                      <button 
+                        className="dropdown-item" 
+                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setActiveSubmenu(prev => prev === 'linkedin' ? null : 'linkedin');
+                        }}
+                      >
                         {item.label} <ChevronRight size={10} />
                       </button>
                       <div className="nav-subdropdown-menu">
@@ -303,7 +315,11 @@ export default function Navbar({
                           <button
                             key={sub.page}
                             className={`dropdown-item${currentPage === sub.page ? ' active' : ''}`}
-                            onClick={() => go(sub.page)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              go(sub.page);
+                              setActiveSubmenu(null);
+                            }}
                           >
                             {sub.label}
                           </button>

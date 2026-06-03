@@ -793,6 +793,18 @@
   z-index: 1200;
 }
 
-.nav-subdropdown-container:hover .nav-subdropdown-menu {
+.nav-subdropdown-container:hover .nav-subdropdown-menu,
+.nav-subdropdown-container.open .nav-subdropdown-menu {
   display: flex;
+}
+
+/* Pseudo-element to bridge the mouse gap */
+.nav-subdropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -12px;
+  width: 12px;
+  background: transparent;
 }
