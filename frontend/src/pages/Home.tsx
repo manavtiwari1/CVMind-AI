@@ -675,8 +675,10 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
 
       {/* Feature Section */}
       <section className="features-section">
-        <h2 className="section-title">Deep Resume Diagnostics</h2>
-        <p className="section-subtitle">What our artificial recruiter evaluates in your document:</p>
+        <div className="section-heading-row">
+          <h2 className="section-title">Deep Resume Diagnostics</h2>
+          <p className="section-subtitle">What our artificial recruiter evaluates in your document:</p>
+        </div>
         
         <div className="responsive-grid features-grid">
           <div className="feature-card glass-card">
