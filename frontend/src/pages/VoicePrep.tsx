@@ -86,7 +86,11 @@ export default function VoicePrep({ customApiKey, resumeText }: VoicePrepProps) 
       if (event.error !== 'no-speech') {
         if (timerRef.current) clearInterval(timerRef.current);
         isRecordingRef.current = false;
-        setErrorMsg(`Microphone error: ${event.error}. Make sure mic permissions are allowed.`);
+        if (event.error === 'network') {
+          setErrorMsg('Network error: Your browser (like Brave) or VPN is blocking the speech recognition server. Try using standard Google Chrome or Edge without a VPN.');
+        } else {
+          setErrorMsg(`Microphone error: ${event.error}. Make sure mic permissions are allowed.`);
+        }
         setStep('question');
       }
     };
