@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
   Sparkles, FileText, Upload, Lock, ShieldAlert, ArrowRight,
   ChevronDown, ChevronUp, Copy, Check, CheckCircle2,
@@ -20,9 +20,11 @@ interface PrepProps {
   resumeText: string;
   setResumeText: (text: string) => void;
   setCurrentPage: (page: string) => void;
+  loadedWork: any;
+  setLoadedWork: (work: any) => void;
 }
 
-export default function Prep({ customApiKey, resumeText, setResumeText, setCurrentPage }: PrepProps) {
+export default function Prep({ customApiKey, resumeText, setResumeText, setCurrentPage, loadedWork, setLoadedWork }: PrepProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,8 +36,129 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>('All');
+
+  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
+  const [evaluations, setEvaluations] = useState<Record<number, any>>({});
+  const [evaluatingIndex, setEvaluatingIndex] = useState<number | null>(null);
+  const [savingPrep, setSavingPrep] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load from database if loadedWork is present
+  useEffect(() => {
+    if (loadedWork && loadedWork.type === 'prep') {
+      try {
+        const payload = JSON.parse(loadedWork.htmlContent);
+        if (payload.questions) {
+          setQuestions(payload.questions);
+          if (payload.resumeText) setResumeText(payload.resumeText);
+          if (payload.userAnswers) setUserAnswers(payload.userAnswers);
+          if (payload.evaluations) setEvaluations(payload.evaluations);
+          setExpandedIndex(0);
+        }
+      } catch (err) {
+        console.error('Failed to parse loaded prep session:', err);
+      }
+    }
+  }, [loadedWork]);
+
+  const handleEvaluateAnswer = async (idx: number) => {
+    const answer = userAnswers[idx];
+    if (!answer || !answer.trim()) {
+      alert('Please type your answer first before evaluating.');
+      return;
+    }
+
+    setEvaluatingIndex(idx);
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (customApiKey) {
+        headers['x-gemini-key'] = customApiKey;
+      }
+
+      const response = await fetch(`${baseUrl}/api/prep/evaluate`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          question: questions[idx].question,
+          userAnswer: answer,
+          resumeText
+        })
+      });
+
+      const resData = await response.json();
+      if (!response.ok) {
+        throw new Error(resData.error || 'Failed to evaluate answer');
+      }
+
+      if (resData.success && resData.data) {
+        setEvaluations(prev => ({
+          ...prev,
+          [idx]: resData.data
+        }));
+      }
+    } catch (err: any) {
+      alert(err.message || 'Evaluation failed. Make sure the backend server is running.');
+    } finally {
+      setEvaluatingIndex(null);
+    }
+  };
+
+  const handleSavePrepSession = async () => {
+    const userStr = localStorage.getItem('cvmind_user');
+    if (!userStr) {
+      alert('Please sign in to save your interview prep scorecard.');
+      return;
+    }
+
+    let userId = '';
+    try {
+      const user = JSON.parse(userStr);
+      userId = user.id || user._id;
+    } catch {
+      alert('Session invalid. Please sign in again.');
+      return;
+    }
+
+    setSavingPrep(true);
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+      const payload = {
+        resumeText,
+        questions,
+        userAnswers,
+        evaluations
+      };
+
+      const response = await fetch(`${baseUrl}/api/user/work`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          title: `Interview Prep - ${questions[0]?.question?.slice(0, 25) || 'Session'}...`,
+          type: 'prep',
+          templateId: 'interview-prep',
+          htmlContent: JSON.stringify(payload),
+          workId: loadedWork?.id || loadedWork?._id || undefined
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to save');
+
+      setSaveSuccess(true);
+      if (data.data && setLoadedWork) {
+        setLoadedWork(data.data);
+      }
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (err: any) {
+      alert(err.message || 'An error occurred while saving your session.');
+    } finally {
+      setSavingPrep(false);
+    }
+  };
 
   const loaderSteps = [
     'Scanning CV professional history...',
@@ -364,12 +487,20 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
                 </div>
               </div>
 
-              <div className="toolbar-right">
+              <div className="toolbar-right" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button className="btn-secondary btn-sm" onClick={handleCopyAll}>
                   {copiedAll ? <><Check size={14} className="text-success" /> Copied Scorecard!</> : <><Copy size={14} /> Copy All</>}
                 </button>
-                 <button className="btn-primary btn-sm" onClick={downloadPrepPDF}>
+                <button className="btn-primary btn-sm" onClick={downloadPrepPDF}>
                   <FileDown size={14} /> Download PDF
+                </button>
+                <button 
+                  className="btn-primary btn-sm" 
+                  style={{ background: 'var(--color-emerald)', borderColor: 'var(--color-emerald)' }} 
+                  onClick={handleSavePrepSession}
+                  disabled={savingPrep}
+                >
+                  {savingPrep ? 'Saving...' : saveSuccess ? 'Saved to Works!' : 'Save Session'}
                 </button>
               </div>
             </div>
@@ -452,6 +583,51 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
                               {q.tip}
                             </p>
                           </div>
+
+                          {/* Mock Practice Answer Input */}
+                          <div className="body-section mock-practice-section" style={{ borderTop: '1px solid var(--border)', paddingTop: '1.25rem', marginTop: '1.25rem' }}>
+                            <h4 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--blue)' }}>
+                              <Cpu size={15} /> Practice Your Answer
+                            </h4>
+                            <div className="practice-box-group" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+                              <textarea
+                                className="practice-answer-input"
+                                style={{ width: '100%', minHeight: '80px', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.02)', color: 'var(--text-primary)', border: '1px solid var(--border)', resize: 'vertical', fontSize: '0.85rem', outline: 'none' }}
+                                placeholder="Type your personal mock answer here... try to use the STAR method."
+                                value={userAnswers[idx] || ''}
+                                onChange={(e) => setUserAnswers(prev => ({ ...prev, [idx]: e.target.value }))}
+                              />
+                              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <button 
+                                  className="btn-primary btn-sm" 
+                                  onClick={() => handleEvaluateAnswer(idx)}
+                                  disabled={evaluatingIndex === idx}
+                                >
+                                  {evaluatingIndex === idx ? 'Analyzing Answer...' : 'AI Evaluation & Score'}
+                                </button>
+                                </div>
+                              </div>
+
+                              {/* Evaluation results */}
+                              {evaluations[idx] && (
+                                <div className="evaluation-box glass-card animate-fade-in" style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '8px' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                    <h5 style={{ margin: 0, color: 'var(--color-primary)', fontWeight: 700 }}>AI Assessment</h5>
+                                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', background: 'var(--color-primary-dim)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                                      Score: {evaluations[idx].score}/10
+                                    </span>
+                                  </div>
+                                  <div style={{ fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <p style={{ margin: 0 }}><strong>Strengths:</strong> {evaluations[idx].strengths}</p>
+                                    <p style={{ margin: 0 }}><strong>To Improve:</strong> {evaluations[idx].improvements}</p>
+                                    <div style={{ margin: '0.5rem 0 0', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderLeft: '3px solid var(--color-emerald)', borderRadius: '0 4px 4px 0' }}>
+                                      <strong>Refined Answer:</strong>
+                                      <p style={{ margin: '0.2rem 0 0', fontStyle: 'italic' }}>"{evaluations[idx].refinedAnswer}"</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
 
                         </div>
                       )}

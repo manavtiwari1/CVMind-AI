@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { 
-  ChevronDown, Menu, X, User, Briefcase, Mail, Settings, 
+  ChevronDown, ChevronRight, Menu, X, User, Briefcase, Mail, Settings, 
   LogOut, Loader2, Trash2, Edit3, Sparkles, MapPin, Key, Lock, AlertCircle, FileText, Camera,
   Sun, Moon, Globe
 } from 'lucide-react';
@@ -274,7 +274,7 @@ export default function Navbar({
           {/* Products Dropdown */}
           <div className="nav-dropdown-container">
             <button
-              className={`nav-link dropdown-toggle${['tailor', 'prep'].includes(currentPage) ? ' active' : ''}`}
+              className={`nav-link dropdown-toggle${['tailor', 'prep', 'linkedin', 'linkedin-bio'].includes(currentPage) ? ' active' : ''}`}
             >
               Products <ChevronDown size={12} className="dropdown-arrow" />
             </button>
@@ -283,17 +283,45 @@ export default function Navbar({
                 { label: 'AI Resume Analyzer', page: 'home' },
                 { label: 'AI Resume Tailorer', page: 'tailor' },
                 { label: 'SmartPrep AI (Prep)', page: 'prep' },
-                { label: 'LinkedIn Optimizer', page: 'linkedin' },
+                { 
+                  label: 'LinkedIn Optimizer',
+                  subItems: [
+                    { label: 'Profile PDF Audit', page: 'linkedin' },
+                    { label: 'Bio & Banner Generator', page: 'linkedin-bio' }
+                  ]
+                },
                 { label: 'Resume Builder', page: 'resume-builder' },
-              ].map(({ label, page }) => (
-                <button
-                  key={page}
-                  className={`dropdown-item${currentPage === page ? ' active' : ''}`}
-                  onClick={() => go(page)}
-                >
-                  {label}
-                </button>
-              ))}
+              ].map((item: any, idx: number) => {
+                if (item.subItems) {
+                  return (
+                    <div className="nav-subdropdown-container" key={idx}>
+                      <button className="dropdown-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                        {item.label} <ChevronRight size={10} />
+                      </button>
+                      <div className="nav-subdropdown-menu">
+                        {item.subItems.map((sub: any) => (
+                          <button
+                            key={sub.page}
+                            className={`dropdown-item${currentPage === sub.page ? ' active' : ''}`}
+                            onClick={() => go(sub.page)}
+                          >
+                            {sub.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <button
+                    key={item.page}
+                    className={`dropdown-item${currentPage === item.page ? ' active' : ''}`}
+                    onClick={() => go(item.page)}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -409,7 +437,8 @@ export default function Navbar({
           { label: 'Dashboard', page: 'dashboard' },
           { label: 'Resume Builder', page: 'resume-builder' },
           { label: 'Resume Tailor', page: 'tailor' },
-          { label: 'LinkedIn Optimizer', page: 'linkedin' },
+          { label: 'LinkedIn Profile Audit', page: 'linkedin' },
+          { label: 'LinkedIn Bio & Banner AI', page: 'linkedin-bio' },
           { label: 'Interview Prep AI', page: 'prep' },
           { label: 'About CVMind AI', page: 'about' },
           { label: 'Contact Support', page: 'contact' }
@@ -687,8 +716,11 @@ export default function Navbar({
                   {works.map((w: any) => (
                     <div key={w.id || w._id} className="work-item-card">
                       <div className="work-card-top">
-                        <span className={`work-type-badge ${w.type}`}>
-                          {w.type === 'cover-letter' ? 'Cover Letter' : w.type === 'linkedin' ? 'LinkedIn' : 'Resume'}
+                        <span className={`work-type-badge ${w.type}`} style={{
+                          background: w.type === 'prep' ? 'rgba(99,102,241,0.12)' : w.type === 'linkedin-bio' ? 'rgba(41,151,255,0.12)' : undefined,
+                          color: w.type === 'prep' ? '#6366f1' : w.type === 'linkedin-bio' ? '#2997ff' : undefined
+                        }}>
+                          {w.type === 'cover-letter' ? 'Cover Letter' : w.type === 'linkedin' ? 'LinkedIn Audit' : w.type === 'linkedin-bio' ? 'LinkedIn Bio' : w.type === 'prep' ? 'AI Prep' : 'Resume'}
                         </span>
                         <span className="work-date">
                           {new Date(w.updatedAt || w.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -704,6 +736,10 @@ export default function Navbar({
                           setLoadedWork(w);
                           if (w.type === 'linkedin') {
                             go('linkedin');
+                          } else if (w.type === 'linkedin-bio') {
+                            go('linkedin-bio');
+                          } else if (w.type === 'prep') {
+                            go('prep');
                           } else {
                             go('resume-builder');
                           }

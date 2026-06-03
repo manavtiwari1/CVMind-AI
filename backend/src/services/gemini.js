@@ -999,3 +999,200 @@ export async function analyzeLinkedInProfileWithGemini(profileText, customApiKey
   }
 }
 
+const evaluationSchema = {
+  type: 'object',
+  properties: {
+    score: { type: 'number', description: 'Evaluation score of the candidate\'s answer from 1 to 10.' },
+    strengths: { type: 'string', description: 'What the candidate did well in their response. Keep it concise (strictly under 60 words).' },
+    improvements: { type: 'string', description: 'Areas where the candidate can improve, such as structure, vocabulary, or STAR elements. Keep it concise (strictly under 60 words).' },
+    refinedAnswer: { type: 'string', description: 'An optimized version of their answer that sounds highly professional, polished, and structured. Keep it under 60 words.' }
+  },
+  required: ['score', 'strengths', 'improvements', 'refinedAnswer']
+};
+
+export async function evaluatePrepAnswerWithGemini({ question, userAnswer, resumeText, customApiKey = null }) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const systemPrompt = `You are a world-class Executive Interview Coach. Your task is to evaluate the candidate's response to a specific interview question.
+  Evaluate the answer based on:
+  1. Professional alignment and relevance to the resume details.
+  2. Structure (STAR method: Situation, Task, Action, Result) for behavioral questions.
+  3. Clarity, confidence, and terminology.
+  
+  Provide a score from 1 to 10, key strengths, areas of improvement, and a highly polished "refined" version of the answer that the candidate should use instead.`;
+
+  const userPrompt = `
+  Question: "${question}"
+  Candidate's Answer: "${userAnswer}"
+  ${resumeText ? `Candidate's Resume Context:\n"""\n${resumeText}\n"""` : ''}
+  
+  Evaluate this answer and return the structured JSON now.`;
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: `${systemPrompt}\nYou MUST strictly respond with a JSON object that conforms to this JSON schema:\n${JSON.stringify(evaluationSchema, null, 2)}` },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.3,
+          max_tokens: 800,
+          response_format: { type: 'json_object' }
+        })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+      const result = await response.json();
+      return JSON.parse(result.choices[0].message.content.trim());
+    } catch (error) {
+      console.error('OpenRouter Evaluation Error:', error);
+      throw new Error('Interview evaluation failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: evaluationSchema,
+        temperature: 0.3
+      }
+    });
+    return JSON.parse(result.response.text().trim());
+  } catch (error) {
+    console.error('Gemini Evaluation Error:', error);
+    throw new Error('Interview evaluation failed. ' + error.message);
+  }
+}
+
+const linkedinBioSchema = {
+  type: 'object',
+  properties: {
+    headlines: {
+      type: 'array',
+      items: { type: 'string' },
+      description: '3 professional, high-impact LinkedIn profile headlines (e.g. including target role, core competencies, accomplishments, separated by |).'
+    },
+    aboutSummaries: {
+      type: 'array',
+      items: { type: 'string' },
+      description: '2 distinct Professional "About" sections (around 100-150 words). One should be structured/bulleted and one should be narrative.'
+    },
+    bannerIdeas: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          text: { type: 'string', description: 'Recommended main text to display on a custom LinkedIn banner (e.g. key value proposition).' },
+          bgStyle: { type: 'string', description: 'Visual style / color palette recommendation (e.g. Modern Navy Blue & Gold Minimalist).' },
+          tip: { type: 'string', description: 'Brief guidance on graphics/icons to include.' }
+        },
+        required: ['text', 'bgStyle', 'tip']
+      },
+      description: '2 creative LinkedIn banner ideas.'
+    },
+    hashtags: {
+      type: 'array',
+      items: { type: 'string' },
+      description: '5 high-traffic career hashtags.'
+    }
+  },
+  required: ['headlines', 'aboutSummaries', 'bannerIdeas', 'hashtags']
+};
+
+export async function generateLinkedinBioWithGemini({ skills, jobTitle, resumeText, customApiKey = null }) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const systemPrompt = `You are a premier LinkedIn Personal Branding Coach. Your task is to craft high-conversion LinkedIn profile assets:
+  1. Headlines: Catchy, keyword-optimized, highlighting their specialty and value.
+  2. About Summaries: Storytelling summaries showing passion, key accomplishments, and clear calls to action.
+  3. Banner Designs: Guidance on what copy, background styles, and graphical elements to put on their profile banner.
+  4. Hashtags: Industry-specific search tags.`;
+
+  const userPrompt = `
+  Target Job Title: "${jobTitle || 'Professional'}"
+  Skills / Keywords provided: "${skills || ''}"
+  ${resumeText ? `Optional Resume Context:\n"""\n${resumeText}\n"""` : ''}
+  
+  Generate the LinkedIn Profile Assets and return the structured JSON now.`;
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: `${systemPrompt}\nYou MUST strictly respond with a JSON object that conforms to this JSON schema:\n${JSON.stringify(linkedinBioSchema, null, 2)}` },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.4,
+          max_tokens: 1200,
+          response_format: { type: 'json_object' }
+        })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+      const result = await response.json();
+      return JSON.parse(result.choices[0].message.content.trim());
+    } catch (error) {
+      console.error('OpenRouter LinkedIn Bio Error:', error);
+      throw new Error('LinkedIn bio generation failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: linkedinBioSchema,
+        temperature: 0.4
+      }
+    });
+    return JSON.parse(result.response.text().trim());
+  } catch (error) {
+    console.error('Gemini LinkedIn Bio Error:', error);
+    throw new Error('LinkedIn bio generation failed. ' + error.message);
+  }
+}
+
+

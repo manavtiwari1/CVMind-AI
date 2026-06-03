@@ -768,3 +768,31 @@
   color: var(--text-primary);
   border-color: var(--border-strong);
 }
+
+/* Sub-dropdown menu styling */
+.nav-subdropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.nav-subdropdown-menu {
+  position: absolute;
+  left: calc(100% + 4px);
+  top: -6px;
+  background: var(--bg-elevated);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  box-shadow: var(--shadow-lg);
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  width: 180px;
+  z-index: 1200;
+}
+
+.nav-subdropdown-container:hover .nav-subdropdown-menu {
+  display: flex;
+}

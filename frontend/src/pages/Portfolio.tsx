@@ -12,6 +12,7 @@ export default function Portfolio({ workId }: PortfolioProps) {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [workData, setWorkData] = useState<any>(null);
+  const [themeName, setThemeName] = useState('classic');
 
   useEffect(() => {
     if (!workId) {
@@ -79,6 +80,7 @@ export default function Portfolio({ workId }: PortfolioProps) {
     });
     a.click();
     URL.revokeObjectURL(a.href);
+    a.remove();
   };
 
   if (loading) {
@@ -118,8 +120,21 @@ export default function Portfolio({ workId }: PortfolioProps) {
           <h1 className="pf-document-title" title={workData.title}>{workData.title}</h1>
         </div>
         <div className="pf-topbar-right">
+          <select 
+            value={themeName} 
+            onChange={(e) => setThemeName(e.target.value)} 
+            className="pf-btn"
+            style={{ cursor: 'pointer', outline: 'none' }}
+            title="Choose Portfolio Theme"
+          >
+            <option value="classic">Classic White</option>
+            <option value="dark">Sleek Dark Mode</option>
+            <option value="terminal">Developer Terminal</option>
+            <option value="executive">Minimal Executive</option>
+          </select>
+
           <button className="pf-btn" onClick={handlePrint}>
-            <Printer size={13} /> Print / Save PDF
+            <Printer size={13} /> Print / PDF
           </button>
           <button className="pf-btn btn-secondary" onClick={handleDownloadDOCX}>
             <Download size={13} /> Word DOC
@@ -131,7 +146,7 @@ export default function Portfolio({ workId }: PortfolioProps) {
       </div>
 
       {/* Main Resume view board */}
-      <div className="pf-sheet-shell">
+      <div className={`pf-sheet-shell theme-${themeName}`}>
         <div className="pf-sheet-paper">
           <div 
             className="pf-sheet-content"

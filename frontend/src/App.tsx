@@ -11,6 +11,7 @@ import Tailor from './pages/Tailor';
 import Prep from './pages/Prep';
 import CoverLetter from './pages/CoverLetter';
 import LinkedIn from './pages/LinkedIn';
+import LinkedInBio from './pages/LinkedInBio';
 import Portfolio from './pages/Portfolio';
 import Privacy from './pages/Privacy';
 import FAQ from './pages/FAQ';
@@ -26,7 +27,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'resume-builder', 'privacy', 'faq'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'resume-builder', 'privacy', 'faq'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -95,7 +96,7 @@ export default function App() {
 
   // Private route interceptor to enforce Sign In for product modules
   useEffect(() => {
-    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin'];
+    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin', 'linkedin-bio'];
     if (privatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
       setShowAuthModal(true);
@@ -165,12 +166,23 @@ export default function App() {
             resumeText={resumeText}
             setResumeText={setResumeText}
             setCurrentPage={setCurrentPage}
+            loadedWork={loadedWork}
+            setLoadedWork={setLoadedWork}
           />
         );
       case 'linkedin':
         return (
           <LinkedIn 
             customApiKey={customApiKey}
+            loadedWork={loadedWork}
+            setLoadedWork={setLoadedWork}
+          />
+        );
+      case 'linkedin-bio':
+        return (
+          <LinkedInBio 
+            customApiKey={customApiKey}
+            resumeText={resumeText}
             loadedWork={loadedWork}
             setLoadedWork={setLoadedWork}
           />

@@ -128,6 +128,14 @@ const linkedinLogSchema = new mongoose.Schema({
 
 const LinkedinLog = mongoose.models.LinkedinLog || mongoose.model('LinkedinLog', linkedinLogSchema);
 
+const linkedinBioLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  jobTitle: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const LinkedinBioLog = mongoose.models.LinkedinBioLog || mongoose.model('LinkedinBioLog', linkedinBioLogSchema);
+
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -456,6 +464,30 @@ export async function saveLinkedinLog({ email, score }) {
   writeDb(db);
 }
 
+export async function saveLinkedinBioLog({ email, jobTitle }) {
+  await ensureMongoConnection();
+
+  // 1. MongoDB Mode (Non-blocking)
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    LinkedinBioLog.create({
+      email: email || '',
+      jobTitle: jobTitle || ''
+    }).catch(err => console.error('MongoDB saveLinkedinBioLog error:', err));
+    return;
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  if (!db.linkedinBioLogs) db.linkedinBioLogs = [];
+  db.linkedinBioLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    jobTitle: jobTitle || '',
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
 export async function getWorkById(workId) {
   await ensureMongoConnection();
   const cleanWorkId = String(workId || '').trim();
@@ -485,6 +517,7 @@ export async function getAdminStats() {
       const prepLogs = await PrepLog.find().sort({ createdAt: -1 }).limit(100);
       const loginLogs = await LoginLog.find().sort({ createdAt: -1 }).limit(100);
       const linkedinLogs = await LinkedinLog.find().sort({ createdAt: -1 }).limit(100);
+      const linkedinBioLogs = await LinkedinBioLog.find().sort({ createdAt: -1 }).limit(100);
       const resumes = await Work.find({ type: 'resume' }).sort({ updatedAt: -1 }).limit(100);
       const coverLetters = await Work.find({ type: 'cover-letter' }).sort({ updatedAt: -1 }).limit(100);
       
@@ -495,6 +528,7 @@ export async function getAdminStats() {
       const totalPreps = await PrepLog.countDocuments();
       const totalLogins = await LoginLog.countDocuments();
       const totalLinkedins = await LinkedinLog.countDocuments();
+      const totalLinkedinBios = await LinkedinBioLog.countDocuments();
       const totalResumes = await Work.countDocuments({ type: 'resume' });
       const totalCoverLetters = await Work.countDocuments({ type: 'cover-letter' });
       
@@ -617,6 +651,13 @@ export async function getAdminStats() {
           updatedAt: c.updatedAt,
           user: userMap[String(c.userId)] || { name: 'Unknown User', email: 'N/A' }
         })),
+        totalLinkedinBios,
+        recentLinkedinBios: linkedinBioLogs.slice(0, 15).map(b => ({
+          id: b._id,
+          email: b.email,
+          jobTitle: b.jobTitle,
+          createdAt: b.createdAt
+        })),
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
           updatedAt: new Date().toISOString()
@@ -636,9 +677,11 @@ export async function getAdminStats() {
   const prepLogs = Array.isArray(db.prepLogs) ? db.prepLogs : [];
   const loginLogs = Array.isArray(db.loginLogs) ? db.loginLogs : [];
   const linkedinLogs = Array.isArray(db.linkedinLogs) ? db.linkedinLogs : [];
+  const linkedinBioLogs = Array.isArray(db.linkedinBioLogs) ? db.linkedinBioLogs : [];
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
   const totalLinkedins = linkedinLogs.length;
+  const totalLinkedinBios = linkedinBioLogs.length;
 
   const works = Array.isArray(db.works) ? db.works : [];
   const resumes = works.filter(w => w.type === 'resume');
@@ -677,7 +720,9 @@ export async function getAdminStats() {
     totalResumes,
     totalCoverLetters,
     totalLinkedins,
+    totalLinkedinBios,
     recentLinkedins: linkedinLogs.slice(0, 15),
+    recentLinkedinBios: linkedinBioLogs.slice(0, 15),
     recentScans: scans.slice(0, 8),
     contactMessages: contacts.slice(0, 8),
     recentFixes: fixes.slice(0, 10),

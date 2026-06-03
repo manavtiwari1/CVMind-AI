@@ -5,8 +5,8 @@ import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, getWorkById } from './db.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini } from './services/gemini.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, getWorkById } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -603,6 +603,35 @@ apiRouter.post('/api/prep', upload.single('resume'), async (req, res) => {
   }
 });
 
+// AI Prep Evaluate Answer Endpoint
+apiRouter.post('/api/prep/evaluate', async (req, res) => {
+  try {
+    const { question, userAnswer, resumeText } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!question || !userAnswer) {
+      return res.status(400).json({ error: 'Question and User Answer are required.' });
+    }
+
+    const result = await evaluatePrepAnswerWithGemini({
+      question,
+      userAnswer,
+      resumeText,
+      customApiKey
+    });
+
+    return res.json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error('Prep Evaluate API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
+    });
+  }
+});
+
 
 // AI Cover Letter Refine Endpoint
 apiRouter.post('/api/cover-letter/refine', async (req, res) => {
@@ -687,6 +716,58 @@ apiRouter.post('/api/linkedin/analyze', upload.single('linkedinPdf'), async (req
     console.error('LinkedIn Optimize API Error:', error);
     return res.status(500).json({
       error: 'try again after sometime or mail to contact@manavtiwari.in for this error'
+    });
+  }
+});
+
+// LinkedIn Profile Bio & Banner Generator Endpoint
+apiRouter.post('/api/linkedin/bio', async (req, res) => {
+  try {
+    const { skills, jobTitle, resumeText, email, userId } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!jobTitle) {
+      return res.status(400).json({ error: 'Job Title is required.' });
+    }
+
+    const result = await generateLinkedinBioWithGemini({
+      skills,
+      jobTitle,
+      resumeText,
+      customApiKey
+    });
+
+    // Save log
+    await saveLinkedinBioLog({
+      email: email || '',
+      jobTitle: jobTitle
+    });
+
+    let savedWork = null;
+    if (userId) {
+      savedWork = await saveWork({
+        userId,
+        title: `LinkedIn Assets - ${jobTitle}`,
+        type: 'linkedin-bio',
+        templateId: 'linkedin-bio-gen',
+        htmlContent: JSON.stringify({
+          skills,
+          jobTitle,
+          resumeText,
+          result
+        })
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: result,
+      work: savedWork
+    });
+  } catch (error) {
+    console.error('LinkedIn Bio Generator API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
   }
 });

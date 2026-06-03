@@ -60,6 +60,10 @@ interface AdminStats {
   recentFixes?: Array<{ id: string; fileName: string; priorScore: number; createdAt: string }>;
   totalPreps?: number;
   recentPreps?: Array<{ id: string; fileName: string; fileSize: number; questionsCount: number; createdAt: string }>;
+  totalLinkedins?: number;
+  totalLinkedinBios?: number;
+  recentLinkedins?: Array<{ id: string; email: string; score: number; createdAt: string }>;
+  recentLinkedinBios?: Array<{ id: string; email: string; jobTitle: string; createdAt: string }>;
   recentResumes?: Array<{
     id: string;
     title: string;
@@ -326,6 +330,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
             <NavItem icon={<BrainCircuit size={15} />}    label="AI Auto-Fixes"     active={activeSection === 'fixes'}      onClick={() => setActiveSection('fixes')} />
             <NavItem icon={<Sparkles size={15} />}        label="AI Tailor Logs"    active={activeSection === 'tailors'}    onClick={() => setActiveSection('tailors')} />
             <NavItem icon={<Sparkles size={15} />}        label="AI Prep Logs"      active={activeSection === 'preps'}      onClick={() => setActiveSection('preps')} />
+            <NavItem icon={<Sparkles size={15} />}        label="LinkedIn Audit Logs" active={activeSection === 'linkedin-logs'} onClick={() => setActiveSection('linkedin-logs')} />
+            <NavItem icon={<Sparkles size={15} />}        label="LinkedIn Bio Logs" active={activeSection === 'linkedin-bio-logs'} onClick={() => setActiveSection('linkedin-bio-logs')} />
             <NavItem icon={<LogIn size={15} />}           label="Login Logs"        active={activeSection === 'logins'}     onClick={() => setActiveSection('logins')} />
             <NavItem icon={<FileText size={15} />}        label="Resume Builder Logs" active={activeSection === 'resume-logs'} onClick={() => setActiveSection('resume-logs')} />
             <NavItem icon={<FileText size={15} />}        label="Cover Letter Logs"  active={activeSection === 'cl-logs'} onClick={() => setActiveSection('cl-logs')} />
@@ -362,6 +368,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'fixes'      && 'AI Resume Auto-Fix Logs'}
                 {activeSection === 'tailors'    && 'AI Resume Tailoring Logs'}
                 {activeSection === 'preps'      && 'AI Interview Prep Scorecard Logs'}
+                {activeSection === 'linkedin-logs' && 'LinkedIn Profile Audit Logs'}
+                {activeSection === 'linkedin-bio-logs' && 'LinkedIn Bio & Banner Logs'}
                 {activeSection === 'logins'     && 'User Authentication & Login Activity Logs'}
                 {activeSection === 'resume-logs' && 'Resume Builder Saved Drafts'}
                 {activeSection === 'cl-logs'     && 'Cover Letter Builder Saved Drafts'}
@@ -443,6 +451,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <StatCard icon={<BrainCircuit size={18} />} label="Resumes Auto-Fixed"     value={(stats.totalFixes ?? 0).toLocaleString()} caption="ATS-optimized by AI" trendCls="card-emerald" />
                       <StatCard icon={<Sparkles size={18} />}    label="Resumes Tailored"       value={(stats.totalTailors ?? 0).toLocaleString()} caption="Aligned to target JDs" trendCls="card-rose" />
                       <StatCard icon={<Sparkles size={18} />}    label="SmartPreps Generated"   value={(stats.totalPreps ?? 0).toLocaleString()} caption="Interview prep scorecards" trendCls="card-purple" />
+                      <StatCard icon={<Sparkles size={18} />}    label="LinkedIn Audits"        value={(stats.totalLinkedins ?? 0).toLocaleString()} caption="LinkedIn profile audits" trendCls="card-cyan" />
+                      <StatCard icon={<Sparkles size={18} />}    label="LinkedIn Bios Generated" value={(stats.totalLinkedinBios ?? 0).toLocaleString()} caption="LinkedIn personal bios" trendCls="card-indigo" />
                       <StatCard icon={<FileText size={18} />}    label="Resumes Created"        value={(stats.totalResumes ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-cyan" />
                       <StatCard icon={<FileText size={18} />}    label="Cover Letters Created"  value={(stats.totalCoverLetters ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-rose" />
                       <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact" trendCls="card-amber" />
@@ -905,6 +915,79 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                 <span className="badge badge-success" style={{ marginLeft: '1rem', padding: '0.45rem 0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                                   Generated
                                 </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ LINKEDIN AUDIT LOGS SECTION ─ */}
+                {activeSection === 'linkedin-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Historical LinkedIn Profile Audit Logs</h2>
+                      <span className="panel-badge">{stats.totalLinkedins ?? 0} audits logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentLinkedins || (stats.recentLinkedins || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">✨</span>
+                          <p>No LinkedIn audits logged in the database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentLinkedins || []).map(l => (
+                            <div className="admin-table-row glass-card detail" key={l.id}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{l.email || 'Anonymous User'}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Log ID: <code className="admin-status-mono">{l.id.slice(0, 8)}...</code></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(l.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                              <div className="table-row-right" style={{ display: 'flex', alignItems: 'center' }}>
+                                <span className={`admin-score-pill ${l.score >= 8 ? 'high' : l.score >= 6 ? 'mid' : 'low'}`}>
+                                  Score: {l.score}/10
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ LINKEDIN BIO LOGS SECTION ─ */}
+                {activeSection === 'linkedin-bio-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Historical LinkedIn Bio & Banner Generation Logs</h2>
+                      <span className="panel-badge">{stats.totalLinkedinBios ?? 0} bios logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentLinkedinBios || (stats.recentLinkedinBios || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">✨</span>
+                          <p>No LinkedIn bio generations logged in the database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentLinkedinBios || []).map(b => (
+                            <div className="admin-table-row glass-card detail" key={b.id}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{b.email || 'Anonymous User'}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Job Title: <strong style={{ color: 'var(--color-primary)' }}>{b.jobTitle}</strong></span>
+                                  <span>•</span>
+                                  <span>Log ID: <code className="admin-status-mono">{b.id.slice(0, 8)}...</code></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(b.createdAt).toLocaleString()}</span>
+                                </div>
                               </div>
                             </div>
                           ))}
