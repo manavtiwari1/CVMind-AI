@@ -222,9 +222,6 @@ export default function Navbar({
     const userId = user?.id || user?._id;
     if (!userId || !workId) return;
 
-    const confirmDelete = window.confirm('Are you sure you want to permanently delete this work?');
-    if (!confirmDelete) return;
-
     const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
 
     try {
