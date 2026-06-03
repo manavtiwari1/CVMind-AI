@@ -2,6 +2,127 @@
    CVMind AI — Premium Apple-Dark Home Page
    ════════════════════════════════════════════════════════════ */
 
+/* ── Launch Countdown Banner ──────────────────────────────── */
+.launch-countdown-banner {
+  width: 100%;
+  background: linear-gradient(90deg,
+    rgba(41,151,255,0.08) 0%,
+    rgba(16,16,28,0.92) 30%,
+    rgba(16,16,28,0.92) 70%,
+    rgba(191,90,242,0.08) 100%
+  );
+  border-bottom: 1px solid rgba(41,151,255,0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 24px rgba(41,151,255,0.08);
+}
+
+.countdown-banner-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.6rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.countdown-label-left {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(41,151,255,0.9);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.countdown-rocket-icon {
+  color: rgba(41,151,255,0.9);
+  animation: rocketPulse 2s ease-in-out infinite;
+}
+
+@keyframes rocketPulse {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50%       { transform: translateY(-2px); opacity: 0.7; }
+}
+
+.countdown-units {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40px;
+}
+
+.countdown-number {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, #fff 30%, rgba(41,151,255,0.85) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.countdown-seconds {
+  background: linear-gradient(135deg, rgba(191,90,242,0.9) 0%, #fff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: secondFlip 1s ease-in-out;
+}
+
+@keyframes secondFlip {
+  0%   { opacity: 0.5; transform: scale(0.95); }
+  50%  { opacity: 1;   transform: scale(1.04); }
+  100% { opacity: 1;   transform: scale(1); }
+}
+
+.countdown-unit-label {
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.countdown-separator {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgba(41,151,255,0.4);
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.countdown-label-right {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 600px) {
+  .countdown-label-left span,
+  .countdown-label-right { display: none; }
+  .countdown-banner-inner { justify-content: center; }
+  .countdown-number { font-size: 1.05rem; }
+}
+
 /* ── Page wrapper ─────────────────────────────────────────── */
 .home-container {
   width: 100%;
