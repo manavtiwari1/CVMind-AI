@@ -14,14 +14,32 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       id: 1,
       version: 'v2.1.0',
       date: 'June 3, 2026',
-      title: 'LLM Core Upgrade to DeepSeek & Silent Auto-Saves',
+      title: 'Big Product Update: CVMind AI is now Launch-Ready!',
       tag: 'Core Upgrade',
-      description: 'A massive performance rewrite migrating backend systems to DeepSeek API and integrating background automation for continuous data safety.',
+      description: 'Over the last few days, we have completely transformed CVMind AI from a simple resume reviewer into a comprehensive, end-to-end career suite powered by AI. Humne products navigation, core AI engine, aur dashboard UX me major features aur updates deploy kiye hain.',
       details: [
-        'DeepSeek API Migration: Replaced our legacy LLM backend with the DeepSeek API (deepseek-chat), providing faster, schema-safe JSON evaluations with a zero connection timeout rate.',
-        'Silent Background Auto-Save: Content editors (Resume Builder, Cover Letter) and SmartPrep AI sandboxes now automatically save changes every 4 seconds without active typing interruptions.',
-        'Frictionless Deletion: Removed standard browser confirm popups. Deleting files is now instant, automatically syncing and resetting the active user view in real-time.',
-        'Core Bugfixes: Resolved pre-declaration ReferenceError (Temporal Dead Zone) warnings, backend CORS DELETE blocking bugs, and mongoose deprecation warnings.'
+        '<strong>🎙️ 1. SmartPrep AI (HR & Technical Interview Coach)</strong><br/>Interview crack karna ab aur bhi easy hai! SmartPrep AI aapke resume ko parse karke exact targeted job profiles ke rules aur domain checklist ke according standard interview questions set karta hai:',
+        '<span class="sub-bullet"><strong>Practice Sandbox:</strong> Aap question-by-question answers type karke prepare kar sakte hain.</span>',
+        '<span class="sub-bullet"><strong>AI Evaluation & Score:</strong> Instant feedback aur score (out of 10) milta hai ki aapka answer standard STAR (Situation, Task, Action, Result) method me align ho raha hai ya nahi.</span>',
+        
+        '<strong>💼 2. LinkedIn Optimizer (Dedicated Submenu Suite)</strong><br/>Aapki professional branding ko state-of-the-art level par le jaane ke liye:',
+        '<span class="sub-bullet"><strong>Profile PDF Audit:</strong> Apni LinkedIn profile ka PDF download karke upload karein aur optimization scores paayein.</span>',
+        '<span class="sub-bullet"><strong>Bio & Banner Generator:</strong> Custom hook, core skills, aur metrics ke align-optimized LinkedIn bio aur headlines auto-generate karein.</span>',
+        '<span class="sub-bullet"><strong>Outreach & DM Writer:</strong> Recruiter DMs, referral requests, aur connection requests ke custom personalized templates generate karein.</span>',
+
+        '<strong>🗺️ 3. Career Path AI (Career Transitions Builder)</strong><br/>Apne standard career benchmark milestones define karein:',
+        '<span class="sub-bullet"><strong>Skill Gap & Courses:</strong> Target job profiles ke related skills gap detect karein aur custom courses recommendations paayein.</span>',
+        '<span class="sub-bullet"><strong>Elevator Pitch Builder:</strong> Corporate, Startup, aur Creative contexts ke according custom 60-second verbal pitches build karein.</span>',
+        '<span class="sub-bullet"><strong>Interactive Career Roadmap:</strong> Apne current role se target role me upgrade hone ke liye visual timeline checklists ke milestones aur guidelines paayein.</span>',
+
+        '<strong>🔄 4. Premium UX & Auto-Save Features</strong><br/>User convenience ke liye humne manual updates ko clear and automated banaya hai:',
+        '<span class="sub-bullet"><strong>Silent Background Auto-Save:</strong> Content editor (Cover Letter/Resume) har 4 seconds me background changes ko save karega bina active cursor state disturb kiye. SmartPrep AI aur Outreach logs update hote hi auto-save hote hain.</span>',
+        '<span class="sub-bullet"><strong>Visual Status Badges:</strong> Manual save button ki jagah ab elegant ✓ Saved automatically to My Works status badge show hota hai.</span>',
+        '<span class="sub-bullet"><strong>Deletion Safety Sync:</strong> "My Works" modal se save file delete karte hi active editor/dashboard wapas gallery view par sync hokar state reset kar leta hai taaki clean logs rahein.</span>',
+
+        '<strong>🤖 5. Upgraded AI API Engine (DeepSeek Integration)</strong><br/>Performance ko dynamic aur crash-proof rakhne ke liye humne ek bada step kiya hai:',
+        '<span class="sub-bullet"><strong>Optimized API Integration:</strong> Humne Google Gemini 2.5 Flash aur OpenRouter API pipeline ko fully rebuild kiya hai, taaki users ko bina kisi fail rate ya connection timeouts ke, instant response mile aur product use karte waqt koi problem na aaye.</span>',
+        '<span class="sub-bullet"><strong>Schema-Safe Parsing:</strong> Frontend aur backend ke beech API error boundaries build kiye hain, jisse output format mismatch hone ka chance zero ho gaya hai.</span>'
       ],
       icon: Cpu,
       badgeColor: 'badge-blue'
@@ -30,14 +48,14 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       id: 2,
       version: 'v2.0.0',
       date: 'June 1, 2026',
-      title: 'LinkedIn Optimizer & Career Path AI transition Suites',
+      title: 'LinkedIn Outreach & Transition Features Rollout',
       tag: 'New Features',
-      description: 'Extending CVMind AI from a standard scanner into a complete, end-to-end career transition tool.',
+      description: 'Extending platform scopes into customized networking DMs, corporate pitches, visual timelines, and skill path planning.',
       details: [
-        'LinkedIn Profile Audit: Upload your LinkedIn profile in PDF format to receive instant branding optimization scores.',
-        'Outreach & DM Builder: Auto-generate customized recruiter connection requests, referral pitches, and cold DMs.',
-        'Career Path Planner: Visual roadmap transition steps detailing core milestones, skill gaps, and course recommendations.',
-        'Elevator Pitch Builder: Instantly create metric-focused corporate verbal pitches and startup-oriented pitches.'
+        '<strong>Recruiter DMs & Connection Requests:</strong> Dynamic cold networking pitches customized for LinkedIn character limits.',
+        '<strong>Automated Skill Gap Scans:</strong> Matches resume context against targeted descriptions and recommends online curriculum links.',
+        '<strong>Custom Elevator Pitches:</strong> Produces narratives matching corporate, startup, or creative communication requirements.',
+        '<strong>Interactive transition roadmap checklists:</strong> A 4-stage transitions timeline to benchmark candidate milestones.'
       ],
       icon: Rocket,
       badgeColor: 'badge-purple'
@@ -46,14 +64,13 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       id: 3,
       version: 'v1.2.0',
       date: 'May 29, 2026',
-      title: 'SmartPrep AI Mock Interviews & Shareable Portfolios',
+      title: 'Premium Portfolios & Interactive Coach Sandbox',
       tag: 'UX Polish',
       description: 'Adding interview question sandboxes and public-facing designer portfolios for recruiters.',
       details: [
-        'SmartPrep AI Coach: Customized mock interviews checking technical, behavioral, and HR questions based on your resume.',
-        'STAR Method Evaluations: Live answers grading out of 10 checking situation-task-action-result methodologies.',
-        'Shareable Portfolios: Generates clean, responsive web pages of your resume, opening in separate tabs with unique themes.',
-        'Bio & Banner Generator: Tags and copy headline templates to maximize social search indexing.'
+        '<strong>SmartPrep Question Bank:</strong> Custom scorecards checking technical, behavioral, and HR questions based on your resume.',
+        '<strong>Shareable Portfolio Links:</strong> Visual web portfolios featuring premium responsive templates, opening in clean external tabs.',
+        '<strong>Banner Guidelines & Taglines:</strong> Layout design suggestions to optimize profile banner keywords.'
       ],
       icon: Sparkles,
       badgeColor: 'badge-green'
@@ -62,14 +79,14 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       id: 4,
       version: 'v1.1.0',
       date: 'May 25, 2026',
-      title: 'Resend Email Dispatch & Split-Screen FAQ Help Center',
+      title: 'Email Password Reset & FAQ Help Center',
       tag: 'Security & Help',
-      description: 'Hardening platform validation flows, introducing admin audit logs, and redesigning support guides.',
+      description: 'Hardening verification pipelines, logging administrator audits, and streamlining navigation guides.',
       details: [
-        'Resend Integration: Integrated SMTP Resend SDK to enable automated, tokenized password reset links via email.',
-        'Audit Logging Dashboard: Admin dashboard now records password reset events with audit logs.',
-        'Split-Screen Help Center: Replaced legacy layout with a categorized FAQ article reader.',
-        'Frictionless Resume Checks: Enabled public AI Resume Scans without requiring instant registration.'
+        '<strong>SMTP Resend SDK Dispatcher:</strong> Enables live, secure, tokenized password reset links via email.',
+        '<strong>Admin Audit Logs:</strong> Logs password reset triggers for secure developer maintenance.',
+        '<strong>Redesigned FAQ split-screen articles:</strong> Streamlines user support access.',
+        '<strong>Frictionless Landing Page:</strong> Removes authorization boundaries for initial resume scans.'
       ],
       icon: ShieldCheck,
       badgeColor: 'badge-orange'
@@ -144,9 +161,11 @@ export default function Blog({ setCurrentPage }: BlogProps) {
                   <h4 className="bullet-section-title">Key Highlights:</h4>
                   <ul className="blog-bullet-list">
                     {item.details.map((detail, dIdx) => (
-                      <li key={dIdx} className="blog-bullet-item">
-                        {detail}
-                      </li>
+                      <li 
+                        key={dIdx} 
+                        className="blog-bullet-item" 
+                        dangerouslySetInnerHTML={{ __html: detail }} 
+                      />
                     ))}
                   </ul>
                 </div>

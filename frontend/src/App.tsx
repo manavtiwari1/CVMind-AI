@@ -52,6 +52,11 @@ export default function App() {
     localStorage.setItem('cvmind_theme', theme);
   }, [theme]);
 
+  // Scroll to top of the page on route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
+
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
