@@ -277,7 +277,7 @@ export default function Navbar({
           {/* Products Dropdown */}
           <div className="nav-dropdown-container">
             <button
-              className={`nav-link dropdown-toggle${['tailor', 'prep', 'linkedin', 'linkedin-bio'].includes(currentPage) ? ' active' : ''}`}
+              className={`nav-link dropdown-toggle${['tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'career-courses', 'elevator-pitch', 'career-roadmap'].includes(currentPage) ? ' active' : ''}`}
             >
               Products <ChevronDown size={12} className="dropdown-arrow" />
             </button>
@@ -288,14 +288,25 @@ export default function Navbar({
                 { label: 'SmartPrep AI (Prep)', page: 'prep' },
                 { 
                   label: 'LinkedIn Optimizer',
+                  submenuKey: 'linkedin',
                   subItems: [
                     { label: 'Profile PDF Audit', page: 'linkedin' },
-                    { label: 'Bio & Banner Generator', page: 'linkedin-bio' }
+                    { label: 'Bio & Banner Generator', page: 'linkedin-bio' },
+                    { label: 'Outreach & DM Writer', page: 'linkedin-outreach' }
+                  ]
+                },
+                { 
+                  label: 'Career Path AI',
+                  submenuKey: 'career',
+                  subItems: [
+                    { label: 'Skill Gaps & Courses', page: 'career-courses' },
+                    { label: 'Elevator Pitch Builder', page: 'elevator-pitch' },
+                    { label: 'Interactive Career Roadmap', page: 'career-roadmap' }
                   ]
                 },
               ].map((item: any, idx: number) => {
                 if (item.subItems) {
-                  const isOpen = activeSubmenu === 'linkedin';
+                  const isOpen = activeSubmenu === item.submenuKey;
                   return (
                     <div className={`nav-subdropdown-container${isOpen ? ' open' : ''}`} key={idx}>
                       <button 
@@ -304,7 +315,7 @@ export default function Navbar({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          setActiveSubmenu(prev => prev === 'linkedin' ? null : 'linkedin');
+                          setActiveSubmenu(prev => prev === item.submenuKey ? null : item.submenuKey);
                         }}
                       >
                         {item.label} <ChevronRight size={10} />
@@ -454,6 +465,10 @@ export default function Navbar({
           { label: 'Resume Tailor', page: 'tailor' },
           { label: 'LinkedIn Profile Audit', page: 'linkedin' },
           { label: 'LinkedIn Bio & Banner AI', page: 'linkedin-bio' },
+          { label: 'LinkedIn Outreach DMs', page: 'linkedin-outreach' },
+          { label: 'Career Skill Gaps', page: 'career-courses' },
+          { label: 'AI Elevator Pitch', page: 'elevator-pitch' },
+          { label: 'Career Roadmap AI', page: 'career-roadmap' },
           { label: 'Interview Prep AI', page: 'prep' },
           { label: 'About CVMind AI', page: 'about' },
           { label: 'Contact Support', page: 'contact' }
@@ -732,10 +747,27 @@ export default function Navbar({
                     <div key={w.id || w._id} className="work-item-card">
                       <div className="work-card-top">
                         <span className={`work-type-badge ${w.type}`} style={{
-                          background: w.type === 'prep' ? 'rgba(99,102,241,0.12)' : w.type === 'linkedin-bio' ? 'rgba(41,151,255,0.12)' : undefined,
-                          color: w.type === 'prep' ? '#6366f1' : w.type === 'linkedin-bio' ? '#2997ff' : undefined
+                          background: w.type === 'prep' ? 'rgba(99,102,241,0.12)' : 
+                                      w.type === 'linkedin-bio' ? 'rgba(41,151,255,0.12)' : 
+                                      w.type === 'linkedin-outreach' ? 'rgba(41,151,255,0.12)' : 
+                                      w.type === 'career-courses' ? 'rgba(16,185,129,0.12)' : 
+                                      w.type === 'elevator-pitch' ? 'rgba(167,139,250,0.12)' : 
+                                      w.type === 'career-roadmap' ? 'rgba(251,146,60,0.12)' : undefined,
+                          color: w.type === 'prep' ? '#6366f1' : 
+                                 w.type === 'linkedin-bio' ? '#2997ff' : 
+                                 w.type === 'linkedin-outreach' ? '#2997ff' : 
+                                 w.type === 'career-courses' ? '#10b981' : 
+                                 w.type === 'elevator-pitch' ? '#a78bfa' : 
+                                 w.type === 'career-roadmap' ? '#fb923c' : undefined
                         }}>
-                          {w.type === 'cover-letter' ? 'Cover Letter' : w.type === 'linkedin' ? 'LinkedIn Audit' : w.type === 'linkedin-bio' ? 'LinkedIn Bio' : w.type === 'prep' ? 'AI Prep' : 'Resume'}
+                          {w.type === 'cover-letter' ? 'Cover Letter' : 
+                           w.type === 'linkedin' ? 'LinkedIn Audit' : 
+                           w.type === 'linkedin-bio' ? 'LinkedIn Bio' : 
+                           w.type === 'linkedin-outreach' ? 'Outreach DM' : 
+                           w.type === 'career-courses' ? 'Skill Gaps' : 
+                           w.type === 'elevator-pitch' ? 'Elevator Pitch' : 
+                           w.type === 'career-roadmap' ? 'Roadmap AI' : 
+                           w.type === 'prep' ? 'AI Prep' : 'Resume'}
                         </span>
                         <span className="work-date">
                           {new Date(w.updatedAt || w.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -753,6 +785,14 @@ export default function Navbar({
                             go('linkedin');
                           } else if (w.type === 'linkedin-bio') {
                             go('linkedin-bio');
+                          } else if (w.type === 'linkedin-outreach') {
+                            go('linkedin-outreach');
+                          } else if (w.type === 'career-courses') {
+                            go('career-courses');
+                          } else if (w.type === 'elevator-pitch') {
+                            go('elevator-pitch');
+                          } else if (w.type === 'career-roadmap') {
+                            go('career-roadmap');
                           } else if (w.type === 'prep') {
                             go('prep');
                           } else {

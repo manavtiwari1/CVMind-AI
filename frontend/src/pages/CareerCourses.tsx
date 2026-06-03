@@ -1,0 +1,344 @@
+import { useState, useEffect } from 'react';
+import { 
+  ArrowRight, RefreshCw, BookOpen, GraduationCap, Check, HelpCircle
+} from 'lucide-react';
+import './CareerCourses.css';
+
+interface CareerCoursesProps {
+  customApiKey: string;
+  resumeText: string;
+  loadedWork?: any;
+  setLoadedWork?: (work: any) => void;
+}
+
+export default function CareerCourses({ customApiKey, resumeText, loadedWork, setLoadedWork }: CareerCoursesProps) {
+  const [targetJob, setTargetJob] = useState('');
+  const [skills, setSkills] = useState('');
+  const [useResumeText, setUseResumeText] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [savingWork, setSavingWork] = useState(false);
+
+  // Load saved work if opened from My Works
+  useEffect(() => {
+    if (loadedWork && loadedWork.type === 'career-courses') {
+      try {
+        const parsed = JSON.parse(loadedWork.htmlContent);
+        if (parsed) {
+          setTargetJob(parsed.targetJob || '');
+          setSkills(parsed.skills || '');
+          setResult(parsed.result || null);
+        }
+      } catch (e) {
+        console.error('Error parsing loaded career courses work:', e);
+      }
+    }
+  }, [loadedWork]);
+
+  const handleGenerate = async () => {
+    if (!targetJob.trim()) {
+      setErrorMsg('Target Job Title is required.');
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg(null);
+    setResult(null);
+    setSaveSuccess(false);
+
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL 
+        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+
+      const userStr = localStorage.getItem('cvmind_user');
+      let email = '';
+      let userId = '';
+      if (userStr) {
+        try {
+          const parsedUser = JSON.parse(userStr);
+          email = parsedUser.email || '';
+          userId = parsedUser.id || parsedUser._id || '';
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!userId) {
+        throw new Error('Please sign in to run Skill Gap analysis & save recommendations.');
+      }
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (customApiKey) {
+        headers['x-gemini-key'] = customApiKey;
+      }
+
+      const response = await fetch(`${baseUrl}/api/career/courses`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          targetJob,
+          skills,
+          resumeText: useResumeText ? resumeText : '',
+          email,
+          userId
+        })
+      });
+
+      const resData = await response.json();
+      if (!response.ok) {
+        throw new Error(resData.error || 'Server returned an error');
+      }
+
+      if (resData.success && resData.data) {
+        setResult(resData.data);
+        if (resData.work && setLoadedWork) {
+          setLoadedWork(resData.work);
+        }
+      } else {
+        throw new Error('Invalid output format from server.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(err.message || 'Generation failed. Make sure the servers are online.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveSession = async () => {
+    if (!result) return;
+    const userStr = localStorage.getItem('cvmind_user');
+    if (!userStr) {
+      alert('Please sign in to save your career courses.');
+      return;
+    }
+
+    let userId = '';
+    try {
+      const user = JSON.parse(userStr);
+      userId = user.id || user._id;
+    } catch {
+      alert('Session invalid. Please sign in again.');
+      return;
+    }
+
+    setSavingWork(true);
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL 
+        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+
+      const response = await fetch(`${baseUrl}/api/user/work`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          title: `Skill Gaps & Courses - ${targetJob}`,
+          type: 'career-courses',
+          templateId: 'career-courses-gen',
+          htmlContent: JSON.stringify({
+            targetJob,
+            skills,
+            resumeText: useResumeText ? resumeText : '',
+            result
+          }),
+          workId: loadedWork?.id || loadedWork?._id || undefined
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to save');
+
+      setSaveSuccess(true);
+      if (data.data && setLoadedWork) {
+        setLoadedWork(data.data);
+      }
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (err: any) {
+      alert(err.message || 'An error occurred while saving your session.');
+    } finally {
+      setSavingWork(false);
+    }
+  };
+
+  const removeState = () => {
+    setResult(null);
+    setTargetJob('');
+    setSkills('');
+    setSaveSuccess(false);
+    if (setLoadedWork) {
+      setLoadedWork(null);
+    }
+  };
+
+  return (
+    <div className="career-courses-container animate-fade-in-up">
+      <div className="glow-ambient" style={{ top: '15%', left: '10%' }}></div>
+      <div className="glow-ambient" style={{ bottom: '25%', right: '15%' }}></div>
+
+      {/* Header */}
+      <div className="career-courses-header">
+        <div className="career-courses-title-section">
+          <div className="career-courses-badge">
+            <GraduationCap size={13} style={{ fill: 'currentColor' }} /> Career Path AI
+          </div>
+          <h1 className="career-courses-title-text">Skill Gaps & Online Courses</h1>
+          <p className="career-courses-subtitle-text">
+            Compare your profile against target roles, identify missing skills, and get personalized course recommendations to bridge the gap.
+          </p>
+        </div>
+        {result && (
+          <button className="btn-secondary" onClick={removeState}>
+            <RefreshCw size={14} /> Start Over
+          </button>
+        )}
+      </div>
+
+      <div className="career-courses-content-area">
+        {!loading && !result && (
+          <div className="career-courses-input-card glass-card">
+            <div className="input-card-info">
+              <h3>Analyze Career Skill Gaps</h3>
+              <p>Enter your target career path to analyze missing technical and soft skills, and get structured learning recommendations.</p>
+            </div>
+
+            <div className="career-courses-form">
+              <div className="form-group">
+                <label>Target Job Title *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. DevOps Architect, UX Researcher, Data Scientist..."
+                  value={targetJob}
+                  onChange={(e) => setTargetJob(e.target.value)}
+                  className="form-control-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Current Skills / Tech Stack (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. JavaScript, Excel, SQL, Project Coordination..."
+                  value={skills}
+                  onChange={(e) => setSkills(e.target.value)}
+                  className="form-control-input"
+                />
+              </div>
+
+              {resumeText && (
+                <div className="resume-context-checkbox" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                  <input
+                    type="checkbox"
+                    id="useResumeCheck"
+                    checked={useResumeText}
+                    onChange={(e) => setUseResumeText(e.target.checked)}
+                    style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                  />
+                  <label htmlFor="useResumeCheck" style={{ cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    Include active CV resume context (highly recommended for precision scan)
+                  </label>
+                </div>
+              )}
+
+              {errorMsg && (
+                <div className="error-message-bar" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.85rem' }}>
+                  <span>⚠️ {errorMsg}</span>
+                </div>
+              )}
+
+              <button className="btn-primary" style={{ marginTop: '0.5rem', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }} onClick={handleGenerate}>
+                Analyze Skills & Fetch Courses <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {loading && (
+          <div className="career-courses-loading-card glass-card">
+            <div className="scan-beam"></div>
+            <div className="spinner-wrapper">
+              <div className="career-courses-spinner"></div>
+            </div>
+            <h3>Conducting Skill Gap Audit...</h3>
+            <p className="animate-pulse">Gemini is matching your profile with target skill matrices and mapping online course curricula...</p>
+          </div>
+        )}
+
+        {result && (
+          <div className="career-courses-results-grid animate-fade-in">
+            {/* Sidebar Gaps List */}
+            <div className="results-sidebar glass-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
+                <HelpCircle size={16} className="text-warning" />
+                <h4 style={{ margin: 0 }}>Identified Skill Gaps</h4>
+              </div>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 1rem' }}>
+                These are the top skill areas you lack compared to benchmark requirements for **{targetJob}**:
+              </p>
+              <div className="gaps-list-stack" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {result.gaps && result.gaps.map((gap: string, idx: number) => (
+                  <div key={idx} className="gap-item-card" style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', background: 'rgba(239,68,68,0.03)', border: '1px solid rgba(239,68,68,0.1)', padding: '0.65rem 0.85rem', borderRadius: '8px' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#f87171', fontWeight: 700 }}>•</span>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)' }}>{gap}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button 
+                className="btn-primary" 
+                style={{ background: 'var(--color-emerald)', borderColor: 'var(--color-emerald)', width: '100%', justifyContent: 'center', display: 'flex', marginTop: '1.5rem' }}
+                onClick={handleSaveSession}
+                disabled={savingWork}
+              >
+                {savingWork ? 'Saving...' : saveSuccess ? 'Saved to Works!' : 'Save Learning Plan'}
+              </button>
+            </div>
+
+            {/* Courses Recommendations Cards */}
+            <div className="results-main-panel">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                <BookOpen size={20} className="text-blue" />
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Recommended Online Courses & Certifications</h3>
+              </div>
+
+              <div className="courses-cards-grid" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                {result.courses && result.courses.map((course: any, index: number) => (
+                  <div key={index} className="course-recommendation-card glass-card" style={{ padding: '1.75rem', border: '1px solid var(--border)', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                      <div>
+                        <span style={{ display: 'inline-block', fontSize: '0.72rem', fontWeight: 800, background: 'var(--blue-dim)', color: 'var(--blue)', border: '1px solid rgba(41,151,255,0.2)', padding: '0.25rem 0.6rem', borderRadius: '4px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                          {course.platform}
+                        </span>
+                        <h4 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 850, color: 'var(--text-primary)' }}>{course.title}</h4>
+                      </div>
+                      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '0.4rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
+                        Duration: <strong>{course.duration}</strong>
+                      </div>
+                    </div>
+
+                    <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.6' }}>
+                      {course.reason}
+                    </p>
+
+                    <div>
+                      <h5 style={{ margin: '0 0 0.5rem', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Skills you will build:</h5>
+                      <div className="skills-badge-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                        {course.skillsCovered && course.skillsCovered.map((skill: string, sIdx: number) => (
+                          <span key={sIdx} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.78rem', background: 'rgba(255,255,255,0.03)', color: 'var(--text-secondary)', border: '1px solid var(--border)', padding: '0.2% 0.5rem', borderRadius: '6px' }}>
+                            <Check size={11} className="text-success" /> {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

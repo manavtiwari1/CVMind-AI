@@ -1,0 +1,442 @@
+import { useState, useEffect } from 'react';
+import { 
+  Copy, Check, Linkedin, ArrowRight, RefreshCw, Send, Users, UserCheck
+} from 'lucide-react';
+import './LinkedInOutreach.css';
+
+interface LinkedInOutreachProps {
+  customApiKey: string;
+  resumeText: string;
+  loadedWork?: any;
+  setLoadedWork?: (work: any) => void;
+}
+
+export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork, setLoadedWork }: LinkedInOutreachProps) {
+  const [jobTitle, setJobTitle] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [targetName, setTargetName] = useState('');
+  const [context, setContext] = useState('');
+  const [useResumeText, setUseResumeText] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [copiedSection, setCopiedSection] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [savingWork, setSavingWork] = useState(false);
+  const [activeTab, setActiveTab] = useState<'connect' | 'referral' | 'recruiter'>('connect');
+
+  // Load saved work if opened from My Works
+  useEffect(() => {
+    if (loadedWork && loadedWork.type === 'linkedin-outreach') {
+      try {
+        const parsed = JSON.parse(loadedWork.htmlContent);
+        if (parsed) {
+          setJobTitle(parsed.jobTitle || '');
+          setCompanyName(parsed.companyName || '');
+          setTargetName(parsed.targetName || '');
+          setContext(parsed.context || '');
+          setResult(parsed.result || null);
+        }
+      } catch (e) {
+        console.error('Error parsing loaded LinkedIn outreach work:', e);
+      }
+    }
+  }, [loadedWork]);
+
+  const handleCopy = (text: string, sectionId: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedSection(sectionId);
+    setTimeout(() => setCopiedSection(null), 2000);
+  };
+
+  const handleGenerate = async () => {
+    if (!jobTitle.trim()) {
+      setErrorMsg('Target Job Title is required.');
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg(null);
+    setResult(null);
+    setSaveSuccess(false);
+
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL 
+        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+
+      const userStr = localStorage.getItem('cvmind_user');
+      let email = '';
+      let userId = '';
+      if (userStr) {
+        try {
+          const parsedUser = JSON.parse(userStr);
+          email = parsedUser.email || '';
+          userId = parsedUser.id || parsedUser._id || '';
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!userId) {
+        throw new Error('Please sign in to generate and save your LinkedIn outreach DMs.');
+      }
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (customApiKey) {
+        headers['x-gemini-key'] = customApiKey;
+      }
+
+      const response = await fetch(`${baseUrl}/api/linkedin/outreach`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          jobTitle,
+          companyName,
+          context,
+          targetName,
+          resumeText: useResumeText ? resumeText : '',
+          email,
+          userId
+        })
+      });
+
+      const resData = await response.json();
+      if (!response.ok) {
+        throw new Error(resData.error || 'Server returned an error');
+      }
+
+      if (resData.success && resData.data) {
+        setResult(resData.data);
+        if (resData.work && setLoadedWork) {
+          setLoadedWork(resData.work);
+        }
+      } else {
+        throw new Error('Invalid output format from server.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(err.message || 'Generation failed. Make sure the servers are online.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveSession = async () => {
+    if (!result) return;
+    const userStr = localStorage.getItem('cvmind_user');
+    if (!userStr) {
+      alert('Please sign in to save your LinkedIn outreach.');
+      return;
+    }
+
+    let userId = '';
+    try {
+      const user = JSON.parse(userStr);
+      userId = user.id || user._id;
+    } catch {
+      alert('Session invalid. Please sign in again.');
+      return;
+    }
+
+    setSavingWork(true);
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL 
+        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+
+      const response = await fetch(`${baseUrl}/api/user/work`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          title: `LinkedIn Outreach - ${jobTitle} (${companyName || 'General'})`,
+          type: 'linkedin-outreach',
+          templateId: 'linkedin-outreach-gen',
+          htmlContent: JSON.stringify({
+            jobTitle,
+            companyName,
+            context,
+            targetName,
+            result
+          }),
+          workId: loadedWork?.id || loadedWork?._id || undefined
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to save');
+
+      setSaveSuccess(true);
+      if (data.data && setLoadedWork) {
+        setLoadedWork(data.data);
+      }
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (err: any) {
+      alert(err.message || 'An error occurred while saving your session.');
+    } finally {
+      setSavingWork(false);
+    }
+  };
+
+  const removeState = () => {
+    setResult(null);
+    setJobTitle('');
+    setCompanyName('');
+    setTargetName('');
+    setContext('');
+    setSaveSuccess(false);
+    if (setLoadedWork) {
+      setLoadedWork(null);
+    }
+  };
+
+  return (
+    <div className="li-outreach-container animate-fade-in-up">
+      <div className="glow-ambient" style={{ top: '15%', left: '10%' }}></div>
+      <div className="glow-ambient" style={{ bottom: '25%', right: '15%' }}></div>
+
+      {/* Header */}
+      <div className="li-outreach-header">
+        <div className="li-outreach-title-section">
+          <div className="li-outreach-badge">
+            <Linkedin size={13} style={{ fill: 'currentColor' }} /> Networking Assistant
+          </div>
+          <h1 className="li-outreach-title-text">LinkedIn Outreach & DM Writer</h1>
+          <p className="li-outreach-subtitle-text">
+            Generate high-conversion, personalized connection requests, referral pitches, and recruiter DMs that land interviews.
+          </p>
+        </div>
+        {result && (
+          <button className="btn-secondary" onClick={removeState}>
+            <RefreshCw size={14} /> Start Over
+          </button>
+        )}
+      </div>
+
+      <div className="li-outreach-content-area">
+        {!loading && !result && (
+          <div className="li-outreach-input-card glass-card">
+            <div className="input-card-info">
+              <h3>Custom Outreach Wizard</h3>
+              <p>Provide details about the target job, company, and contact person to write tailored professional pitches.</p>
+            </div>
+
+            <div className="li-outreach-form">
+              <div className="form-group-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-group">
+                  <label>Target Job Title *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Product Manager, Frontend Developer..."
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    className="form-control-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Target Company</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Google, Stripe, Local Startup..."
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    className="form-control-input"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Recipient Name (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. John Doe, HR Team..."
+                  value={targetName}
+                  onChange={(e) => setTargetName(e.target.value)}
+                  className="form-control-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Custom Context / Focus Area (Optional)</label>
+                <textarea
+                  placeholder="e.g. Mention my background in SaaS sales, or highlight my recent React portfolio project, or mention we both went to University of Washington..."
+                  value={context}
+                  onChange={(e) => setContext(e.target.value)}
+                  className="form-control-input"
+                  rows={3}
+                  style={{ resize: 'none' }}
+                />
+              </div>
+
+              {resumeText && (
+                <div className="resume-context-checkbox" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                  <input
+                    type="checkbox"
+                    id="useResumeCheck"
+                    checked={useResumeText}
+                    onChange={(e) => setUseResumeText(e.target.checked)}
+                    style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                  />
+                  <label htmlFor="useResumeCheck" style={{ cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    Include active CV resume context (highly recommended for personalized alignment)
+                  </label>
+                </div>
+              )}
+
+              {errorMsg && (
+                <div className="error-message-bar" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.85rem' }}>
+                  <span>⚠️ {errorMsg}</span>
+                </div>
+              )}
+
+              <button className="btn-primary" style={{ marginTop: '0.5rem', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }} onClick={handleGenerate}>
+                Generate Networking Templates <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {loading && (
+          <div className="li-outreach-loading-card glass-card">
+            <div className="scan-beam"></div>
+            <div className="spinner-wrapper">
+              <div className="li-outreach-spinner"></div>
+            </div>
+            <h3>Generating Outreach Copy...</h3>
+            <p className="animate-pulse">Gemini is structuring connection request notes, cold referral pitches, and recruiter DMs...</p>
+          </div>
+        )}
+
+        {result && (
+          <div className="li-outreach-results-grid animate-fade-in">
+            {/* Sidebar actions / Stats */}
+            <div className="results-sidebar glass-card">
+              <h4>Pitch Summary</h4>
+              <div className="sidebar-stat-item">
+                <span>Job Profile:</span>
+                <strong>{jobTitle}</strong>
+              </div>
+              {companyName && (
+                <div className="sidebar-stat-item">
+                  <span>Company:</span>
+                  <strong>{companyName}</strong>
+                </div>
+              )}
+              {targetName && (
+                <div className="sidebar-stat-item">
+                  <span>Contact:</span>
+                  <strong>{targetName}</strong>
+                </div>
+              )}
+
+              <div className="sidebar-actions" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1.5rem' }}>
+                <button 
+                  className="btn-primary" 
+                  style={{ background: 'var(--color-emerald)', borderColor: 'var(--color-emerald)', width: '100%', justifyContent: 'center', display: 'flex' }}
+                  onClick={handleSaveSession}
+                  disabled={savingWork}
+                >
+                  {savingWork ? 'Saving...' : saveSuccess ? 'Saved to Works!' : 'Save Outreach Kit'}
+                </button>
+              </div>
+            </div>
+
+            {/* Main suggestion panels */}
+            <div className="results-main-panel">
+              
+              {/* Tab Selector */}
+              <div className="tabs-header-wrapper glass-card">
+                <button 
+                  className={`tab-btn ${activeTab === 'connect' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('connect')}
+                >
+                  <Users size={14} /> Connection Request (Invite)
+                </button>
+                <button 
+                  className={`tab-btn ${activeTab === 'referral' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('referral')}
+                >
+                  <Send size={14} /> Referral Ask
+                </button>
+                <button 
+                  className={`tab-btn ${activeTab === 'recruiter' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('recruiter')}
+                >
+                  <UserCheck size={14} /> Recruiter DM
+                </button>
+              </div>
+
+              {/* Tab Contents */}
+              <div className="tab-content-display glass-card" style={{ marginTop: '1.5rem', padding: '2rem', border: '1px solid var(--border)', borderRadius: '16px' }}>
+                
+                {activeTab === 'connect' && (
+                  <div className="tab-pane-content animate-fade-in">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                      <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--blue)' }}>Personalized Connection Invite</h4>
+                      <button 
+                        className="btn-secondary btn-sm" 
+                        onClick={() => handleCopy(result.connectionRequest, 'connect-copy')}
+                        style={{ padding: '0.35rem 0.75rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}
+                      >
+                        {copiedSection === 'connect-copy' ? <><Check size={12} className="text-success" /> Copied!</> : <><Copy size={12} /> Copy Invite</>}
+                      </button>
+                    </div>
+                    <div className="pitch-output-preview" style={{ padding: '1.25rem', background: 'rgba(0,0,0,0.15)', borderRadius: '8px', border: '1px solid var(--border)', fontFamily: 'inherit', fontSize: '0.9rem', lineHeight: '1.65', color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}>
+                      {result.connectionRequest}
+                    </div>
+                    <div className="helper-tip-box" style={{ marginTop: '1.25rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                      <strong>Pro-tip:</strong> LinkedIn connection notes have a strict 300-character limit. This template has been dynamically optimized to remain within the boundary while maximizing conversion.
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'referral' && (
+                  <div className="tab-pane-content animate-fade-in">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                      <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--blue)' }}>Informational Interview & Referral Pitch</h4>
+                      <button 
+                        className="btn-secondary btn-sm" 
+                        onClick={() => handleCopy(result.referralPitch, 'referral-copy')}
+                        style={{ padding: '0.35rem 0.75rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}
+                      >
+                        {copiedSection === 'referral-copy' ? <><Check size={12} className="text-success" /> Copied!</> : <><Copy size={12} /> Copy Pitch</>}
+                      </button>
+                    </div>
+                    <div className="pitch-output-preview" style={{ padding: '1.25rem', background: 'rgba(0,0,0,0.15)', borderRadius: '8px', border: '1px solid var(--border)', fontFamily: 'inherit', fontSize: '0.9rem', lineHeight: '1.65', color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}>
+                      {result.referralPitch}
+                    </div>
+                    <div className="helper-tip-box" style={{ marginTop: '1.25rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                      <strong>Pro-tip:</strong> Send this to employees working in similar functions at your target company. Make sure to personalize the brackets before hitting send!
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'recruiter' && (
+                  <div className="tab-pane-content animate-fade-in">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                      <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--blue)' }}>Direct Message for Recruiters & Hiring Managers</h4>
+                      <button 
+                        className="btn-secondary btn-sm" 
+                        onClick={() => handleCopy(result.recruiterDM, 'recruiter-copy')}
+                        style={{ padding: '0.35rem 0.75rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}
+                      >
+                        {copiedSection === 'recruiter-copy' ? <><Check size={12} className="text-success" /> Copied!</> : <><Copy size={12} /> Copy Pitch</>}
+                      </button>
+                    </div>
+                    <div className="pitch-output-preview" style={{ padding: '1.25rem', background: 'rgba(0,0,0,0.15)', borderRadius: '8px', border: '1px solid var(--border)', fontFamily: 'inherit', fontSize: '0.9rem', lineHeight: '1.65', color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}>
+                      {result.recruiterDM}
+                    </div>
+                    <div className="helper-tip-box" style={{ marginTop: '1.25rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                      <strong>Pro-tip:</strong> Use this for direct InMails when applying for an active role. It concisely presents your profile and immediately references the open position.
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

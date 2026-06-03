@@ -1195,4 +1195,387 @@ export async function generateLinkedinBioWithGemini({ skills, jobTitle, resumeTe
   }
 }
 
+// ─── LINKEDIN OUTREACH & DM WRITER ──────────────────────────────────────────
+const outreachSchema = {
+  type: 'object',
+  properties: {
+    connectionRequest: {
+      type: 'string',
+      description: 'A personalized LinkedIn connection request note. Must be under 300 characters.'
+    },
+    referralPitch: {
+      type: 'string',
+      description: 'A message to a professional working at the target company asking for an informational interview or referral. Under 150 words.'
+    },
+    recruiterDM: {
+      type: 'string',
+      description: 'A direct message to a recruiter pitching the candidate for a specific job title. Under 150 words.'
+    }
+  },
+  required: ['connectionRequest', 'referralPitch', 'recruiterDM']
+};
+
+export async function generateLinkedinOutreachWithGemini({ jobTitle, companyName, context, targetName, customApiKey = null }) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const systemPrompt = `You are a premier Career Coach and Networking Expert. Your task is to craft high-conversion outreach templates:
+  1. connectionRequest: A warm, concise LinkedIn connection note under 300 characters.
+  2. referralPitch: A polite request for an informational interview or referral. Under 150 words.
+  3. recruiterDM: A direct pitch targeting recruiters or hiring managers. Under 150 words.`;
+
+  const userPrompt = `
+  Target Job Title: "${jobTitle || ''}"
+  Target Company: "${companyName || ''}"
+  Recipient Name: "${targetName || 'Professional'}"
+  Candidate Background / Custom Context: "${context || ''}"
+  
+  Generate the networking messages and return the structured JSON now.`;
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: `${systemPrompt}\nYou MUST strictly respond with a JSON object that conforms to this JSON schema:\n${JSON.stringify(outreachSchema, null, 2)}` },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.4,
+          max_tokens: 1000,
+          response_format: { type: 'json_object' }
+        })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+      const result = await response.json();
+      return JSON.parse(result.choices[0].message.content.trim());
+    } catch (error) {
+      console.error('OpenRouter Outreach Error:', error);
+      throw new Error('Outreach generation failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: outreachSchema,
+        temperature: 0.4
+      }
+    });
+    return JSON.parse(result.response.text().trim());
+  } catch (error) {
+    console.error('Gemini Outreach Error:', error);
+    throw new Error('Outreach generation failed. ' + error.message);
+  }
+}
+
+// ─── SKILL GAPS & COURSES RECOMMENDATIONS ────────────────────────────────────
+const careerCoursesSchema = {
+  type: 'object',
+  properties: {
+    gaps: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'A list of 3-5 critical skill gaps identified between the resume/current profile and target job title.'
+    },
+    courses: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          title: { type: 'string', description: 'Title of the recommended online course or certification.' },
+          platform: { type: 'string', description: 'Platform offering the course (e.g., Coursera, Udemy, edX, LinkedIn Learning).' },
+          skillsCovered: { type: 'array', items: { type: 'string' }, description: 'Skills covered by this course.' },
+          reason: { type: 'string', description: 'A short reason explaining why this course helps bridge a specific gap.' },
+          duration: { type: 'string', description: 'Estimated time commitment to complete the course.' }
+        },
+        required: ['title', 'platform', 'skillsCovered', 'reason', 'duration']
+      },
+      description: 'A list of 3-5 structured course recommendations.'
+    }
+  },
+  required: ['gaps', 'courses']
+};
+
+export async function generateCareerCoursesWithGemini({ targetJob, skills, resumeText, customApiKey = null }) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const systemPrompt = `You are a Career Path and Skills Development Coach. Your task is to:
+  1. Identify 3-5 key skill gaps between the candidate's profile/resume and their target job title.
+  2. Recommend 3-5 high-quality online courses or certifications from reputable platforms (e.g. Coursera, Udemy, Pluralsight, edX, LinkedIn Learning) to bridge those gaps.`;
+
+  const userPrompt = `
+  Target Job Title: "${targetJob || ''}"
+  Candidate's Current Skills / Key Inputs: "${skills || ''}"
+  ${resumeText ? `Candidate's Resume Context:\n"""\n${resumeText}\n"""` : ''}
+  
+  Identify gaps and course recommendations and return the structured JSON now.`;
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: `${systemPrompt}\nYou MUST strictly respond with a JSON object that conforms to this JSON schema:\n${JSON.stringify(careerCoursesSchema, null, 2)}` },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.3,
+          max_tokens: 1200,
+          response_format: { type: 'json_object' }
+        })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+      const result = await response.json();
+      return JSON.parse(result.choices[0].message.content.trim());
+    } catch (error) {
+      console.error('OpenRouter Career Courses Error:', error);
+      throw new Error('Career courses analysis failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: careerCoursesSchema,
+        temperature: 0.3
+      }
+    });
+    return JSON.parse(result.response.text().trim());
+  } catch (error) {
+    console.error('Gemini Career Courses Error:', error);
+    throw new Error('Career courses analysis failed. ' + error.message);
+  }
+}
+
+// ─── AI ELEVATOR PITCH BUILDER ──────────────────────────────────────────────
+const elevatorPitchSchema = {
+  type: 'object',
+  properties: {
+    corporate: {
+      type: 'string',
+      description: 'A 60-second elevator pitch tailored for corporate environments, highlighting achievements, leadership, or metrics.'
+    },
+    startup: {
+      type: 'string',
+      description: 'A 60-second pitch for startups or tech settings, emphasizing agility, problem-solving, and value-add.'
+    },
+    creative: {
+      type: 'string',
+      description: 'A 60-second pitch with a narrative/creative flair, focusing on vision, innovation, and key project impacts.'
+    }
+  },
+  required: ['corporate', 'startup', 'creative']
+};
+
+export async function generateElevatorPitchWithGemini({ jobTitle, details, resumeText, customApiKey = null }) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const systemPrompt = `You are a professional Personal Branding specialist and Executive Coach. Your task is to write three distinct 60-second elevator pitches (around 100-150 words each):
+  1. corporate: Structured, polished, and focusing on metrics, accomplishments, and alignment with corporate goals.
+  2. startup: Adaptable, mission-driven, and focusing on resourcefulness, execution speed, and customer or product impact.
+  3. creative: Narrative-driven, conversational, highlight-based, showing unique vision or design/innovation approach.`;
+
+  const userPrompt = `
+  Target Job Title: "${jobTitle || ''}"
+  Candidate Key Details / Focus: "${details || ''}"
+  ${resumeText ? `Candidate's Resume Context:\n"""\n${resumeText}\n"""` : ''}
+  
+  Construct the elevator pitches and return the structured JSON now.`;
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: `${systemPrompt}\nYou MUST strictly respond with a JSON object that conforms to this JSON schema:\n${JSON.stringify(elevatorPitchSchema, null, 2)}` },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.4,
+          max_tokens: 1200,
+          response_format: { type: 'json_object' }
+        })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+      const result = await response.json();
+      return JSON.parse(result.choices[0].message.content.trim());
+    } catch (error) {
+      console.error('OpenRouter Elevator Pitch Error:', error);
+      throw new Error('Elevator pitch generation failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: elevatorPitchSchema,
+        temperature: 0.4
+      }
+    });
+    return JSON.parse(result.response.text().trim());
+  } catch (error) {
+    console.error('Gemini Elevator Pitch Error:', error);
+    throw new Error('Elevator pitch generation failed. ' + error.message);
+  }
+}
+
+// ─── INTERACTIVE CAREER ROADMAP ──────────────────────────────────────────────
+const careerRoadmapSchema = {
+  type: 'object',
+  properties: {
+    steps: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          stepNumber: { type: 'integer' },
+          phaseName: { type: 'string', description: 'Name of the career transition phase.' },
+          timeframe: { type: 'string', description: 'Expected duration/timeframe for this step.' },
+          focus: { type: 'string', description: 'Main strategic focus area of this step.' },
+          actions: { type: 'array', items: { type: 'string' }, description: '2-3 concrete actions to take.' },
+          milestone: { type: 'string', description: 'Key check-point or milestone that indicates completion.' }
+        },
+        required: ['stepNumber', 'phaseName', 'timeframe', 'focus', 'actions', 'milestone']
+      },
+      description: 'Exactly 4 chronological steps outlining the transition pathway.'
+    }
+  },
+  required: ['steps']
+};
+
+export async function generateCareerRoadmapWithGemini({ currentRole, targetRole, years, resumeText, customApiKey = null }) {
+  const apiKey = customApiKey || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Gemini API key is not configured.');
+  }
+
+  const systemPrompt = `You are an elite Career Strategist and Transition Planner. Your job is to generate a comprehensive, highly actionable 4-step vertical career roadmap (exactly 4 phases) to transition from the candidate's current role/background to their target role. 
+  Ensure each step has realistic timeframes, specific focuses, 2-3 tangible action items, and a clear, measurable completion milestone.`;
+
+  const userPrompt = `
+  Current Role/Background: "${currentRole || 'Associate'}"
+  Target Role: "${targetRole || 'Manager'}"
+  Transition Timeframe Budget: "${years || '2 years'}"
+  ${resumeText ? `Optional Resume Context:\n"""\n${resumeText}\n"""` : ''}
+  
+  Generate the 4-phase career roadmap and return the structured JSON now.`;
+
+  const isOpenRouter = apiKey.startsWith('sk-or-');
+  if (isOpenRouter) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://cvmind.ai',
+          'X-Title': 'CVMind AI'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: `${systemPrompt}\nYou MUST strictly respond with a JSON object that conforms to this JSON schema:\n${JSON.stringify(careerRoadmapSchema, null, 2)}` },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.4,
+          max_tokens: 1200,
+          response_format: { type: 'json_object' }
+        })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+      }
+      const result = await response.json();
+      return JSON.parse(result.choices[0].message.content.trim());
+    } catch (error) {
+      console.error('OpenRouter Career Roadmap Error:', error);
+      throw new Error('Career roadmap generation failed. ' + error.message);
+    }
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt
+    });
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: careerRoadmapSchema,
+        temperature: 0.4
+      }
+    });
+    return JSON.parse(result.response.text().trim());
+  } catch (error) {
+    console.error('Gemini Career Roadmap Error:', error);
+    throw new Error('Career roadmap generation failed. ' + error.message);
+  }
+}
+
 

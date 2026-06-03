@@ -62,8 +62,16 @@ interface AdminStats {
   recentPreps?: Array<{ id: string; fileName: string; fileSize: number; questionsCount: number; createdAt: string }>;
   totalLinkedins?: number;
   totalLinkedinBios?: number;
+  totalLinkedinOutreachs?: number;
+  totalCareerCourses?: number;
+  totalElevatorPitches?: number;
+  totalCareerRoadmaps?: number;
   recentLinkedins?: Array<{ id: string; email: string; score: number; createdAt: string }>;
   recentLinkedinBios?: Array<{ id: string; email: string; jobTitle: string; createdAt: string }>;
+  recentLinkedinOutreachs?: Array<{ id: string; email: string; jobTitle: string; createdAt: string }>;
+  recentCareerCourses?: Array<{ id: string; email: string; jobTitle: string; createdAt: string }>;
+  recentElevatorPitches?: Array<{ id: string; email: string; jobTitle: string; createdAt: string }>;
+  recentCareerRoadmaps?: Array<{ id: string; email: string; createdAt: string }>;
   recentResumes?: Array<{
     id: string;
     title: string;
@@ -332,6 +340,10 @@ export default function Admin({ setCurrentPage }: AdminProps) {
             <NavItem icon={<Sparkles size={15} />}        label="AI Prep Logs"      active={activeSection === 'preps'}      onClick={() => setActiveSection('preps')} />
             <NavItem icon={<Sparkles size={15} />}        label="LinkedIn Audit Logs" active={activeSection === 'linkedin-logs'} onClick={() => setActiveSection('linkedin-logs')} />
             <NavItem icon={<Sparkles size={15} />}        label="LinkedIn Bio Logs" active={activeSection === 'linkedin-bio-logs'} onClick={() => setActiveSection('linkedin-bio-logs')} />
+            <NavItem icon={<Sparkles size={15} />}        label="LinkedIn Outreach Logs" active={activeSection === 'linkedin-outreach-logs'} onClick={() => setActiveSection('linkedin-outreach-logs')} />
+            <NavItem icon={<Sparkles size={15} />}        label="Skill Gaps Logs" active={activeSection === 'career-courses-logs'} onClick={() => setActiveSection('career-courses-logs')} />
+            <NavItem icon={<Sparkles size={15} />}        label="Elevator Pitch Logs" active={activeSection === 'elevator-pitch-logs'} onClick={() => setActiveSection('elevator-pitch-logs')} />
+            <NavItem icon={<Sparkles size={15} />}        label="Career Roadmap Logs" active={activeSection === 'career-roadmap-logs'} onClick={() => setActiveSection('career-roadmap-logs')} />
             <NavItem icon={<LogIn size={15} />}           label="Login Logs"        active={activeSection === 'logins'}     onClick={() => setActiveSection('logins')} />
             <NavItem icon={<FileText size={15} />}        label="Resume Builder Logs" active={activeSection === 'resume-logs'} onClick={() => setActiveSection('resume-logs')} />
             <NavItem icon={<FileText size={15} />}        label="Cover Letter Logs"  active={activeSection === 'cl-logs'} onClick={() => setActiveSection('cl-logs')} />
@@ -370,6 +382,10 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'preps'      && 'AI Interview Prep Scorecard Logs'}
                 {activeSection === 'linkedin-logs' && 'LinkedIn Profile Audit Logs'}
                 {activeSection === 'linkedin-bio-logs' && 'LinkedIn Bio & Banner Logs'}
+                {activeSection === 'linkedin-outreach-logs' && 'LinkedIn Outreach DM Logs'}
+                {activeSection === 'career-courses-logs' && 'Career Skill Gaps & Courses Logs'}
+                {activeSection === 'elevator-pitch-logs' && 'AI Elevator Pitch Logs'}
+                {activeSection === 'career-roadmap-logs' && 'Interactive Career Roadmap Logs'}
                 {activeSection === 'logins'     && 'User Authentication & Login Activity Logs'}
                 {activeSection === 'resume-logs' && 'Resume Builder Saved Drafts'}
                 {activeSection === 'cl-logs'     && 'Cover Letter Builder Saved Drafts'}
@@ -453,6 +469,10 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <StatCard icon={<Sparkles size={18} />}    label="SmartPreps Generated"   value={(stats.totalPreps ?? 0).toLocaleString()} caption="Interview prep scorecards" trendCls="card-purple" />
                       <StatCard icon={<Sparkles size={18} />}    label="LinkedIn Audits"        value={(stats.totalLinkedins ?? 0).toLocaleString()} caption="LinkedIn profile audits" trendCls="card-cyan" />
                       <StatCard icon={<Sparkles size={18} />}    label="LinkedIn Bios Generated" value={(stats.totalLinkedinBios ?? 0).toLocaleString()} caption="LinkedIn personal bios" trendCls="card-indigo" />
+                      <StatCard icon={<Sparkles size={18} />}    label="LinkedIn Outreach Kits"  value={(stats.totalLinkedinOutreachs ?? 0).toLocaleString()} caption="Custom networking DMs" trendCls="card-indigo" />
+                      <StatCard icon={<Sparkles size={18} />}    label="Skill Gaps Checked"      value={(stats.totalCareerCourses ?? 0).toLocaleString()} caption="Course recommend logs" trendCls="card-emerald" />
+                      <StatCard icon={<Sparkles size={18} />}    label="Elevator Pitches Built"  value={(stats.totalElevatorPitches ?? 0).toLocaleString()} caption="Speakable personal pitches" trendCls="card-rose" />
+                      <StatCard icon={<Sparkles size={18} />}    label="Career Roadmaps Made"    value={(stats.totalCareerRoadmaps ?? 0).toLocaleString()} caption="Chronological transition plans" trendCls="card-purple" />
                       <StatCard icon={<FileText size={18} />}    label="Resumes Created"        value={(stats.totalResumes ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-cyan" />
                       <StatCard icon={<FileText size={18} />}    label="Cover Letters Created"  value={(stats.totalCoverLetters ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-rose" />
                       <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact" trendCls="card-amber" />
@@ -987,6 +1007,144 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                   <span>Log ID: <code className="admin-status-mono">{b.id.slice(0, 8)}...</code></span>
                                   <span>•</span>
                                   <span>Generated: {new Date(b.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ LINKEDIN OUTREACH LOGS SECTION ─ */}
+                {activeSection === 'linkedin-outreach-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Historical LinkedIn Outreach Logs</h2>
+                      <span className="panel-badge">{stats.totalLinkedinOutreachs ?? 0} kits logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentLinkedinOutreachs || (stats.recentLinkedinOutreachs || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">✨</span>
+                          <p>No LinkedIn outreach generations logged in the database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentLinkedinOutreachs || []).map((o, oIdx) => (
+                            <div className="admin-table-row glass-card detail" key={o.id || oIdx}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{o.email || 'Anonymous User'}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Job Title: <strong style={{ color: 'var(--color-primary)' }}>{o.jobTitle}</strong></span>
+                                  <span>•</span>
+                                  <span>Log ID: <code className="admin-status-mono">{(o.id || '').slice(0, 8)}...</code></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(o.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ CAREER COURSES LOGS SECTION ─ */}
+                {activeSection === 'career-courses-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Historical Career Courses & Gaps Logs</h2>
+                      <span className="panel-badge">{stats.totalCareerCourses ?? 0} audits logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentCareerCourses || (stats.recentCareerCourses || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">✨</span>
+                          <p>No Career courses gap audits logged in the database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentCareerCourses || []).map((cc, ccIdx) => (
+                            <div className="admin-table-row glass-card detail" key={cc.id || ccIdx}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{cc.email || 'Anonymous User'}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Target Role: <strong style={{ color: 'var(--color-primary)' }}>{cc.jobTitle}</strong></span>
+                                  <span>•</span>
+                                  <span>Log ID: <code className="admin-status-mono">{(cc.id || '').slice(0, 8)}...</code></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(cc.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ ELEVATOR PITCH LOGS SECTION ─ */}
+                {activeSection === 'elevator-pitch-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Historical AI Elevator Pitch Logs</h2>
+                      <span className="panel-badge">{stats.totalElevatorPitches ?? 0} pitches logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentElevatorPitches || (stats.recentElevatorPitches || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">✨</span>
+                          <p>No Elevator Pitch builds logged in the database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentElevatorPitches || []).map((ep, epIdx) => (
+                            <div className="admin-table-row glass-card detail" key={ep.id || epIdx}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{ep.email || 'Anonymous User'}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Target Job: <strong style={{ color: 'var(--color-primary)' }}>{ep.jobTitle}</strong></span>
+                                  <span>•</span>
+                                  <span>Log ID: <code className="admin-status-mono">{(ep.id || '').slice(0, 8)}...</code></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(ep.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ CAREER ROADMAP LOGS SECTION ─ */}
+                {activeSection === 'career-roadmap-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Historical Career Roadmap Logs</h2>
+                      <span className="panel-badge">{stats.totalCareerRoadmaps ?? 0} roadmaps logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentCareerRoadmaps || (stats.recentCareerRoadmaps || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">✨</span>
+                          <p>No Career Roadmaps logged in the database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentCareerRoadmaps || []).map((cr, crIdx) => (
+                            <div className="admin-table-row glass-card detail" key={cr.id || crIdx}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{cr.email || 'Anonymous User'}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Log ID: <code className="admin-status-mono">{(cr.id || '').slice(0, 8)}...</code></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(cr.createdAt).toLocaleString()}</span>
                                 </div>
                               </div>
                             </div>

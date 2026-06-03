@@ -5,8 +5,8 @@ import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, getWorkById } from './db.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini } from './services/gemini.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, getWorkById } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -768,6 +768,213 @@ apiRouter.post('/api/linkedin/bio', async (req, res) => {
     console.error('LinkedIn Bio Generator API Error:', error);
     return res.status(500).json({
       error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
+    });
+  }
+});
+
+// LinkedIn Outreach & DM Writer Endpoint
+apiRouter.post('/api/linkedin/outreach', async (req, res) => {
+  try {
+    const { jobTitle, companyName, context, targetName, email, userId } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!jobTitle) {
+      return res.status(400).json({ error: 'Job Title is required.' });
+    }
+
+    const result = await generateLinkedinOutreachWithGemini({
+      jobTitle,
+      companyName,
+      context,
+      targetName,
+      customApiKey
+    });
+
+    await saveLinkedinOutreachLog({
+      email: email || '',
+      jobTitle: jobTitle
+    });
+
+    let savedWork = null;
+    if (userId) {
+      savedWork = await saveWork({
+        userId,
+        title: `LinkedIn Outreach - ${jobTitle} (${companyName || 'General'})`,
+        type: 'linkedin-outreach',
+        templateId: 'linkedin-outreach-gen',
+        htmlContent: JSON.stringify({
+          jobTitle,
+          companyName,
+          context,
+          targetName,
+          result
+        })
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: result,
+      work: savedWork
+    });
+  } catch (error) {
+    console.error('LinkedIn Outreach API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'AI Generation failed. Please try again later.'
+    });
+  }
+});
+
+// Skill Gap & Course Recommendation Endpoint
+apiRouter.post('/api/career/courses', async (req, res) => {
+  try {
+    const { targetJob, skills, resumeText, email, userId } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!targetJob) {
+      return res.status(400).json({ error: 'Target Job is required.' });
+    }
+
+    const result = await generateCareerCoursesWithGemini({
+      targetJob,
+      skills,
+      resumeText,
+      customApiKey
+    });
+
+    await saveCareerCoursesLog({
+      email: email || '',
+      jobTitle: targetJob
+    });
+
+    let savedWork = null;
+    if (userId) {
+      savedWork = await saveWork({
+        userId,
+        title: `Career Courses - ${targetJob}`,
+        type: 'career-courses',
+        templateId: 'career-courses-gen',
+        htmlContent: JSON.stringify({
+          targetJob,
+          skills,
+          resumeText,
+          result
+        })
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: result,
+      work: savedWork
+    });
+  } catch (error) {
+    console.error('Career Courses API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'AI Generation failed. Please try again later.'
+    });
+  }
+});
+
+// Elevator Pitch Builder Endpoint
+apiRouter.post('/api/career/pitch', async (req, res) => {
+  try {
+    const { jobTitle, details, resumeText, email, userId } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!jobTitle) {
+      return res.status(400).json({ error: 'Job Title is required.' });
+    }
+
+    const result = await generateElevatorPitchWithGemini({
+      jobTitle,
+      details,
+      resumeText,
+      customApiKey
+    });
+
+    await saveElevatorPitchLog({
+      email: email || '',
+      jobTitle: jobTitle
+    });
+
+    let savedWork = null;
+    if (userId) {
+      savedWork = await saveWork({
+        userId,
+        title: `Elevator Pitch - ${jobTitle}`,
+        type: 'elevator-pitch',
+        templateId: 'elevator-pitch-gen',
+        htmlContent: JSON.stringify({
+          jobTitle,
+          details,
+          resumeText,
+          result
+        })
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: result,
+      work: savedWork
+    });
+  } catch (error) {
+    console.error('Elevator Pitch API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'AI Generation failed. Please try again later.'
+    });
+  }
+});
+
+// Career Roadmap Endpoint
+apiRouter.post('/api/career/roadmap', async (req, res) => {
+  try {
+    const { currentRole, targetRole, years, resumeText, email, userId } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!targetRole) {
+      return res.status(400).json({ error: 'Target Role is required.' });
+    }
+
+    const result = await generateCareerRoadmapWithGemini({
+      currentRole,
+      targetRole,
+      years,
+      resumeText,
+      customApiKey
+    });
+
+    await saveCareerRoadmapLog({
+      email: email || ''
+    });
+
+    let savedWork = null;
+    if (userId) {
+      savedWork = await saveWork({
+        userId,
+        title: `Career Roadmap - ${targetRole}`,
+        type: 'career-roadmap',
+        templateId: 'career-roadmap-gen',
+        htmlContent: JSON.stringify({
+          currentRole,
+          targetRole,
+          years,
+          resumeText,
+          result
+        })
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: result,
+      work: savedWork
+    });
+  } catch (error) {
+    console.error('Career Roadmap API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'AI Generation failed. Please try again later.'
     });
   }
 });

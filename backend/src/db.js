@@ -136,6 +136,33 @@ const linkedinBioLogSchema = new mongoose.Schema({
 
 const LinkedinBioLog = mongoose.models.LinkedinBioLog || mongoose.model('LinkedinBioLog', linkedinBioLogSchema);
 
+const linkedinOutreachLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  jobTitle: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now }
+});
+const LinkedinOutreachLog = mongoose.models.LinkedinOutreachLog || mongoose.model('LinkedinOutreachLog', linkedinOutreachLogSchema);
+
+const careerCoursesLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  jobTitle: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now }
+});
+const CareerCoursesLog = mongoose.models.CareerCoursesLog || mongoose.model('CareerCoursesLog', careerCoursesLogSchema);
+
+const elevatorPitchLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  jobTitle: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now }
+});
+const ElevatorPitchLog = mongoose.models.ElevatorPitchLog || mongoose.model('ElevatorPitchLog', elevatorPitchLogSchema);
+
+const careerRoadmapLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now }
+});
+const CareerRoadmapLog = mongoose.models.CareerRoadmapLog || mongoose.model('CareerRoadmapLog', careerRoadmapLogSchema);
+
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -488,6 +515,73 @@ export async function saveLinkedinBioLog({ email, jobTitle }) {
   writeDb(db);
 }
 
+export async function saveLinkedinOutreachLog({ email, jobTitle }) {
+  await ensureMongoConnection();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    LinkedinOutreachLog.create({ email: email || '', jobTitle: jobTitle || '' }).catch(err => console.error('MongoDB saveLinkedinOutreachLog error:', err));
+    return;
+  }
+  const db = readDb();
+  if (!db.linkedinOutreachLogs) db.linkedinOutreachLogs = [];
+  db.linkedinOutreachLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    jobTitle: jobTitle || '',
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
+export async function saveCareerCoursesLog({ email, jobTitle }) {
+  await ensureMongoConnection();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    CareerCoursesLog.create({ email: email || '', jobTitle: jobTitle || '' }).catch(err => console.error('MongoDB saveCareerCoursesLog error:', err));
+    return;
+  }
+  const db = readDb();
+  if (!db.careerCoursesLogs) db.careerCoursesLogs = [];
+  db.careerCoursesLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    jobTitle: jobTitle || '',
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
+export async function saveElevatorPitchLog({ email, jobTitle }) {
+  await ensureMongoConnection();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    ElevatorPitchLog.create({ email: email || '', jobTitle: jobTitle || '' }).catch(err => console.error('MongoDB saveElevatorPitchLog error:', err));
+    return;
+  }
+  const db = readDb();
+  if (!db.elevatorPitchLogs) db.elevatorPitchLogs = [];
+  db.elevatorPitchLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    jobTitle: jobTitle || '',
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
+export async function saveCareerRoadmapLog({ email }) {
+  await ensureMongoConnection();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    CareerRoadmapLog.create({ email: email || '' }).catch(err => console.error('MongoDB saveCareerRoadmapLog error:', err));
+    return;
+  }
+  const db = readDb();
+  if (!db.careerRoadmapLogs) db.careerRoadmapLogs = [];
+  db.careerRoadmapLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
 export async function getWorkById(workId) {
   await ensureMongoConnection();
   const cleanWorkId = String(workId || '').trim();
@@ -518,6 +612,10 @@ export async function getAdminStats() {
       const loginLogs = await LoginLog.find().sort({ createdAt: -1 }).limit(100);
       const linkedinLogs = await LinkedinLog.find().sort({ createdAt: -1 }).limit(100);
       const linkedinBioLogs = await LinkedinBioLog.find().sort({ createdAt: -1 }).limit(100);
+      const linkedinOutreachLogs = await LinkedinOutreachLog.find().sort({ createdAt: -1 }).limit(100);
+      const careerCoursesLogs = await CareerCoursesLog.find().sort({ createdAt: -1 }).limit(100);
+      const elevatorPitchLogs = await ElevatorPitchLog.find().sort({ createdAt: -1 }).limit(100);
+      const careerRoadmapLogs = await CareerRoadmapLog.find().sort({ createdAt: -1 }).limit(100);
       const resumes = await Work.find({ type: 'resume' }).sort({ updatedAt: -1 }).limit(100);
       const coverLetters = await Work.find({ type: 'cover-letter' }).sort({ updatedAt: -1 }).limit(100);
       
@@ -529,6 +627,10 @@ export async function getAdminStats() {
       const totalLogins = await LoginLog.countDocuments();
       const totalLinkedins = await LinkedinLog.countDocuments();
       const totalLinkedinBios = await LinkedinBioLog.countDocuments();
+      const totalLinkedinOutreachs = await LinkedinOutreachLog.countDocuments();
+      const totalCareerCourses = await CareerCoursesLog.countDocuments();
+      const totalElevatorPitches = await ElevatorPitchLog.countDocuments();
+      const totalCareerRoadmaps = await CareerRoadmapLog.countDocuments();
       const totalResumes = await Work.countDocuments({ type: 'resume' });
       const totalCoverLetters = await Work.countDocuments({ type: 'cover-letter' });
       
@@ -658,6 +760,33 @@ export async function getAdminStats() {
           jobTitle: b.jobTitle,
           createdAt: b.createdAt
         })),
+        totalLinkedinOutreachs,
+        recentLinkedinOutreachs: linkedinOutreachLogs.slice(0, 15).map(o => ({
+          id: o._id,
+          email: o.email,
+          jobTitle: o.jobTitle,
+          createdAt: o.createdAt
+        })),
+        totalCareerCourses,
+        recentCareerCourses: careerCoursesLogs.slice(0, 15).map(cc => ({
+          id: cc._id,
+          email: cc.email,
+          jobTitle: cc.jobTitle,
+          createdAt: cc.createdAt
+        })),
+        totalElevatorPitches,
+        recentElevatorPitches: elevatorPitchLogs.slice(0, 15).map(ep => ({
+          id: ep._id,
+          email: ep.email,
+          jobTitle: ep.jobTitle,
+          createdAt: ep.createdAt
+        })),
+        totalCareerRoadmaps,
+        recentCareerRoadmaps: careerRoadmapLogs.slice(0, 15).map(cr => ({
+          id: cr._id,
+          email: cr.email,
+          createdAt: cr.createdAt
+        })),
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
           updatedAt: new Date().toISOString()
@@ -678,10 +807,19 @@ export async function getAdminStats() {
   const loginLogs = Array.isArray(db.loginLogs) ? db.loginLogs : [];
   const linkedinLogs = Array.isArray(db.linkedinLogs) ? db.linkedinLogs : [];
   const linkedinBioLogs = Array.isArray(db.linkedinBioLogs) ? db.linkedinBioLogs : [];
+  const linkedinOutreachLogs = Array.isArray(db.linkedinOutreachLogs) ? db.linkedinOutreachLogs : [];
+  const careerCoursesLogs = Array.isArray(db.careerCoursesLogs) ? db.careerCoursesLogs : [];
+  const elevatorPitchLogs = Array.isArray(db.elevatorPitchLogs) ? db.elevatorPitchLogs : [];
+  const careerRoadmapLogs = Array.isArray(db.careerRoadmapLogs) ? db.careerRoadmapLogs : [];
+
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
   const totalLinkedins = linkedinLogs.length;
   const totalLinkedinBios = linkedinBioLogs.length;
+  const totalLinkedinOutreachs = linkedinOutreachLogs.length;
+  const totalCareerCourses = careerCoursesLogs.length;
+  const totalElevatorPitches = elevatorPitchLogs.length;
+  const totalCareerRoadmaps = careerRoadmapLogs.length;
 
   const works = Array.isArray(db.works) ? db.works : [];
   const resumes = works.filter(w => w.type === 'resume');
@@ -721,8 +859,16 @@ export async function getAdminStats() {
     totalCoverLetters,
     totalLinkedins,
     totalLinkedinBios,
+    totalLinkedinOutreachs,
+    totalCareerCourses,
+    totalElevatorPitches,
+    totalCareerRoadmaps,
     recentLinkedins: linkedinLogs.slice(0, 15),
     recentLinkedinBios: linkedinBioLogs.slice(0, 15),
+    recentLinkedinOutreachs: linkedinOutreachLogs.slice(0, 15),
+    recentCareerCourses: careerCoursesLogs.slice(0, 15),
+    recentElevatorPitches: elevatorPitchLogs.slice(0, 15),
+    recentCareerRoadmaps: careerRoadmapLogs.slice(0, 15),
     recentScans: scans.slice(0, 8),
     contactMessages: contacts.slice(0, 8),
     recentFixes: fixes.slice(0, 10),

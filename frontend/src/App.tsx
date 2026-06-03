@@ -12,6 +12,10 @@ import Prep from './pages/Prep';
 import CoverLetter from './pages/CoverLetter';
 import LinkedIn from './pages/LinkedIn';
 import LinkedInBio from './pages/LinkedInBio';
+import LinkedInOutreach from './pages/LinkedInOutreach';
+import CareerCourses from './pages/CareerCourses';
+import ElevatorPitch from './pages/ElevatorPitch';
+import CareerRoadmap from './pages/CareerRoadmap';
 import Portfolio from './pages/Portfolio';
 import Privacy from './pages/Privacy';
 import FAQ from './pages/FAQ';
@@ -27,7 +31,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'resume-builder', 'privacy', 'faq'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -96,7 +100,7 @@ export default function App() {
 
   // Private route interceptor to enforce Sign In for product modules
   useEffect(() => {
-    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin', 'linkedin-bio'];
+    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'career-courses', 'elevator-pitch', 'career-roadmap'];
     if (privatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
       setShowAuthModal(true);
@@ -181,6 +185,42 @@ export default function App() {
       case 'linkedin-bio':
         return (
           <LinkedInBio 
+            customApiKey={customApiKey}
+            resumeText={resumeText}
+            loadedWork={loadedWork}
+            setLoadedWork={setLoadedWork}
+          />
+        );
+      case 'linkedin-outreach':
+        return (
+          <LinkedInOutreach 
+            customApiKey={customApiKey}
+            resumeText={resumeText}
+            loadedWork={loadedWork}
+            setLoadedWork={setLoadedWork}
+          />
+        );
+      case 'career-courses':
+        return (
+          <CareerCourses 
+            customApiKey={customApiKey}
+            resumeText={resumeText}
+            loadedWork={loadedWork}
+            setLoadedWork={setLoadedWork}
+          />
+        );
+      case 'elevator-pitch':
+        return (
+          <ElevatorPitch 
+            customApiKey={customApiKey}
+            resumeText={resumeText}
+            loadedWork={loadedWork}
+            setLoadedWork={setLoadedWork}
+          />
+        );
+      case 'career-roadmap':
+        return (
+          <CareerRoadmap 
             customApiKey={customApiKey}
             resumeText={resumeText}
             loadedWork={loadedWork}
