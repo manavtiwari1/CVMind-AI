@@ -279,9 +279,9 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
     },
     {
       id: 'tailor-prep',
-      title: 'Job Description AI Tailor & SmartPrep AI',
-      description: 'Articles details regarding semantic gap keywords matching and interactive interviewer coaching.',
-      articleCount: 4,
+      title: 'AI Career Suite, LinkedIn & SmartPrep',
+      description: 'Articles details regarding resume tailoring, interview coaching, LinkedIn optimization, and Career Path builders.',
+      articleCount: 7,
       articles: [
         {
           id: 11,
@@ -361,6 +361,66 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
               <ul>
                 <li><strong>Zero Machine Learning Training:</strong> Your mock answers and conversational inputs are never uploaded to train public LLM models.</li>
                 <li><strong>QA Logs Isolation:</strong> Conversation dialogue metrics are logged securely strictly for development error checks and chatbot behavior audits, and are periodically purged completely.</li>
+              </ul>
+            </div>
+          )
+        },
+        {
+          id: 15,
+          question: 'How does the LinkedIn Optimizer audit profile PDFs and generate assets?',
+          title: 'LinkedIn Optimization Audits, Headlines, and Recruiter DMs',
+          editedTime: 'Edited 1 day ago',
+          tags: ['linkedin', 'branding', 'bio', 'banner', 'outreach'],
+          content: (
+            <div className="article-body">
+              <p className="lead-paragraph">
+                The <strong>LinkedIn Optimizer</strong> is a dedicated suite designed to maximize your professional branding and social search indexing.
+              </p>
+              <h3>Core LinkedIn Suite Capabilities:</h3>
+              <ul>
+                <li><strong>Profile PDF Audit:</strong> Download your LinkedIn profile in PDF format, upload it directly to CVMind, and receive an instant scoring breakdown analyzing your searchability, headline, and bio.</li>
+                <li><strong>Bio & Banner Generator:</strong> Automatically generates catchyheadlines separated by | and compelling, narrative About summaries. It also shares visual direction layout copy to design custom profile banners.</li>
+                <li><strong>Outreach & DM Writer:</strong> Automatically drafts recruiter DMs (under 150 words) and warm connection request messages (under 300 characters) to boost response rates.</li>
+              </ul>
+            </div>
+          )
+        },
+        {
+          id: 16,
+          question: 'How does Career Path AI help in transition planning and roadmaps?',
+          title: 'Career Path AI - Skills Transitions, Elevator Pitches, and Roadmaps',
+          editedTime: 'Edited 1 day ago',
+          tags: ['career', 'transition', 'roadmap', 'pitch', 'courses'],
+          content: (
+            <div className="article-body">
+              <p className="lead-paragraph">
+                <strong>Career Path AI</strong> is designed for candidates looking to upgrade their roles or pivot into completely new industries.
+              </p>
+              <h3>Key Transition Modules:</h3>
+              <ol>
+                <li><strong>Skill Gap & Courses:</strong> Checks your resume experience against target job descriptions, identifies training voids, and recommends online learning paths (Coursera/Udemy/LinkedIn Learning).</li>
+                <li><strong>Elevator Pitch Builder:</strong> Creates three tailored verbal pitches (Corporate metrics-focused, Tech/Startup mission-focused, and Creative storytelling) for your networking events.</li>
+                <li><strong>Interactive Roadmaps:</strong> Produces a customized, chronological 4-step transition plan complete with actions and measurable completion milestones.</li>
+              </ol>
+            </div>
+          )
+        },
+        {
+          id: 17,
+          question: 'How does silent background auto-save and deletion safety work?',
+          title: 'Background Auto-Save & Deletion Safety Sync',
+          editedTime: 'Edited 1 day ago',
+          tags: ['save', 'autosave', 'delete', 'sync', 'dashboard'],
+          content: (
+            <div className="article-body">
+              <p>
+                CVMind AI supports automatic cloud synchronization so you never lose your progress or experience formatting glitches.
+              </p>
+              <h3>Auto-Save and Deletion Safety Workflows</h3>
+              <ul>
+                <li><strong>Silent Background Saves:</strong> Cover letters, resumes, and interview mock sandbox answers are saved automatically every 4 seconds in the background without disturbing your active keyboard state or cursor.</li>
+                <li><strong>Automatic Badges:</strong> The page displays a subtle `✓ Saved automatically to My Works` status badge instead of manual save buttons.</li>
+                <li><strong>Deletion Sync:</strong> When deleting a file from the navbar dashboard modal, the platform instantly clears current state variables and returns you to the home gallery so that stale, deleted files are not auto-saved back to the database.</li>
               </ul>
             </div>
           )
