@@ -269,7 +269,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
               <h3>Data Visibility Breakdown</h3>
               <ul>
                 <li><strong>Resumes:</strong> Never saved (parsed in-memory).</li>
-                <li><strong>Technical Logs:</strong> Anonymized backend metrics only (apki koi personal details nahi aati h).</li>
+                <li><strong>Technical Logs:</strong> Anonymized backend metrics only (your personal details are not collected).</li>
                 <li><strong>AI Assistant Conversations:</strong> Monitored solely for safety/QA audits and systematically purged.</li>
               </ul>
             </div>

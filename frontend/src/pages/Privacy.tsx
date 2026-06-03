@@ -36,7 +36,7 @@ export default function Privacy() {
       icon: <Terminal size={24} />,
       title: "System Logs (Strictly Anonymized)",
       type: "monitoring",
-      desc: "We can see technical system logs for backend operations. However, these logs contain absolutely no personal details (apki koi personal details nahi aati h). No names, no email addresses, and no phone numbers are captured. The telemetry is entirely anonymous and used solely to optimize platform speed."
+      desc: "We can see technical system logs for backend operations. However, these logs contain absolutely no personal details. No names, no email addresses, and no phone numbers are captured. The telemetry is entirely anonymous and used solely to optimize platform speed."
     },
 
     {
