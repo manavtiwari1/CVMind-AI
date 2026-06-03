@@ -138,7 +138,7 @@
   border: 3px solid rgba(41, 151, 255, 0.1);
   border-top-color: var(--blue);
   border-radius: 50%;
-  animation: cl-spin 1s linear infinite;
+  animation: spin 1s linear infinite;
   margin: 0 auto 1.5rem;
 }
 
