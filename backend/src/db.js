@@ -163,6 +163,28 @@ const careerRoadmapLogSchema = new mongoose.Schema({
 });
 const CareerRoadmapLog = mongoose.models.CareerRoadmapLog || mongoose.model('CareerRoadmapLog', careerRoadmapLogSchema);
 
+const voicePrepLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  jobTitle: { type: String, default: '' },
+  score: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now }
+});
+const VoicePrepLog = mongoose.models.VoicePrepLog || mongoose.model('VoicePrepLog', voicePrepLogSchema);
+
+const portfolioGenLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  theme: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now }
+});
+const PortfolioGenLog = mongoose.models.PortfolioGenLog || mongoose.model('PortfolioGenLog', portfolioGenLogSchema);
+
+const linkedinPostLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  topic: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now }
+});
+const LinkedinPostLog = mongoose.models.LinkedinPostLog || mongoose.model('LinkedinPostLog', linkedinPostLogSchema);
+
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -582,6 +604,59 @@ export async function saveCareerRoadmapLog({ email }) {
   writeDb(db);
 }
 
+export async function saveVoicePrepLog({ email, jobTitle, score }) {
+  await ensureMongoConnection();
+  const scoreVal = Number(score || 0);
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    VoicePrepLog.create({ email: email || '', jobTitle: jobTitle || '', score: scoreVal }).catch(err => console.error('MongoDB saveVoicePrepLog error:', err));
+    return;
+  }
+  const db = readDb();
+  if (!db.voicePrepLogs) db.voicePrepLogs = [];
+  db.voicePrepLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    jobTitle: jobTitle || '',
+    score: scoreVal,
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
+export async function savePortfolioGenLog({ email, theme }) {
+  await ensureMongoConnection();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    PortfolioGenLog.create({ email: email || '', theme: theme || '' }).catch(err => console.error('MongoDB savePortfolioGenLog error:', err));
+    return;
+  }
+  const db = readDb();
+  if (!db.portfolioGenLogs) db.portfolioGenLogs = [];
+  db.portfolioGenLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    theme: theme || '',
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
+export async function saveLinkedinPostLog({ email, topic }) {
+  await ensureMongoConnection();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    LinkedinPostLog.create({ email: email || '', topic: topic || '' }).catch(err => console.error('MongoDB saveLinkedinPostLog error:', err));
+    return;
+  }
+  const db = readDb();
+  if (!db.linkedinPostLogs) db.linkedinPostLogs = [];
+  db.linkedinPostLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    topic: topic || '',
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
 export async function getWorkById(workId) {
   await ensureMongoConnection();
   const cleanWorkId = String(workId || '').trim();
@@ -616,6 +691,9 @@ export async function getAdminStats() {
       const careerCoursesLogs = await CareerCoursesLog.find().sort({ createdAt: -1 }).limit(100);
       const elevatorPitchLogs = await ElevatorPitchLog.find().sort({ createdAt: -1 }).limit(100);
       const careerRoadmapLogs = await CareerRoadmapLog.find().sort({ createdAt: -1 }).limit(100);
+      const voicePrepLogs = await VoicePrepLog.find().sort({ createdAt: -1 }).limit(100);
+      const portfolioGenLogs = await PortfolioGenLog.find().sort({ createdAt: -1 }).limit(100);
+      const linkedinPostLogs = await LinkedinPostLog.find().sort({ createdAt: -1 }).limit(100);
       const resumes = await Work.find({ type: 'resume' }).sort({ updatedAt: -1 }).limit(100);
       const coverLetters = await Work.find({ type: 'cover-letter' }).sort({ updatedAt: -1 }).limit(100);
       
@@ -631,6 +709,9 @@ export async function getAdminStats() {
       const totalCareerCourses = await CareerCoursesLog.countDocuments();
       const totalElevatorPitches = await ElevatorPitchLog.countDocuments();
       const totalCareerRoadmaps = await CareerRoadmapLog.countDocuments();
+      const totalVoicePreps = await VoicePrepLog.countDocuments();
+      const totalPortfolioGens = await PortfolioGenLog.countDocuments();
+      const totalLinkedinPosts = await LinkedinPostLog.countDocuments();
       const totalResumes = await Work.countDocuments({ type: 'resume' });
       const totalCoverLetters = await Work.countDocuments({ type: 'cover-letter' });
       
@@ -787,6 +868,28 @@ export async function getAdminStats() {
           email: cr.email,
           createdAt: cr.createdAt
         })),
+        totalVoicePreps,
+        recentVoicePreps: voicePrepLogs.slice(0, 15).map(vp => ({
+          id: vp._id,
+          email: vp.email,
+          jobTitle: vp.jobTitle,
+          score: vp.score,
+          createdAt: vp.createdAt
+        })),
+        totalPortfolioGens,
+        recentPortfolioGens: portfolioGenLogs.slice(0, 15).map(pg => ({
+          id: pg._id,
+          email: pg.email,
+          theme: pg.theme,
+          createdAt: pg.createdAt
+        })),
+        totalLinkedinPosts,
+        recentLinkedinPosts: linkedinPostLogs.slice(0, 15).map(lp => ({
+          id: lp._id,
+          email: lp.email,
+          topic: lp.topic,
+          createdAt: lp.createdAt
+        })),
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
           updatedAt: new Date().toISOString()
@@ -811,6 +914,9 @@ export async function getAdminStats() {
   const careerCoursesLogs = Array.isArray(db.careerCoursesLogs) ? db.careerCoursesLogs : [];
   const elevatorPitchLogs = Array.isArray(db.elevatorPitchLogs) ? db.elevatorPitchLogs : [];
   const careerRoadmapLogs = Array.isArray(db.careerRoadmapLogs) ? db.careerRoadmapLogs : [];
+  const voicePrepLogs = Array.isArray(db.voicePrepLogs) ? db.voicePrepLogs : [];
+  const portfolioGenLogs = Array.isArray(db.portfolioGenLogs) ? db.portfolioGenLogs : [];
+  const linkedinPostLogs = Array.isArray(db.linkedinPostLogs) ? db.linkedinPostLogs : [];
 
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
@@ -820,6 +926,9 @@ export async function getAdminStats() {
   const totalCareerCourses = careerCoursesLogs.length;
   const totalElevatorPitches = elevatorPitchLogs.length;
   const totalCareerRoadmaps = careerRoadmapLogs.length;
+  const totalVoicePreps = voicePrepLogs.length;
+  const totalPortfolioGens = portfolioGenLogs.length;
+  const totalLinkedinPosts = linkedinPostLogs.length;
 
   const works = Array.isArray(db.works) ? db.works : [];
   const resumes = works.filter(w => w.type === 'resume');

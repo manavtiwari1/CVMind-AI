@@ -72,6 +72,12 @@ interface AdminStats {
   recentCareerCourses?: Array<{ id: string; email: string; jobTitle: string; createdAt: string }>;
   recentElevatorPitches?: Array<{ id: string; email: string; jobTitle: string; createdAt: string }>;
   recentCareerRoadmaps?: Array<{ id: string; email: string; createdAt: string }>;
+  totalVoicePreps?: number;
+  totalPortfolioGens?: number;
+  totalLinkedinPosts?: number;
+  recentVoicePreps?: Array<{ id: string; email: string; jobTitle: string; score: number; createdAt: string }>;
+  recentPortfolioGens?: Array<{ id: string; email: string; theme: string; createdAt: string }>;
+  recentLinkedinPosts?: Array<{ id: string; email: string; topic: string; createdAt: string }>;
   recentResumes?: Array<{
     id: string;
     title: string;
@@ -344,6 +350,9 @@ export default function Admin({ setCurrentPage }: AdminProps) {
             <NavItem icon={<Sparkles size={15} />}        label="Skill Gaps Logs" active={activeSection === 'career-courses-logs'} onClick={() => setActiveSection('career-courses-logs')} />
             <NavItem icon={<Sparkles size={15} />}        label="Elevator Pitch Logs" active={activeSection === 'elevator-pitch-logs'} onClick={() => setActiveSection('elevator-pitch-logs')} />
             <NavItem icon={<Sparkles size={15} />}        label="Career Roadmap Logs" active={activeSection === 'career-roadmap-logs'} onClick={() => setActiveSection('career-roadmap-logs')} />
+            <NavItem icon={<Sparkles size={15} />}        label="Voice Practice Logs" active={activeSection === 'voice-prep-logs'} onClick={() => setActiveSection('voice-prep-logs')} />
+            <NavItem icon={<Sparkles size={15} />}        label="Portfolio Gen Logs" active={activeSection === 'portfolio-gen-logs'} onClick={() => setActiveSection('portfolio-gen-logs')} />
+            <NavItem icon={<Sparkles size={15} />}        label="LinkedIn Post Logs" active={activeSection === 'linkedin-post-logs'} onClick={() => setActiveSection('linkedin-post-logs')} />
             <NavItem icon={<LogIn size={15} />}           label="Login Logs"        active={activeSection === 'logins'}     onClick={() => setActiveSection('logins')} />
             <NavItem icon={<FileText size={15} />}        label="Resume Builder Logs" active={activeSection === 'resume-logs'} onClick={() => setActiveSection('resume-logs')} />
             <NavItem icon={<FileText size={15} />}        label="Cover Letter Logs"  active={activeSection === 'cl-logs'} onClick={() => setActiveSection('cl-logs')} />
@@ -386,6 +395,9 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'career-courses-logs' && 'Career Skill Gaps & Courses Logs'}
                 {activeSection === 'elevator-pitch-logs' && 'AI Elevator Pitch Logs'}
                 {activeSection === 'career-roadmap-logs' && 'Interactive Career Roadmap Logs'}
+                {activeSection === 'voice-prep-logs' && 'Voice Interview Practice Logs'}
+                {activeSection === 'portfolio-gen-logs' && 'Portfolio Website Generator Logs'}
+                {activeSection === 'linkedin-post-logs' && 'LinkedIn Viral Post Generator Logs'}
                 {activeSection === 'logins'     && 'User Authentication & Login Activity Logs'}
                 {activeSection === 'resume-logs' && 'Resume Builder Saved Drafts'}
                 {activeSection === 'cl-logs'     && 'Cover Letter Builder Saved Drafts'}
@@ -473,6 +485,9 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <StatCard icon={<Sparkles size={18} />}    label="Skill Gaps Checked"      value={(stats.totalCareerCourses ?? 0).toLocaleString()} caption="Course recommend logs" trendCls="card-emerald" />
                       <StatCard icon={<Sparkles size={18} />}    label="Elevator Pitches Built"  value={(stats.totalElevatorPitches ?? 0).toLocaleString()} caption="Speakable personal pitches" trendCls="card-rose" />
                       <StatCard icon={<Sparkles size={18} />}    label="Career Roadmaps Made"    value={(stats.totalCareerRoadmaps ?? 0).toLocaleString()} caption="Chronological transition plans" trendCls="card-purple" />
+                      <StatCard icon={<Sparkles size={18} />}    label="Voice Practices"         value={(stats.totalVoicePreps ?? 0).toLocaleString()} caption="Vocal mock interviews" trendCls="card-cyan" />
+                      <StatCard icon={<Sparkles size={18} />}    label="Portfolios Generated"    value={(stats.totalPortfolioGens ?? 0).toLocaleString()} caption="Personal HTML websites" trendCls="card-indigo" />
+                      <StatCard icon={<Sparkles size={18} />}    label="LinkedIn Posts Written"  value={(stats.totalLinkedinPosts ?? 0).toLocaleString()} caption="Viral LinkedIn posts" trendCls="card-emerald" />
                       <StatCard icon={<FileText size={18} />}    label="Resumes Created"        value={(stats.totalResumes ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-cyan" />
                       <StatCard icon={<FileText size={18} />}    label="Cover Letters Created"  value={(stats.totalCoverLetters ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-rose" />
                       <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact" trendCls="card-amber" />
@@ -1145,6 +1160,110 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                   <span>Log ID: <code className="admin-status-mono">{(cr.id || '').slice(0, 8)}...</code></span>
                                   <span>•</span>
                                   <span>Generated: {new Date(cr.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ VOICE PREP LOGS SECTION ─ */}
+                {activeSection === 'voice-prep-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Voice Interview Practice Logs</h2>
+                      <span className="panel-badge">{stats.totalVoicePreps ?? 0} sessions logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentVoicePreps || (stats.recentVoicePreps || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">🎙️</span>
+                          <p>No Voice Interview Practices logged in the database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentVoicePreps || []).map((vp, vpIdx) => (
+                            <div className="admin-table-row glass-card detail" key={vp.id || vpIdx}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{vp.email || 'Anonymous User'} - {vp.jobTitle}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Log ID: <code className="admin-status-mono">{(vp.id || '').slice(0, 8)}...</code></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(vp.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                              <div className="table-row-right">
+                                <span className={`admin-score-pill ${vp.score >= 8 ? 'high' : vp.score >= 6 ? 'mid' : 'low'}`}>
+                                  Score: {vp.score}/10
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ PORTFOLIO GEN LOGS SECTION ─ */}
+                {activeSection === 'portfolio-gen-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> Portfolio Website Generator Logs</h2>
+                      <span className="panel-badge">{stats.totalPortfolioGens ?? 0} portfolios logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentPortfolioGens || (stats.recentPortfolioGens || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">🌐</span>
+                          <p>No Portfolio websites generated yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentPortfolioGens || []).map((pg, pgIdx) => (
+                            <div className="admin-table-row glass-card detail" key={pg.id || pgIdx}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{pg.email || 'Anonymous User'}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Theme: <code className="admin-status-mono">{pg.theme}</code></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(pg.createdAt).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ LINKEDIN POST LOGS SECTION ─ */}
+                {activeSection === 'linkedin-post-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> LinkedIn Viral Post Generator Logs</h2>
+                      <span className="panel-badge">{stats.totalLinkedinPosts ?? 0} posts logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentLinkedinPosts || (stats.recentLinkedinPosts || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">📝</span>
+                          <p>No LinkedIn posts generated yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentLinkedinPosts || []).map((lp, lpIdx) => (
+                            <div className="admin-table-row glass-card detail" key={lp.id || lpIdx}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{lp.email || 'Anonymous User'}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Topic: <code className="admin-status-mono">{lp.topic}</code></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(lp.createdAt).toLocaleString()}</span>
                                 </div>
                               </div>
                             </div>

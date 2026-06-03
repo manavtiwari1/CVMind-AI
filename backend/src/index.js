@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, getWorkById } from './db.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -1074,6 +1074,10 @@ Return ONLY valid JSON.`;
         templateId: 'linkedin-post-gen',
         htmlContent: JSON.stringify({ topic, jobTitle, tone, result: data })
       });
+      const user = await findUserById(userId);
+      if (user) {
+        await saveLinkedinPostLog({ email: user.email, topic });
+      }
     }
 
     return res.json({ success: true, data, work: savedWork });
@@ -1126,7 +1130,7 @@ Return ONLY this JSON:
 // Voice Prep — Analyze User Answer
 apiRouter.post('/api/voice-prep/analyze', async (req, res) => {
   try {
-    const { question, transcript, jobTitle } = req.body || {};
+    const { question, transcript, jobTitle, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
 
     if (!question || !transcript) return res.status(400).json({ error: 'Question and transcript are required.' });
@@ -1173,7 +1177,23 @@ Return ONLY this JSON:
     let text = dsJson.choices[0].message.content.trim();
     if (text.startsWith('```')) text = text.replace(/```json\n?|```\n?/g, '').trim();
     const data = JSON.parse(text);
-    return res.json({ success: true, data });
+
+    let savedWork = null;
+    if (userId) {
+      savedWork = await saveWork({
+        userId,
+        title: `Voice Practice - ${jobTitle || 'General'}`,
+        type: 'voice-prep',
+        templateId: 'voice-practice',
+        htmlContent: JSON.stringify({ question, transcript, jobTitle, result: data })
+      });
+      const user = await findUserById(userId);
+      if (user) {
+        await saveVoicePrepLog({ email: user.email, jobTitle: jobTitle || 'General', score: data.overallScore || 0 });
+      }
+    }
+
+    return res.json({ success: true, data, work: savedWork });
   } catch (error) {
     console.error('Voice Prep Analyze API Error:', error);
     return res.status(500).json({ error: error.message || 'Failed to analyze answer.' });
@@ -1265,6 +1285,10 @@ Return this exact JSON structure:
         templateId: `portfolio-${colorTheme || 'dark-pro'}`,
         htmlContent: JSON.stringify({ portfolioData, colorTheme, style, portfolioHTML })
       });
+      const user = await findUserById(userId);
+      if (user) {
+        await savePortfolioGenLog({ email: user.email, theme: colorTheme || 'dark-pro' });
+      }
     }
 
     return res.json({ success: true, data: { portfolioData, portfolioHTML }, work: savedWork });
