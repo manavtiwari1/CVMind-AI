@@ -91,97 +91,6 @@ const getProductIcon = (iconName: string) => {
 
 
 function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) => void }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStartX, setDragStartX] = useState(0);
-  const [rotationOffset, setRotationOffset] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const total = homeProducts.length;
-
-  const startAutoRotate = () => {
-    intervalRef.current = setInterval(() => {
-      setActiveIndex(prev => (prev + 1) % total);
-    }, 3500);
-  };
-
-  const stopAutoRotate = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
-  useEffect(() => {
-    startAutoRotate();
-    return () => stopAutoRotate();
-  }, []);
-
-  useEffect(() => {
-    if (isHovered) {
-      stopAutoRotate();
-    } else {
-      stopAutoRotate();
-      startAutoRotate();
-    }
-  }, [isHovered]);
-
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    setIsDragging(true);
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    setDragStartX(clientX);
-    stopAutoRotate();
-  };
-
-  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return;
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const delta = clientX - dragStartX;
-    setRotationOffset(delta * 0.45);
-  };
-
-  const handleDragEnd = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return;
-    setIsDragging(false);
-    const clientX = 'changedTouches' in e ? e.changedTouches[0].clientX : e.clientX;
-    const delta = clientX - dragStartX;
-    if (Math.abs(delta) > 50) {
-      if (delta < 0) {
-        setActiveIndex(prev => (prev + 1) % total);
-      } else {
-        setActiveIndex(prev => (prev - 1 + total) % total);
-      }
-    }
-    setRotationOffset(0);
-    if (!isHovered) startAutoRotate();
-  };
-
-  const getCardStyle = (index: number) => {
-    const angleStep = 360 / total;
-    const angle = ((index - activeIndex) * angleStep + rotationOffset + 360) % 360;
-    const normalizedAngle = angle > 180 ? angle - 360 : angle;
-
-    const radius = 260;
-    const radians = (normalizedAngle * Math.PI) / 180;
-    const x = Math.sin(radians) * radius;
-    const z = Math.cos(radians) * radius;
-
-    const scale = 0.6 + ((z + radius) / (2 * radius)) * 0.4;
-    const opacity = 0.25 + ((z + radius) / (2 * radius)) * 0.75;
-    const zIndex = Math.round(scale * 100);
-
-    const isCenter = Math.abs(normalizedAngle) < 30;
-
-    return {
-      transform: `translateX(${x}px) translateZ(${z}px) rotateY(${-normalizedAngle * 0.85}deg) scale(${scale})`,
-      opacity,
-      zIndex,
-      filter: isCenter ? 'brightness(1) blur(0px)' : `brightness(${0.55 + scale * 0.45}) blur(1.2px)`,
-      transition: isDragging ? 'none' : 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
-    };
-  };
-
   return (
     <section className="hpc-section">
       <div className="hpc-heading">
@@ -189,121 +98,48 @@ function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) =
         <h2 className="hpc-title">Everything You Need to <span className="hpc-title-grad">Land the Job</span></h2>
       </div>
 
-      <div
-        className="hpc-carousel-scene"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => { setIsHovered(false); setIsDragging(false); setRotationOffset(0); }}
-        onMouseDown={handleDragStart}
-        onMouseMove={handleDragMove}
-        onMouseUp={handleDragEnd}
-        onTouchStart={handleDragStart}
-        onTouchMove={handleDragMove}
-        onTouchEnd={handleDragEnd}
-      >
-        <div
-          className="hpc-carousel-glow"
-          style={{ background: homeProducts[activeIndex].glow }}
-        />
-
-        <div className="hpc-platform">
-          <div className="hpc-platform-ring hpc-ring-1" />
-          <div className="hpc-platform-ring hpc-ring-2" />
-        </div>
-
-        <div className="hpc-carousel-3d">
-          {homeProducts.map((p, index) => (
-            <div
-              key={p.id}
-              className={`hpc-flip-card ${index === activeIndex ? 'active' : ''}`}
-              style={{
-                ...getCardStyle(index),
-                '--card-glow': p.glow,
-                '--card-color': p.color
-              } as React.CSSProperties}
-              onClick={() => {
-                if (index !== activeIndex) {
-                  stopAutoRotate();
-                  setActiveIndex(index);
-                  setTimeout(() => { if (!isHovered) startAutoRotate(); }, 4000);
-                }
-              }}
-            >
-              <div className="hpc-flip-inner">
-                {/* FRONT */}
-                <div className="hpc-flip-front">
-                  {p.badge && <span className="hpc-card-badge">{p.badge}</span>}
-                  <div className="hpc-flip-icon">{getProductIcon(p.icon)}</div>
-                  <h3 className="hpc-flip-title">{p.title}</h3>
-                  <div className="hpc-flip-tags">
-                    {p.features.slice(0, 2).map(f => (
-                      <span key={f} className="hpc-flip-tag">{f}</span>
-                    ))}
-                  </div>
-                  <span className="hpc-flip-hint">hover to flip ↻</span>
+      <div className="hpc-grid">
+        {homeProducts.map((p) => (
+          <div
+            key={p.id}
+            className="hpc-flip-card"
+            style={{
+              '--card-glow': p.glow,
+              '--card-color': p.color
+            } as React.CSSProperties}
+          >
+            <div className="hpc-flip-inner">
+              {/* FRONT */}
+              <div className="hpc-flip-front">
+                {p.badge && <span className="hpc-card-badge">{p.badge}</span>}
+                <div className="hpc-flip-icon">{getProductIcon(p.icon)}</div>
+                <h3 className="hpc-flip-title">{p.title}</h3>
+                <div className="hpc-flip-tags">
+                  {p.features.slice(0, 2).map(f => (
+                    <span key={f} className="hpc-flip-tag">{f}</span>
+                  ))}
                 </div>
+                <span className="hpc-flip-hint">hover to flip ↻</span>
+              </div>
 
-                {/* BACK */}
-                <div className="hpc-flip-back">
-                  <div className="hpc-flip-back-icon">{getProductIcon(p.icon)}</div>
-                  <h3 className="hpc-flip-back-title">{p.title}</h3>
-                  <p className="hpc-flip-back-desc">{p.desc}</p>
-                  <div className="hpc-flip-back-stats">
-                    {p.stats.map(s => (
-                      <div key={s.label} className="hpc-flip-stat">
-                        <span className="hpc-flip-stat-val">{s.value}</span>
-                        <span className="hpc-flip-stat-lbl">{s.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button className="hpc-flip-cta" onClick={() => setCurrentPage(p.page)}>Try it Free →</button>
+              {/* BACK */}
+              <div className="hpc-flip-back">
+                <div className="hpc-flip-back-icon">{getProductIcon(p.icon)}</div>
+                <h3 className="hpc-flip-back-title">{p.title}</h3>
+                <p className="hpc-flip-back-desc">{p.desc}</p>
+                <div className="hpc-flip-back-stats">
+                  {p.stats.map(s => (
+                    <div key={s.label} className="hpc-flip-stat">
+                      <span className="hpc-flip-stat-val">{s.value}</span>
+                      <span className="hpc-flip-stat-lbl">{s.label}</span>
+                    </div>
+                  ))}
                 </div>
+                <button className="hpc-flip-cta" onClick={() => setCurrentPage(p.page)}>Try it Free →</button>
               </div>
             </div>
-          ))}
-        </div>
-
-        <div className="hpc-drag-hint">
-          <span>◁</span> drag to explore <span>▷</span>
-        </div>
-      </div>
-
-      <div className="hpc-carousel-nav">
-        <button
-          className="hpc-nav-arrow"
-          onClick={() => {
-            stopAutoRotate();
-            setActiveIndex(p => (p - 1 + total) % total);
-            setTimeout(() => startAutoRotate(), 4000);
-          }}
-        >
-          ‹
-        </button>
-
-        <div className="hpc-nav-dots">
-          {homeProducts.map((p, i) => (
-            <button
-              key={p.id}
-              className={`hpc-nav-dot ${i === activeIndex ? 'active' : ''}`}
-              onClick={() => {
-                stopAutoRotate();
-                setActiveIndex(i);
-                setTimeout(() => startAutoRotate(), 4000);
-              }}
-              aria-label={`Go to ${p.title}`}
-            />
-          ))}
-        </div>
-
-        <button
-          className="hpc-nav-arrow"
-          onClick={() => {
-            stopAutoRotate();
-            setActiveIndex(p => (p + 1) % total);
-            setTimeout(() => startAutoRotate(), 4000);
-          }}
-        >
-          ›
-        </button>
+          </div>
+        ))}
       </div>
     </section>
   );

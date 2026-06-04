@@ -1,6 +1,6 @@
 /* ════════════════════════════════════════════════════════════════
-   Home Product Carousel — 3D Circular Rotating Cards
-   Clean professional theme, responsive layout, fluid flip & rotate animations
+   Home Product Grid — Premium Flat-Billboard Flip Cards
+   Clean professional theme, responsive layout, fluid CSS transitions
    ════════════════════════════════════════════════════════════════ */
 
 /* ── Section wrapper ── */
@@ -12,14 +12,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2.5rem;
 }
 
 /* ── Heading ── */
 .hpc-heading {
   text-align: center;
   max-width: 600px;
-  margin-bottom: 0.5rem;
 }
 
 .hpc-eyebrow {
@@ -62,86 +61,22 @@
   background-clip: text;
 }
 
-/* ── 3D Carousel Scene Container ── */
-.hpc-carousel-scene {
-  position: relative;
+/* ── Static Responsive Grid ── */
+.hpc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
   width: 100%;
-  height: 380px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+/* ── Flip Card Structure ── */
+.hpc-flip-card {
   perspective: 1200px;
-  -webkit-perspective: 1200px;
-  overflow: visible;
-  cursor: grab;
-  user-select: none;
-}
-
-.hpc-carousel-scene:active {
-  cursor: grabbing;
-}
-
-/* Ambient glow beneath active card */
-.hpc-carousel-glow {
-  position: absolute;
-  width: 280px;
-  height: 280px;
-  border-radius: 50%;
-  filter: blur(75px);
-  opacity: 0.16;
-  pointer-events: none;
-  z-index: 0;
-  transition: background 0.8s ease;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Rotating Platform Base */
-.hpc-platform {
-  position: absolute;
-  width: 540px;
-  height: 540px;
-  bottom: -190px;
-  left: 50%;
-  transform: translateX(-50%) rotateX(80deg);
-  transform-style: preserve-3d;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.hpc-platform-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1.5px solid rgba(41, 151, 255, 0.08);
-}
-
-.hpc-ring-1 {
-  animation: hpcSpinRing 20s linear infinite;
-  border-style: dashed;
-}
-
-.hpc-ring-2 {
-  inset: 25px;
-  opacity: 0.5;
-  border: 1px solid rgba(41, 151, 255, 0.04);
-}
-
-@keyframes hpcSpinRing {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* 3D Container */
-.hpc-carousel-3d {
-  position: relative;
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  border-radius: 16px;
   width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
 }
 
 .hpc-flip-inner {
@@ -149,15 +84,15 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* elastic 3D flip */
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1); /* smooth premium flip */
 }
 
-/* Hover flip trigger - pops card forward in Z-space while flipping */
+/* Hover flip trigger - scales up slightly to simulate popout Z-depth */
 .hpc-flip-card:hover .hpc-flip-inner {
-  transform: rotateY(180deg) scale(1.08) translateZ(15px);
+  transform: rotateY(180deg) scale(1.04);
 }
 
-/* Front & Back Base Styles - Layered in 3D space */
+/* Front & Back Base Styles */
 .hpc-flip-front,
 .hpc-flip-back {
   position: absolute;
@@ -178,11 +113,13 @@
   -webkit-transform-style: preserve-3d;
 }
 
-/* Front Card Styling - Translated slightly forward in 3D */
+/* Front Card Styling - Premium Glassmorphism */
 .hpc-flip-front {
   background: rgba(22, 22, 26, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    0 4px 30px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   position: relative;
@@ -213,7 +150,7 @@
   left: 125%;
 }
 
-/* Floating Status Badge - Floated high in 3D parallax */
+/* Floating Status Badge */
 .hpc-card-badge {
   position: absolute;
   top: 12px;
@@ -230,17 +167,16 @@
   pointer-events: none;
   z-index: 2;
   transition: all 0.3s ease;
-  transform: translateZ(25px);
+  transform: translateZ(15px);
 }
 
-.hpc-flip-card:hover .hpc-card-badge,
-.hpc-flip-card.active .hpc-card-badge {
+.hpc-flip-card:hover .hpc-card-badge {
   background: rgba(41, 151, 255, 0.12);
   border-color: var(--card-color, #2997ff);
   box-shadow: 0 0 10px rgba(41, 151, 255, 0.15);
 }
 
-/* Floating Icon in 3D space */
+/* Icon wrap */
 .hpc-flip-icon {
   margin-bottom: 1rem;
   display: flex;
@@ -253,7 +189,7 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   transition: all 0.3s ease;
-  transform: translateZ(20px);
+  transform: translateZ(12px);
 }
 
 .hpc-card-icon-svg {
@@ -310,8 +246,11 @@
 .hpc-flip-back {
   background: rgba(16, 16, 20, 0.97);
   border: 1px solid var(--card-glow, rgba(41, 151, 255, 0.35));
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.55), 0 0 20px var(--card-glow, rgba(41, 151, 255, 0.15));
-  transform: rotateY(180deg);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.1),
+    0 10px 40px rgba(0, 0, 0, 0.55), 
+    0 0 20px var(--card-glow, rgba(41, 151, 255, 0.15));
+  transform: rotateY(180deg) translateZ(10px);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -402,24 +341,17 @@
 }
 
 /* Card Hover Accent Glows */
-.hpc-flip-card.active .hpc-flip-front {
-  border-color: var(--card-glow, rgba(255, 255, 255, 0.2));
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4), 0 0 16px var(--card-glow, rgba(255, 255, 255, 0.05));
-}
-
 .hpc-flip-card:hover .hpc-flip-front {
   border-color: var(--card-glow, rgba(255, 255, 255, 0.3));
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 24px var(--card-glow, rgba(255, 255, 255, 0.1));
 }
 
-.hpc-flip-card:hover .hpc-flip-tag,
-.hpc-flip-card.active .hpc-flip-tag {
+.hpc-flip-card:hover .hpc-flip-tag {
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--card-color, rgba(255, 255, 255, 0.15));
 }
 
-.hpc-flip-card:hover .hpc-flip-icon,
-.hpc-flip-card.active .hpc-flip-icon {
+.hpc-flip-card:hover .hpc-flip-icon {
   border-color: var(--card-glow, rgba(255, 255, 255, 0.2));
   box-shadow: 0 0 16px var(--card-glow, rgba(255, 255, 255, 0.05));
   background: rgba(255, 255, 255, 0.06);
@@ -429,125 +361,26 @@
   transform: scale(1.05);
 }
 
-/* ── Drag Guide Prompt ── */
-.hpc-drag-hint {
-  position: absolute;
-  bottom: 0px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-tertiary);
-  opacity: 0.5;
-  pointer-events: none;
-  animation: hpcPulse 2.5s infinite;
-}
-
-.hpc-drag-hint span {
-  animation: hpcBounce 1.5s infinite alternate;
-}
-
-@keyframes hpcPulse {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.65; }
-}
-
-/* ── Navigation dots & arrows ── */
-.hpc-carousel-nav {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  margin-top: 1rem;
-  z-index: 10;
-}
-
-.hpc-nav-arrow {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary);
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  line-height: 1;
-  padding: 0;
-  padding-bottom: 2px;
-}
-
-.hpc-nav-arrow:hover {
-  background: rgba(41, 151, 255, 0.1);
-  border-color: rgba(41, 151, 255, 0.3);
-  color: #2997ff;
-}
-
-.hpc-nav-dots {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.hpc-nav-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  padding: 0;
-}
-
-.hpc-nav-dot.active {
-  width: 18px;
-  border-radius: 3px;
-  background: #2997ff;
-  box-shadow: 0 0 8px rgba(41, 151, 255, 0.7);
-}
 
 /* ── Responsive breakpoints ── */
-@media (max-width: 768px) {
-  .hpc-carousel-scene {
-    height: 340px;
+@media (max-width: 900px) {
+  .hpc-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 600px;
+    gap: 1.25rem;
   }
   
-  .hpc-flip-card {
-    width: 220px;
-  }
-
-  .hpc-platform {
-    width: 440px;
-    height: 440px;
-    bottom: -150px;
-  }
-
   .hpc-section {
-    padding: 3rem 1.25rem 2rem;
+    padding: 3rem 1.25rem;
+    gap: 2rem;
   }
 }
 
-@media (max-width: 480px) {
-  .hpc-carousel-scene {
-    height: 330px;
-  }
-  
-  .hpc-flip-card {
-    width: 220px;
-  }
-
-  .hpc-platform {
-    width: 400px;
-    height: 400px;
-    bottom: -140px;
+@media (max-width: 580px) {
+  .hpc-grid {
+    grid-template-columns: 1fr;
+    max-width: 250px;
+    gap: 1.25rem;
   }
 
   .hpc-flip-front,
@@ -579,7 +412,7 @@
 
   /* Back Tweaks */
   .hpc-flip-back-icon {
-    display: none; /* Hide icon on back face to save space on mobile */
+    display: none;
   }
 
   .hpc-flip-back-title {
