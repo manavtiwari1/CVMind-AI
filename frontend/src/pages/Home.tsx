@@ -172,7 +172,7 @@ function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) =
     const isMobile = windowWidth < 600;
     const radius = isMobile ? 120 : 240;
     const radians = (normalizedAngle * Math.PI) / 180;
-    const x = Math.sin(radians) * radius * (isMobile ? 0.65 : 0.72); // Horizontal overlap compression
+    const x = Math.sin(radians) * radius * (isMobile ? 0.85 : 1.15); // Spread cards further out horizontally
     const z = Math.cos(radians) * radius;
 
     const scale = isMobile
