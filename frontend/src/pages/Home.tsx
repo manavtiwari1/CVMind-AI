@@ -91,6 +91,30 @@ const getProductIcon = (iconName: string) => {
 
 
 function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) => void }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [width, setWidth] = useState(window.innerWidth);
+
+  const total = homeProducts.length;
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const cardsPerPage = width > 900 ? 3 : (width > 600 ? 2 : 1);
+  const maxIndex = total - cardsPerPage;
+  const currentActiveIndex = Math.min(activeIndex, maxIndex);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const interval = setInterval(() => {
+      setActiveIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [isHovered, maxIndex]);
+
   return (
     <section className="hpc-section">
       <div className="hpc-heading">
@@ -98,47 +122,87 @@ function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) =
         <h2 className="hpc-title">Everything You Need to <span className="hpc-title-grad">Land the Job</span></h2>
       </div>
 
-      <div className="hpc-grid">
-        {homeProducts.map((p) => (
-          <div
-            key={p.id}
-            className="hpc-flip-card"
-            style={{
-              '--card-glow': p.glow,
-              '--card-color': p.color
-            } as React.CSSProperties}
-          >
-            <div className="hpc-flip-inner">
-              {/* FRONT */}
-              <div className="hpc-flip-front">
-                {p.badge && <span className="hpc-card-badge">{p.badge}</span>}
-                <div className="hpc-flip-icon">{getProductIcon(p.icon)}</div>
-                <h3 className="hpc-flip-title">{p.title}</h3>
-                <div className="hpc-flip-tags">
-                  {p.features.slice(0, 2).map(f => (
-                    <span key={f} className="hpc-flip-tag">{f}</span>
-                  ))}
-                </div>
-                <span className="hpc-flip-hint">hover to flip ↻</span>
-              </div>
+      <div
+        className="hpc-slider-container"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <button
+          className="hpc-slider-arrow prev"
+          onClick={() => setActiveIndex(prev => (prev <= 0 ? maxIndex : prev - 1))}
+          aria-label="Previous tools"
+        >
+          ‹
+        </button>
 
-              {/* BACK */}
-              <div className="hpc-flip-back">
-                <div className="hpc-flip-back-icon">{getProductIcon(p.icon)}</div>
-                <h3 className="hpc-flip-back-title">{p.title}</h3>
-                <p className="hpc-flip-back-desc">{p.desc}</p>
-                <div className="hpc-flip-back-stats">
-                  {p.stats.map(s => (
-                    <div key={s.label} className="hpc-flip-stat">
-                      <span className="hpc-flip-stat-val">{s.value}</span>
-                      <span className="hpc-flip-stat-lbl">{s.label}</span>
+        <div className="hpc-slider-viewport">
+          <div
+            className="hpc-slider-track"
+            style={{
+              transform: `translateX(calc(-${currentActiveIndex} * (100% + 1.5rem) / ${cardsPerPage}))`
+            }}
+          >
+            {homeProducts.map((p) => (
+              <div
+                key={p.id}
+                className="hpc-flip-card"
+                style={{
+                  '--card-glow': p.glow,
+                  '--card-color': p.color
+                } as React.CSSProperties}
+              >
+                <div className="hpc-flip-inner">
+                  {/* FRONT */}
+                  <div className="hpc-flip-front">
+                    {p.badge && <span className="hpc-card-badge">{p.badge}</span>}
+                    <div className="hpc-flip-icon">{getProductIcon(p.icon)}</div>
+                    <h3 className="hpc-flip-title">{p.title}</h3>
+                    <div className="hpc-flip-tags">
+                      {p.features.slice(0, 2).map(f => (
+                        <span key={f} className="hpc-flip-tag">{f}</span>
+                      ))}
                     </div>
-                  ))}
+                    <span className="hpc-flip-hint">hover to flip ↻</span>
+                  </div>
+
+                  {/* BACK */}
+                  <div className="hpc-flip-back">
+                    <div className="hpc-flip-back-icon">{getProductIcon(p.icon)}</div>
+                    <h3 className="hpc-flip-back-title">{p.title}</h3>
+                    <p className="hpc-flip-back-desc">{p.desc}</p>
+                    <div className="hpc-flip-back-stats">
+                      {p.stats.map(s => (
+                        <div key={s.label} className="hpc-flip-stat">
+                          <span className="hpc-flip-stat-val">{s.value}</span>
+                          <span className="hpc-flip-stat-lbl">{s.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <button className="hpc-flip-cta" onClick={() => setCurrentPage(p.page)}>Try it Free →</button>
+                  </div>
                 </div>
-                <button className="hpc-flip-cta" onClick={() => setCurrentPage(p.page)}>Try it Free →</button>
               </div>
-            </div>
+            ))}
           </div>
+        </div>
+
+        <button
+          className="hpc-slider-arrow next"
+          onClick={() => setActiveIndex(prev => (prev >= maxIndex ? 0 : prev + 1))}
+          aria-label="Next tools"
+        >
+          ›
+        </button>
+      </div>
+
+      <div className="hpc-slider-dots">
+        {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+          <button
+            key={i}
+            className={`hpc-slider-dot ${i === currentActiveIndex ? 'active' : ''}`}
+            onClick={() => setActiveIndex(i)}
+            aria-label={`Go to slide ${i + 1}`}
+          />
         ))}
       </div>
     </section>

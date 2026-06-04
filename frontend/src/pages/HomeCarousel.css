@@ -1,6 +1,6 @@
 /* ════════════════════════════════════════════════════════════════
-   Home Product Grid — Premium Flat-Billboard Flip Cards
-   Clean professional theme, responsive layout, fluid CSS transitions
+   Home Product Carousel — Premium Flat Horizontal Slider
+   Clean professional theme, responsive layout, fluid sliding animations
    ════════════════════════════════════════════════════════════════ */
 
 /* ── Section wrapper ── */
@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2.5rem;
+  gap: 1.5rem;
 }
 
 /* ── Heading ── */
@@ -61,13 +61,30 @@
   background-clip: text;
 }
 
-/* ── Static Responsive Grid ── */
-.hpc-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* ── Flat Horizontal Slider Container ── */
+.hpc-slider-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.hpc-slider-viewport {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 1.5rem 0.25rem;
+  margin: -1.5rem -0.25rem;
+}
+
+.hpc-slider-track {
+  display: flex;
   gap: 1.5rem;
   width: 100%;
-  margin-top: 0.5rem;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
 /* ── Flip Card Structure ── */
@@ -76,7 +93,9 @@
   aspect-ratio: 1 / 1;
   cursor: pointer;
   border-radius: 16px;
-  width: 100%;
+  --cards-per-page: 3;
+  width: calc((100% - (var(--cards-per-page) - 1) * 1.5rem) / var(--cards-per-page));
+  flex-shrink: 0;
 }
 
 .hpc-flip-inner {
@@ -87,7 +106,7 @@
   transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1); /* smooth premium flip */
 }
 
-/* Hover flip trigger - scales up slightly to simulate popout Z-depth */
+/* Hover flip trigger */
 .hpc-flip-card:hover .hpc-flip-inner {
   transform: rotateY(180deg) scale(1.04);
 }
@@ -113,7 +132,7 @@
   -webkit-transform-style: preserve-3d;
 }
 
-/* Front Card Styling - Premium Glassmorphism */
+/* Front Card Styling */
 .hpc-flip-front {
   background: rgba(22, 22, 26, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -361,13 +380,83 @@
   transform: scale(1.05);
 }
 
+/* ── Navigation arrows & dots ── */
+.hpc-slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-55%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+  padding: 0;
+  padding-bottom: 4px;
+  z-index: 10;
+}
+
+.hpc-slider-arrow.prev {
+  left: -58px;
+}
+
+.hpc-slider-arrow.next {
+  right: -58px;
+}
+
+.hpc-slider-arrow:hover {
+  background: rgba(41, 151, 255, 0.1);
+  border-color: rgba(41, 151, 255, 0.3);
+  color: #2997ff;
+  box-shadow: 0 0 12px rgba(41, 151, 255, 0.15);
+}
+
+.hpc-slider-dots {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.hpc-slider-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.hpc-slider-dot.active {
+  width: 18px;
+  border-radius: 3px;
+  background: #2997ff;
+  box-shadow: 0 0 8px rgba(41, 151, 255, 0.7);
+}
 
 /* ── Responsive breakpoints ── */
+@media (max-width: 990px) {
+  .hpc-slider-arrow.prev {
+    left: -15px; /* adjust spacing inside layout margins on narrower screens */
+  }
+
+  .hpc-slider-arrow.next {
+    right: -15px;
+  }
+}
+
 @media (max-width: 900px) {
-  .hpc-grid {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 600px;
-    gap: 1.25rem;
+  .hpc-flip-card {
+    --cards-per-page: 2;
   }
   
   .hpc-section {
@@ -376,11 +465,15 @@
   }
 }
 
-@media (max-width: 580px) {
-  .hpc-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 600px) {
+  .hpc-flip-card {
+    --cards-per-page: 1;
     max-width: 250px;
-    gap: 1.25rem;
+    margin: 0 auto;
+  }
+
+  .hpc-slider-arrow {
+    display: none; /* Hide arrows on mobile, use dots/swipes */
   }
 
   .hpc-flip-front,
