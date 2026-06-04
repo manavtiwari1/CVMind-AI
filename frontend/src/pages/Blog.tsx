@@ -11,6 +11,25 @@ export default function Blog({ setCurrentPage }: BlogProps) {
 
   const changelogData = [
     {
+      id: 6,
+      version: 'v2.3.0',
+      date: 'June 4, 2026',
+      title: '360° Rotating Product Showcase on Home Page',
+      tag: 'UX Polish',
+      description: 'A stunning 3D rotating product carousel has been added to the Home page, showcasing all 6 AI tools through interactive cards — featuring auto-rotation, drag support, flip animations, and live navigation controls.',
+      details: [
+        '<strong>🎠 360° 3D Card Carousel:</strong> A fully interactive 3D carousel is now embedded below the hero/upload section on the Home page. All 6 AI product cards rotate with real perspective depth and smooth transitions.',
+        '<strong>⚡ Auto-Rotate with Pause-on-Hover:</strong> Cards automatically cycle every 6 seconds. Hovering pauses the rotation instantly, and it resumes as soon as the cursor leaves.',
+        '<strong>👆 Drag to Explore:</strong> Users can manually drag the carousel left or right using mouse or touch — fully functional on both desktop and mobile devices.',
+        '<strong>🔄 Flip Animation (Front & Back):</strong> Each card can be flipped to reveal a "How it Works" back side showing a step-by-step guide and feature tags for that tool.',
+        '<strong>🎯 Direct Navigation:</strong> Clicking "Try it Free" on any card navigates directly to that tool without any extra steps or redirects.',
+        '<strong>🌟 Live Progress Arc:</strong> An animated arc indicator at the bottom displays the current card number and product name with a smooth fill transition.',
+        '<strong>🎨 Per-Card Gradient Glow:</strong> Every product card has its own unique color gradient and ambient glow effect, giving the platform a premium, polished aesthetic.'
+      ],
+      icon: Sparkles,
+      badgeColor: 'badge-green'
+    },
+    {
       id: 5,
       version: 'v2.2.0',
       date: 'June 3, 2026',
