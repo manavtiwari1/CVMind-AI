@@ -174,10 +174,10 @@ function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) =
     const isCenter = Math.abs(normalizedAngle) < 30;
 
     return {
-      transform: `translateX(${x}px) translateZ(${z}px) scale(${scale})`,
+      transform: `translateX(${x}px) translateZ(${z}px) rotateY(${-normalizedAngle * 0.85}deg) scale(${scale})`,
       opacity,
       zIndex,
-      filter: isCenter ? 'brightness(1)' : `brightness(${0.5 + scale * 0.5})`,
+      filter: isCenter ? 'brightness(1) blur(0px)' : `brightness(${0.55 + scale * 0.45}) blur(1.2px)`,
       transition: isDragging ? 'none' : 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
     };
   };
