@@ -23,6 +23,7 @@ import Blog from './pages/Blog';
 import LinkedInPost from './pages/linkedin/LinkedInPost';
 import VoicePrep from './pages/VoicePrep';
 import PortfolioGen from './pages/PortfolioGen';
+import Products from './pages/Products';
 import AuthModal from './components/AuthModal';
 import ParticleBackground from './components/ParticleBackground';
 import './styles/theme.css';
@@ -35,7 +36,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -167,6 +168,11 @@ export default function App() {
         title: "Developer Portfolio Showcase | CVMind AI",
         description: "Interactive professional portfolio showcasing developer projects, skills, and work achievements powered by CVMind AI.",
         keywords: "Developer Portfolio, Interactive CV, Project Showcase"
+      },
+      products: {
+        title: "All AI Career Tools | Product Showcase - CVMind AI",
+        description: "Explore all 6 AI-powered career tools by CVMind. From resume checking to interview prep, LinkedIn optimization, and career roadmapping — all in one place.",
+        keywords: "AI Career Tools, Resume Checker, Interview Prep, LinkedIn Optimizer, Career Roadmap, Voice Coach"
       }
     };
 
@@ -419,6 +425,8 @@ export default function App() {
             setCurrentPage={setCurrentPage}
           />
         );
+      case 'products':
+        return <Products setCurrentPage={setCurrentPage} />;
       case 'portfolio':
         const wId = window.location.pathname.split('/').pop();
         return <Portfolio workId={wId} />;

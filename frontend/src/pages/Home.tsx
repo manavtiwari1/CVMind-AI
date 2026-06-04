@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown, Pencil, Rocket } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown, Pencil, Rocket, Brain, Target, Linkedin, Scissors, Map, Mic } from 'lucide-react';
 import './Home.css';
 import './HomeCarousel.css';
 
@@ -28,246 +28,286 @@ function getTimeLeft() {
 // ─── Product cards data ───────────────────────────────────────────────────
 const homeProducts = [
   {
-    id: 'resume-checker', icon: '🧠', title: 'AI Resume Checker', tagline: 'Beat Every ATS System',
+    id: 'resume-checker', icon: 'brain', title: 'AI Resume Checker', tagline: 'Beat Every ATS System',
     desc: 'Corporate-grade AI audits your resume for formatting, keyword gaps, and delivers professional rewrites.',
     features: ['ATS Score 0–100', 'Keyword Gap Analysis', 'Bullet Rewriter', 'Before & After View'],
     gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
-    glow: 'rgba(41,151,255,0.55)', badge: 'Most Popular', badgeClass: 'badge-blue',
+    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'Most Popular', badgeClass: 'badge-blue',
     stats: [{ label: 'Score Boost', value: '+42%' }, { label: 'Keywords', value: '18+' }], page: 'dashboard',
   },
   {
-    id: 'interview-prep', icon: '🎯', title: 'AI Interview Prep', tagline: 'Ace Every Interview',
+    id: 'interview-prep', icon: 'target', title: 'AI Interview Prep', tagline: 'Ace Every Interview',
     desc: 'Simulate behavioral questions, get STAR-framework coaching, and score your answers with instant AI feedback.',
     features: ['Behavioral Simulator', 'STAR Framework', 'Real-time Scoring', 'Voice Mode'],
-    gradient: 'linear-gradient(135deg, #bf5af2 0%, #e879f9 100%)',
-    glow: 'rgba(191,90,242,0.55)', badge: 'AI-Powered', badgeClass: 'badge-purple',
+    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
+    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'AI-Powered', badgeClass: 'badge-blue',
     stats: [{ label: 'Questions', value: '500+' }, { label: 'Pass Rate', value: '89%' }], page: 'prep',
   },
   {
-    id: 'linkedin', icon: '🔗', title: 'LinkedIn Optimizer', tagline: 'Get Noticed by Recruiters',
+    id: 'linkedin', icon: 'linkedin', title: 'LinkedIn Optimizer', tagline: 'Get Noticed by Recruiters',
     desc: 'AI-generated bios, outreach messages, and viral posts that attract recruiters and build your personal brand.',
     features: ['Bio Generator', 'Outreach Writer', 'Viral Post Creator', 'Headline Optimizer'],
-    gradient: 'linear-gradient(135deg, #30d158 0%, #34d399 100%)',
-    glow: 'rgba(48,209,88,0.55)', badge: 'New', badgeClass: 'badge-green',
+    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
+    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'New', badgeClass: 'badge-blue',
     stats: [{ label: 'Profile Views', value: '3×' }, { label: 'Connection Rate', value: '+67%' }], page: 'linkedin',
   },
   {
-    id: 'tailor', icon: '✂️', title: 'Resume Tailor', tagline: 'Match Any Job Description',
+    id: 'tailor', icon: 'scissors', title: 'Resume Tailor', tagline: 'Match Any Job Description',
     desc: 'Upload a job description and AI instantly aligns your resume — keywords, skills, achievements — for max ATS score.',
     features: ['JD Keyword Match', 'Skills Gap Detector', 'Achievement Rewriter', 'Match Score %'],
-    gradient: 'linear-gradient(135deg, #ff9f0a 0%, #ffcc02 100%)',
-    glow: 'rgba(255,159,10,0.55)', badge: 'Smart', badgeClass: 'badge-orange',
+    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
+    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'Smart', badgeClass: 'badge-blue',
     stats: [{ label: 'Accuracy', value: '96%' }, { label: 'Time Saved', value: '2hrs' }], page: 'tailor',
   },
   {
-    id: 'career-roadmap', icon: '🗺️', title: 'Career Roadmap', tagline: 'Plan Your Next 5 Years',
+    id: 'career-roadmap', icon: 'map', title: 'Career Roadmap', tagline: 'Plan Your Next 5 Years',
     desc: 'Personalized AI career roadmap with step-by-step milestones, certifications, and skill progression paths.',
     features: ['Goal-based Planning', 'Certification Paths', 'Skill Milestones', 'Timeline View'],
-    gradient: 'linear-gradient(135deg, #ff453a 0%, #ff6b6b 100%)',
-    glow: 'rgba(255,69,58,0.55)', badge: 'Premium', badgeClass: 'badge-red',
+    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
+    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'Premium', badgeClass: 'badge-blue',
     stats: [{ label: 'Career Paths', value: '50+' }, { label: 'Satisfaction', value: '4.9★' }], page: 'career-roadmap',
   },
   {
-    id: 'voice-prep', icon: '🎙️', title: 'Voice Interview Coach', tagline: 'Speak Like a Pro',
+    id: 'voice-prep', icon: 'mic', title: 'Voice Interview Coach', tagline: 'Speak Like a Pro',
     desc: 'Practice interviews aloud. AI transcribes, detects filler words, scores confidence, and gives real-time coaching.',
     features: ['Live Transcription', 'Filler Word Detector', 'Confidence Score', 'Instant Feedback'],
-    gradient: 'linear-gradient(135deg, #5ac8fa 0%, #2997ff 60%, #bf5af2 100%)',
-    glow: 'rgba(90,200,250,0.55)', badge: 'Live AI', badgeClass: 'badge-blue',
+    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
+    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'Live AI', badgeClass: 'badge-blue',
     stats: [{ label: 'Accuracy', value: '98%' }, { label: 'Improvement', value: '+31%' }], page: 'voice-prep',
   },
 ];
 
+const getProductIcon = (iconName: string) => {
+  switch (iconName) {
+    case 'brain': return <Brain className="hpc-card-icon-svg" />;
+    case 'target': return <Target className="hpc-card-icon-svg" />;
+    case 'linkedin': return <Linkedin className="hpc-card-icon-svg" />;
+    case 'scissors': return <Scissors className="hpc-card-icon-svg" />;
+    case 'map': return <Map className="hpc-card-icon-svg" />;
+    case 'mic': return <Mic className="hpc-card-icon-svg" />;
+    default: return null;
+  }
+};
+
+
 function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) => void }) {
-  const total = homeProducts.length;
-  const [active, setActive] = useState(0);
-  const [flipped, setFlipped] = useState<Record<string, boolean>>({});
-  const [dragging, setDragging] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
-  const [rotOffset, setRotOffset] = useState(0);
-  const [hovered, setHovered] = useState(false);
+  const [rotationOffset, setRotationOffset] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const start = useCallback(() => {
-    intervalRef.current = setInterval(() => setActive(p => (p + 1) % total), 3500);
-  }, [total]);
+  const total = homeProducts.length;
 
-  const stop = useCallback(() => {
-    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+  const startAutoRotate = () => {
+    intervalRef.current = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % total);
+    }, 3500);
+  };
+
+  const stopAutoRotate = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    startAutoRotate();
+    return () => stopAutoRotate();
   }, []);
 
-  useEffect(() => { start(); return stop; }, [start, stop]);
-  useEffect(() => { hovered ? stop() : (stop(), start()); }, [hovered]);
+  useEffect(() => {
+    if (isHovered) {
+      stopAutoRotate();
+    } else {
+      stopAutoRotate();
+      startAutoRotate();
+    }
+  }, [isHovered]);
 
-  const onDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    setDragging(true);
-    setDragStartX('touches' in e ? e.touches[0].clientX : e.clientX);
-    stop();
-  };
-  const onDragMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!dragging) return;
-    const x = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    setRotOffset((x - dragStartX) * 0.3);
-  };
-  const onDragEnd = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!dragging) return;
-    setDragging(false);
-    const x = 'changedTouches' in e ? e.changedTouches[0].clientX : e.clientX;
-    const delta = x - dragStartX;
-    if (Math.abs(delta) > 50) setActive(p => delta < 0 ? (p + 1) % total : (p - 1 + total) % total);
-    setRotOffset(0);
-    if (!hovered) start();
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDragging(true);
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    setDragStartX(clientX);
+    stopAutoRotate();
   };
 
-  const cardStyle = (i: number) => {
-    const step = 360 / total;
-    const angle = ((i - active) * step + rotOffset + 360) % 360;
-    const norm = angle > 180 ? angle - 360 : angle;
-    const rad = (norm * Math.PI) / 180;
-    const R = 300;
-    const x = Math.sin(rad) * R;
-    const z = Math.cos(rad) * R;
-    const scale = 0.55 + ((z + R) / (2 * R)) * 0.45;
-    const opacity = 0.25 + ((z + R) / (2 * R)) * 0.75;
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return;
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const delta = clientX - dragStartX;
+    setRotationOffset(delta * 0.45);
+  };
+
+  const handleDragEnd = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    const clientX = 'changedTouches' in e ? e.changedTouches[0].clientX : e.clientX;
+    const delta = clientX - dragStartX;
+    if (Math.abs(delta) > 50) {
+      if (delta < 0) {
+        setActiveIndex(prev => (prev + 1) % total);
+      } else {
+        setActiveIndex(prev => (prev - 1 + total) % total);
+      }
+    }
+    setRotationOffset(0);
+    if (!isHovered) startAutoRotate();
+  };
+
+  const getCardStyle = (index: number) => {
+    const angleStep = 360 / total;
+    const angle = ((index - activeIndex) * angleStep + rotationOffset + 360) % 360;
+    const normalizedAngle = angle > 180 ? angle - 360 : angle;
+
+    const radius = 260;
+    const radians = (normalizedAngle * Math.PI) / 180;
+    const x = Math.sin(radians) * radius;
+    const z = Math.cos(radians) * radius;
+
+    const scale = 0.6 + ((z + radius) / (2 * radius)) * 0.4;
+    const opacity = 0.25 + ((z + radius) / (2 * radius)) * 0.75;
+    const zIndex = Math.round(scale * 100);
+
+    const isCenter = Math.abs(normalizedAngle) < 30;
+
     return {
       transform: `translateX(${x}px) translateZ(${z}px) scale(${scale})`,
       opacity,
-      zIndex: Math.round(scale * 100),
-      filter: `brightness(${0.45 + scale * 0.65})`,
-      transition: dragging ? 'none' : 'all 1.1s cubic-bezier(0.25,0.8,0.25,1)',
+      zIndex,
+      filter: isCenter ? 'brightness(1)' : `brightness(${0.5 + scale * 0.5})`,
+      transition: isDragging ? 'none' : 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
     };
   };
-
-  const goTo = (i: number) => { stop(); setActive(i); setTimeout(() => { if (!hovered) start(); }, 4000); };
 
   return (
     <section className="hpc-section">
       <div className="hpc-heading">
-        <span className="hpc-eyebrow"><span className="hpc-dot" />All AI Tools</span>
+        <span className="hpc-eyebrow"><span className="hpc-dot" />Our AI Tools</span>
         <h2 className="hpc-title">Everything You Need to <span className="hpc-title-grad">Land the Job</span></h2>
-        <p className="hpc-sub">6 AI-powered tools working together. Drag, hover or watch them rotate.</p>
       </div>
 
       <div
-        className="hpc-stage"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => { setHovered(false); setDragging(false); setRotOffset(0); }}
-        onMouseDown={onDragStart} onMouseMove={onDragMove} onMouseUp={onDragEnd}
-        onTouchStart={onDragStart} onTouchMove={onDragMove} onTouchEnd={onDragEnd}
+        className="hpc-carousel-scene"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => { setIsHovered(false); setIsDragging(false); setRotationOffset(0); }}
+        onMouseDown={handleDragStart}
+        onMouseMove={handleDragMove}
+        onMouseUp={handleDragEnd}
+        onTouchStart={handleDragStart}
+        onTouchMove={handleDragMove}
+        onTouchEnd={handleDragEnd}
       >
-        <div className="hpc-glow" style={{ background: homeProducts[active].glow }} />
+        <div
+          className="hpc-carousel-glow"
+          style={{ background: homeProducts[activeIndex].glow }}
+        />
 
         <div className="hpc-platform">
-          {[1, 2, 3].map(n => <div key={n} className={`hpc-ring hpc-ring-${n}`} />)}
+          <div className="hpc-platform-ring hpc-ring-1" />
+          <div className="hpc-platform-ring hpc-ring-2" />
         </div>
 
-        <div className="hpc-3d">
-          {homeProducts.map((p, i) => (
+        <div className="hpc-carousel-3d">
+          {homeProducts.map((p, index) => (
             <div
               key={p.id}
-              className={`hpc-card ${i === active ? 'hpc-card-active' : ''} ${flipped[p.id] ? 'hpc-card-flipped' : ''}`}
-              style={cardStyle(i)}
-              onClick={() => { if (i !== active) goTo(i); }}
+              className={`hpc-flip-card ${index === activeIndex ? 'active' : ''}`}
+              style={{
+                ...getCardStyle(index),
+                '--card-glow': p.glow,
+                '--card-color': p.color
+              } as React.CSSProperties}
+              onClick={() => {
+                if (index !== activeIndex) {
+                  stopAutoRotate();
+                  setActiveIndex(index);
+                  setTimeout(() => { if (!isHovered) startAutoRotate(); }, 4000);
+                }
+              }}
             >
-              <div className="hpc-card-inner">
-                {/* ── FRONT ── */}
-                <div className="hpc-card-face hpc-card-front" style={{ borderColor: `${p.glow}50` }}>
-                  <div className="hpc-bar" style={{ background: p.gradient }} />
-                  <div className="hpc-shine" />
-                  <span className={`hpc-badge badge ${p.badgeClass}`}>{p.badge}</span>
-                  <div className="hpc-icon-wrap" style={{ boxShadow: `0 0 36px ${p.glow}` }}>
-                    <span className="hpc-icon">{p.icon}</span>
+              <div className="hpc-flip-inner">
+                {/* FRONT */}
+                <div className="hpc-flip-front">
+                  <div className="hpc-flip-icon">{getProductIcon(p.icon)}</div>
+                  <h3 className="hpc-flip-title">{p.title}</h3>
+                  <div className="hpc-flip-tags">
+                    {p.features.slice(0, 2).map(f => (
+                      <span key={f} className="hpc-flip-tag">{f}</span>
+                    ))}
                   </div>
-                  <div className="hpc-body">
-                    <h3 className="hpc-card-title">{p.title}</h3>
-                    <p className="hpc-tagline" style={{ background: p.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{p.tagline}</p>
-                    <p className="hpc-desc">{p.desc}</p>
-                    <div className="hpc-stats">
-                      {p.stats.map(s => (
-                        <div key={s.label} className="hpc-stat">
-                          <span className="hpc-stat-val" style={{ background: p.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.value}</span>
-                          <span className="hpc-stat-lbl">{s.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <ul className="hpc-features">
-                      {p.features.map(f => (
-                        <li key={f}><span className="hpc-dot-f" style={{ background: p.gradient }} />{f}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="hpc-actions">
-                    <button className="hpc-cta" style={{ background: p.gradient, boxShadow: `0 4px 20px ${p.glow}` }}
-                      onClick={e => { e.stopPropagation(); setCurrentPage(p.page); }}>Try it Free →</button>
-                    <button className="hpc-flip" onClick={e => { e.stopPropagation(); setFlipped(prev => ({ ...prev, [p.id]: !prev[p.id] })); stop(); setTimeout(() => { if (!hovered) start(); }, 5000); }}>↻ Details</button>
-                  </div>
+                  <span className="hpc-flip-hint">hover to flip ↻</span>
                 </div>
 
-                {/* ── BACK ── */}
-                <div className="hpc-card-face hpc-card-back" style={{ borderColor: `${p.glow}50` }}>
-                  <div className="hpc-bar" style={{ background: p.gradient }} />
-                  <div className="hpc-shine" />
-                  <div className="hpc-back-body">
-                    <div className="hpc-back-icon">{p.icon}</div>
-                    <h3 className="hpc-card-title">{p.title}</h3>
-                    <p className="hpc-back-sub">How it works</p>
-                    <div className="hpc-steps">
-                      {['Upload your resume or paste text', 'AI analyzes & finds opportunities', 'Get results & optimized output'].map((s, si) => (
-                        <div key={si} className="hpc-step">
-                          <span className="hpc-step-n" style={{ background: p.gradient }}>{si + 1}</span>
-                          <span>{s}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="hpc-tags">
-                      {p.features.map(f => <span key={f} className="hpc-tag" style={{ borderColor: `${p.glow}50` }}>{f}</span>)}
-                    </div>
-                    <div className="hpc-actions">
-                      <button className="hpc-cta" style={{ background: p.gradient, boxShadow: `0 4px 20px ${p.glow}` }}
-                        onClick={e => { e.stopPropagation(); setCurrentPage(p.page); }}>Get Started →</button>
-                      <button className="hpc-flip" onClick={e => { e.stopPropagation(); setFlipped(prev => ({ ...prev, [p.id]: false })); }}>← Back</button>
-                    </div>
+                {/* BACK */}
+                <div className="hpc-flip-back">
+                  <div className="hpc-flip-back-icon">{getProductIcon(p.icon)}</div>
+                  <h3 className="hpc-flip-back-title">{p.title}</h3>
+                  <p className="hpc-flip-back-desc">{p.desc}</p>
+                  <div className="hpc-flip-back-stats">
+                    {p.stats.map(s => (
+                      <div key={s.label} className="hpc-flip-stat">
+                        <span className="hpc-flip-stat-val">{s.value}</span>
+                        <span className="hpc-flip-stat-lbl">{s.label}</span>
+                      </div>
+                    ))}
                   </div>
+                  <button className="hpc-flip-cta" onClick={() => setCurrentPage(p.page)}>Try it Free →</button>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="hpc-drag-hint">◁ drag to explore ▷</div>
+        <div className="hpc-drag-hint">
+          <span>◁</span> drag to explore <span>▷</span>
+        </div>
       </div>
 
-      <div className="hpc-nav">
-        <button className="hpc-arrow" onClick={() => goTo((active - 1 + total) % total)}>‹</button>
-        <div className="hpc-dots">
+      <div className="hpc-carousel-nav">
+        <button
+          className="hpc-nav-arrow"
+          onClick={() => {
+            stopAutoRotate();
+            setActiveIndex(p => (p - 1 + total) % total);
+            setTimeout(() => startAutoRotate(), 4000);
+          }}
+        >
+          ‹
+        </button>
+
+        <div className="hpc-nav-dots">
           {homeProducts.map((p, i) => (
-            <button key={p.id} className={`hpc-dot-nav ${i === active ? 'hpc-dot-active' : ''}`}
-              style={i === active ? { background: homeProducts[active].gradient } : {}}
-              onClick={() => goTo(i)} aria-label={p.title} />
+            <button
+              key={p.id}
+              className={`hpc-nav-dot ${i === activeIndex ? 'active' : ''}`}
+              onClick={() => {
+                stopAutoRotate();
+                setActiveIndex(i);
+                setTimeout(() => startAutoRotate(), 4000);
+              }}
+              aria-label={`Go to ${p.title}`}
+            />
           ))}
         </div>
-        <button className="hpc-arrow" onClick={() => goTo((active + 1) % total)}>›</button>
-      </div>
 
-      <div className="hpc-label">
-        <span className="hpc-label-num">{String(active + 1).padStart(2, '0')}</span>
-        <span className="hpc-label-sep">/</span>
-        <span className="hpc-label-tot">{String(total).padStart(2, '0')}</span>
-        <span className="hpc-label-name">{homeProducts[active].title}</span>
-        <svg className="hpc-arc" width="44" height="44" viewBox="0 0 44 44">
-          <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="2.5" />
-          <circle cx="22" cy="22" r="18" fill="none" stroke="url(#hpcArc)" strokeWidth="2.5" strokeLinecap="round"
-            strokeDasharray={`${(2 * Math.PI * 18 * (active + 1)) / total} ${2 * Math.PI * 18}`}
-            transform="rotate(-90 22 22)" style={{ transition: 'stroke-dasharray 0.5s ease' }} />
-          <defs>
-            <linearGradient id="hpcArc" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#2997ff" /><stop offset="100%" stopColor="#bf5af2" />
-            </linearGradient>
-          </defs>
-        </svg>
+        <button
+          className="hpc-nav-arrow"
+          onClick={() => {
+            stopAutoRotate();
+            setActiveIndex(p => (p + 1) % total);
+            setTimeout(() => startAutoRotate(), 4000);
+          }}
+        >
+          ›
+        </button>
       </div>
     </section>
   );
 }
+
 
 // ─── Home Page ────────────────────────────────────────────────────────────────
 export default function Home({ setCurrentPage, setAnalysisResult, setResumeText, customApiKey }: HomeProps) {
