@@ -231,6 +231,7 @@ function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) =
               <div className="hpc-flip-inner">
                 {/* FRONT */}
                 <div className="hpc-flip-front">
+                  {p.badge && <span className="hpc-card-badge">{p.badge}</span>}
                   <div className="hpc-flip-icon">{getProductIcon(p.icon)}</div>
                   <h3 className="hpc-flip-title">{p.title}</h3>
                   <div className="hpc-flip-tags">
