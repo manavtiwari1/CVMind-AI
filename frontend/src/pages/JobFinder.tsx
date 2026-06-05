@@ -84,12 +84,32 @@ function getScoreClass(score: number) {
   return 'score-low';
 }
 
+function getPlatformInfo(url: string) {
+  const lowerUrl = (url || '').toLowerCase();
+  if (lowerUrl.includes('indeed.com')) {
+    return { name: 'Indeed', className: 'indeed', ctaText: 'Apply on Indeed' };
+  }
+  if (lowerUrl.includes('glassdoor.com')) {
+    return { name: 'Glassdoor', className: 'glassdoor', ctaText: 'Apply on Glassdoor' };
+  }
+  if (lowerUrl.includes('google.com')) {
+    return { name: 'Google Jobs', className: 'google', ctaText: 'Apply on Google Jobs' };
+  }
+  if (lowerUrl.includes('internshala.com')) {
+    return { name: 'Internshala', className: 'internshala', ctaText: 'Apply on Internshala' };
+  }
+  if (lowerUrl.includes('linkedin.com')) {
+    return { name: 'LinkedIn', className: 'linkedin', ctaText: 'Apply on LinkedIn' };
+  }
+  return { name: 'LinkedIn', className: 'linkedin', ctaText: 'Apply Now' }; // Default fallback
+}
+
 const loaderSteps = [
   'Parsing your resume skills & experience...',
   'Analysing your target job preferences...',
   'Scanning the job market with AI...',
   'Scoring match compatibility...',
-  'Curating the top 8–10 opportunities...',
+  'Curating the top 20+ opportunities...',
   'Generating personalized apply links...',
 ];
 
@@ -580,6 +600,14 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           {job.experienceRequired}
                         </span>
                       )}
+                      {(() => {
+                        const platform = getPlatformInfo(job.applyUrl);
+                        return (
+                          <span className={`jf-tag jf-tag-source ${platform.className}`}>
+                            {platform.name}
+                          </span>
+                        );
+                      })()}
                     </div>
 
                     {/* Match Reasons */}
@@ -608,6 +636,15 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                       <span className="jf-platforms-label">Also search on:</span>
                       <div className="jf-platforms-row">
                         <a
+                          href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(job.company + ' ' + job.title + ' ' + job.location)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="jf-platform-btn linkedin"
+                          title="Search on LinkedIn"
+                        >
+                          LinkedIn
+                        </a>
+                        <a
                           href={`https://www.indeed.com/jobs?q=${encodeURIComponent(job.company + ' ' + job.title)}&l=${encodeURIComponent(job.location)}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -634,6 +671,15 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                         >
                           Google Jobs
                         </a>
+                        <a
+                          href={`https://internshala.com/jobs/keywords-${encodeURIComponent(job.title)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="jf-platform-btn internshala"
+                          title="Search on Internshala"
+                        >
+                          Internshala
+                        </a>
                       </div>
                     </div>
 
@@ -650,15 +696,20 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           </div>
                         )}
                       </div>
-                      <a
-                        href={job.applyUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="jf-apply-btn"
-                        id={`jf-apply-${idx}`}
-                      >
-                        Apply Now <ExternalLink size={12} />
-                      </a>
+                      {(() => {
+                        const platform = getPlatformInfo(job.applyUrl);
+                        return (
+                          <a
+                            href={job.applyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`jf-apply-btn ${platform.className}`}
+                            id={`jf-apply-${idx}`}
+                          >
+                            {platform.ctaText} <ExternalLink size={12} />
+                          </a>
+                        );
+                      })()}
                     </div>
                   </div>
                 );
