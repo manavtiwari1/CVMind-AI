@@ -24,6 +24,7 @@ import LinkedInPost from './pages/linkedin/LinkedInPost';
 import VoicePrep from './pages/VoicePrep';
 import PortfolioGen from './pages/PortfolioGen';
 import Products from './pages/Products';
+import JobFinder from './pages/JobFinder';
 import AuthModal from './components/AuthModal';
 import ParticleBackground from './components/ParticleBackground';
 import './styles/theme.css';
@@ -36,7 +37,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -171,8 +172,13 @@ export default function App() {
       },
       products: {
         title: "All AI Career Tools | Product Showcase - CVMind AI",
-        description: "Explore all 6 AI-powered career tools by CVMind. From resume checking to interview prep, LinkedIn optimization, and career roadmapping — all in one place.",
-        keywords: "AI Career Tools, Resume Checker, Interview Prep, LinkedIn Optimizer, Career Roadmap, Voice Coach"
+        description: "Explore all 7 AI-powered career tools by CVMind. From resume checking to interview prep, LinkedIn optimization, career roadmapping, and AI job finding — all in one place.",
+        keywords: "AI Career Tools, Resume Checker, Interview Prep, LinkedIn Optimizer, Career Roadmap, Voice Coach, Job Finder"
+      },
+      'job-finder': {
+        title: "AI Job Finder | Match Jobs to Your CV - CVMind AI",
+        description: "Upload your CV and describe your target role. CVMind AI matches you with 8–10 curated job openings complete with match scores, required skills, salary ranges, and direct apply links.",
+        keywords: "AI Job Finder, Job Search, Resume to Jobs, Remote Jobs, Full-time Jobs, Internship Finder, Career Match"
       }
     };
 
@@ -272,7 +278,7 @@ export default function App() {
 
   // Private route interceptor to enforce Sign In for product modules
   useEffect(() => {
-    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'voice-prep', 'portfolio-gen'];
+    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'voice-prep', 'portfolio-gen', 'job-finder'];
     if (privatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
       setShowAuthModal(true);
@@ -427,6 +433,8 @@ export default function App() {
         );
       case 'products':
         return <Products setCurrentPage={setCurrentPage} />;
+      case 'job-finder':
+        return <JobFinder customApiKey={customApiKey} />;
       case 'portfolio':
         const wId = window.location.pathname.split('/').pop();
         return <Portfolio workId={wId} />;

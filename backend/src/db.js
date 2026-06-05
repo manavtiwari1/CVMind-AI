@@ -185,6 +185,16 @@ const linkedinPostLogSchema = new mongoose.Schema({
 });
 const LinkedinPostLog = mongoose.models.LinkedinPostLog || mongoose.model('LinkedinPostLog', linkedinPostLogSchema);
 
+const jobFinderLogSchema = new mongoose.Schema({
+  email: { type: String, default: '' },
+  jobsCount: { type: Number, default: 0 },
+  jobDescription: { type: String, default: '' },
+  jobType: { type: String, default: 'All' },
+  createdAt: { type: Date, default: Date.now }
+});
+const JobFinderLog = mongoose.models.JobFinderLog || mongoose.model('JobFinderLog', jobFinderLogSchema);
+
+
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -657,7 +667,32 @@ export async function saveLinkedinPostLog({ email, topic }) {
   writeDb(db);
 }
 
+export async function saveJobFinderLog({ email, jobsCount, jobDescription, jobType }) {
+  await ensureMongoConnection();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    JobFinderLog.create({
+      email: email || '',
+      jobsCount: Number(jobsCount || 0),
+      jobDescription: jobDescription || '',
+      jobType: jobType || 'All'
+    }).catch(err => console.error('MongoDB saveJobFinderLog error:', err));
+    return;
+  }
+  const db = readDb();
+  if (!db.jobFinderLogs) db.jobFinderLogs = [];
+  db.jobFinderLogs.unshift({
+    id: randomUUID(),
+    email: email || '',
+    jobsCount: Number(jobsCount || 0),
+    jobDescription: jobDescription || '',
+    jobType: jobType || 'All',
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
 export async function getWorkById(workId) {
+
   await ensureMongoConnection();
   const cleanWorkId = String(workId || '').trim();
 
@@ -694,6 +729,7 @@ export async function getAdminStats() {
       const voicePrepLogs = await VoicePrepLog.find().sort({ createdAt: -1 }).limit(100);
       const portfolioGenLogs = await PortfolioGenLog.find().sort({ createdAt: -1 }).limit(100);
       const linkedinPostLogs = await LinkedinPostLog.find().sort({ createdAt: -1 }).limit(100);
+      const jobFinderLogs = await JobFinderLog.find().sort({ createdAt: -1 }).limit(100);
       const resumes = await Work.find({ type: 'resume' }).sort({ updatedAt: -1 }).limit(100);
       const coverLetters = await Work.find({ type: 'cover-letter' }).sort({ updatedAt: -1 }).limit(100);
       
@@ -712,6 +748,7 @@ export async function getAdminStats() {
       const totalVoicePreps = await VoicePrepLog.countDocuments();
       const totalPortfolioGens = await PortfolioGenLog.countDocuments();
       const totalLinkedinPosts = await LinkedinPostLog.countDocuments();
+      const totalJobFinders = await JobFinderLog.countDocuments();
       const totalResumes = await Work.countDocuments({ type: 'resume' });
       const totalCoverLetters = await Work.countDocuments({ type: 'cover-letter' });
       
@@ -890,6 +927,15 @@ export async function getAdminStats() {
           topic: lp.topic,
           createdAt: lp.createdAt
         })),
+        totalJobFinders,
+        recentJobFinders: jobFinderLogs.slice(0, 15).map(jf => ({
+          id: jf._id,
+          email: jf.email,
+          jobsCount: jf.jobsCount,
+          jobDescription: jf.jobDescription,
+          jobType: jf.jobType,
+          createdAt: jf.createdAt
+        })),
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
           updatedAt: new Date().toISOString()
@@ -917,6 +963,7 @@ export async function getAdminStats() {
   const voicePrepLogs = Array.isArray(db.voicePrepLogs) ? db.voicePrepLogs : [];
   const portfolioGenLogs = Array.isArray(db.portfolioGenLogs) ? db.portfolioGenLogs : [];
   const linkedinPostLogs = Array.isArray(db.linkedinPostLogs) ? db.linkedinPostLogs : [];
+  const jobFinderLogs = Array.isArray(db.jobFinderLogs) ? db.jobFinderLogs : [];
 
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
@@ -929,6 +976,7 @@ export async function getAdminStats() {
   const totalVoicePreps = voicePrepLogs.length;
   const totalPortfolioGens = portfolioGenLogs.length;
   const totalLinkedinPosts = linkedinPostLogs.length;
+  const totalJobFinders = jobFinderLogs.length;
 
   const works = Array.isArray(db.works) ? db.works : [];
   const resumes = works.filter(w => w.type === 'resume');
@@ -972,12 +1020,20 @@ export async function getAdminStats() {
     totalCareerCourses,
     totalElevatorPitches,
     totalCareerRoadmaps,
+    totalVoicePreps,
+    totalPortfolioGens,
+    totalLinkedinPosts,
+    totalJobFinders,
     recentLinkedins: linkedinLogs.slice(0, 15),
     recentLinkedinBios: linkedinBioLogs.slice(0, 15),
     recentLinkedinOutreachs: linkedinOutreachLogs.slice(0, 15),
     recentCareerCourses: careerCoursesLogs.slice(0, 15),
     recentElevatorPitches: elevatorPitchLogs.slice(0, 15),
     recentCareerRoadmaps: careerRoadmapLogs.slice(0, 15),
+    recentVoicePreps: voicePrepLogs.slice(0, 15),
+    recentPortfolioGens: portfolioGenLogs.slice(0, 15),
+    recentLinkedinPosts: linkedinPostLogs.slice(0, 15),
+    recentJobFinders: jobFinderLogs.slice(0, 15),
     recentScans: scans.slice(0, 8),
     contactMessages: contacts.slice(0, 8),
     recentFixes: fixes.slice(0, 10),
@@ -1165,8 +1221,8 @@ export async function saveUserResetToken(email, token, expiresMs) {
   if (mongoURI && mongoose.connection.readyState === 1) {
     const user = await User.findOne({ email: searchEmail });
     if (!user) throw new Error('User not found');
-    user.resetPasswordToken = token;
-    user.resetPasswordExpires = new Date(expiresMs);
+    user.resetPasswordToken = token || '';
+    user.resetPasswordExpires = (expiresMs != null && expiresMs > 0) ? new Date(expiresMs) : null;
     await user.save();
     return user;
   }
@@ -1176,8 +1232,8 @@ export async function saveUserResetToken(email, token, expiresMs) {
   if (!db.users) db.users = [];
   const u = db.users.find(x => x.email === searchEmail);
   if (!u) throw new Error('User not found');
-  u.resetPasswordToken = token;
-  u.resetPasswordExpires = new Date(expiresMs).toISOString();
+  u.resetPasswordToken = token || '';
+  u.resetPasswordExpires = (expiresMs != null && expiresMs > 0) ? new Date(expiresMs).toISOString() : null;
   writeDb(db);
   return u;
 }

@@ -126,7 +126,7 @@ export default function About() {
       <section className="privacy-card glass-card">
         <h3 className="privacy-title">Data Ethics & Security</h3>
         <p className="privacy-text">
-          We believe in absolute data privacy. Your resume content is never stored on a database, never shared with third parties, and never used to train machine learning models. The file is parsed in-memory, analyzed by the Gemini API in a secure single session, and immediately cleared from the server.
+          We believe in absolute data privacy. Your resume content is never stored on a database, never shared with third parties, and never used to train machine learning models. The file is parsed in-memory, analyzed by our secure AI engine in a secure single session, and immediately cleared from the server.
         </p>
       </section>
     </div>

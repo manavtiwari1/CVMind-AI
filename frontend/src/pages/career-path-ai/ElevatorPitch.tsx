@@ -220,7 +220,7 @@ export default function ElevatorPitch({ customApiKey, resumeText, loadedWork, se
               <div className="elevator-pitch-spinner"></div>
             </div>
             <h3>Formulating Verbal Pitches...</h3>
-            <p className="animate-pulse">Gemini is structuring dynamic hooks, core metrics, and speakable calls to action...</p>
+            <p className="animate-pulse">Our AI is structuring dynamic hooks, core metrics, and speakable calls to action...</p>
           </div>
         )}
 

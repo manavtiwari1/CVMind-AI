@@ -157,7 +157,7 @@ export default function LinkedInBio({ customApiKey, resumeText, loadedWork, setL
           <div className="li-bio-input-card glass-card">
             <div className="input-card-info">
               <h3>Profile Optimization Form</h3>
-              <p>Fill out your target job profile, and let Gemini construct premium headlines, bios, and LinkedIn banner slogans.</p>
+              <p>Fill out your target job profile, and let our AI construct premium headlines, bios, and LinkedIn banner slogans.</p>
             </div>
 
             <div className="li-bio-form">
@@ -218,7 +218,7 @@ export default function LinkedInBio({ customApiKey, resumeText, loadedWork, setL
               <div className="li-bio-spinner"></div>
             </div>
             <h3>Generating LinkedIn Brand Copy...</h3>
-            <p className="animate-pulse">Gemini is structuring professional bios, custom headers, and banner visual themes...</p>
+            <p className="animate-pulse">Our AI is structuring professional bios, custom headers, and banner visual themes...</p>
           </div>
         )}
 

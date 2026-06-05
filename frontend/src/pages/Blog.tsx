@@ -11,6 +11,23 @@ export default function Blog({ setCurrentPage }: BlogProps) {
 
   const changelogData = [
     {
+      id: 7,
+      version: 'v2.4.0',
+      date: 'June 5, 2026',
+      title: 'Introducing AI Job Finder: CV-to-Role Matching Engine',
+      tag: 'New Features',
+      description: 'Find jobs tailored specifically to your resume in seconds. Upload your CV, describe your target role, and let AI scan the market to curate 8–10 matched opportunities with salary ranges, required skills, and direct LinkedIn apply links.',
+      details: [
+        '<strong>🔍 Intelligent Role Matching:</strong> Analyzes your resume experience and target preferences to align compatible roles, bypassing generic keyword filters.',
+        '<strong>📈 Compatibility Match Scores:</strong> Real-time percentage score checking showing how strongly your skills map to target responsibilities.',
+        '<strong>⚙️ Smart Work Type Filters:</strong> Instantly filter matches using Remote, Full-time, Part-time, and Internship selector pills.',
+        '<strong>💼 Direct Apply Links:</strong> Pre-populated, search-safe job board links matching the exact title and location on standard professional boards.',
+        '<strong>🖥️ Premium Interactive Visuals:</strong> Gorgeous animated scanning console displaying active step-by-step progress checklists while the AI curates matches.'
+      ],
+      icon: Sparkles,
+      badgeColor: 'badge-purple'
+    },
+    {
       id: 6,
       version: 'v2.3.0',
       date: 'June 4, 2026',
@@ -35,7 +52,7 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       date: 'June 3, 2026',
       title: 'Voice Practice, AI Portfolios & LinkedIn Post Generator',
       tag: 'New Features',
-      description: 'Massive update introducing three major tools: Web Speech API-based mock interviews, 1-click portfolio website generation, and viral LinkedIn post generation, along with complete DeepSeek API migrations.',
+      description: 'Massive update introducing three major tools: Web Speech API-based mock interviews, 1-click portfolio website generation, and viral LinkedIn post generation, along with complete AI API engine migrations.',
       details: [
         '<strong>🎙️ Voice Interview Practice:</strong> Built an interactive mock interview sandbox utilizing the Web Speech API. Candidates can now speak their answers aloud, and the AI will analyze transcripts for STAR alignment, confidence, and filler words.',
         '<strong>🌐 Portfolio Website Generator:</strong> Instantly convert a resume into a responsive HTML/CSS portfolio website. Features 5 premium themes, an interactive device preview frame, and a direct .html download option.',

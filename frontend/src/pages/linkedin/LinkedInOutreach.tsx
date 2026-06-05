@@ -252,7 +252,7 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
               <div className="li-outreach-spinner"></div>
             </div>
             <h3>Generating Outreach Copy...</h3>
-            <p className="animate-pulse">Gemini is structuring connection request notes, cold referral pitches, and recruiter DMs...</p>
+            <p className="animate-pulse">Our AI is structuring connection request notes, cold referral pitches, and recruiter DMs...</p>
           </div>
         )}
 

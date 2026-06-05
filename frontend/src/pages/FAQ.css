@@ -229,10 +229,10 @@
 /* Folders Grid */
 .faq-folders-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
   width: 100%;
-  max-width: 1000px;
+  max-width: 850px;
   margin-bottom: 5rem;
 }
 
@@ -790,4 +790,101 @@
   .faq-cta-card h2 {
     font-size: 1.5rem;
   }
+}
+
+/* Category Specific Folder Card Hover Themes */
+.folder-card-resumes:hover {
+  border-color: rgba(0, 212, 170, 0.3);
+  box-shadow: var(--shadow-md), 0 10px 30px rgba(0, 212, 170, 0.08);
+}
+.folder-card-resumes .folder-icon-box {
+  color: #00d4aa;
+  background: rgba(0, 212, 170, 0.05);
+  border-color: rgba(0, 212, 170, 0.15);
+}
+.folder-card-resumes:hover .folder-icon-box {
+  background: rgba(0, 212, 170, 0.12);
+  border-color: rgba(0, 212, 170, 0.35);
+  box-shadow: 0 0 20px rgba(0, 212, 170, 0.15);
+}
+
+.folder-card-accounts:hover {
+  border-color: rgba(41, 151, 255, 0.3);
+  box-shadow: var(--shadow-md), 0 10px 30px rgba(41, 151, 255, 0.08);
+}
+.folder-card-accounts .folder-icon-box {
+  color: #2997ff;
+  background: rgba(41, 151, 255, 0.05);
+  border-color: rgba(41, 151, 255, 0.15);
+}
+.folder-card-accounts:hover .folder-icon-box {
+  background: rgba(41, 151, 255, 0.12);
+  border-color: rgba(41, 151, 255, 0.35);
+  box-shadow: 0 0 20px rgba(41, 151, 255, 0.15);
+}
+
+.folder-card-tailor-prep:hover {
+  border-color: rgba(191, 90, 242, 0.3);
+  box-shadow: var(--shadow-md), 0 10px 30px rgba(191, 90, 242, 0.08);
+}
+.folder-card-tailor-prep .folder-icon-box {
+  color: #bf5af2;
+  background: rgba(191, 90, 242, 0.05);
+  border-color: rgba(191, 90, 242, 0.15);
+}
+.folder-card-tailor-prep:hover .folder-icon-box {
+  background: rgba(191, 90, 242, 0.12);
+  border-color: rgba(191, 90, 242, 0.35);
+  box-shadow: 0 0 20px rgba(191, 90, 242, 0.15);
+}
+
+.folder-card-job-finder:hover {
+  border-color: rgba(255, 159, 10, 0.3);
+  box-shadow: var(--shadow-md), 0 10px 30px rgba(255, 159, 10, 0.08);
+}
+.folder-card-job-finder .folder-icon-box {
+  color: #ff9f0a;
+  background: rgba(255, 159, 10, 0.05);
+  border-color: rgba(255, 159, 10, 0.15);
+}
+.folder-card-job-finder:hover .folder-icon-box {
+  background: rgba(255, 159, 10, 0.12);
+  border-color: rgba(255, 159, 10, 0.35);
+  box-shadow: 0 0 20px rgba(255, 159, 10, 0.15);
+}
+
+/* Sidebar Active Link Slide Indicator Styling */
+.sidebar-article-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-article-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--blue, #2997ff);
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+
+.sidebar-article-link.active::after {
+  transform: scaleY(1);
+}
+
+.sidebar-article-link.active {
+  background: rgba(41, 151, 255, 0.08);
+}
+
+/* Callouts Styling Override */
+.article-content-body .callout-info {
+  background: rgba(0, 212, 170, 0.06);
+  border-left: 4px solid #00d4aa;
+  color: var(--text-secondary);
+}
+.article-content-body .callout-info strong {
+  color: #00d4aa;
 }

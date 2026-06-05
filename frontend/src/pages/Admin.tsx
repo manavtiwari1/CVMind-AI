@@ -75,9 +75,11 @@ interface AdminStats {
   totalVoicePreps?: number;
   totalPortfolioGens?: number;
   totalLinkedinPosts?: number;
+  totalJobFinders?: number;
   recentVoicePreps?: Array<{ id: string; email: string; jobTitle: string; score: number; createdAt: string }>;
   recentPortfolioGens?: Array<{ id: string; email: string; theme: string; createdAt: string }>;
   recentLinkedinPosts?: Array<{ id: string; email: string; topic: string; createdAt: string }>;
+  recentJobFinders?: Array<{ id: string; email: string; jobsCount: number; jobDescription: string; jobType: string; createdAt: string }>;
   recentResumes?: Array<{
     id: string;
     title: string;
@@ -353,6 +355,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
             <NavItem icon={<Sparkles size={15} />}        label="Voice Practice Logs" active={activeSection === 'voice-prep-logs'} onClick={() => setActiveSection('voice-prep-logs')} />
             <NavItem icon={<Sparkles size={15} />}        label="Portfolio Gen Logs" active={activeSection === 'portfolio-gen-logs'} onClick={() => setActiveSection('portfolio-gen-logs')} />
             <NavItem icon={<Sparkles size={15} />}        label="LinkedIn Post Logs" active={activeSection === 'linkedin-post-logs'} onClick={() => setActiveSection('linkedin-post-logs')} />
+            <NavItem icon={<Sparkles size={15} />}        label="AI Job Finder Logs" active={activeSection === 'job-finder-logs'} onClick={() => setActiveSection('job-finder-logs')} />
             <NavItem icon={<LogIn size={15} />}           label="Login Logs"        active={activeSection === 'logins'}     onClick={() => setActiveSection('logins')} />
             <NavItem icon={<FileText size={15} />}        label="Resume Builder Logs" active={activeSection === 'resume-logs'} onClick={() => setActiveSection('resume-logs')} />
             <NavItem icon={<FileText size={15} />}        label="Cover Letter Logs"  active={activeSection === 'cl-logs'} onClick={() => setActiveSection('cl-logs')} />
@@ -398,6 +401,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'voice-prep-logs' && 'Voice Interview Practice Logs'}
                 {activeSection === 'portfolio-gen-logs' && 'Portfolio Website Generator Logs'}
                 {activeSection === 'linkedin-post-logs' && 'LinkedIn Viral Post Generator Logs'}
+                {activeSection === 'job-finder-logs' && 'AI Job Finder Search Logs'}
                 {activeSection === 'logins'     && 'User Authentication & Login Activity Logs'}
                 {activeSection === 'resume-logs' && 'Resume Builder Saved Drafts'}
                 {activeSection === 'cl-logs'     && 'Cover Letter Builder Saved Drafts'}
@@ -488,6 +492,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <StatCard icon={<Sparkles size={18} />}    label="Voice Practices"         value={(stats.totalVoicePreps ?? 0).toLocaleString()} caption="Vocal mock interviews" trendCls="card-cyan" />
                       <StatCard icon={<Sparkles size={18} />}    label="Portfolios Generated"    value={(stats.totalPortfolioGens ?? 0).toLocaleString()} caption="Personal HTML websites" trendCls="card-indigo" />
                       <StatCard icon={<Sparkles size={18} />}    label="LinkedIn Posts Written"  value={(stats.totalLinkedinPosts ?? 0).toLocaleString()} caption="Viral LinkedIn posts" trendCls="card-emerald" />
+                      <StatCard icon={<Sparkles size={18} />}    label="AI Job Finder Searches"  value={(stats.totalJobFinders ?? 0).toLocaleString()} caption="CV-matched job runs" trendCls="card-emerald" />
                       <StatCard icon={<FileText size={18} />}    label="Resumes Created"        value={(stats.totalResumes ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-cyan" />
                       <StatCard icon={<FileText size={18} />}    label="Cover Letters Created"  value={(stats.totalCoverLetters ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-rose" />
                       <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact" trendCls="card-amber" />
@@ -1265,6 +1270,46 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                   <span>•</span>
                                   <span>Generated: {new Date(lp.createdAt).toLocaleString()}</span>
                                 </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ AI JOB FINDER LOGS SECTION ─ */}
+                {activeSection === 'job-finder-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><Sparkles size={15} /> AI Job Finder Logs</h2>
+                      <span className="panel-badge">{stats.totalJobFinders ?? 0} searches logged</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentJobFinders || (stats.recentJobFinders || []).length === 0 ? (
+                        <div className="admin-empty">
+                          <span className="admin-empty-icon">🔍</span>
+                          <p>No job finder searches logged yet.</p>
+                        </div>
+                      ) : (
+                        <div className="admin-fixes-detail-list">
+                          {(stats.recentJobFinders || []).map((jf, jfIdx) => (
+                            <div className="admin-table-row glass-card detail" key={jf.id || jfIdx}>
+                              <div className="table-row-details">
+                                <strong className="row-filename">{jf.email || 'Anonymous User'}</strong>
+                                <div className="row-metadata-strip">
+                                  <span>Type: <code className="admin-status-mono">{jf.jobType}</code></span>
+                                  <span>•</span>
+                                  <span>Matches: <strong style={{ color: 'var(--color-primary)' }}>{jf.jobsCount}</strong></span>
+                                  <span>•</span>
+                                  <span>Generated: {new Date(jf.createdAt).toLocaleString()}</span>
+                                </div>
+                                {jf.jobDescription && (
+                                  <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'rgba(255, 255, 255, 0.6)', fontStyle: 'italic' }}>
+                                    Target JD/Keywords: {jf.jobDescription}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}

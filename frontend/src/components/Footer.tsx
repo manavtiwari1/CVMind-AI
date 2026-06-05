@@ -39,6 +39,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
               <button className="footer-link" onClick={() => setCurrentPage('dashboard')}>Score Dashboard</button>
               <button className="footer-link" onClick={() => setCurrentPage('resume-builder')}>Resume Builder</button>
               <button className="footer-link" onClick={() => setCurrentPage('tailor')}>Resume Tailorer</button>
+              <button className="footer-link" onClick={() => setCurrentPage('job-finder')}>AI Job Finder</button>
               <button className="footer-link" onClick={() => setCurrentPage('about')}>How it Works</button>
             </div>
 

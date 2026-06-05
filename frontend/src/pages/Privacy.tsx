@@ -18,7 +18,7 @@ export default function Privacy() {
       icon: <EyeOff size={24} />,
       title: "Resumes (Zero Retention)",
       type: "secure",
-      desc: "We cannot see or access your uploaded resumes. When you upload a PDF, DOCX, or TXT file for ATS auditing or scoring, it is parsed in-memory, analyzed by the Gemini API in a secure single session, and immediately flushed. Your documents are never saved to a database, never written to disk, and never shared."
+      desc: "We cannot see or access your uploaded resumes. When you upload a PDF, DOCX, or TXT file for ATS auditing or scoring, it is parsed in-memory, analyzed in a secure single session, and immediately flushed. Your documents are never saved to a database, never written to disk, and never shared."
     },
     {
       icon: <Briefcase size={24} />,

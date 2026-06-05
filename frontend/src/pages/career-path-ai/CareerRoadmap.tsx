@@ -232,7 +232,7 @@ export default function CareerRoadmap({ customApiKey, resumeText, loadedWork, se
               <div className="career-roadmap-spinner"></div>
             </div>
             <h3>Building Career Transition Path...</h3>
-            <p className="animate-pulse">Gemini is mapping milestones, timeframe phases, and skill progression checks...</p>
+            <p className="animate-pulse">Our AI is mapping milestones, timeframe phases, and skill progression checks...</p>
           </div>
         )}
 

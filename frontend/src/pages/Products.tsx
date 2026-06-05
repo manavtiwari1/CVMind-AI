@@ -94,6 +94,19 @@ const products: ProductCard[] = [
     badgeClass: 'badge-blue',
     stats: [{ label: 'Accuracy', value: '98%' }, { label: 'Avg Improvement', value: '+31%' }],
   },
+  {
+    id: 'job-finder',
+    icon: '🔍',
+    title: 'AI Job Finder',
+    tagline: 'Find Your Dream Job Instantly',
+    description: 'Upload your CV, describe your target role, and AI curates 8–10 perfectly matched job openings with match scores, required skills, salary ranges, and direct apply links.',
+    features: ['CV-to-Job Match', 'Match Score %', 'Work Type Filters', 'Direct Apply Links'],
+    gradient: 'linear-gradient(135deg, #00d4aa 0%, #2997ff 100%)',
+    glowColor: 'rgba(0, 212, 170, 0.6)',
+    badge: 'New',
+    badgeClass: 'badge-green',
+    stats: [{ label: 'Jobs per Search', value: '8–10' }, { label: 'Match Accuracy', value: '95%' }],
+  },
 ];
 
 interface ProductsProps {
@@ -211,6 +224,7 @@ export default function Products({ setCurrentPage }: ProductsProps) {
     'resume-tailor': 'tailor',
     'career-roadmap': 'career-roadmap',
     'voice-prep': 'voice-prep',
+    'job-finder': 'job-finder',
   };
 
   return (
@@ -226,7 +240,7 @@ export default function Products({ setCurrentPage }: ProductsProps) {
           <span className="headline-gradient"> Land the Job</span>
         </h1>
         <p className="products-subheadline">
-          6 powerful AI tools working together to transform your career. Drag, hover, or watch them rotate.
+          7 powerful AI tools working together to transform your career. Drag, hover, or watch them rotate.
         </p>
       </div>
 

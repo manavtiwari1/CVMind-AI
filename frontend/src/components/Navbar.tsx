@@ -280,7 +280,7 @@ export default function Navbar({
           {/* Products Dropdown */}
           <div className="nav-dropdown-container">
             <button
-              className={`nav-link dropdown-toggle${['tailor', 'prep', 'voice-prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'portfolio-gen'].includes(currentPage) ? ' active' : ''}`}
+              className={`nav-link dropdown-toggle${['tailor', 'prep', 'voice-prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'portfolio-gen', 'job-finder'].includes(currentPage) ? ' active' : ''}`}
             >
               Products <ChevronDown size={12} className="dropdown-arrow" />
             </button>
@@ -316,6 +316,7 @@ export default function Navbar({
                   ]
                 },
                 { label: 'Portfolio Generator', page: 'portfolio-gen' },
+                { label: 'AI Job Finder', page: 'job-finder' },
               ].map((item: any, idx: number) => {
                 if (item.subItems) {
                   const isOpen = activeSubmenu === item.submenuKey;
@@ -514,7 +515,13 @@ export default function Navbar({
                 className={`mobile-drawer-link mobile-sub-link${currentPage === 'portfolio-gen' ? ' active' : ''}`}
                 onClick={() => go('portfolio-gen')}
               >
-                🌐 Portfolio Generator
+                Portfolio Generator
+              </button>
+              <button
+                className={`mobile-drawer-link mobile-sub-link${currentPage === 'job-finder' ? ' active' : ''}`}
+                onClick={() => go('job-finder')}
+              >
+                AI Job Finder
               </button>
 
               {/* SmartPrep AI sub-accordion */}
@@ -532,7 +539,7 @@ export default function Navbar({
                       Interview Prep AI
                     </button>
                     <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'voice-prep' ? ' active' : ''}`} onClick={() => go('voice-prep')}>
-                      🎤 Voice Practice AI
+                      Voice Practice AI
                     </button>
                   </div>
                 )}
@@ -559,7 +566,7 @@ export default function Navbar({
                       Outreach &amp; DM Writer
                     </button>
                     <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'linkedin-post' ? ' active' : ''}`} onClick={() => go('linkedin-post')}>
-                      📝 Post Generator
+                      Post Generator
                     </button>
                   </div>
                 )}

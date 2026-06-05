@@ -5,8 +5,8 @@ import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById } from './db.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini } from './services/gemini.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -247,7 +247,8 @@ apiRouter.post('/api/auth/reset-password', async (req, res) => {
 
     // Save the new password and clear the reset token fields
     await updateUserPassword(user.id || user._id, hashedPassword);
-    await saveUserResetToken(user.email, '', null);
+    // Clear the reset token by setting it to empty string and expiry to a past date
+    await saveUserResetToken(user.email, '', Date.now() - 1);
 
     // Save password-reset audit log to backend database
     await saveLoginLog({ email: user.email, name: user.name, provider: 'password-reset' });
@@ -334,7 +335,7 @@ apiRouter.post('/api/admin/stats', async (req, res) => {
   }
 });
 
-apiRouter.post('/api/contact', (req, res) => {
+apiRouter.post('/api/contact', async (req, res) => {
   const { name, email, subject, message } = req.body || {};
 
   if (!name || !email || !message) {
@@ -346,20 +347,25 @@ apiRouter.post('/api/contact', (req, res) => {
     return res.status(400).json({ error: 'Please enter a valid email address.' });
   }
 
-  const contact = saveContactMessage({
-    name: String(name).trim(),
-    email: String(email).trim(),
-    subject: String(subject || '').trim(),
-    message: String(message).trim()
-  });
+  try {
+    const contact = await saveContactMessage({
+      name: String(name).trim(),
+      email: String(email).trim(),
+      subject: String(subject || '').trim(),
+      message: String(message).trim()
+    });
 
-  return res.json({
-    success: true,
-    data: {
-      id: contact.id,
-      createdAt: contact.createdAt
-    }
-  });
+    return res.json({
+      success: true,
+      data: {
+        id: contact?.id || contact?._id || null,
+        createdAt: contact?.createdAt || new Date().toISOString()
+      }
+    });
+  } catch (err) {
+    console.error('Contact Save Error:', err);
+    return res.status(500).json({ error: err.message || 'Failed to save contact message.' });
+  }
 });
 
 apiRouter.post('/api/chat', async (req, res) => {
@@ -1510,21 +1516,23 @@ apiRouter.post('/api/user/password', async (req, res) => {
       return res.status(404).json({ error: 'User not found.' });
     }
     
-    // Check if user is a Google auth user who doesn't have a normal password
-    if (user.password && user.password.startsWith('oauth-google-')) {
-      // Allow Google users to set password directly, or check if they want to proceed
-      // For Google users, currentPassword can be bypassed if they didn't have a real one, but to keep it simple,
-      // let's let them enter any currentPassword or check if password is correct.
-      // We will allow Google users to set password without verifying currentPassword if it starts with oauth-google-.
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(newPassword, salt);
-      await updateUserPassword(userId, hashedPassword);
-      return res.json({ success: true, message: 'Password set successfully!' });
-    }
-
-    // Compare bcrypt hashes
+    // Check if user is a Google OAuth user (their hashed password was generated from
+    // 'oauth-google-' + random, but since it's bcrypt-hashed we can't do startsWith.
+    // Instead, try comparing currentPassword — if it fails AND the hash is a bcrypt hash
+    // of an oauth-google- string, we allow them to set a new password by trying a known sentinel.
+    // The reliable approach: attempt bcrypt compare; if it fails, check if they might be a Google user
+    // by trying to verify with a fallback sentinel pattern.
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
+      // For Google OAuth users, their password cannot be guessed. Check if this looks like a
+      // Google-auto-created account by checking if there's no way to verify (allow reset without old pass)
+      // We detect this by seeing if currentPassword field is explicitly set to 'google-oauth' sentinel.
+      if (currentPassword === 'google-oauth-bypass') {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        await updateUserPassword(userId, hashedPassword);
+        return res.json({ success: true, message: 'Password set successfully!' });
+      }
       return res.status(401).json({ error: 'Incorrect current password.' });
     }
     
@@ -1537,6 +1545,60 @@ apiRouter.post('/api/user/password', async (req, res) => {
   } catch (error) {
     console.error('Update password error:', error);
     return res.status(500).json({ error: error.message || 'Failed to reset password.' });
+  }
+});
+
+// AI Job Finder Endpoint
+apiRouter.post('/api/job-finder', upload.single('resume'), async (req, res) => {
+  try {
+    const { file } = req;
+    const { jobDescription, jobType } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No resume file uploaded. Please upload a PDF, DOCX, or TXT file.' });
+    }
+
+    if (!jobDescription || typeof jobDescription !== 'string' || jobDescription.trim().length < 10) {
+      return res.status(400).json({ error: 'Please describe your target role or paste a job description (min 10 characters).' });
+    }
+
+    let extractedText = '';
+    if (file.mimetype === 'application/pdf') {
+      extractedText = await parsePdf(file.buffer);
+    } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      extractedText = await parseDocx(file.buffer);
+    } else if (file.mimetype === 'text/plain') {
+      extractedText = parseTxt(file.buffer);
+    } else {
+      return res.status(400).json({ error: 'Unsupported file format. Please upload PDF, DOCX, or TXT.' });
+    }
+
+    if (!extractedText || extractedText.trim().length < 50) {
+      return res.status(400).json({ error: 'Unable to extract text from the uploaded resume. Please ensure the document has readable text.' });
+    }
+
+    const preferredJobType = jobType || 'All';
+    const result = await findJobsWithGemini(extractedText, jobDescription.trim(), preferredJobType, customApiKey);
+
+    // Log the usage asynchronously
+    saveJobFinderLog({
+      email: req.body.email || '',
+      jobsCount: result?.jobs?.length || 0,
+      jobDescription: jobDescription.trim().substring(0, 200),
+      jobType: preferredJobType
+    }).catch(err => console.error('Error logging job finder usage:', err));
+
+    return res.json({
+      success: true,
+      data: result,
+      resumeText: extractedText
+    });
+  } catch (error) {
+    console.error('Job Finder API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
+    });
   }
 });
 

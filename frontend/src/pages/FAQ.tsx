@@ -20,7 +20,7 @@ interface FAQArticle {
 }
 
 interface FAQCategory {
-  id: 'resumes' | 'accounts' | 'tailor-prep';
+  id: 'resumes' | 'accounts' | 'tailor-prep' | 'job-finder';
   title: string;
   description: string;
   articleCount: number;
@@ -32,7 +32,7 @@ interface FAQProps {
 }
 
 export default function FAQ({ setCurrentPage }: FAQProps) {
-  const [selectedCategory, setSelectedCategory] = useState<'resumes' | 'accounts' | 'tailor-prep' | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<'resumes' | 'accounts' | 'tailor-prep' | 'job-finder' | null>(null);
   const [activeArticleId, setActiveArticleId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -451,12 +451,87 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
           )
         }
       ]
+    },
+    {
+      id: 'job-finder',
+      title: 'AI Job Finder',
+      description: 'Articles about matching CVs with job roles, work type filtering, application links, and match metrics.',
+      articleCount: 3,
+      articles: [
+        {
+          id: 19,
+          question: 'How does the AI Job Finder matching engine work?',
+          title: 'CV-to-Job Matching Algorithms & Logic',
+          editedTime: 'Edited just now',
+          tags: ['match', 'score', 'job description', 'skills', 'cv'],
+          content: (
+            <div className="article-body">
+              <p className="lead-paragraph">
+                The AI Job Finder scans and cross-references your resume skills against targeted role descriptions to locate high-probability match fits.
+              </p>
+              <h3>The Matching Flow</h3>
+              <ol>
+                <li><strong>CV Analysis:</strong> Extracts professional experience, skill density, seniority, and industry signals from your uploaded document.</li>
+                <li><strong>Job Description Parsing:</strong> Audits your targeted role preferences to identify must-have skills, preferred tools, and domain keywords.</li>
+                <li><strong>Semantic Scoring:</strong> Calculates compatibility by checking matches across required competencies, experience requirements, and work styles.</li>
+              </ol>
+              <div className="callout-info">
+                <strong>Pro-Tip:</strong> The match percentage indicates how well your current resume qualifies for the role. Use our AI Resume Analyzer to fix gaps if your match score is below 70%.
+              </div>
+            </div>
+          )
+        },
+        {
+          id: 20,
+          question: 'Are the job matches and apply links real?',
+          title: 'Job Match Synthesis & LinkedIn Redirection Links',
+          editedTime: 'Edited just now',
+          tags: ['linkedin', 'jobs', 'apply', 'links', 'data'],
+          content: (
+            <div className="article-body">
+              <p className="lead-paragraph">
+                Yes! Every job curated contains structured roles matching current market demands and pre-built search links that point directly to active job listings.
+              </p>
+              <h3>How Apply Links are Structured</h3>
+              <ul>
+                <li><strong>Market Realism:</strong> Our AI matching engine generates highly realistic company and position matches based on current industry postings.</li>
+                <li><strong>LinkedIn Redirects:</strong> The <strong>Apply Now</strong> button forwards you to pre-populated search queries on LinkedIn Jobs for the exact company, title, and location generated, allowing you to instantly find the live posting and apply with one click.</li>
+              </ul>
+            </div>
+          )
+        },
+        {
+          id: 21,
+          question: 'How do I filter job matches by work type?',
+          title: 'Work Style Filters: Remote, Full-time & Internships',
+          editedTime: 'Edited just now',
+          tags: ['filters', 'remote', 'full-time', 'part-time', 'internship'],
+          content: (
+            <div className="article-body">
+              <p>
+                To make your job search highly relevant to your lifestyle, CVMind AI lets you filter results by work preferences.
+              </p>
+              <h3>Selecting Preferences</h3>
+              <p>
+                Before launching a search, choose from the filter row:
+              </p>
+              <ul>
+                <li><strong>🌐 All:</strong> Curates a mix of all available roles.</li>
+                <li><strong>💼 Full-time:</strong> Focuses strictly on permanent full-time careers.</li>
+                <li><strong>🕐 Part-time:</strong> Limits results to part-time positions.</li>
+                <li><strong>🏠 Remote:</strong> Matches only with fully home-based or remote job setups.</li>
+                <li><strong>🎓 Internship:</strong> Focuses on trainee, apprentice, and internship roles.</li>
+              </ul>
+            </div>
+          )
+        }
+      ]
     }
   ];
 
   // Helper to resolve all articles into a flat list for global search filtering
   const allArticles = useMemo(() => {
-    const list: { catId: 'resumes' | 'accounts' | 'tailor-prep'; article: FAQArticle }[] = [];
+    const list: { catId: 'resumes' | 'accounts' | 'tailor-prep' | 'job-finder'; article: FAQArticle }[] = [];
     faqCategories.forEach(category => {
       category.articles.forEach(article => {
         list.push({ catId: category.id, article });
@@ -478,7 +553,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
   }, [searchQuery, allArticles]);
 
   // Navigate to split view from categories dashboard
-  const handleCategoryClick = (catId: 'resumes' | 'accounts' | 'tailor-prep') => {
+  const handleCategoryClick = (catId: 'resumes' | 'accounts' | 'tailor-prep' | 'job-finder') => {
     setSelectedCategory(catId);
     const category = faqCategories.find(c => c.id === catId);
     if (category && category.articles.length > 0) {
@@ -487,7 +562,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
   };
 
   // Jump to specific article directly (e.g. from search click)
-  const handleArticleJump = (catId: 'resumes' | 'accounts' | 'tailor-prep', articleId: number) => {
+  const handleArticleJump = (catId: 'resumes' | 'accounts' | 'tailor-prep' | 'job-finder', articleId: number) => {
     setSelectedCategory(catId);
     setActiveArticleId(articleId);
     setSearchQuery('');
@@ -560,7 +635,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
                         onClick={() => handleArticleJump(item.catId, item.article.id)}
                       >
                         <div className="suggestion-info">
-                          <span className="suggestion-category-tag">{item.catId === 'resumes' ? 'Resumes & Cover Letters' : item.catId === 'accounts' ? 'Accounts' : 'AI Tailor & SmartPrep'}</span>
+                          <span className="suggestion-category-tag">{item.catId === 'resumes' ? 'Resumes & Cover Letters' : item.catId === 'accounts' ? 'Accounts' : item.catId === 'job-finder' ? 'AI Job Finder' : 'AI Tailor & SmartPrep'}</span>
                           <span className="suggestion-question">{item.article.question}</span>
                         </div>
                         <ArrowRight size={14} className="suggestion-arrow" />
@@ -581,7 +656,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
             {faqCategories.map((cat) => (
               <button 
                 key={cat.id} 
-                className="folder-card glass-card animate-hover"
+                className={`folder-card folder-card-${cat.id} glass-card animate-hover`}
                 onClick={() => handleCategoryClick(cat.id)}
               >
                 <div className="folder-icon-box">

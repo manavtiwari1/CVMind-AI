@@ -478,6 +478,9 @@ export async function chatWithCVMind(message, history = [], customApiKey = null)
     if (lower.includes('upload') || lower.includes('analyse') || lower.includes('analyze') || lower.includes('resume')) {
       return 'To analyze your resume, upload your PDF, DOCX, or TXT file on the home page. Our AI Resume Analyzer evaluates ATS keyword scores, formatting, and action verbs. For target job matches, try the AI Resume Tailorer in the top navigation.';
     }
+    if (lower.includes('job') || lower.includes('finder') || lower.includes('match') || lower.includes('opening')) {
+      return 'Our AI Job Finder analyzes your CV and target role preferences to curate 8-10 matching job openings complete with match scores, required skills, salary estimates, and direct apply links. Go to "AI Job Finder" in the navigation dropdown to start your search.';
+    }
     if (lower.includes('prep') || lower.includes('interview') || lower.includes('question') || lower.includes('star')) {
       return 'Our SmartPrep AI features a comprehensive Mock Interview Sandbox. It generates 10 tailored Technical, Behavioral, HR, and Situational questions from Big 4 & Tech styles. You can type your answers and get graded out of 10 with STAR methodology feedback and model answers.';
     }
@@ -496,7 +499,7 @@ export async function chatWithCVMind(message, history = [], customApiKey = null)
     if (lower.includes('privacy') || lower.includes('safe') || lower.includes('data')) {
       return 'Privacy is our core pillar. Resumes are parsed in-memory and flushed immediately. We adhere to the constitutional Right to Privacy under Article 21, securing all user data under TLS 1.3.';
     }
-    return 'I am the CVMind AI assistant. I can guide you through our Career Suite: AI Resume Scanners, Tailorers, SmartPrep Mock Interviews, LinkedIn Optimizers, Career Path transition tools, and the upcoming launch on June 17, 2026.';
+    return 'I am the CVMind AI assistant. I can guide you through our Career Suite: AI Resume Scanners, Tailorers, SmartPrep Mock Interviews, LinkedIn Optimizers, Career Path transition tools, and the new AI Job Finder tool.';
   }
 
   const systemInstruction = `You are CVMind AI's elite, friendly, and professional conversational assistant. You help users navigate the CVMind AI ecosystem, which is launching officially on June 17, 2026 at 5:00 PM IST. Always respond in clear, concise English.
@@ -507,10 +510,11 @@ Our comprehensive, end-to-end career suite includes the following features:
 3. SmartPrep AI (Interview Coach): Generates 10 resume-tailored questions (Google, McKinsey, Amazon style) covering Technical, Behavioral, HR, & Situational areas. Offers a typing sandbox with live STAR method grading, score evaluations, and model answers under 45 words.
 4. LinkedIn Optimizer: Scan your downloaded profile PDF. Automatically writes catchy headlines, custom About hooks, and banner text ideas. Also generates recruiter cold DMs (under 150 words) and connection requests (under 300 chars).
 5. Career Path AI: Benchmarks skills against target job profiles, suggesting gap-closing courses (Coursera, Udemy). Generates 60-second elevator pitches (Corporate, Startup, Creative) and 4-step interactive transition roadmaps.
-6. Auto-Save & Dashboard Sync: Silent background auto-saving every 4 seconds with live status badges.
-7. Privacy: Strictly in-memory file parsing. No document is saved to disk, fully complying with Article 21 privacy dignity.
+6. AI Job Finder: Upload CV + describe target role/preferences to match with 8-10 job matches (Remote/Full-time/Part-time/Internships) showing match scores, skills gap analysis, salary estimates, and direct LinkedIn apply links.
+7. Auto-Save & Dashboard Sync: Silent background auto-saving every 4 seconds with live status badges.
+8. Privacy: Strictly in-memory file parsing. No document is saved to disk, fully complying with Article 21 privacy dignity.
 
-Always answer briefly, practically, and professionally. Highlight navigation guidelines (e.g. click "AI Resume Tailorer" in the navbar, upload files, etc.). If asked about launch date, tell them June 17, 2026 at 5:00 PM IST. Do not claim you have analyzed their resume inside chat; tell them to use the Upload buttons on respective pages.`;
+Always answer briefly, practically, and professionally. Highlight navigation guidelines (e.g. click "AI Job Finder" in the navigation dropdown, upload files, etc.). If asked about launch date, tell them June 17, 2026 at 5:00 PM IST. Do not claim you have analyzed their resume inside chat; tell them to use the Upload buttons on respective pages.`;
 
   const recentHistory = Array.isArray(history)
     ? history.slice(-8).map((item) => `${item.role === 'user' ? 'User' : 'Assistant'}: ${item.content}`).join('\n')
@@ -901,6 +905,105 @@ export async function generateElevatorPitchWithGemini({ jobTitle, details, resum
   } catch (error) {
     console.error('DeepSeek Elevator Pitch Error:', error);
     throw new Error('Elevator pitch generation failed. ' + error.message);
+  }
+}
+
+// ─── JOB FINDER SCHEMA ───────────────────────────────────────────────────────
+const jobFinderSchema = {
+  type: 'object',
+  properties: {
+    jobs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          title: { type: 'string', description: 'The exact job title of the opening.' },
+          company: { type: 'string', description: 'The name of the hiring company.' },
+          companyDomain: { type: 'string', description: 'The official website domain of the company, e.g. google.com, microsoft.com, accenture.com, tcs.com. Used to fetch company logo.' },
+          location: { type: 'string', description: 'City, State or "Remote" or "Hybrid — City, Country".' },
+          jobType: { type: 'string', description: 'One of: Full-time, Part-time, Internship, Remote, Contract.' },
+          matchScore: { type: 'integer', description: 'How well this job matches the candidate resume and JD preference, from 0 to 100.' },
+          matchReasons: {
+            type: 'array',
+            items: { type: 'string' },
+            description: '2-3 specific reasons why this job is a strong match for the candidate.'
+          },
+          requiredSkills: {
+            type: 'array',
+            items: { type: 'string' },
+            description: '4-6 key skills/technologies required for this role.'
+          },
+          salary: { type: 'string', description: 'Estimated salary range (e.g. "$80,000 – $110,000/yr" or "₹8–12 LPA") or "Not disclosed".' },
+          applyUrl: { type: 'string', description: 'A real, working URL to apply. Must be a LinkedIn Jobs, Indeed, Glassdoor, or company careers page search URL that is valid and opens a relevant job listing. Format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-title>&location=<location> OR https://www.indeed.com/jobs?q=<URL-encoded-title>&l=<location>.' },
+          postedDate: { type: 'string', description: 'Approximate posting date relative to today, e.g. "2 days ago", "1 week ago", "Today".' },
+          experienceRequired: { type: 'string', description: 'Required experience level e.g. "0–1 years", "2–4 years", "5+ years".' }
+        },
+        required: ['title', 'company', 'companyDomain', 'location', 'jobType', 'matchScore', 'matchReasons', 'requiredSkills', 'salary', 'applyUrl', 'postedDate', 'experienceRequired']
+      },
+      description: 'List of 8–10 highly relevant job matches for the candidate.'
+    },
+    searchSummary: {
+      type: 'string',
+      description: 'A 1-2 sentence summary of what was found and why these jobs were selected.'
+    }
+  },
+  required: ['jobs', 'searchSummary']
+};
+
+/**
+ * Uses DeepSeek AI to find and match relevant job openings based on a candidate's resume and target JD.
+ * @param {string} resumeText - Parsed text of the candidate's CV.
+ * @param {string} jobDescription - Target role / job description preferences entered by user.
+ * @param {string} jobType - Preferred work arrangement filter: 'All' | 'Remote' | 'Full-time' | 'Part-time' | 'Internship'
+ * @param {string} [customApiKey] - Optional user-supplied API key.
+ * @returns {Promise<object>} - Structured JSON with matched jobs array.
+ */
+export async function findJobsWithGemini(resumeText, jobDescription, jobType = 'All', customApiKey = null) {
+  const jobTypeFilter = jobType && jobType !== 'All'
+    ? `IMPORTANT: Only return jobs of type "${jobType}". Do NOT include other job types.`
+    : 'Include a mix of job types (Full-time, Part-time, Remote, Internship) as appropriate.';
+
+  const systemPrompt = `You are a senior Executive Recruiter and Job Market Intelligence Specialist with deep knowledge of the global tech, finance, consulting, and creative hiring landscapes.
+
+Your task is to analyze the candidate's resume and their target job description preference, then curate 8–10 highly relevant, realistic job openings that are an excellent match.
+
+RULES:
+1. Each job must be realistic and plausible — use real company names (Google, Microsoft, Infosys, Deloitte, Goldman Sachs, Accenture, etc.) or well-known startups.
+2. Match jobs closely to the candidate's actual experience level, skills, and target role.
+3. For applyUrl, ALWAYS generate a real working LinkedIn Jobs search URL in this format:
+   https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company-name>%20<URL-encoded-job-title>%20<URL-encoded-location>
+   Include the company name, job title, and location all within the single 'keywords' parameter. Do NOT use a separate 'location' parameter, as complex location strings (containing dashes, spaces, or "Remote") cause LinkedIn to trigger routing redirection errors or 404 page-not-found screens.
+   Replace spaces with %20. Example: Company "Google", Title "Software Engineer", Location "New York" → keywords=Google%20Software%20Engineer%20New%20York
+4. Rank jobs by matchScore (highest first).
+5. ${jobTypeFilter}
+6. Provide specific, resume-aligned matchReasons (not generic).
+7. You MUST strictly return your response in the specified JSON structure. No markdown, no wrappers.
+8. For companyDomain, provide the correct website domain of the company (e.g. google.com, microsoft.com, goldmansachs.com, tcs.com, accenture.com).`;
+
+  const userPrompt = `Candidate's Resume:
+"""
+${resumeText}
+"""
+
+Target Role / Job Description Preferences:
+"""
+${jobDescription}
+"""
+
+Analyze the candidate's background and find 8–10 perfectly matched job openings. Return structured JSON now.`;
+
+  try {
+    return await callDeepSeek({
+      systemInstruction: systemPrompt,
+      prompt: userPrompt,
+      responseSchema: jobFinderSchema,
+      customApiKey,
+      temperature: 0.35,
+      maxTokens: 3500
+    });
+  } catch (error) {
+    console.error('DeepSeek Job Finder Error:', error);
+    throw new Error('Job matching failed. ' + error.message);
   }
 }
 

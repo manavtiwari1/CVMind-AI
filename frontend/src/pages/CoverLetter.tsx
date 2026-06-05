@@ -1858,8 +1858,8 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
         <div className="cl-footer-right">
           <span className="cl-footer-hint">
             <Sparkles size={12} /> {selectedTemplate?.type === 'cover-letter' 
-              ? 'AI Refine polishes your entire cover letter with Gemini AI' 
-              : 'AI Refine polishes your entire resume with Gemini AI'}
+              ? 'AI Refine polishes your entire cover letter with CVMind AI' 
+              : 'AI Refine polishes your entire resume with CVMind AI'}
           </span>
           <button className="cl-ai-btn-lg" disabled={refining} onClick={handleRefine}
             style={{ '--ac': selectedTemplate?.color || '#2997ff' } as React.CSSProperties}>

@@ -208,7 +208,7 @@ export default function CareerCourses({ customApiKey, resumeText, loadedWork, se
               <div className="career-courses-spinner"></div>
             </div>
             <h3>Conducting Skill Gap Audit...</h3>
-            <p className="animate-pulse">Gemini is matching your profile with target skill matrices and mapping online course curricula...</p>
+            <p className="animate-pulse">Our AI is matching your profile with target skill matrices and mapping online course curricula...</p>
           </div>
         )}
 
