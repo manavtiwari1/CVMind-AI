@@ -84,112 +84,12 @@ function getScoreClass(score: number) {
   return 'score-low';
 }
 
-const isLargeMNC = (company: string) => {
-  const mncList = [
-    'infosys', 'accenture', 'google', 'microsoft', 'amazon', 'tata', 'tcs', 
-    'wipro', 'capgemini', 'cognizant', 'deloitte', 'ey', 'pwc', 'kpmg', 
-    'goldman sachs', 'jpmorgan', 'chase', 'meta', 'apple', 'netflix', 
-    'oracle', 'ibm', 'hcl', 'tech mahindra', 'l&t', 'larsen', 'infosys bpm',
-    'sap', 'adobe', 'salesforce', 'cisco', 'intel', 'nvidia', 'amd', 'vodafone',
-    'samsung', 'hp', 'dell', 'lenovo', 'walmart', 'target', 'flipkart', 'reliance'
-  ];
-  const lowerComp = (company || '').toLowerCase();
-  return mncList.some(mnc => lowerComp.includes(mnc));
-};
-
-const getCoreKeywords = (title: string) => {
-  let clean = (title || '')
-    .toLowerCase()
-    .replace(/\b(junior|senior|lead|associate|trainee|intern|fresher|hiring|remote|hybrid|contract|full time|part time|staff|principal|vp|manager|specialist|expert|analyst|developer|engineer)\b/gi, '')
-    .replace(/\(.*?\)/g, '')
-    .replace(/[^a-zA-Z0-9\s#\+\.]/g, '')
-    .trim();
-  
-  const words = clean.split(/\s+/).filter(w => w.length > 1);
-  if (words.length === 0) {
-    const origWords = (title || '')
-      .replace(/\(.*?\)/g, '')
-      .replace(/[^a-zA-Z0-9\s]/g, '')
-      .split(/\s+/)
-      .filter(w => w.length > 1);
-    return origWords.slice(0, 2).join(' ');
-  }
-  return words.slice(0, 2).join(' ');
-};
-
-function getPlatformInfo(url: string, company: string, title: string, location: string) {
-  const lowerUrl = (url || '').toLowerCase();
-  const comp = company || '';
-  const ttl = title || '';
-  const loc = location || '';
-  
-  let platform = 'linkedin';
-  let name = 'LinkedIn';
-  let ctaText = 'Apply on LinkedIn';
-  
-  if (lowerUrl.includes('indeed.com')) {
-    platform = 'indeed';
-    name = 'Indeed';
-    ctaText = 'Apply on Indeed';
-  } else if (lowerUrl.includes('glassdoor.com')) {
-    platform = 'glassdoor';
-    name = 'Glassdoor';
-    ctaText = 'Apply on Glassdoor';
-  } else if (lowerUrl.includes('google.com')) {
-    platform = 'google';
-    name = 'Google Jobs';
-    ctaText = 'Apply on Google Jobs';
-  } else if (lowerUrl.includes('internshala.com')) {
-    platform = 'internshala';
-    name = 'Internshala';
-    ctaText = 'Apply on Internshala';
-  } else if (lowerUrl.includes('linkedin.com')) {
-    platform = 'linkedin';
-    name = 'LinkedIn';
-    ctaText = 'Apply on LinkedIn';
-  }
-
-  // Safety Upgrade: MNCs do not post on Internshala, so upgrade Internshala matches to Google Jobs
-  if (platform === 'internshala' && isLargeMNC(comp)) {
-    platform = 'google';
-    name = 'Google Jobs';
-    ctaText = 'Apply on Google Jobs';
-  }
-  
-  // Reconstruct search URL dynamically
-  let dynamicUrl = url;
-  const coreKeywords = getCoreKeywords(ttl);
-  const companyStr = `"${comp}"`.trim();
-  
-  if (platform === 'linkedin') {
-    const searchStr = `${companyStr} ${coreKeywords} ${loc}`.trim();
-    dynamicUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(searchStr)}`;
-  } else if (platform === 'indeed') {
-    const queryStr = `company:${companyStr} ${coreKeywords}`;
-    dynamicUrl = `https://www.indeed.com/jobs?q=${encodeURIComponent(queryStr)}&l=${encodeURIComponent(loc)}`;
-  } else if (platform === 'glassdoor') {
-    const searchStrShort = `${companyStr} ${coreKeywords}`.trim();
-    dynamicUrl = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(searchStrShort)}`;
-  } else if (platform === 'google') {
-    const searchStr = `${companyStr} ${coreKeywords} ${loc}`.trim();
-    dynamicUrl = `https://www.google.com/search?q=${encodeURIComponent(searchStr + ' jobs')}`;
-  }
-
-  if (platform === 'internshala') {
-    const isInternship = lowerUrl.includes('internship') || ttl.toLowerCase().includes('intern');
-    const path = isInternship ? 'internships' : 'jobs';
-    dynamicUrl = `https://internshala.com/${path}/keywords-${encodeURIComponent(comp + ' ' + ttl)}`;
-  }
-  
-  return { name, className: platform, ctaText, url: dynamicUrl };
-}
-
 const loaderSteps = [
   'Parsing your resume skills & experience...',
   'Analysing your target job preferences...',
   'Scanning the job market with AI...',
   'Scoring match compatibility...',
-  'Curating the top 20+ opportunities...',
+  'Curating the top 8–10 opportunities...',
   'Generating personalized apply links...',
 ];
 
@@ -680,14 +580,6 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           {job.experienceRequired}
                         </span>
                       )}
-                      {(() => {
-                        const platform = getPlatformInfo(job.applyUrl, job.company, job.title, job.location);
-                        return (
-                          <span className={`jf-tag jf-tag-source ${platform.className}`}>
-                            {platform.name}
-                          </span>
-                        );
-                      })()}
                     </div>
 
                     {/* Match Reasons */}
@@ -716,16 +608,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                       <span className="jf-platforms-label">Also search on:</span>
                       <div className="jf-platforms-row">
                         <a
-                          href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent('"' + job.company + '" ' + getCoreKeywords(job.title))}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="jf-platform-btn linkedin"
-                          title="Search on LinkedIn"
-                        >
-                          LinkedIn
-                        </a>
-                        <a
-                          href={`https://www.indeed.com/jobs?q=${encodeURIComponent('company:"' + job.company + '" ' + getCoreKeywords(job.title))}&l=${encodeURIComponent(job.location)}`}
+                          href={`https://www.indeed.com/jobs?q=${encodeURIComponent(job.company + ' ' + job.title)}&l=${encodeURIComponent(job.location)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn indeed"
@@ -734,7 +617,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           Indeed
                         </a>
                         <a
-                          href={`https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent('"' + job.company + '" ' + getCoreKeywords(job.title))}`}
+                          href={`https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(job.company + ' ' + job.title)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn glassdoor"
@@ -743,7 +626,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           Glassdoor
                         </a>
                         <a
-                          href={`https://www.google.com/search?q=${encodeURIComponent('"' + job.company + '" ' + getCoreKeywords(job.title) + ' jobs')}`}
+                          href={`https://www.google.com/search?q=${encodeURIComponent(job.company + ' ' + job.title + ' ' + job.location + ' jobs')}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn google"
@@ -751,17 +634,6 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                         >
                           Google Jobs
                         </a>
-                        {!isLargeMNC(job.company) && (
-                          <a
-                            href={`https://internshala.com/jobs/keywords-${encodeURIComponent(job.company + ' ' + job.title)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="jf-platform-btn internshala"
-                            title="Search on Internshala"
-                          >
-                            Internshala
-                          </a>
-                        )}
                       </div>
                     </div>
 
@@ -778,20 +650,15 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           </div>
                         )}
                       </div>
-                      {(() => {
-                        const platform = getPlatformInfo(job.applyUrl, job.company, job.title, job.location);
-                        return (
-                          <a
-                            href={platform.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`jf-apply-btn ${platform.className}`}
-                            id={`jf-apply-${idx}`}
-                          >
-                            {platform.ctaText} <ExternalLink size={12} />
-                          </a>
-                        );
-                      })()}
+                      <a
+                        href={job.applyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="jf-apply-btn"
+                        id={`jf-apply-${idx}`}
+                      >
+                        Apply Now <ExternalLink size={12} />
+                      </a>
                     </div>
                   </div>
                 );

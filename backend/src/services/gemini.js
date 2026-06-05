@@ -934,13 +934,13 @@ const jobFinderSchema = {
             description: '4-6 key skills/technologies required for this role.'
           },
           salary: { type: 'string', description: 'Estimated salary range (e.g. "$80,000 – $110,000/yr" or "₹8–12 LPA") or "Not disclosed".' },
-          applyUrl: { type: 'string', description: 'A real, working URL to apply. Must be a search URL from LinkedIn, Indeed, Glassdoor, Google Jobs, or Internshala.' },
+          applyUrl: { type: 'string', description: 'A real, working URL to apply. Must be a LinkedIn Jobs, Indeed, Glassdoor, or company careers page search URL that is valid and opens a relevant job listing. Format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-title>&location=<location> OR https://www.indeed.com/jobs?q=<URL-encoded-title>&l=<location>.' },
           postedDate: { type: 'string', description: 'Approximate posting date relative to today, e.g. "2 days ago", "1 week ago", "Today".' },
           experienceRequired: { type: 'string', description: 'Required experience level e.g. "0–1 years", "2–4 years", "5+ years".' }
         },
         required: ['title', 'company', 'companyDomain', 'location', 'jobType', 'matchScore', 'matchReasons', 'requiredSkills', 'salary', 'applyUrl', 'postedDate', 'experienceRequired']
       },
-      description: 'List of 20–25 highly relevant job matches for the candidate.'
+      description: 'List of 8–10 highly relevant job matches for the candidate.'
     },
     searchSummary: {
       type: 'string',
@@ -965,20 +965,15 @@ export async function findJobsWithGemini(resumeText, jobDescription, jobType = '
 
   const systemPrompt = `You are a senior Executive Recruiter and Job Market Intelligence Specialist with deep knowledge of the global tech, finance, consulting, and creative hiring landscapes.
 
-Your task is to analyze the candidate's resume and their target job description preference, then curate 20–25 highly relevant, realistic job openings that are an excellent match.
+Your task is to analyze the candidate's resume and their target job description preference, then curate 8–10 highly relevant, realistic job openings that are an excellent match.
 
 RULES:
 1. Each job must be realistic and plausible — use real company names (Google, Microsoft, Infosys, Deloitte, Goldman Sachs, Accenture, etc.) or well-known startups.
 2. Match jobs closely to the candidate's actual experience level, skills, and target role.
-3. For applyUrl, generate a search URL for one of the following job platforms (distribute the 20-25 jobs across all of these platforms dynamically so the user gets a variety of platforms to apply through):
-   - LinkedIn format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company-name>%20<URL-encoded-job-title>%20<URL-encoded-location>
-     (Include the company name, job title, and location all within the single 'keywords' parameter. Replace spaces with %20. Do NOT use a separate 'location' parameter, as complex location strings cause routing redirection errors.)
-   - Indeed format: https://www.indeed.com/jobs?q=<URL-encoded-company-name>%20<URL-encoded-job-title>&l=<URL-encoded-location>
-   - Glassdoor format: https://www.glassdoor.com/Job/jobs.htm?sc.keyword=<URL-encoded-company-name>%20<URL-encoded-job-title>
-   - Google Jobs format: https://www.google.com/search?q=<URL-encoded-company-name>%20<URL-encoded-job-title>%20<URL-encoded-location>%20jobs
-   - Internshala format (use for jobs/internships in India or remote roles suitable for Internshala): https://internshala.com/jobs/keywords-<URL-encoded-job-title>
-     (Or if the job is an internship: https://internshala.com/internships/keywords-<URL-encoded-job-title>)
-   IMPORTANT: The company name, job title, and location used in the applyUrl MUST EXACTLY match the company, title, and location fields you output for that job. Never output a URL referencing a different company or job title.
+3. For applyUrl, ALWAYS generate a real working LinkedIn Jobs search URL in this format:
+   https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company-name>%20<URL-encoded-job-title>%20<URL-encoded-location>
+   Include the company name, job title, and location all within the single 'keywords' parameter. Do NOT use a separate 'location' parameter, as complex location strings (containing dashes, spaces, or "Remote") cause LinkedIn to trigger routing redirection errors or 404 page-not-found screens.
+   Replace spaces with %20. Example: Company "Google", Title "Software Engineer", Location "New York" → keywords=Google%20Software%20Engineer%20New%20York
 4. Rank jobs by matchScore (highest first).
 5. ${jobTypeFilter}
 6. Provide specific, resume-aligned matchReasons (not generic).
@@ -995,7 +990,7 @@ Target Role / Job Description Preferences:
 ${jobDescription}
 """
 
-Analyze the candidate's background and find 20–25 perfectly matched job openings. Return structured JSON now.`;
+Analyze the candidate's background and find 8–10 perfectly matched job openings. Return structured JSON now.`;
 
   try {
     return await callDeepSeek({
@@ -1004,7 +999,7 @@ Analyze the candidate's background and find 20–25 perfectly matched job openin
       responseSchema: jobFinderSchema,
       customApiKey,
       temperature: 0.35,
-      maxTokens: 8000
+      maxTokens: 3500
     });
   } catch (error) {
     console.error('DeepSeek Job Finder Error:', error);
