@@ -136,19 +136,22 @@ function getPlatformInfo(url: string, company: string, title: string, location: 
     ctaText = 'Apply on Google Jobs';
   }
   
-  // Reconstruct search URL dynamically with exact quotes to guarantee 100% company match
+  // Reconstruct search URL dynamically with exact company quotes to guarantee match and flexible titles
   let dynamicUrl = url;
-  const quotedSearchStr = `"${comp}" "${ttl}" ${loc}`.trim();
-  const quotedSearchStrShort = `"${comp}" "${ttl}"`.trim();
+  const companyStr = `"${comp}"`.trim();
   
   if (platform === 'linkedin') {
-    dynamicUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(quotedSearchStr)}`;
+    const searchStr = `${companyStr} ${ttl} ${loc}`.trim();
+    dynamicUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(searchStr)}`;
   } else if (platform === 'indeed') {
-    dynamicUrl = `https://www.indeed.com/jobs?q=${encodeURIComponent(quotedSearchStrShort)}&l=${encodeURIComponent(loc)}`;
+    const queryStr = `company:${companyStr} ${ttl}`.trim();
+    dynamicUrl = `https://www.indeed.com/jobs?q=${encodeURIComponent(queryStr)}&l=${encodeURIComponent(loc)}`;
   } else if (platform === 'glassdoor') {
-    dynamicUrl = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(quotedSearchStrShort)}`;
+    const searchStrShort = `${companyStr} ${ttl}`.trim();
+    dynamicUrl = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(searchStrShort)}`;
   } else if (platform === 'google') {
-    dynamicUrl = `https://www.google.com/search?q=${encodeURIComponent(quotedSearchStr + ' jobs')}`;
+    const searchStr = `${companyStr} ${ttl} ${loc}`.trim();
+    dynamicUrl = `https://www.google.com/search?q=${encodeURIComponent(searchStr + ' jobs')}`;
   } else if (platform === 'internshala') {
     const isInternship = lowerUrl.includes('internship') || ttl.toLowerCase().includes('intern');
     const path = isInternship ? 'internships' : 'jobs';
@@ -690,7 +693,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                       <span className="jf-platforms-label">Also search on:</span>
                       <div className="jf-platforms-row">
                         <a
-                          href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent('"' + job.company + '" "' + job.title + '"')}`}
+                          href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent('"' + job.company + '" ' + job.title)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn linkedin"
@@ -699,7 +702,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           LinkedIn
                         </a>
                         <a
-                          href={`https://www.indeed.com/jobs?q=${encodeURIComponent('"' + job.company + '" "' + job.title + '"')}&l=${encodeURIComponent(job.location)}`}
+                          href={`https://www.indeed.com/jobs?q=${encodeURIComponent('company:"' + job.company + '" ' + job.title)}&l=${encodeURIComponent(job.location)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn indeed"
@@ -708,7 +711,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           Indeed
                         </a>
                         <a
-                          href={`https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent('"' + job.company + '" "' + job.title + '"')}`}
+                          href={`https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent('"' + job.company + '" ' + job.title)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn glassdoor"
@@ -717,7 +720,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           Glassdoor
                         </a>
                         <a
-                          href={`https://www.google.com/search?q=${encodeURIComponent('"' + job.company + '" "' + job.title + '" jobs')}`}
+                          href={`https://www.google.com/search?q=${encodeURIComponent('"' + job.company + '" ' + job.title + ' jobs')}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn google"
