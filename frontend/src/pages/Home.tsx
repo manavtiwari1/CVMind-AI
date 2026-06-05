@@ -75,6 +75,14 @@ const homeProducts = [
     glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'Live AI', badgeClass: 'badge-blue',
     stats: [{ label: 'Accuracy', value: '98%' }, { label: 'Improvement', value: '+31%' }], page: 'voice-prep',
   },
+  {
+    id: 'job-finder', icon: 'search', title: 'AI Job Finder', tagline: 'Match Jobs to Your CV',
+    desc: 'Match your CV against target roles to find 8–10 curated job openings complete with match scores, skills gap lists, and direct apply links.',
+    features: ['CV-to-Job Matching', 'Multi-Platform Links', 'Skills Gap Analysis', 'Salary Estimates'],
+    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
+    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'New Tool', badgeClass: 'badge-blue',
+    stats: [{ label: 'Match Accuracy', value: '95%' }, { label: 'Curated Jobs', value: '8-10' }], page: 'job-finder',
+  },
 ];
 
 const getProductIcon = (iconName: string) => {
@@ -85,6 +93,7 @@ const getProductIcon = (iconName: string) => {
     case 'scissors': return <Scissors className="hpc-card-icon-svg" />;
     case 'map': return <Map className="hpc-card-icon-svg" />;
     case 'mic': return <Mic className="hpc-card-icon-svg" />;
+    case 'search': return <Search className="hpc-card-icon-svg" />;
     default: return null;
   }
 };

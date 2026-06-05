@@ -201,6 +201,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   address: { type: String, default: '' },
   avatar: { type: String, default: '' },
+  isGoogleUser: { type: Boolean, default: false },
   resetPasswordToken: { type: String, default: '' },
   resetPasswordExpires: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now }
@@ -273,7 +274,7 @@ export async function findUserByEmail(email) {
   return db.users.find(u => u.email === searchEmail) || null;
 }
 
-export async function createUser({ email, name, password }) {
+export async function createUser({ email, name, password, isGoogleUser = false }) {
   await ensureMongoConnection();
   const cleanEmail = String(email || '').trim().toLowerCase();
   const cleanName = String(name || '').trim();
@@ -283,13 +284,15 @@ export async function createUser({ email, name, password }) {
     const newUser = new User({
       email: cleanEmail,
       name: cleanName,
-      password
+      password,
+      isGoogleUser
     });
     await newUser.save();
     return {
       id: newUser._id,
       email: newUser.email,
       name: newUser.name,
+      isGoogleUser: newUser.isGoogleUser,
       createdAt: newUser.createdAt
     };
   }
@@ -308,6 +311,7 @@ export async function createUser({ email, name, password }) {
     email: cleanEmail,
     name: cleanName,
     password,
+    isGoogleUser,
     createdAt: new Date().toISOString()
   };
 
@@ -1189,6 +1193,7 @@ export async function updateUserPassword(userId, newPasswordHash) {
     const user = await User.findById(cleanUserId);
     if (!user) throw new Error('User not found');
     user.password = newPasswordHash;
+    user.isGoogleUser = false;
     await user.save();
     return user;
   }
@@ -1198,6 +1203,7 @@ export async function updateUserPassword(userId, newPasswordHash) {
   const u = db.users.find(x => x.id === cleanUserId || x._id === cleanUserId);
   if (!u) throw new Error('User not found');
   u.password = newPasswordHash;
+  u.isGoogleUser = false;
   writeDb(db);
   return u;
 }

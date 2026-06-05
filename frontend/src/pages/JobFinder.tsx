@@ -603,6 +603,40 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                       </div>
                     )}
 
+                    {/* Platforms section */}
+                    <div className="jf-platforms-section">
+                      <span className="jf-platforms-label">Also search on:</span>
+                      <div className="jf-platforms-row">
+                        <a
+                          href={`https://www.indeed.com/jobs?q=${encodeURIComponent(job.company + ' ' + job.title)}&l=${encodeURIComponent(job.location)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="jf-platform-btn indeed"
+                          title="Search on Indeed"
+                        >
+                          Indeed
+                        </a>
+                        <a
+                          href={`https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(job.company + ' ' + job.title)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="jf-platform-btn glassdoor"
+                          title="Search on Glassdoor"
+                        >
+                          Glassdoor
+                        </a>
+                        <a
+                          href={`https://www.google.com/search?q=${encodeURIComponent(job.company + ' ' + job.title + ' ' + job.location + ' jobs')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="jf-platform-btn google"
+                          title="Search on Google Jobs"
+                        >
+                          Google Jobs
+                        </a>
+                      </div>
+                    </div>
+
                     {/* Footer */}
                     <div className="jf-card-footer">
                       <div>

@@ -181,12 +181,18 @@ export default function Navbar({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user?.id || user?._id,
-          currentPassword,
+          currentPassword: user?.isGoogleUser ? 'google-oauth-bypass' : currentPassword,
           newPassword
         })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to reset password');
+
+      if (user?.isGoogleUser) {
+        const updatedUser = { ...user, isGoogleUser: false };
+        localStorage.setItem('cvmind_user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      }
 
       setModalSuccess(data.message || 'Password updated successfully!');
       setCurrentPassword('');
@@ -767,7 +773,7 @@ export default function Navbar({
             </div>
             
             <form onSubmit={handleUpdatePassword} className="nav-modal-form">
-              {user?.password?.startsWith('oauth-google-') ? (
+              {user?.isGoogleUser ? (
                 <div className="auth-alert success" style={{ marginBottom: '0.5rem', background: 'rgba(41, 151, 255, 0.08)', color: 'var(--blue)' }}>
                   <Sparkles size={14} className="auth-alert-icon" />
                   <span>Google Signed In: Set a password below to enable password login.</span>

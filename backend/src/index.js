@@ -97,7 +97,8 @@ apiRouter.post('/api/auth/signup', async (req, res) => {
     const newUser = await createUser({
       email,
       name,
-      password: hashedPassword
+      password: hashedPassword,
+      isGoogleUser: false
     });
 
     await saveLoginLog({ email: newUser.email, name: newUser.name, provider: 'signup' });
@@ -108,7 +109,8 @@ apiRouter.post('/api/auth/signup', async (req, res) => {
       user: {
         id: newUser.id || newUser._id,
         name: newUser.name,
-        email: newUser.email
+        email: newUser.email,
+        isGoogleUser: newUser.isGoogleUser || false
       }
     });
   } catch (err) {
@@ -145,7 +147,8 @@ apiRouter.post('/api/auth/login', async (req, res) => {
       user: {
         id: user.id || user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        isGoogleUser: user.isGoogleUser || false
       }
     });
   } catch (err) {
@@ -293,7 +296,8 @@ apiRouter.post('/api/auth/google', async (req, res) => {
       user = await createUser({
         email,
         name: name || email.split('@')[0],
-        password: mockPasswordHash
+        password: mockPasswordHash,
+        isGoogleUser: true
       });
     }
 
@@ -306,7 +310,8 @@ apiRouter.post('/api/auth/google', async (req, res) => {
         id: user.id || user._id,
         name: user.name,
         email: user.email,
-        avatar: picture || ''
+        avatar: picture || '',
+        isGoogleUser: user.isGoogleUser || false
       }
     });
   } catch (err) {
@@ -1496,7 +1501,8 @@ apiRouter.post('/api/user/profile', async (req, res) => {
         name: updated.name,
         email: updated.email,
         address: updated.address || '',
-        avatar: updated.avatar || ''
+        avatar: updated.avatar || '',
+        isGoogleUser: updated.isGoogleUser || false
       }
     });
   } catch (error) {

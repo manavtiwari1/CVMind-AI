@@ -158,6 +158,15 @@
   width: 40px;
   height: 40px;
 }
+.jf-upload-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  cursor: pointer;
+}
 .jf-upload-prompt p {
   color: var(--text-secondary, #94a3b8);
   font-size: 0.85rem;
@@ -1116,3 +1125,69 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in-up { animation: fadeInUp 0.4s ease; }
+
+/* ── Job Search Platforms Section ── */
+.jf-platforms-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: left;
+}
+.jf-platforms-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-secondary, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.jf-platforms-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.jf-platform-btn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid transparent;
+}
+.jf-platform-btn.indeed {
+  background: rgba(0, 212, 170, 0.08);
+  border-color: rgba(0, 212, 170, 0.2);
+  color: #00d4aa;
+}
+.jf-platform-btn.indeed:hover {
+  background: rgba(0, 212, 170, 0.16);
+  border-color: #00d4aa;
+  transform: translateY(-1px);
+}
+.jf-platform-btn.glassdoor {
+  background: rgba(191, 90, 242, 0.08);
+  border-color: rgba(191, 90, 242, 0.2);
+  color: #e879f9;
+}
+.jf-platform-btn.glassdoor:hover {
+  background: rgba(191, 90, 242, 0.16);
+  border-color: #e879f9;
+  transform: translateY(-1px);
+}
+.jf-platform-btn.google {
+  background: rgba(255, 159, 10, 0.08);
+  border-color: rgba(255, 159, 10, 0.2);
+  color: #ff9f0a;
+}
+.jf-platform-btn.google:hover {
+  background: rgba(255, 159, 10, 0.16);
+  border-color: #ff9f0a;
+  transform: translateY(-1px);
+}
+
