@@ -84,8 +84,24 @@ function getScoreClass(score: number) {
   return 'score-low';
 }
 
+const isLargeMNC = (company: string) => {
+  const mncList = [
+    'infosys', 'accenture', 'google', 'microsoft', 'amazon', 'tata', 'tcs', 
+    'wipro', 'capgemini', 'cognizant', 'deloitte', 'ey', 'pwc', 'kpmg', 
+    'goldman sachs', 'jpmorgan', 'chase', 'meta', 'apple', 'netflix', 
+    'oracle', 'ibm', 'hcl', 'tech mahindra', 'l&t', 'larsen', 'infosys bpm',
+    'sap', 'adobe', 'salesforce', 'cisco', 'intel', 'nvidia', 'amd', 'vodafone',
+    'samsung', 'hp', 'dell', 'lenovo', 'walmart', 'target', 'flipkart', 'reliance'
+  ];
+  const lowerComp = (company || '').toLowerCase();
+  return mncList.some(mnc => lowerComp.includes(mnc));
+};
+
 function getPlatformInfo(url: string, company: string, title: string, location: string) {
   const lowerUrl = (url || '').toLowerCase();
+  const comp = company || '';
+  const ttl = title || '';
+  const loc = location || '';
   
   let platform = 'linkedin';
   let name = 'LinkedIn';
@@ -112,27 +128,31 @@ function getPlatformInfo(url: string, company: string, title: string, location: 
     name = 'LinkedIn';
     ctaText = 'Apply on LinkedIn';
   }
+
+  // Safety Upgrade: MNCs do not post on Internshala, so upgrade Internshala matches to Google Jobs
+  if (platform === 'internshala' && isLargeMNC(comp)) {
+    platform = 'google';
+    name = 'Google Jobs';
+    ctaText = 'Apply on Google Jobs';
+  }
   
-  // Reconstruct search URL dynamically to guarantee 100% match with card data
+  // Reconstruct search URL dynamically with exact quotes to guarantee 100% company match
   let dynamicUrl = url;
-  const comp = company || '';
-  const ttl = title || '';
-  const loc = location || '';
-  const searchStr = `${comp} ${ttl} ${loc}`.trim();
-  const searchStrShort = `${comp} ${ttl}`.trim();
+  const quotedSearchStr = `"${comp}" "${ttl}" ${loc}`.trim();
+  const quotedSearchStrShort = `"${comp}" "${ttl}"`.trim();
   
   if (platform === 'linkedin') {
-    dynamicUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(searchStr)}`;
+    dynamicUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(quotedSearchStr)}`;
   } else if (platform === 'indeed') {
-    dynamicUrl = `https://www.indeed.com/jobs?q=${encodeURIComponent(searchStrShort)}&l=${encodeURIComponent(loc)}`;
+    dynamicUrl = `https://www.indeed.com/jobs?q=${encodeURIComponent(quotedSearchStrShort)}&l=${encodeURIComponent(loc)}`;
   } else if (platform === 'glassdoor') {
-    dynamicUrl = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(searchStrShort)}`;
+    dynamicUrl = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(quotedSearchStrShort)}`;
   } else if (platform === 'google') {
-    dynamicUrl = `https://www.google.com/search?q=${encodeURIComponent(searchStr + ' jobs')}`;
+    dynamicUrl = `https://www.google.com/search?q=${encodeURIComponent(quotedSearchStr + ' jobs')}`;
   } else if (platform === 'internshala') {
     const isInternship = lowerUrl.includes('internship') || ttl.toLowerCase().includes('intern');
     const path = isInternship ? 'internships' : 'jobs';
-    dynamicUrl = `https://internshala.com/${path}/keywords-${encodeURIComponent(searchStrShort)}`;
+    dynamicUrl = `https://internshala.com/${path}/keywords-${encodeURIComponent(comp + ' ' + ttl)}`;
   }
   
   return { name, className: platform, ctaText, url: dynamicUrl };
@@ -670,7 +690,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                       <span className="jf-platforms-label">Also search on:</span>
                       <div className="jf-platforms-row">
                         <a
-                          href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(job.company + ' ' + job.title + ' ' + job.location)}`}
+                          href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent('"' + job.company + '" "' + job.title + '"')}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn linkedin"
@@ -679,7 +699,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           LinkedIn
                         </a>
                         <a
-                          href={`https://www.indeed.com/jobs?q=${encodeURIComponent(job.company + ' ' + job.title)}&l=${encodeURIComponent(job.location)}`}
+                          href={`https://www.indeed.com/jobs?q=${encodeURIComponent('"' + job.company + '" "' + job.title + '"')}&l=${encodeURIComponent(job.location)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn indeed"
@@ -688,7 +708,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           Indeed
                         </a>
                         <a
-                          href={`https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(job.company + ' ' + job.title)}`}
+                          href={`https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent('"' + job.company + '" "' + job.title + '"')}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn glassdoor"
@@ -697,7 +717,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                           Glassdoor
                         </a>
                         <a
-                          href={`https://www.google.com/search?q=${encodeURIComponent(job.company + ' ' + job.title + ' ' + job.location + ' jobs')}`}
+                          href={`https://www.google.com/search?q=${encodeURIComponent('"' + job.company + '" "' + job.title + '" jobs')}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="jf-platform-btn google"
@@ -705,15 +725,17 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                         >
                           Google Jobs
                         </a>
-                        <a
-                          href={`https://internshala.com/jobs/keywords-${encodeURIComponent(job.title)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="jf-platform-btn internshala"
-                          title="Search on Internshala"
-                        >
-                          Internshala
-                        </a>
+                        {!isLargeMNC(job.company) && (
+                          <a
+                            href={`https://internshala.com/jobs/keywords-${encodeURIComponent(job.company + ' ' + job.title)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="jf-platform-btn internshala"
+                            title="Search on Internshala"
+                          >
+                            Internshala
+                          </a>
+                        )}
                       </div>
                     </div>
 
