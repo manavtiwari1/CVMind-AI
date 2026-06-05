@@ -978,6 +978,7 @@ RULES:
    - Google Jobs format: https://www.google.com/search?q=<URL-encoded-company-name>%20<URL-encoded-job-title>%20<URL-encoded-location>%20jobs
    - Internshala format (use for jobs/internships in India or remote roles suitable for Internshala): https://internshala.com/jobs/keywords-<URL-encoded-job-title>
      (Or if the job is an internship: https://internshala.com/internships/keywords-<URL-encoded-job-title>)
+   IMPORTANT: The company name, job title, and location used in the applyUrl MUST EXACTLY match the company, title, and location fields you output for that job. Never output a URL referencing a different company or job title.
 4. Rank jobs by matchScore (highest first).
 5. ${jobTypeFilter}
 6. Provide specific, resume-aligned matchReasons (not generic).

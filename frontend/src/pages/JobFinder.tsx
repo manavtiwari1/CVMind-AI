@@ -84,24 +84,58 @@ function getScoreClass(score: number) {
   return 'score-low';
 }
 
-function getPlatformInfo(url: string) {
+function getPlatformInfo(url: string, company: string, title: string, location: string) {
   const lowerUrl = (url || '').toLowerCase();
+  
+  let platform = 'linkedin';
+  let name = 'LinkedIn';
+  let ctaText = 'Apply on LinkedIn';
+  
   if (lowerUrl.includes('indeed.com')) {
-    return { name: 'Indeed', className: 'indeed', ctaText: 'Apply on Indeed' };
+    platform = 'indeed';
+    name = 'Indeed';
+    ctaText = 'Apply on Indeed';
+  } else if (lowerUrl.includes('glassdoor.com')) {
+    platform = 'glassdoor';
+    name = 'Glassdoor';
+    ctaText = 'Apply on Glassdoor';
+  } else if (lowerUrl.includes('google.com')) {
+    platform = 'google';
+    name = 'Google Jobs';
+    ctaText = 'Apply on Google Jobs';
+  } else if (lowerUrl.includes('internshala.com')) {
+    platform = 'internshala';
+    name = 'Internshala';
+    ctaText = 'Apply on Internshala';
+  } else if (lowerUrl.includes('linkedin.com')) {
+    platform = 'linkedin';
+    name = 'LinkedIn';
+    ctaText = 'Apply on LinkedIn';
   }
-  if (lowerUrl.includes('glassdoor.com')) {
-    return { name: 'Glassdoor', className: 'glassdoor', ctaText: 'Apply on Glassdoor' };
+  
+  // Reconstruct search URL dynamically to guarantee 100% match with card data
+  let dynamicUrl = url;
+  const comp = company || '';
+  const ttl = title || '';
+  const loc = location || '';
+  const searchStr = `${comp} ${ttl} ${loc}`.trim();
+  const searchStrShort = `${comp} ${ttl}`.trim();
+  
+  if (platform === 'linkedin') {
+    dynamicUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(searchStr)}`;
+  } else if (platform === 'indeed') {
+    dynamicUrl = `https://www.indeed.com/jobs?q=${encodeURIComponent(searchStrShort)}&l=${encodeURIComponent(loc)}`;
+  } else if (platform === 'glassdoor') {
+    dynamicUrl = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(searchStrShort)}`;
+  } else if (platform === 'google') {
+    dynamicUrl = `https://www.google.com/search?q=${encodeURIComponent(searchStr + ' jobs')}`;
+  } else if (platform === 'internshala') {
+    const isInternship = lowerUrl.includes('internship') || ttl.toLowerCase().includes('intern');
+    const path = isInternship ? 'internships' : 'jobs';
+    dynamicUrl = `https://internshala.com/${path}/keywords-${encodeURIComponent(searchStrShort)}`;
   }
-  if (lowerUrl.includes('google.com')) {
-    return { name: 'Google Jobs', className: 'google', ctaText: 'Apply on Google Jobs' };
-  }
-  if (lowerUrl.includes('internshala.com')) {
-    return { name: 'Internshala', className: 'internshala', ctaText: 'Apply on Internshala' };
-  }
-  if (lowerUrl.includes('linkedin.com')) {
-    return { name: 'LinkedIn', className: 'linkedin', ctaText: 'Apply on LinkedIn' };
-  }
-  return { name: 'LinkedIn', className: 'linkedin', ctaText: 'Apply Now' }; // Default fallback
+  
+  return { name, className: platform, ctaText, url: dynamicUrl };
 }
 
 const loaderSteps = [
@@ -601,7 +635,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                         </span>
                       )}
                       {(() => {
-                        const platform = getPlatformInfo(job.applyUrl);
+                        const platform = getPlatformInfo(job.applyUrl, job.company, job.title, job.location);
                         return (
                           <span className={`jf-tag jf-tag-source ${platform.className}`}>
                             {platform.name}
@@ -697,10 +731,10 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                         )}
                       </div>
                       {(() => {
-                        const platform = getPlatformInfo(job.applyUrl);
+                        const platform = getPlatformInfo(job.applyUrl, job.company, job.title, job.location);
                         return (
                           <a
-                            href={job.applyUrl}
+                            href={platform.url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={`jf-apply-btn ${platform.className}`}
