@@ -10,20 +10,7 @@ interface HomeProps {
   customApiKey: string;
 }
 
-// June 17 2026, 17:00:00 IST = UTC+5:30 → UTC time = 11:30:00
-const LAUNCH_DATE = new Date('2026-06-17T11:30:00Z');
-
-function getTimeLeft() {
-  const now = new Date();
-  const diff = LAUNCH_DATE.getTime() - now.getTime();
-  if (diff <= 0) return null;
-  return {
-    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((diff / (1000 * 60)) % 60),
-    seconds: Math.floor((diff / 1000) % 60),
-  };
-}
+// Countdown helpers removed
 
 // ─── Product cards data ───────────────────────────────────────────────────
 const homeProducts = [
@@ -330,7 +317,6 @@ function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) =
 
 // ─── Home Page ────────────────────────────────────────────────────────────────
 export default function Home({ setCurrentPage, setAnalysisResult, setResumeText, customApiKey }: HomeProps) {
-  const [timeLeft, setTimeLeft] = useState(getTimeLeft());
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -341,13 +327,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   
   const [tiltStyle, setTiltStyle] = useState<{ transform: string }>({ transform: 'rotateY(-14deg) rotateX(8deg)' });
   const sceneRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(getTimeLeft());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const handleMouseMove3D = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!sceneRef.current) return;
@@ -528,40 +507,14 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       </div>
 
       {/* ── Launch Countdown Banner ─────────────────────────── */}
-      {timeLeft && (
-        <div className="launch-countdown-banner" role="banner" aria-label="Launch countdown">
-          <div className="countdown-banner-inner">
-            <div className="countdown-label-left">
-              <Rocket size={15} className="countdown-rocket-icon" />
-              <span>launch to be soon</span>
-            </div>
-            <div className="countdown-units">
-              <div className="countdown-unit">
-                <span className="countdown-number">{String(timeLeft.days).padStart(2, '0')}</span>
-                <span className="countdown-unit-label">Days</span>
-              </div>
-              <span className="countdown-separator">:</span>
-              <div className="countdown-unit">
-                <span className="countdown-number">{String(timeLeft.hours).padStart(2, '0')}</span>
-                <span className="countdown-unit-label">Hrs</span>
-              </div>
-              <span className="countdown-separator">:</span>
-              <div className="countdown-unit">
-                <span className="countdown-number">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                <span className="countdown-unit-label">Min</span>
-              </div>
-              <span className="countdown-separator">:</span>
-              <div className="countdown-unit">
-                <span className="countdown-number countdown-seconds">{String(timeLeft.seconds).padStart(2, '0')}</span>
-                <span className="countdown-unit-label">Sec</span>
-              </div>
-            </div>
-            <div className="countdown-label-right">
-              <span>June 17, 2026 · 5:00 PM IST</span>
-            </div>
+      <div className="launch-countdown-banner" role="banner" aria-label="Launch status">
+        <div className="countdown-banner-inner" style={{ justifyContent: 'center' }}>
+          <div className="countdown-label-left" style={{ justifyContent: 'center', width: 'auto' }}>
+            <Rocket size={15} className="countdown-rocket-icon" />
+            <span>launch to be soon</span>
           </div>
         </div>
-      )}
+      </div>
 
       <section className="hero-section">
         <div className="hero-grid-container">
