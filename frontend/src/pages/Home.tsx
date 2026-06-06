@@ -508,10 +508,10 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
 
       {/* ── Launch Countdown Banner ─────────────────────────── */}
       <div className="launch-countdown-banner" role="banner" aria-label="Launch status">
-        <div className="countdown-banner-inner" style={{ justifyContent: 'center' }}>
-          <div className="countdown-label-left" style={{ justifyContent: 'center', width: 'auto' }}>
-            <Rocket size={15} className="countdown-rocket-icon" />
-            <span>launch to be soon</span>
+        <div className="countdown-banner-inner" style={{ justifyContent: 'center', padding: '0.8rem 1.5rem' }}>
+          <div className="countdown-label-left" style={{ justifyContent: 'center', width: 'auto', fontSize: '1.05rem', fontWeight: 800, letterSpacing: '0.08em' }}>
+            <Rocket size={20} className="countdown-rocket-icon" />
+            <span>launching soon</span>
           </div>
         </div>
       </div>
