@@ -164,7 +164,7 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       <section className="blog-hero">
         <div className="blog-badge-wrapper">
           <span className="blog-pulse-dot"></span>
-          <span className="blog-launch-date">Launch Date: June 17, 2026 at 5:00 PM IST</span>
+          <span className="blog-launch-date">Launching Soon</span>
         </div>
         <h1 className="blog-title">CVMind AI Changelog</h1>
         <p className="blog-subtitle">
@@ -231,9 +231,9 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       <section className="blog-cta-section">
         <div className="blog-cta-card">
           <div className="cta-content">
-            <h3 className="cta-title">Ready for Launch?</h3>
+            <h3 className="cta-title">Launching Soon</h3>
             <p className="cta-desc">
-              CVMind AI has completed rigorous performance optimizations, CORS resolutions, and TypeScript compilations. We are officially going live on June 17, 2026.
+              CVMind AI has completed rigorous performance optimizations, CORS resolutions, and TypeScript compilations. We are officially going live soon.
             </p>
             <button className="cta-btn" onClick={() => setCurrentPage('home')}>
               Try CVMind AI Now <ArrowRight size={16} />
