@@ -533,7 +533,7 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
           <div className="countdown-banner-inner">
             <div className="countdown-label-left">
               <Rocket size={15} className="countdown-rocket-icon" />
-              <span>Official Launch</span>
+              <span>launch to be soon</span>
             </div>
             <div className="countdown-units">
               <div className="countdown-unit">
