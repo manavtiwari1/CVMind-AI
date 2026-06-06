@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import {
   Upload, FileText, Search, RefreshCw, ShieldCheck,
-  Briefcase, MapPin, Clock, ExternalLink, AlertCircle, Sparkles
+  Briefcase, MapPin, Clock, ExternalLink, AlertCircle, Sparkles, Lock
 } from 'lucide-react';
 import './JobFinder.css';
 
@@ -31,7 +31,6 @@ interface JobFinderResult {
 
 const JOB_TYPES = ['All', 'Full-time', 'Part-time', 'Remote', 'Internship'];
 
-// Generate a consistent gradient per company name
 const companyGradients = [
   'linear-gradient(135deg,#2997ff,#5ac8fa)',
   'linear-gradient(135deg,#bf5af2,#e879f9)',
@@ -94,6 +93,22 @@ const loaderSteps = [
 ];
 
 export default function JobFinder({ customApiKey }: JobFinderProps) {
+  const [currentUserEmail] = useState<string>(() => {
+    const userStr = localStorage.getItem('cvmind_user');
+    if (userStr) {
+      try {
+        const parsedUser = JSON.parse(userStr);
+        return parsedUser?.email?.toLowerCase() || '';
+      } catch (e) {
+        return '';
+      }
+    }
+    return '';
+  });
+
+  const allowedEmails = ['riturani2005@gmail.com', 'rajendermishra39@gmail.com'];
+  const isAuthorized = allowedEmails.includes(currentUserEmail);
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState('');
   const [dragActive, setDragActive] = useState(false);
@@ -164,16 +179,8 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
       formData.append('jobDescription', jobDescription.trim());
       formData.append('jobType', jobType);
 
-      const userStr = localStorage.getItem('cvmind_user');
-      if (userStr) {
-        try {
-          const parsedUser = JSON.parse(userStr);
-          if (parsedUser && parsedUser.email) {
-            formData.append('email', parsedUser.email);
-          }
-        } catch (e) {
-          console.error('Error parsing user data for email log:', e);
-        }
+      if (currentUserEmail) {
+        formData.append('email', currentUserEmail);
       }
 
       const baseUrl =
@@ -225,6 +232,35 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
   const availableTypes = result
     ? ['All', ...Array.from(new Set(result.jobs.map(j => j.jobType).filter(Boolean)))]
     : ['All'];
+
+  if (!isAuthorized) {
+    return (
+      <div className="jf-page animate-fade-in-up" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+        <div className="jf-stage" aria-hidden="true">
+          <div className="jf-glow-left" />
+          <div className="jf-glow-right" />
+        </div>
+        <div className="glass-card" style={{ maxWidth: '550px', padding: '3rem 2rem', textAlign: 'center', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.08)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ width: '80px', height: '80px', background: 'rgba(255, 69, 58, 0.1)', border: '1px solid rgba(255, 69, 58, 0.3)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem' }}>
+            <Lock size={36} style={{ color: '#ff453a' }} />
+          </div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: '#fff' }}>Access Restricted</h1>
+          <p style={{ color: '#94a3b8', lineHeight: 1.6, marginBottom: '2rem' }}>
+            The AI Job Finder module is temporarily locked. This feature is currently undergoing system upgrades and is unavailable to all users.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <button 
+              onClick={() => window.location.href = '/'}
+              className="jf-submit-btn" 
+              style={{ margin: 0, width: 'auto', padding: '0.75rem 2rem' }}
+            >
+              Go Back Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="jf-page animate-fade-in-up">

@@ -357,13 +357,16 @@ export default function Navbar({
                     </div>
                   );
                 }
+                const isLocked = item.page === 'job-finder';
                 return (
                   <button
                     key={item.page}
                     className={`dropdown-item${currentPage === item.page ? ' active' : ''}`}
                     onClick={() => go(item.page)}
+                    style={isLocked ? { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } : {}}
                   >
-                    {item.label}
+                    <span>{item.label}</span>
+                    {isLocked && <Lock size={12} style={{ color: '#ff453a', marginLeft: '8px' }} />}
                   </button>
                 );
               })}
@@ -526,8 +529,10 @@ export default function Navbar({
               <button
                 className={`mobile-drawer-link mobile-sub-link${currentPage === 'job-finder' ? ' active' : ''}`}
                 onClick={() => go('job-finder')}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
               >
-                AI Job Finder
+                <span>AI Job Finder</span>
+                <Lock size={12} style={{ color: '#ff453a' }} />
               </button>
 
               {/* SmartPrep AI sub-accordion */}

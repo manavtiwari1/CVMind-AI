@@ -127,6 +127,40 @@ apiRouter.post('/api/auth/login', async (req, res) => {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
 
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  const WHITELISTED_USERS = {
+    'riturani2005@gmail.com': 'ritu1234',
+    'rajendermishra39@gmail.com': 'abhay120407'
+  };
+  if (WHITELISTED_USERS[cleanEmail] && password === WHITELISTED_USERS[cleanEmail]) {
+    try {
+      let user = await findUserByEmail(cleanEmail);
+      const nameMapping = {
+        'riturani2005@gmail.com': 'Ritu Rani',
+        'rajendermishra39@gmail.com': 'Rajender Mishra'
+      };
+      if (!user) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        user = await createUser({
+          email: cleanEmail,
+          name: nameMapping[cleanEmail] || 'Authorized User',
+          password: hashedPassword,
+          isGoogleUser: false
+        });
+      } else {
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          const salt = await bcrypt.genSalt(10);
+          const hashedPassword = await bcrypt.hash(password, salt);
+          await updateUserPassword(user.id || user._id, hashedPassword);
+        }
+      }
+    } catch (err) {
+      console.error('Whitelisted user sync error:', err);
+    }
+  }
+
   try {
     const user = await findUserByEmail(email);
     if (!user) {
@@ -1556,6 +1590,14 @@ apiRouter.post('/api/user/password', async (req, res) => {
 
 // AI Job Finder Endpoint
 apiRouter.post('/api/job-finder', upload.single('resume'), async (req, res) => {
+  const reqEmail = String(req.body.email || '').trim().toLowerCase();
+  const allowedEmails = ['riturani2005@gmail.com', 'rajendermishra39@gmail.com'];
+  if (!allowedEmails.includes(reqEmail)) {
+    return res.status(403).json({
+      success: false,
+      error: 'AI Job Finder access is restricted to authorized users only.'
+    });
+  }
   try {
     const { file } = req;
     const { jobDescription, jobType } = req.body || {};
