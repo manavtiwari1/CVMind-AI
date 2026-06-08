@@ -1221,10 +1221,42 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'AI generation failed.');
 
+      const generatedHtml = data.data.generatedHtml;
+
+      // Instantly save to "My Works" to ensure 0% data loss risk
+      const userStr = localStorage.getItem('cvmind_user');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          const userId = user.id || user._id;
+          if (userId) {
+            const saveRes = await fetch(`${baseUrl}/api/user/work`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId,
+                title: activeWorkTitle.trim() || `Resume - ${selectedTemplate.name}`,
+                type: 'resume',
+                templateId: selectedTemplate.id,
+                htmlContent: generatedHtml,
+                workId: null
+              })
+            });
+            const saveData = await saveRes.json();
+            if (saveRes.ok && saveData.data) {
+              const newId = saveData.data.id || saveData.data._id;
+              setActiveWorkId(newId);
+            }
+          }
+        } catch (saveErr) {
+          console.error("Wizard instant save error:", saveErr);
+        }
+      }
+
       setStep('editor');
       setTimeout(() => {
         if (editorRef.current) {
-          editorRef.current.innerHTML = data.data.generatedHtml;
+          editorRef.current.innerHTML = generatedHtml;
           countWords();
         }
       }, 100);
