@@ -5,7 +5,7 @@ import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini } from './services/gemini.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini, generateResumeWithGemini } from './services/gemini.js';
 import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog } from './db.js';
 import { Resend } from 'resend';
 
@@ -705,6 +705,37 @@ apiRouter.post('/api/cover-letter/refine', async (req, res) => {
     console.error('Cover Letter Refine API Error:', error);
     return res.status(500).json({
       error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
+    });
+  }
+});
+
+// AI Resume Generation Endpoint
+apiRouter.post('/api/resume/generate', async (req, res) => {
+  try {
+    const { templateHtml, formData } = req.body || {};
+    const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (!templateHtml || typeof templateHtml !== 'string') {
+      return res.status(400).json({ error: 'Template HTML is required.' });
+    }
+    if (!formData || typeof formData !== 'object') {
+      return res.status(400).json({ error: 'Form data is required.' });
+    }
+
+    const generatedHtml = await generateResumeWithGemini({
+      templateHtml,
+      formData,
+      customApiKey
+    });
+
+    return res.json({
+      success: true,
+      data: { generatedHtml }
+    });
+  } catch (error) {
+    console.error('Resume Generation API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'AI Resume generation failed. Please try again.'
     });
   }
 });

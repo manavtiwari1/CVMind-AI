@@ -9,6 +9,7 @@ import {
   Image, Link, Pencil, Globe
 } from 'lucide-react';
 import './CoverLetter.css';
+import ResumeWizard from '../components/ResumeWizard';
 
 // ─────────────────────────────────────────────────────────────────
 // Types
@@ -624,7 +625,7 @@ interface CoverLetterProps {
 }
 
 export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }: CoverLetterProps) {
-  const [step, setStep] = useState<'gallery' | 'editor'>('gallery');
+  const [step, setStep] = useState<'gallery' | 'form' | 'loading' | 'editor'>('gallery');
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [refining, setRefining] = useState(false);
   const [refineError, setRefineError] = useState('');
@@ -910,7 +911,11 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     setSelectedTemplate(template);
     setActiveWorkId(null);
     setActiveWorkTitle(`${template.type === 'cover-letter' ? 'Cover Letter' : 'Resume'} - ${template.name}`);
-    setStep('editor');
+    if (template.type === 'cover-letter') {
+      setStep('editor');
+    } else {
+      setStep('form');
+    }
   };
 
 
@@ -1194,7 +1199,72 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     }
   };
 
+  const handleGenerateFromWizard = async (formData: any) => {
+    if (!selectedTemplate) return;
+    setStep('loading');
+    setRefineError('');
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
+        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (customApiKey) headers['x-gemini-key'] = customApiKey;
+
+      const res = await fetch(`${baseUrl}/api/resume/generate`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          templateHtml: selectedTemplate.html,
+          formData
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'AI generation failed.');
+
+      setStep('editor');
+      setTimeout(() => {
+        if (editorRef.current) {
+          editorRef.current.innerHTML = data.data.generatedHtml;
+          countWords();
+        }
+      }, 100);
+    } catch (err: any) {
+      setRefineError(err.message || 'Something went wrong.');
+      setStep('form');
+    }
+  };
+
   const closeAllPopups = () => { setShowTextColor(false); setShowHighlight(false); setShowTableDialog(false); };
+
+  // ── WIZARD FORM ─────────────────────────────────────────────
+  if (step === 'form') {
+    return (
+      <ResumeWizard
+        templateName={selectedTemplate?.name || ''}
+        onBack={() => { setStep('gallery'); setSelectedTemplate(null); }}
+        onSkip={() => { setStep('editor'); }}
+        onGenerate={handleGenerateFromWizard}
+      />
+    );
+  }
+
+  // ── LOADING SCREEN ──────────────────────────────────────────
+  if (step === 'loading') {
+    return (
+      <div className="cl-page animate-fade-in-up" style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', maxWidth: '480px', padding: '2.5rem 2rem', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-lg)' }}>
+          <Loader2 size={40} className="cl-spin" style={{ color: 'var(--blue)', marginBottom: '1.5rem' }} />
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.8rem' }}>AI is Crafting Your Resume</h2>
+          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '1.8rem' }}>
+            CVMind AI is optimizing your qualifications, experience points, and skillsets into an ATS-friendly layout. This will take up to 60 seconds...
+          </p>
+          <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '999px', overflow: 'hidden', position: 'relative' }}>
+            <div className="rw-progress-bar-fill" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── GALLERY ─────────────────────────────────────────────────
   if (step === 'gallery') {
@@ -1241,160 +1311,23 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
               style={{ '--card-accent': t.accent, '--card-color': t.color } as React.CSSProperties}
               onClick={() => handleSelectTemplate(t)}>
               
-              {/* Premium Miniature Template Layout Preview */}
+              {/* Premium High-Resolution Template Layout Preview */}
               <div className="cl-card-visual-wrapper">
-                <div className={`cl-card-mini-document mini-layout-${t.id}`}>
-                  
-                  {/* classic-pro & classic-cl */}
-                  {(t.id === 'classic-pro' || t.id === 'classic-cl') && (
-                    <div className="mini-layout-classic-pro" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div className="mini-header">
-                        <div className="mini-line name-bar"></div>
-                        <div className="mini-line sub-bar"></div>
-                      </div>
-                      <div className="mini-line section-header"></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar half"></div>
-                      <div className="mini-line section-header"></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar half"></div>
-                    </div>
-                  )}
-
-                  {/* modern-blue & modern-cl */}
-                  {(t.id === 'modern-blue' || t.id === 'modern-cl') && (
-                    <div className="mini-layout-modern-blue" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div className="mini-header">
-                        <div className="mini-line name-bar"></div>
-                        <div className="mini-line sub-bar" style={{ width: '70%' }}></div>
-                      </div>
-                      <div className="mini-line text-bar" style={{ background: '#e3f2fd', height: '2px' }}></div>
-                      <div className="mini-line section-header" style={{ background: '#1565c0' }}></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar half"></div>
-                    </div>
-                  )}
-
-                  {/* executive-elite & executive-cl */}
-                  {(t.id === 'executive-elite' || t.id === 'executive-cl') && (
-                    <div className="mini-layout-executive-elite" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div className="mini-header">
-                        <div className="mini-line name-bar" style={{ background: '#37474f' }}></div>
-                        <div className="mini-line sub-bar"></div>
-                      </div>
-                      <div className="mini-line section-header" style={{ background: '#37474f' }}></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar half"></div>
-                    </div>
-                  )}
-
-                  {/* tech-minimal */}
-                  {t.id === 'tech-minimal' && (
-                    <div className="mini-layout-tech-minimal" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div className="mini-header">
-                        <div className="mini-line name-bar" style={{ background: '#000', width: '45%' }}></div>
-                        <div className="mini-dot"></div>
-                      </div>
-                      <div className="mini-line section-header" style={{ background: '#22c55e' }}></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar half"></div>
-                    </div>
-                  )}
-
-                  {/* clean-corporate & corporate-cl */}
-                  {(t.id === 'clean-corporate' || t.id === 'corporate-cl') && (
-                    <div className="mini-layout-clean-corporate" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div className="mini-header" style={{ background: t.color || '#00695c', padding: '4px 6px', margin: '-8px -10px 2px -10px', width: '105px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                        <div className="mini-line name-bar" style={{ background: '#fff', width: '60%' }}></div>
-                        <div className="mini-line sub-bar" style={{ background: 'rgba(255,255,255,0.7)', width: '80%', height: '1px' }}></div>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div className="mini-line section-header" style={{ background: t.color || '#00695c' }}></div>
-                        <div className="mini-line text-bar"></div>
-                        <div className="mini-line text-bar half"></div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* finance-authority */}
-                  {t.id === 'finance-authority' && (
-                    <div className="mini-layout-finance-authority" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div className="mini-header">
-                        <div className="mini-line name-bar" style={{ background: '#1e293b' }}></div>
-                        <div className="mini-line sub-bar"></div>
-                      </div>
-                      <div className="mini-line section-header" style={{ background: '#1e293b' }}></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar half"></div>
-                    </div>
-                  )}
-
-                  {/* creative-bold & creative-cl */}
-                  {(t.id === 'creative-bold' || t.id === 'creative-cl') && (
-                    <div className="mini-layout-creative-bold" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '0' }}>
-                      <div className="creative-banner" style={{ background: `linear-gradient(135deg, ${t.color}, #f43f5e)`, height: '18px', width: '105px', margin: '-8px -10px 4px -10px', display: 'flex', alignItems: 'center', padding: '0 8px' }}>
-                        <div className="creative-banner-line" style={{ height: '2px', background: '#fff', width: '40%' }}></div>
-                      </div>
-                      <div className="creative-body" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div className="mini-line section-header" style={{ background: t.color }}></div>
-                        <div className="mini-line text-bar"></div>
-                        <div className="mini-line text-bar half"></div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* data-scientist */}
-                  {t.id === 'data-scientist' && (
-                    <div className="mini-layout-data-scientist" style={{ width: '100%', height: '100%' }}>
-                      <div className="mini-grid" style={{ display: 'grid', gridTemplateColumns: '24px 1fr', gap: '4px', height: '100%' }}>
-                        <div className="mini-sidebar" style={{ borderRight: '1px solid #e5e7eb', paddingRight: '2px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                          <div className="mini-line" style={{ background: t.color, height: '3px' }}></div>
-                          <div className="mini-line text-bar" style={{ height: '1px' }}></div>
-                          <div className="mini-line text-bar" style={{ height: '1px' }}></div>
-                          <div className="mini-line text-bar" style={{ height: '1px' }}></div>
-                        </div>
-                        <div className="mini-main" style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                          <div className="mini-line name-bar" style={{ width: '80%', height: '3px' }}></div>
-                          <div className="mini-line section-header" style={{ background: t.color }}></div>
-                          <div className="mini-line text-bar"></div>
-                          <div className="mini-line text-bar half"></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* healthcare-pro */}
-                  {t.id === 'healthcare-pro' && (
-                    <div className="mini-layout-healthcare-pro" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div className="mini-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div className="mini-line name-bar" style={{ background: '#e11d48', width: '50%' }}></div>
-                        <span style={{ color: '#e11d48', fontSize: '6px', fontWeight: 900 }}>✚</span>
-                      </div>
-                      <div className="mini-line section-header" style={{ background: '#e11d48' }}></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar half"></div>
-                    </div>
-                  )}
-
-                  {/* fresh-graduate */}
-                  {t.id === 'fresh-graduate' && (
-                    <div className="mini-layout-fresh-graduate" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div className="mini-header" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                        <div className="mini-badge-circle" style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <span style={{ color: '#fff', fontSize: '4px', fontWeight: 900 }}>G</span>
-                        </div>
-                        <div className="mini-line name-bar" style={{ width: '45%', background: '#6366f1' }}></div>
-                      </div>
-                      <div className="mini-line section-header" style={{ background: '#6366f1' }}></div>
-                      <div className="mini-line text-bar"></div>
-                      <div className="mini-line text-bar half"></div>
-                    </div>
-                  )}
-
+                <div className="cl-card-mini-document" style={{ overflow: 'hidden' }}>
+                  <img 
+                    src={`/templates/${t.id}.png`} 
+                    alt={t.name}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                    onError={(e) => {
+                      // fallback logic
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
                 </div>
 
                 {/* Hover overlay with button */}

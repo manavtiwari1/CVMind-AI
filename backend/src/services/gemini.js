@@ -704,7 +704,8 @@ CRITICAL INSTRUCTIONS:
 5. If user instructions/prompt are provided, prioritize adjusting the text according to those specific instructions (e.g., changing tone, highlighting skills, rewriting sections, or generating new details).
 6. Ensure the letter speaks directly to the role of "${jobTitle}" at "${companyName}" if provided.
 7. Keep tone professional but human — show genuine enthusiasm.
-8. Keep length appropriate (250–500 words maximum for letters).`;
+8. Keep length appropriate (250–500 words maximum for letters).
+9. Make sure the returned document is fully complete, closing all open HTML tags. NEVER truncate the output.`;
 
   let userPrompt = `Here is the document content to refine:
 """
@@ -723,11 +724,58 @@ ${coverLetterText}
       prompt: userPrompt,
       customApiKey,
       temperature: 0.35,
-      maxTokens: 2000
+      maxTokens: 5000
     });
   } catch (error) {
     console.error('DeepSeek Cover Letter Refine Error:', error);
     throw new Error('Cover letter refinement failed. ' + error.message);
+  }
+}
+
+/**
+ * Populates an HTML resume template with dynamic, professionally written, ATS-optimized content
+ * based on user inputs.
+ * @param {object} params
+ * @param {string} params.templateHtml - The original HTML layout of the chosen template.
+ * @param {object} params.formData - User entered structured info.
+ * @param {string} [params.customApiKey] - Optional API key.
+ * @returns {Promise<string>} - Fully populated resume HTML.
+ */
+export async function generateResumeWithGemini({ templateHtml, formData, customApiKey = null }) {
+  const systemPrompt = `You are an elite professional resume writer, ATS optimization expert, and corporate recruiter.
+Your task is to take a raw HTML resume template and populate it with beautifully written, professional, and ATS-optimized content based on the user's details.
+
+CRITICAL RULES:
+1. You MUST preserve the exact HTML structure, tags, CSS inline styles, wrappers, tables, columns, divisions, fonts, and colors of the template. Do NOT add new main wrapper containers, outer boundaries, or alter layout structure.
+2. Only replace the placeholder values (such as "John Doe", "john.doe@email.com", job titles, dates, locations, bullet points, school names, university names, skill lists, professional summaries, etc.) with the user's actual information.
+3. Enhance the provided work experience descriptions. Rewrite them to be extremely professional, high-impact, and metrics-driven (use action verbs like Led, Spearheaded, Optimized, Engineered, etc.). If descriptions are sparse, expand them with professional responsibilities typical for that job title.
+4. Integrate the user's professional qualifications (e.g. Chartered Accountant, Scientist, Data Analyst, etc.) prominently into the summary or title area.
+5. Create a cohesive professional summary (2-3 sentences) based on the user's qualification, experience, and skills, replacing any placeholder summary in the template.
+6. Populate the skills section with the user's skills formatted matching the template's layout (e.g., comma-separated list or flex tags).
+7. Do NOT include any explanations, introduction, or markdown wrapping. Return ONLY the populated HTML content.
+8. Make sure the returned HTML document is fully complete, closing all open tags. NEVER truncate or omit any section of the HTML. Returns must be complete.`;
+
+  const userPrompt = `Here is the HTML template to populate:
+"""
+${templateHtml}
+"""
+
+Here is the user's data:
+${JSON.stringify(formData, null, 2)}
+
+Populate the template now, rewriting and expanding sections to be premium and recruiter-ready. Return ONLY the complete populated HTML.`;
+
+  try {
+    return await callDeepSeek({
+      systemInstruction: systemPrompt,
+      prompt: userPrompt,
+      customApiKey,
+      temperature: 0.35,
+      maxTokens: 5000
+    });
+  } catch (error) {
+    console.error('DeepSeek Resume Generation Error:', error);
+    throw new Error('AI resume generation failed. ' + error.message);
   }
 }
 

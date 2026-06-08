@@ -11,6 +11,22 @@ export default function Blog({ setCurrentPage }: BlogProps) {
 
   const changelogData = [
     {
+      id: 8,
+      version: 'v2.5.0',
+      date: 'June 8, 2026',
+      title: 'AI Resume Wizard, Dynamic Form Sections & Preview Mockups',
+      tag: 'New Features',
+      description: 'Major update introducing the structured AI Resume Builder Wizard. Users can select any ATS resume template, fill in their credentials dynamically via dynamic form sections, and have AI generate a high-impact resume in under 60 seconds.',
+      details: [
+        '<strong>📋 AI Resume Builder Wizard:</strong> A premium, multi-section form wizard collecting Personal info, Academic details, Work Experience, Skills, and Courses.',
+        '<strong>➕ Dynamic List Add/Remove Controls:</strong> Fully interactive controls to add or remove multiple dynamic work experiences, schools, or certifications.',
+        '<strong>🖼️ High-Resolution Template Previews:</strong> Replaced miniature placeholder drawings in the gallery with real, high-resolution preview screenshots of each template layout.',
+        '<strong>⚡ Truncation-Free AI Refine:</strong> Upgraded the refinement engine with a 5,000-token capacity limit and structured instructions to prevent layout cut-offs.'
+      ],
+      icon: Sparkles,
+      badgeColor: 'badge-purple'
+    },
+    {
       id: 7,
       version: 'v2.4.0',
       date: 'June 5, 2026',
