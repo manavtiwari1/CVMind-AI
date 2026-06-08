@@ -18,10 +18,10 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       tag: 'New Features',
       description: 'Major update introducing the structured AI Resume Builder Wizard. Users can select any ATS resume template, fill in their credentials dynamically via dynamic form sections, and have AI generate a high-impact resume in under 60 seconds.',
       details: [
-        '<strong>📋 AI Resume Builder Wizard:</strong> A premium, multi-section form wizard collecting Personal info, Academic details, Work Experience, Skills, and Courses.',
-        '<strong>➕ Dynamic List Add/Remove Controls:</strong> Fully interactive controls to add or remove multiple dynamic work experiences, schools, or certifications.',
-        '<strong>🖼️ High-Resolution Template Previews:</strong> Replaced miniature placeholder drawings in the gallery with real, high-resolution preview screenshots of each template layout.',
-        '<strong>⚡ Truncation-Free AI Refine:</strong> Upgraded the refinement engine with a 5,000-token capacity limit and structured instructions to prevent layout cut-offs.'
+        '<strong>AI Resume Builder Wizard:</strong> A premium, multi-section form wizard collecting Personal info, Academic details, Work Experience, Skills, and Courses.',
+        '<strong>Dynamic List Add/Remove Controls:</strong> Fully interactive controls to add or remove multiple dynamic work experiences, schools, or certifications.',
+        '<strong>High-Resolution Template Previews:</strong> Replaced miniature placeholder drawings in the gallery with real, high-resolution preview screenshots of each template layout.',
+        '<strong>Truncation-Free AI Refine:</strong> Upgraded the refinement engine with a 5,000-token capacity limit and structured instructions to prevent layout cut-offs.'
       ],
       icon: Sparkles,
       badgeColor: 'badge-purple'
@@ -34,11 +34,11 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       tag: 'New Features',
       description: 'Find jobs tailored specifically to your resume in seconds. Upload your CV, describe your target role, and let AI scan the market to curate 8–10 matched opportunities with salary ranges, required skills, and direct LinkedIn apply links.',
       details: [
-        '<strong>🔍 Intelligent Role Matching:</strong> Analyzes your resume experience and target preferences to align compatible roles, bypassing generic keyword filters.',
-        '<strong>📈 Compatibility Match Scores:</strong> Real-time percentage score checking showing how strongly your skills map to target responsibilities.',
-        '<strong>⚙️ Smart Work Type Filters:</strong> Instantly filter matches using Remote, Full-time, Part-time, and Internship selector pills.',
-        '<strong>💼 Direct Apply Links:</strong> Pre-populated, search-safe job board links matching the exact title and location on standard professional boards.',
-        '<strong>🖥️ Premium Interactive Visuals:</strong> Gorgeous animated scanning console displaying active step-by-step progress checklists while the AI curates matches.'
+        '<strong>Intelligent Role Matching:</strong> Analyzes your resume experience and target preferences to align compatible roles, bypassing generic keyword filters.',
+        '<strong>Compatibility Match Scores:</strong> Real-time percentage score checking showing how strongly your skills map to target responsibilities.',
+        '<strong>Smart Work Type Filters:</strong> Instantly filter matches using Remote, Full-time, Part-time, and Internship selector pills.',
+        '<strong>Direct Apply Links:</strong> Pre-populated, search-safe job board links matching the exact title and location on standard professional boards.',
+        '<strong>Premium Interactive Visuals:</strong> Gorgeous animated scanning console displaying active step-by-step progress checklists while the AI curates matches.'
       ],
       icon: Sparkles,
       badgeColor: 'badge-purple'
@@ -51,13 +51,13 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       tag: 'UX Polish',
       description: 'A stunning 3D rotating product carousel has been added to the Home page, showcasing all 6 AI tools through interactive cards — featuring auto-rotation, drag support, flip animations, and live navigation controls.',
       details: [
-        '<strong>🎠 360° 3D Card Carousel:</strong> A fully interactive 3D carousel is now embedded below the hero/upload section on the Home page. All 6 AI product cards rotate with real perspective depth and smooth transitions.',
-        '<strong>⚡ Auto-Rotate with Pause-on-Hover:</strong> Cards automatically cycle every 6 seconds. Hovering pauses the rotation instantly, and it resumes as soon as the cursor leaves.',
-        '<strong>👆 Drag to Explore:</strong> Users can manually drag the carousel left or right using mouse or touch — fully functional on both desktop and mobile devices.',
-        '<strong>🔄 Flip Animation (Front & Back):</strong> Each card can be flipped to reveal a "How it Works" back side showing a step-by-step guide and feature tags for that tool.',
-        '<strong>🎯 Direct Navigation:</strong> Clicking "Try it Free" on any card navigates directly to that tool without any extra steps or redirects.',
-        '<strong>🌟 Live Progress Arc:</strong> An animated arc indicator at the bottom displays the current card number and product name with a smooth fill transition.',
-        '<strong>🎨 Per-Card Gradient Glow:</strong> Every product card has its own unique color gradient and ambient glow effect, giving the platform a premium, polished aesthetic.'
+        '<strong>360° 3D Card Carousel:</strong> A fully interactive 3D carousel is now embedded below the hero/upload section on the Home page. All 6 AI product cards rotate with real perspective depth and smooth transitions.',
+        '<strong>Auto-Rotate with Pause-on-Hover:</strong> Cards automatically cycle every 6 seconds. Hovering pauses the rotation instantly, and it resumes as soon as the cursor leaves.',
+        '<strong>Drag to Explore:</strong> Users can manually drag the carousel left or right using mouse or touch — fully functional on both desktop and mobile devices.',
+        '<strong>Flip Animation (Front & Back):</strong> Each card can be flipped to reveal a "How it Works" back side showing a step-by-step guide and feature tags for that tool.',
+        '<strong>Direct Navigation:</strong> Clicking "Try it Free" on any card navigates directly to that tool without any extra steps or redirects.',
+        '<strong>Live Progress Arc:</strong> An animated arc indicator at the bottom displays the current card number and product name with a smooth fill transition.',
+        '<strong>Per-Card Gradient Glow:</strong> Every product card has its own unique color gradient and ambient glow effect, giving the platform a premium, polished aesthetic.'
       ],
       icon: Sparkles,
       badgeColor: 'badge-green'
@@ -70,10 +70,10 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       tag: 'New Features',
       description: 'Massive update introducing three major tools: Web Speech API-based mock interviews, 1-click portfolio website generation, and viral LinkedIn post generation, along with complete AI API engine migrations.',
       details: [
-        '<strong>🎙️ Voice Interview Practice:</strong> Built an interactive mock interview sandbox utilizing the Web Speech API. Candidates can now speak their answers aloud, and the AI will analyze transcripts for STAR alignment, confidence, and filler words.',
-        '<strong>🌐 Portfolio Website Generator:</strong> Instantly convert a resume into a responsive HTML/CSS portfolio website. Features 5 premium themes, an interactive device preview frame, and a direct .html download option.',
-        '<strong>📝 LinkedIn Post Generator:</strong> Generates 3 styles of viral LinkedIn posts (Professional, Storytelling, Punchy) with hooks and hashtags based on your resume achievements and target topic.',
-        '<strong>🎤 Microphone Auto-Recovery:</strong> Implemented silent auto-restart logic to prevent the Web Speech API from abruptly stopping during long pauses or browser network timeouts.'
+        '<strong>Voice Interview Practice:</strong> Built an interactive mock interview sandbox utilizing the Web Speech API. Candidates can now speak their answers aloud, and the AI will analyze transcripts for STAR alignment, confidence, and filler words.',
+        '<strong>Portfolio Website Generator:</strong> Instantly convert a resume into a responsive HTML/CSS portfolio website. Features 5 premium themes, an interactive device preview frame, and a direct .html download option.',
+        '<strong>LinkedIn Post Generator:</strong> Generates 3 styles of viral LinkedIn posts (Professional, Storytelling, Punchy) with hooks and hashtags based on your resume achievements and target topic.',
+        '<strong>Microphone Auto-Recovery:</strong> Implemented silent auto-restart logic to prevent the Web Speech API from abruptly stopping during long pauses or browser network timeouts.'
       ],
       icon: Sparkles,
       badgeColor: 'badge-purple'
@@ -86,26 +86,26 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       tag: 'Core Upgrade',
       description: 'Over the last few days, we have completely transformed CVMind AI from a simple resume reviewer into a comprehensive, end-to-end career suite. We have deployed major features and updates across product navigation, our core engine, and dashboard UX.',
       details: [
-        '<strong>🎙️ 1. SmartPrep AI (HR & Technical Interview Coach)</strong><br/>Cracking interviews is now easier than ever! SmartPrep AI parses your resume and curates tailored interview questions based on your targeted job profile and domain checklists:',
+        '<strong>1. SmartPrep AI (HR & Technical Interview Coach)</strong><br/>Cracking interviews is now easier than ever! SmartPrep AI parses your resume and curates tailored interview questions based on your targeted job profile and domain checklists:',
         '<span class="sub-bullet"><strong>Practice Sandbox:</strong> Practice by typing your answers question-by-question.</span>',
         '<span class="sub-bullet"><strong>AI Evaluation & Score:</strong> Receive instant feedback and a score (out of 10) evaluating how well your answer aligns with the standard STAR (Situation, Task, Action, Result) framework.</span>',
         
-        '<strong>💼 2. LinkedIn Optimizer (Dedicated Submenu Suite)</strong><br/>Designed to elevate your professional branding to a state-of-the-art level:',
+        '<strong>2. LinkedIn Optimizer (Dedicated Submenu Suite)</strong><br/>Designed to elevate your professional branding to a state-of-the-art level:',
         '<span class="sub-bullet"><strong>Profile PDF Audit:</strong> Simply download your LinkedIn profile as a PDF, upload it here, and receive actionable optimization scores.</span>',
         '<span class="sub-bullet"><strong>Bio & Headline Generator:</strong> Auto-generate LinkedIn bios and headlines optimized with custom hooks, core skills, and key achievements.</span>',
         '<span class="sub-bullet"><strong>Outreach & DM Writer:</strong> Generate highly personalized templates for recruiter DMs, referral requests, and connection invites.</span>',
 
-        '<strong>🗺️ 3. Career Path AI (Career Transitions Builder)</strong><br/>Define your professional benchmarks and plan milestones:',
+        '<strong>3. Career Path AI (Career Transitions Builder)</strong><br/>Define your professional benchmarks and plan milestones:',
         '<span class="sub-bullet"><strong>Skill Gap & Courses:</strong> Identify skill gaps relative to your target job profile and get curated online course recommendations.</span>',
         '<span class="sub-bullet"><strong>Elevator Pitch Builder:</strong> Craft custom 60-second verbal pitches tailored to Corporate, Startup, or Creative contexts.</span>',
         '<span class="sub-bullet"><strong>Interactive Career Roadmap:</strong> Get visual timeline checklists with milestones and step-by-step guidelines to upgrade from your current role to your target career path.</span>',
 
-        '<strong>🔄 4. Premium UX & Auto-Save Features</strong><br/>For maximum user convenience, we have automated and refined manual actions:',
+        '<strong>4. Premium UX & Auto-Save Features</strong><br/>For maximum user convenience, we have automated and refined manual actions:',
         '<span class="sub-bullet"><strong>Silent Background Auto-Save:</strong> The content editor (for Resumes and Cover Letters) now saves your progress in the background every 4 seconds without interrupting your typing or cursor position. SmartPrep AI practice logs and Outreach templates are also saved automatically upon creation.</span>',
         '<span class="sub-bullet"><strong>Visual Status Badges:</strong> The manual save button is replaced with an elegant, real-time status badge: "✓ Saved automatically to My Works".</span>',
         '<span class="sub-bullet"><strong>Deletion Safety Sync:</strong> Deleting a saved file from the "My Works" panel instantly resets the active editor or dashboard back to the gallery view, ensuring clean state sync across the board.</span>',
 
-        '<strong>🤖 5. Upgraded Core Engine & Performance Optimizations</strong><br/>To keep the platform dynamic, highly responsive, and crash-proof:',
+        '<strong>5. Upgraded Core Engine & Performance Optimizations</strong><br/>To keep the platform dynamic, highly responsive, and crash-proof:',
         '<span class="sub-bullet"><strong>Optimized Request Pipelines:</strong> We have fully rebuilt our server-side request pipelines. This guarantees instant response times, zero connection timeouts, and a seamless user experience under heavy loads.</span>',
         '<span class="sub-bullet"><strong>Schema-Safe Parsing:</strong> Integrated robust error boundaries between the frontend and backend, ensuring structured data compiles correctly with zero format mismatches.</span>'
       ],
