@@ -4,7 +4,7 @@ import {
   RotateCcw, Printer, ArrowRight, Target, Check, AlertCircle, Copy,
   Sparkles, Download, Loader2, Zap
 } from 'lucide-react';
-import { downloadResumeAsDocx } from '../utils/generateResumeDocx';
+import { downloadResumeAsDocx, downloadResumeAsPdf, downloadResumeAsTxt } from '../utils/generateResumeDocx';
 import './Dashboard.css';
 
 interface Suggestions {
@@ -133,7 +133,17 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
   };
 
   const handleDownload = () => {
-    downloadResumeAsDocx(optimizedResume);
+    const originalName = analysisResult?.fileName || 'optimized_resume.docx';
+    const ext = originalName.split('.').pop()?.toLowerCase() || 'docx';
+    const baseName = originalName.replace(/\.[^/.]+$/, "");
+
+    if (ext === 'pdf') {
+      downloadResumeAsPdf(optimizedResume, `${baseName}_optimized.pdf`);
+    } else if (ext === 'txt') {
+      downloadResumeAsTxt(optimizedResume, `${baseName}_optimized.txt`);
+    } else {
+      downloadResumeAsDocx(optimizedResume, `${baseName}_optimized.docx`);
+    }
   };
 
   const triggerPrint = () => {
@@ -517,7 +527,12 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
                         onClick={handleDownload}
                         id="optimize-download-btn"
                       >
-                        <Download size={14} /> Download .docx
+                        <Download size={14} /> {(() => {
+                          const ext = (analysisResult?.fileName || '').split('.').pop()?.toLowerCase();
+                          if (ext === 'pdf') return 'Download .pdf';
+                          if (ext === 'txt') return 'Download .txt';
+                          return 'Download .docx';
+                        })()}
                       </button>
                     </div>
                   </div>

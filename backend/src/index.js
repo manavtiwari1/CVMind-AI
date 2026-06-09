@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Initialize Resend Client
-const resend = new Resend(process.env.RESEND_API_KEY || 're_ZUsGhSqZ_N1wr7tKSbze1ySxbbr66C4pg');
+const resend = new Resend(process.env.RESEND_API_KEY || '');
 
 // Enable CORS for all requests, allow credentials and specific headers
 app.use(cors({
@@ -58,15 +58,15 @@ apiRouter.get('/', (req, res) => {
 // Admin Authentication Login Route
 apiRouter.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body || {};
-  const targetUsername = process.env.ADMIN_USERNAME || 'admin';
-  const targetPassword = process.env.ADMIN_PASSWORD || 'Admin@1234';
-  const configuredSecret = process.env.ADMIN_SECRET || 'admin123';
+  const targetUsername = process.env.ADMIN_USERNAME;
+  const targetPassword = process.env.ADMIN_PASSWORD;
+  const configuredSecret = process.env.ADMIN_SECRET;
 
-  if (username === targetUsername && password === targetPassword) {
+  if (targetUsername && targetPassword && username === targetUsername && password === targetPassword) {
     return res.json({
       success: true,
       message: 'Login successful.',
-      secret: configuredSecret
+      secret: configuredSecret || ''
     });
   }
 
@@ -128,23 +128,29 @@ apiRouter.post('/api/auth/login', async (req, res) => {
   }
 
   const cleanEmail = String(email || '').trim().toLowerCase();
-  const WHITELISTED_USERS = {
-    'riturani2005@gmail.com': 'ritu1234',
-    'rajendermishra39@gmail.com': 'abhay120407'
-  };
+  let WHITELISTED_USERS = {};
+  let WHITELISTED_NAMES = {};
+  try {
+    if (process.env.WHITELISTED_USERS) {
+      WHITELISTED_USERS = JSON.parse(process.env.WHITELISTED_USERS);
+    }
+    if (process.env.WHITELISTED_NAMES) {
+      WHITELISTED_NAMES = JSON.parse(process.env.WHITELISTED_NAMES);
+    }
+  } catch (err) {
+    console.error('Error parsing whitelisted credentials:', err);
+  }
+
   if (WHITELISTED_USERS[cleanEmail] && password === WHITELISTED_USERS[cleanEmail]) {
     try {
       let user = await findUserByEmail(cleanEmail);
-      const nameMapping = {
-        'riturani2005@gmail.com': 'Ritu Rani',
-        'rajendermishra39@gmail.com': 'Rajender Mishra'
-      };
+      const displayName = WHITELISTED_NAMES[cleanEmail] || 'Authorized User';
       if (!user) {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         user = await createUser({
           email: cleanEmail,
-          name: nameMapping[cleanEmail] || 'Authorized User',
+          name: displayName,
           password: hashedPassword,
           isGoogleUser: false
         });
@@ -357,9 +363,9 @@ apiRouter.post('/api/auth/google', async (req, res) => {
 // Admin Analytics Stats Secure Route
 apiRouter.post('/api/admin/stats', async (req, res) => {
   const adminSecret = req.headers['x-admin-secret'] || req.body.secret || null;
-  const configuredSecret = process.env.ADMIN_SECRET || 'admin123';
+  const configuredSecret = process.env.ADMIN_SECRET;
 
-  if (!adminSecret || adminSecret !== configuredSecret) {
+  if (!configuredSecret || !adminSecret || adminSecret !== configuredSecret) {
     return res.status(401).json({ error: 'Unauthorized: Invalid admin secret key.' });
   }
 
@@ -1622,7 +1628,15 @@ apiRouter.post('/api/user/password', async (req, res) => {
 // AI Job Finder Endpoint
 apiRouter.post('/api/job-finder', upload.single('resume'), async (req, res) => {
   const reqEmail = String(req.body.email || '').trim().toLowerCase();
-  const allowedEmails = ['riturani2005@gmail.com', 'rajendermishra39@gmail.com'];
+  let WHITELISTED_USERS = {};
+  try {
+    if (process.env.WHITELISTED_USERS) {
+      WHITELISTED_USERS = JSON.parse(process.env.WHITELISTED_USERS);
+    }
+  } catch (err) {
+    console.error('Error parsing whitelisted users:', err);
+  }
+  const allowedEmails = Object.keys(WHITELISTED_USERS);
   if (!allowedEmails.includes(reqEmail)) {
     return res.status(403).json({
       success: false,

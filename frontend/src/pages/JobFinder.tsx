@@ -106,7 +106,9 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
     return '';
   });
 
-  const allowedEmails = ['riturani2005@gmail.com', 'rajendermishra39@gmail.com'];
+  const allowedEmails = (import.meta.env.VITE_ALLOWED_EMAILS || '')
+    .split(',')
+    .map((e: string) => e.trim().toLowerCase());
   const isAuthorized = allowedEmails.includes(currentUserEmail);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

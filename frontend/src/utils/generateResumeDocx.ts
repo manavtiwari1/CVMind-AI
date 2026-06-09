@@ -301,3 +301,140 @@ export async function downloadResumeAsDocx(
   const blob = await Packer.toBlob(doc);
   saveAs(blob, fileName);
 }
+
+/** Download the optimized resume as a plain text file */
+export function downloadResumeAsTxt(
+  optimizedText: string,
+  fileName = 'optimized_resume_cvmind.txt'
+): void {
+  const blob = new Blob([optimizedText], { type: 'text/plain;charset=utf-8' });
+  saveAs(blob, fileName);
+}
+
+/** Print/download the optimized resume as a beautifully styled PDF */
+export function downloadResumeAsPdf(
+  optimizedText: string,
+  fileName = 'optimized_resume_cvmind.pdf'
+): void {
+  const sections = parseSections(optimizedText);
+  const name = extractName(sections);
+  const contactLines = extractContactLines(sections);
+  const contentSections = sections.filter(s => s.heading !== null);
+
+  let html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>${fileName.replace(/\.pdf$/i, '')}</title>
+  <style>
+    @page {
+      size: letter;
+      margin: 0.75in 0.9in;
+    }
+    body {
+      font-family: 'Calibri', 'Arial', sans-serif;
+      color: #1f2937;
+      line-height: 1.45;
+      font-size: 10.5pt;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .name {
+      font-size: 24pt;
+      font-weight: bold;
+      color: #1a3c5e;
+      margin: 0 0 4px 0;
+    }
+    .contact {
+      font-size: 10pt;
+      color: #6b7280;
+      margin: 2px 0;
+    }
+    .divider {
+      border-bottom: 2px solid #2563eb;
+      margin: 10px 0 16px 0;
+    }
+    .section-title {
+      font-size: 12pt;
+      font-weight: bold;
+      color: #1a3c5e;
+      text-transform: uppercase;
+      border-bottom: 1px solid #1a3c5e;
+      margin: 18px 0 8px 0;
+      padding-bottom: 2px;
+      letter-spacing: 0.5px;
+    }
+    .job-title {
+      font-size: 11pt;
+      font-weight: bold;
+      margin: 8px 0 4px 0;
+      color: #1f2937;
+    }
+    .bullet-item {
+      margin: 4px 0 4px 20px;
+      display: list-item;
+      list-style-type: disc;
+      padding-left: 2px;
+    }
+    .text-block {
+      margin: 4px 0;
+    }
+    .skills-block {
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 class="name">${name}</h1>
+    ${contactLines.map(line => `<div class="contact">${line}</div>`).join('')}
+  </div>
+  <div class="divider"></div>
+  `;
+
+  for (const section of contentSections) {
+    html += `<div class="section-title">${section.heading}</div>`;
+    const headingUpper = (section.heading || '').toUpperCase();
+    const isSkills = headingUpper.includes('SKILL') || headingUpper.includes('COMPETENC');
+
+    for (const line of section.lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+
+      if (looksLikeBullet(trimmed)) {
+        const cleanText = trimmed.replace(/^[•\-\*\u2022]\s*/, '').replace(/^\d+\.\s*/, '').trim();
+        html += `<div class="bullet-item">${cleanText}</div>`;
+      } else if (!isSkills && looksLikeJobTitle(trimmed)) {
+        html += `<div class="job-title">${trimmed}</div>`;
+      } else if (isSkills) {
+        html += `<div class="skills-block">${trimmed}</div>`;
+      } else {
+        html += `<div class="text-block">${trimmed}</div>`;
+      }
+    }
+  }
+
+  html += `
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=900,height=750');
+  if (!win) {
+    alert('Please allow popups to download PDF.');
+    return;
+  }
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  
+  setTimeout(() => {
+    win.print();
+    win.close();
+  }, 500);
+}
