@@ -992,7 +992,7 @@ const jobFinderSchema = {
         },
         required: ['title', 'company', 'companyDomain', 'location', 'jobType', 'matchScore', 'matchReasons', 'requiredSkills', 'salary', 'applyUrl', 'linkedinUrl', 'indeedUrl', 'naukriUrl', 'workindiaUrl', 'postedDate', 'experienceRequired']
       },
-      description: 'List of 8–10 highly relevant job matches for the candidate.'
+      description: 'List of 5–6 highly relevant job matches for the candidate.'
     },
     searchSummary: {
       type: 'string',
@@ -1017,10 +1017,10 @@ export async function findJobsWithGemini(resumeText, jobDescription, jobType = '
 
   const systemPrompt = `You are a senior Executive Recruiter and Job Market Intelligence Specialist with deep knowledge of the global tech, finance, consulting, and creative hiring landscapes.
 
-Your task is to analyze the candidate's resume and their target job description preference, then curate 8–10 highly relevant, realistic job openings.
+Your task is to analyze the candidate's resume and their target job description preference, then curate 5–6 highly relevant, realistic job openings.
 
 RULES:
-1. Experience Level Diversity: You MUST return a mix of Entry-Level (0-2 years), Mid-Level (2-5 years), and Advanced/Senior-Level (5+ years) jobs related to the candidate's core expertise, so they can see opportunities across all experience brackets.
+1. Experience Level Diversity: You MUST return a mix of Entry-Level (0-2 years), Mid-Level (2-5 years), and Advanced/Senior-Level (5+ years) jobs related to the candidate's core expertise, so they can see opportunities across all experience brackets (e.g. 2 Entry-Level, 2 Mid-Level, and 2 Advanced/Senior jobs).
 2. Each job must be realistic and plausible — use real company names (Google, Microsoft, Infosys, Deloitte, Goldman Sachs, Accenture, TCS, Wipro, etc.) or well-known startups.
 3. For the search/apply URLs, ALWAYS generate real working search URLs for all four platforms listed below:
    - linkedinUrl: Format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company>%20<URL-encoded-title>%20<URL-encoded-location>
@@ -1045,7 +1045,7 @@ Target Role / Job Description Preferences:
 ${jobDescription}
 """
 
-Analyze the candidate's background and find 8–10 perfectly matched job openings. Return structured JSON now.`;
+Analyze the candidate's background and find 5–6 perfectly matched job openings. Return structured JSON now.`;
 
   try {
     return await callDeepSeek({
@@ -1054,7 +1054,7 @@ Analyze the candidate's background and find 8–10 perfectly matched job opening
       responseSchema: jobFinderSchema,
       customApiKey,
       temperature: 0.35,
-      maxTokens: 3500
+      maxTokens: 4000
     });
   } catch (error) {
     console.error('DeepSeek Job Finder Error:', error);
