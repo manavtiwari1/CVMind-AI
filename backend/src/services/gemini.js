@@ -1023,15 +1023,17 @@ RULES:
 1. Experience Level Diversity: You MUST return a mix of Entry-Level (0-2 years), Mid-Level (2-5 years), and Advanced/Senior-Level (5+ years) jobs related to the candidate's core expertise, so they can see opportunities across all experience brackets (e.g. 5 Entry-Level, 5 Mid-Level, and 5 Advanced/Senior jobs).
 2. Diverse Companies: Do NOT limit yourself to specific giant MNCs (like Google, Microsoft, Infosys). You MUST include all kinds of companies: small local businesses, growing startups, medium enterprises, and large firms that would realistic hire for these roles. Show a realistic variety of company scales.
 3. Platform-Specific Apply Links: Only populate the platform search URLs if the platform is highly relevant for the job role and country. If not, set it to an empty string "".
+   - GUARANTEE ACTIVE SEARCH RESULTS: To prevent "No matching jobs found" screens, follow these search query guidelines:
+     * For giant MNCs (e.g. Google, Microsoft, Amazon, Accenture, TCS, Infosys, Deloitte, Wipro, etc.), you may search by company name and job title (e.g. "Google Software Engineer").
+     * For all other companies (medium firms, small local businesses, startups), do NOT include the company name in the search query parameter. Instead, search using only the job title and location/skills (e.g. "React Developer Delhi" or "Full Stack Developer Remote"). This guarantees that the user will see active job listings.
    - linkedinUrl & indeedUrl: Include for standard corporate/professional/tech jobs.
    - naukriUrl: Include ONLY for jobs located in India (IT, corporate, local). If the job location is outside India, set to "".
    - workindiaUrl: Include ONLY for entry-level, support, blue/grey-collar, or local junior roles in India. If the job is outside India, or if it is a senior/advanced professional role (where WorkIndia does not list jobs), set to "".
-   - Format rules for active URLs:
-     * linkedinUrl: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company>%20<URL-encoded-title>%20<URL-encoded-location>
-     * indeedUrl: https://www.indeed.com/jobs?q=<URL-encoded-company>%20<URL-encoded-title>&l=<URL-encoded-location>
-     * naukriUrl: https://www.naukri.com/jobs?k=<URL-encoded-company>%20<URL-encoded-title>
-     * workindiaUrl: https://www.workindia.in/jobs-in-india/?search=<URL-encoded-company>%20<URL-encoded-title>
-     Replace spaces with %20 and properly URL-encode parameters.
+   - Format rules for active URLs (replace spaces with %20 and properly URL-encode all parameters):
+     * linkedinUrl: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-query-terms>
+     * indeedUrl: https://www.indeed.com/jobs?q=<URL-encoded-query-terms>&l=<URL-encoded-location>
+     * naukriUrl: https://www.naukri.com/jobs?k=<URL-encoded-query-terms>
+     * workindiaUrl: https://www.workindia.in/jobs-in-india/?search=<URL-encoded-query-terms>
 4. Set the primary applyUrl to the first non-empty platform search URL that is generated (fallback priority order: linkedinUrl -> indeedUrl -> naukriUrl -> workindiaUrl). Ensure it is never empty.
 5. Rank jobs by matchScore (highest first).
 6. ${jobTypeFilter}
