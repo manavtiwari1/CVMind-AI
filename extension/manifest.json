@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "CVmind AI Autofill Helper",
+  "version": "1.0.0",
+  "description": "Autofills job application forms on LinkedIn, Indeed, Naukri, WorkIndia, Greenhouse, Lever, and corporate sites using your CVmind profile.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:5173/*",
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*",
+    "https://*.naukri.com/*",
+    "https://*.workindia.in/*",
+    "https://*.greenhouse.io/*",
+    "https://*.lever.co/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.linkedin.com/*",
+        "https://*.indeed.com/*",
+        "https://*.naukri.com/*",
+        "https://*.workindia.in/*",
+        "https://*.greenhouse.io/*",
+        "https://*.lever.co/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
