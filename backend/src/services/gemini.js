@@ -966,8 +966,8 @@ const jobFinderSchema = {
         type: 'object',
         properties: {
           title: { type: 'string', description: 'The exact job title of the opening.' },
-          company: { type: 'string', description: 'The name of the hiring company.' },
-          companyDomain: { type: 'string', description: 'The official website domain of the company, e.g. google.com, microsoft.com, accenture.com, tcs.com. Used to fetch company logo.' },
+          company: { type: 'string', description: 'The name of the company. If it is a giant MNC (e.g. Google, Microsoft, Amazon, Accenture, TCS, Infosys, Deloitte, Wipro, etc.), return the actual company name. If it is NOT a giant MNC, return a generic category placeholder (e.g. "Tech Startup", "Fintech Company", "Growing Agency", "E-commerce Startup", "Software Solutions Enterprise", "Healthcare Tech Startup", etc.) instead of a specific company name.' },
+          companyDomain: { type: 'string', description: 'The official domain of the giant MNC (e.g. google.com). If the company is a generic placeholder, set this to an empty string "".' },
           location: { type: 'string', description: 'City, State or "Remote" or "Hybrid — City, Country".' },
           jobType: { type: 'string', description: 'One of: Full-time, Part-time, Internship, Remote, Contract.' },
           matchScore: { type: 'integer', description: 'How well this job matches the candidate resume and JD preference, from 0 to 100.' },
@@ -1021,7 +1021,7 @@ Your task is to analyze the candidate's resume and their target job description 
 
 RULES:
 1. Experience Level Diversity: You MUST return a mix of Entry-Level (0-2 years), Mid-Level (2-5 years), and Advanced/Senior-Level (5+ years) jobs related to the candidate's core expertise, so they can see opportunities across all experience brackets (e.g. 5 Entry-Level, 5 Mid-Level, and 5 Advanced/Senior jobs).
-2. Diverse Companies: Do NOT limit yourself to specific giant MNCs (like Google, Microsoft, Infosys). You MUST include all kinds of companies: small local businesses, growing startups, medium enterprises, and large firms that would realistic hire for these roles. Show a realistic variety of company scales.
+2. Diverse Companies & Naming Rules: ONLY use actual company names for giant MNCs (e.g. Google, Microsoft, Amazon, Accenture, TCS, Infosys, Deloitte, Wipro, etc.) where the apply links are highly accurate and verified. For all other medium, small, or startup companies, you MUST return a generic category placeholder (like "Tech Startup", "Fintech Company", "Growing Agency", "E-commerce Startup", "Software Solutions Enterprise") in the "company" field and set "companyDomain" to "".
 3. Platform-Specific Apply Links: Only populate the platform search URLs if the platform is highly relevant for the job role and country. If not, set it to an empty string "".
    - GUARANTEE ACTIVE SEARCH RESULTS: To prevent "No matching jobs found" screens, follow these search query guidelines:
      * For giant MNCs (e.g. Google, Microsoft, Amazon, Accenture, TCS, Infosys, Deloitte, Wipro, etc.), you may search by company name and job title (e.g. "Google Software Engineer").
