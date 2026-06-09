@@ -992,7 +992,7 @@ const jobFinderSchema = {
         },
         required: ['title', 'company', 'companyDomain', 'location', 'jobType', 'matchScore', 'matchReasons', 'requiredSkills', 'salary', 'applyUrl', 'linkedinUrl', 'indeedUrl', 'naukriUrl', 'workindiaUrl', 'postedDate', 'experienceRequired']
       },
-      description: 'List of 5–6 highly relevant job matches for the candidate.'
+      description: 'List of 15–20 highly relevant job matches for the candidate.'
     },
     searchSummary: {
       type: 'string',
@@ -1017,10 +1017,10 @@ export async function findJobsWithGemini(resumeText, jobDescription, jobType = '
 
   const systemPrompt = `You are a senior Executive Recruiter and Job Market Intelligence Specialist with deep knowledge of the global tech, finance, consulting, and creative hiring landscapes.
 
-Your task is to analyze the candidate's resume and their target job description preference, then curate 5–6 highly relevant, realistic job openings.
+Your task is to analyze the candidate's resume and their target job description preference, then curate 15–20 highly relevant, realistic job openings.
 
 RULES:
-1. Experience Level Diversity: You MUST return a mix of Entry-Level (0-2 years), Mid-Level (2-5 years), and Advanced/Senior-Level (5+ years) jobs related to the candidate's core expertise, so they can see opportunities across all experience brackets (e.g. 2 Entry-Level, 2 Mid-Level, and 2 Advanced/Senior jobs).
+1. Experience Level Diversity: You MUST return a mix of Entry-Level (0-2 years), Mid-Level (2-5 years), and Advanced/Senior-Level (5+ years) jobs related to the candidate's core expertise, so they can see opportunities across all experience brackets (e.g. 5 Entry-Level, 5 Mid-Level, and 5 Advanced/Senior jobs).
 2. Diverse Companies: Do NOT limit yourself to specific giant MNCs (like Google, Microsoft, Infosys). You MUST include all kinds of companies: small local businesses, growing startups, medium enterprises, and large firms that would realistic hire for these roles. Show a realistic variety of company scales.
 3. Platform-Specific Apply Links: Only populate the platform search URLs if the platform is highly relevant for the job role and country. If not, set it to an empty string "".
    - linkedinUrl & indeedUrl: Include for standard corporate/professional/tech jobs.
@@ -1035,7 +1035,7 @@ RULES:
 4. Set the primary applyUrl to the most relevant of these four URLs (e.g., the LinkedIn or Indeed URL).
 5. Rank jobs by matchScore (highest first).
 6. ${jobTypeFilter}
-7. Provide specific, resume-aligned matchReasons (not generic).
+7. Keep matchReasons and requiredSkills very concise (1-2 bullet points max for reasons, 3-4 skills max) to ensure that the entire 15+ job dataset fits within the output token limits.
 8. You MUST strictly return your response in the specified JSON structure. No markdown, no wrappers.
 9. For companyDomain, provide the correct website domain of the company (e.g. google.com, microsoft.com, goldmansachs.com, tcs.com, accenture.com) to render logos.`;
 
@@ -1049,7 +1049,7 @@ Target Role / Job Description Preferences:
 ${jobDescription}
 """
 
-Analyze the candidate's background and find 5–6 perfectly matched job openings. Return structured JSON now.`;
+Analyze the candidate's background and find 15–20 perfectly matched job openings. Return structured JSON now.`;
 
   try {
     return await callDeepSeek({
@@ -1058,7 +1058,7 @@ Analyze the candidate's background and find 5–6 perfectly matched job openings
       responseSchema: jobFinderSchema,
       customApiKey,
       temperature: 0.35,
-      maxTokens: 4000
+      maxTokens: 8000
     });
   } catch (error) {
     console.error('DeepSeek Job Finder Error:', error);
