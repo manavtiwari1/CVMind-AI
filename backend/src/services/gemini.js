@@ -982,11 +982,15 @@ const jobFinderSchema = {
             description: '4-6 key skills/technologies required for this role.'
           },
           salary: { type: 'string', description: 'Estimated salary range (e.g. "$80,000 – $110,000/yr" or "₹8–12 LPA") or "Not disclosed".' },
-          applyUrl: { type: 'string', description: 'A real, working URL to apply. Must be a LinkedIn Jobs, Indeed, Glassdoor, or company careers page search URL that is valid and opens a relevant job listing. Format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-title>&location=<location> OR https://www.indeed.com/jobs?q=<URL-encoded-title>&l=<location>.' },
+          applyUrl: { type: 'string', description: 'A real, working URL to apply. Usually LinkedIn or Indeed.' },
+          linkedinUrl: { type: 'string', description: 'LinkedIn search URL. Format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company>%20<URL-encoded-title>%20<URL-encoded-location>' },
+          indeedUrl: { type: 'string', description: 'Indeed search URL. Format: https://www.indeed.com/jobs?q=<URL-encoded-company>%20<URL-encoded-title>&l=<URL-encoded-location>' },
+          naukriUrl: { type: 'string', description: 'Naukri search URL. Format: https://www.naukri.com/jobs?k=<URL-encoded-company>%20<URL-encoded-title>' },
+          workindiaUrl: { type: 'string', description: 'WorkIndia search URL. Format: https://www.workindia.in/jobs-in-india/?search=<URL-encoded-company>%20<URL-encoded-title>' },
           postedDate: { type: 'string', description: 'Approximate posting date relative to today, e.g. "2 days ago", "1 week ago", "Today".' },
           experienceRequired: { type: 'string', description: 'Required experience level e.g. "0–1 years", "2–4 years", "5+ years".' }
         },
-        required: ['title', 'company', 'companyDomain', 'location', 'jobType', 'matchScore', 'matchReasons', 'requiredSkills', 'salary', 'applyUrl', 'postedDate', 'experienceRequired']
+        required: ['title', 'company', 'companyDomain', 'location', 'jobType', 'matchScore', 'matchReasons', 'requiredSkills', 'salary', 'applyUrl', 'linkedinUrl', 'indeedUrl', 'naukriUrl', 'workindiaUrl', 'postedDate', 'experienceRequired']
       },
       description: 'List of 8–10 highly relevant job matches for the candidate.'
     },
@@ -1013,20 +1017,23 @@ export async function findJobsWithGemini(resumeText, jobDescription, jobType = '
 
   const systemPrompt = `You are a senior Executive Recruiter and Job Market Intelligence Specialist with deep knowledge of the global tech, finance, consulting, and creative hiring landscapes.
 
-Your task is to analyze the candidate's resume and their target job description preference, then curate 8–10 highly relevant, realistic job openings that are an excellent match.
+Your task is to analyze the candidate's resume and their target job description preference, then curate 8–10 highly relevant, realistic job openings.
 
 RULES:
-1. Each job must be realistic and plausible — use real company names (Google, Microsoft, Infosys, Deloitte, Goldman Sachs, Accenture, etc.) or well-known startups.
-2. Match jobs closely to the candidate's actual experience level, skills, and target role.
-3. For applyUrl, ALWAYS generate a real working LinkedIn Jobs search URL in this format:
-   https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company-name>%20<URL-encoded-job-title>%20<URL-encoded-location>
-   Include the company name, job title, and location all within the single 'keywords' parameter. Do NOT use a separate 'location' parameter, as complex location strings (containing dashes, spaces, or "Remote") cause LinkedIn to trigger routing redirection errors or 404 page-not-found screens.
-   Replace spaces with %20. Example: Company "Google", Title "Software Engineer", Location "New York" → keywords=Google%20Software%20Engineer%20New%20York
-4. Rank jobs by matchScore (highest first).
-5. ${jobTypeFilter}
-6. Provide specific, resume-aligned matchReasons (not generic).
-7. You MUST strictly return your response in the specified JSON structure. No markdown, no wrappers.
-8. For companyDomain, provide the correct website domain of the company (e.g. google.com, microsoft.com, goldmansachs.com, tcs.com, accenture.com).`;
+1. Experience Level Diversity: You MUST return a mix of Entry-Level (0-2 years), Mid-Level (2-5 years), and Advanced/Senior-Level (5+ years) jobs related to the candidate's core expertise, so they can see opportunities across all experience brackets.
+2. Each job must be realistic and plausible — use real company names (Google, Microsoft, Infosys, Deloitte, Goldman Sachs, Accenture, TCS, Wipro, etc.) or well-known startups.
+3. For the search/apply URLs, ALWAYS generate real working search URLs for all four platforms listed below:
+   - linkedinUrl: Format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company>%20<URL-encoded-title>%20<URL-encoded-location>
+   - indeedUrl: Format: https://www.indeed.com/jobs?q=<URL-encoded-company>%20<URL-encoded-title>&l=<URL-encoded-location>
+   - naukriUrl: Format: https://www.naukri.com/jobs?k=<URL-encoded-company>%20<URL-encoded-title>
+   - workindiaUrl: Format: https://www.workindia.in/jobs-in-india/?search=<URL-encoded-company>%20<URL-encoded-title>
+   Replace spaces with %20 and properly URL-encode all search parameters.
+4. Set the primary applyUrl to the most relevant of these four URLs (e.g., the LinkedIn or Indeed URL).
+5. Rank jobs by matchScore (highest first).
+6. ${jobTypeFilter}
+7. Provide specific, resume-aligned matchReasons (not generic).
+8. You MUST strictly return your response in the specified JSON structure. No markdown, no wrappers.
+9. For companyDomain, provide the correct website domain of the company (e.g. google.com, microsoft.com, goldmansachs.com, tcs.com, accenture.com) to render logos.`;
 
   const userPrompt = `Candidate's Resume:
 """

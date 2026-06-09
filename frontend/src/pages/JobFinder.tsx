@@ -20,6 +20,10 @@ interface Job {
   requiredSkills: string[];
   salary: string;
   applyUrl: string;
+  linkedinUrl: string;
+  indeedUrl: string;
+  naukriUrl: string;
+  workindiaUrl: string;
   postedDate: string;
   experienceRequired: string;
 }
@@ -643,35 +647,52 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
 
                     {/* Platforms section */}
                     <div className="jf-platforms-section">
-                      <span className="jf-platforms-label">Also search on:</span>
+                      <span className="jf-platforms-label">Direct Apply Sources:</span>
                       <div className="jf-platforms-row">
-                        <a
-                          href={`https://www.indeed.com/jobs?q=${encodeURIComponent(job.company + ' ' + job.title)}&l=${encodeURIComponent(job.location)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="jf-platform-btn indeed"
-                          title="Search on Indeed"
-                        >
-                          Indeed
-                        </a>
-                        <a
-                          href={`https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(job.company + ' ' + job.title)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="jf-platform-btn glassdoor"
-                          title="Search on Glassdoor"
-                        >
-                          Glassdoor
-                        </a>
-                        <a
-                          href={`https://www.google.com/search?q=${encodeURIComponent(job.company + ' ' + job.title + ' ' + job.location + ' jobs')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="jf-platform-btn google"
-                          title="Search on Google Jobs"
-                        >
-                          Google Jobs
-                        </a>
+                        {job.linkedinUrl && (
+                          <a
+                            href={job.linkedinUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="jf-platform-btn linkedin"
+                            title="Apply on LinkedIn"
+                          >
+                            LinkedIn
+                          </a>
+                        )}
+                        {job.indeedUrl && (
+                          <a
+                            href={job.indeedUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="jf-platform-btn indeed"
+                            title="Apply on Indeed"
+                          >
+                            Indeed
+                          </a>
+                        )}
+                        {job.naukriUrl && (
+                          <a
+                            href={job.naukriUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="jf-platform-btn naukri"
+                            title="Apply on Naukri.com"
+                          >
+                            Naukri.com
+                          </a>
+                        )}
+                        {job.workindiaUrl && (
+                          <a
+                            href={job.workindiaUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="jf-platform-btn workindia"
+                            title="Apply on WorkIndia.com"
+                          >
+                            WorkIndia
+                          </a>
+                        )}
                       </div>
                     </div>
 

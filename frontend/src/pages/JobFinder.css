@@ -1190,4 +1190,34 @@
   border-color: #ff9f0a;
   transform: translateY(-1px);
 }
+.jf-platform-btn.linkedin {
+  background: rgba(41, 151, 255, 0.08);
+  border-color: rgba(41, 151, 255, 0.2);
+  color: #2997ff;
+}
+.jf-platform-btn.linkedin:hover {
+  background: rgba(41, 151, 255, 0.16);
+  border-color: #2997ff;
+  transform: translateY(-1px);
+}
+.jf-platform-btn.naukri {
+  background: rgba(255, 117, 85, 0.08);
+  border-color: rgba(255, 117, 85, 0.2);
+  color: #ff7555;
+}
+.jf-platform-btn.naukri:hover {
+  background: rgba(255, 117, 85, 0.16);
+  border-color: #ff7555;
+  transform: translateY(-1px);
+}
+.jf-platform-btn.workindia {
+  background: rgba(48, 209, 88, 0.08);
+  border-color: rgba(48, 209, 88, 0.2);
+  color: #30d158;
+}
+.jf-platform-btn.workindia:hover {
+  background: rgba(48, 209, 88, 0.16);
+  border-color: #30d158;
+  transform: translateY(-1px);
+}
 
