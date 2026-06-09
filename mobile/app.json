@@ -7,11 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.airesumechecker.app"
+      "supportsTablet": true
     },
     "android": {
-      "package": "com.airesumechecker.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -21,6 +19,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "083500ad-1774-419a-83c0-5b62282642ad"
+      }
     }
   }
 }
