@@ -194,6 +194,16 @@ const jobFinderLogSchema = new mongoose.Schema({
 });
 const JobFinderLog = mongoose.models.JobFinderLog || mongoose.model('JobFinderLog', jobFinderLogSchema);
 
+const paymentLogSchema = new mongoose.Schema({
+  email: { type: String, required: true },
+  amount: { type: Number, required: true },
+  currency: { type: String, default: 'INR' },
+  paymentMethod: { type: String, required: true }, // 'card' | 'upi' | 'paypal'
+  transactionId: { type: String, required: true },
+  status: { type: String, default: 'success' },
+  createdAt: { type: Date, default: Date.now }
+});
+const PaymentLog = mongoose.models.PaymentLog || mongoose.model('PaymentLog', paymentLogSchema);
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -682,8 +692,6 @@ export async function saveJobFinderLog({ email, jobsCount, jobDescription, jobTy
     }).catch(err => console.error('MongoDB saveJobFinderLog error:', err));
     return;
   }
-  const db = readDb();
-  if (!db.jobFinderLogs) db.jobFinderLogs = [];
   db.jobFinderLogs.unshift({
     id: randomUUID(),
     email: email || '',
@@ -693,6 +701,63 @@ export async function saveJobFinderLog({ email, jobsCount, jobDescription, jobTy
     createdAt: new Date().toISOString()
   });
   writeDb(db);
+}
+
+export async function savePaymentLog({ email, amount, paymentMethod, transactionId, status }) {
+  await ensureMongoConnection();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    await PaymentLog.create({
+      email: cleanEmail,
+      amount: Number(amount || 200),
+      paymentMethod,
+      transactionId,
+      status
+    });
+    return;
+  }
+
+  const db = readDb();
+  if (!db.paymentLogs) db.paymentLogs = [];
+  db.paymentLogs.unshift({
+    id: randomUUID(),
+    email: cleanEmail,
+    amount: Number(amount || 200),
+    paymentMethod,
+    transactionId,
+    status,
+    createdAt: new Date().toISOString()
+  });
+  writeDb(db);
+}
+
+export async function checkJobFinderAccess(email) {
+  await ensureMongoConnection();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+
+  // Whitelist bypass for ease of developer testing
+  let WHITELISTED_USERS = {};
+  try {
+    if (process.env.WHITELISTED_USERS) {
+      WHITELISTED_USERS = JSON.parse(process.env.WHITELISTED_USERS);
+    }
+  } catch (err) {
+    // ignore
+  }
+  if (Object.keys(WHITELISTED_USERS).includes(cleanEmail)) {
+    return true;
+  }
+
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const log = await PaymentLog.findOne({ email: cleanEmail, status: 'success' });
+    return !!log;
+  }
+
+  const db = readDb();
+  if (!db.paymentLogs) db.paymentLogs = [];
+  const hasPaid = db.paymentLogs.some(log => log.email === cleanEmail && log.status === 'success');
+  return hasPaid;
 }
 
 export async function getWorkById(workId) {
@@ -734,6 +799,7 @@ export async function getAdminStats() {
       const portfolioGenLogs = await PortfolioGenLog.find().sort({ createdAt: -1 }).limit(100);
       const linkedinPostLogs = await LinkedinPostLog.find().sort({ createdAt: -1 }).limit(100);
       const jobFinderLogs = await JobFinderLog.find().sort({ createdAt: -1 }).limit(100);
+      const paymentLogs = await PaymentLog.find().sort({ createdAt: -1 }).limit(100);
       const resumes = await Work.find({ type: 'resume' }).sort({ updatedAt: -1 }).limit(100);
       const coverLetters = await Work.find({ type: 'cover-letter' }).sort({ updatedAt: -1 }).limit(100);
       
@@ -753,6 +819,7 @@ export async function getAdminStats() {
       const totalPortfolioGens = await PortfolioGenLog.countDocuments();
       const totalLinkedinPosts = await LinkedinPostLog.countDocuments();
       const totalJobFinders = await JobFinderLog.countDocuments();
+      const totalPayments = await PaymentLog.countDocuments();
       const totalResumes = await Work.countDocuments({ type: 'resume' });
       const totalCoverLetters = await Work.countDocuments({ type: 'cover-letter' });
       
@@ -940,6 +1007,17 @@ export async function getAdminStats() {
           jobType: jf.jobType,
           createdAt: jf.createdAt
         })),
+        totalPayments,
+        recentPayments: paymentLogs.slice(0, 50).map(p => ({
+          id: p._id,
+          email: p.email,
+          amount: p.amount,
+          currency: p.currency,
+          paymentMethod: p.paymentMethod,
+          transactionId: p.transactionId,
+          status: p.status,
+          createdAt: p.createdAt
+        })),
         database: {
           path: 'Cloud MongoDB Cluster0 (Atlas)',
           updatedAt: new Date().toISOString()
@@ -968,6 +1046,7 @@ export async function getAdminStats() {
   const portfolioGenLogs = Array.isArray(db.portfolioGenLogs) ? db.portfolioGenLogs : [];
   const linkedinPostLogs = Array.isArray(db.linkedinPostLogs) ? db.linkedinPostLogs : [];
   const jobFinderLogs = Array.isArray(db.jobFinderLogs) ? db.jobFinderLogs : [];
+  const paymentLogs = Array.isArray(db.paymentLogs) ? db.paymentLogs : [];
 
   const totalScoreSum = scans.reduce((sum, scan) => sum + Number(scan.score || 0), 0);
   const totalScans = scans.length;
@@ -981,6 +1060,7 @@ export async function getAdminStats() {
   const totalPortfolioGens = portfolioGenLogs.length;
   const totalLinkedinPosts = linkedinPostLogs.length;
   const totalJobFinders = jobFinderLogs.length;
+  const totalPayments = paymentLogs.length;
 
   const works = Array.isArray(db.works) ? db.works : [];
   const resumes = works.filter(w => w.type === 'resume');
@@ -1028,6 +1108,7 @@ export async function getAdminStats() {
     totalPortfolioGens,
     totalLinkedinPosts,
     totalJobFinders,
+    totalPayments,
     recentLinkedins: linkedinLogs.slice(0, 15),
     recentLinkedinBios: linkedinBioLogs.slice(0, 15),
     recentLinkedinOutreachs: linkedinOutreachLogs.slice(0, 15),
@@ -1038,6 +1119,7 @@ export async function getAdminStats() {
     recentPortfolioGens: portfolioGenLogs.slice(0, 15),
     recentLinkedinPosts: linkedinPostLogs.slice(0, 15),
     recentJobFinders: jobFinderLogs.slice(0, 15),
+    recentPayments: paymentLogs.slice(0, 50),
     recentScans: scans.slice(0, 8),
     contactMessages: contacts.slice(0, 8),
     recentFixes: fixes.slice(0, 10),

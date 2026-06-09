@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini, generateResumeWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog } from './db.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -1628,21 +1628,18 @@ apiRouter.post('/api/user/password', async (req, res) => {
 // AI Job Finder Endpoint
 apiRouter.post('/api/job-finder', upload.single('resume'), async (req, res) => {
   const reqEmail = String(req.body.email || '').trim().toLowerCase();
-  let WHITELISTED_USERS = {};
   try {
-    if (process.env.WHITELISTED_USERS) {
-      WHITELISTED_USERS = JSON.parse(process.env.WHITELISTED_USERS);
+    const hasAccess = await checkJobFinderAccess(reqEmail);
+    if (!hasAccess) {
+      return res.status(403).json({
+        success: false,
+        error: 'AI Job Finder access is locked. Please complete the ₹200 payment to unlock this feature.'
+      });
     }
   } catch (err) {
-    console.error('Error parsing whitelisted users:', err);
+    console.error('Job Finder Access Check Error:', err);
   }
-  const allowedEmails = Object.keys(WHITELISTED_USERS);
-  if (!allowedEmails.includes(reqEmail)) {
-    return res.status(403).json({
-      success: false,
-      error: 'AI Job Finder access is restricted to authorized users only.'
-    });
-  }
+
   try {
     const { file } = req;
     const { jobDescription, jobType } = req.body || {};
@@ -1692,6 +1689,54 @@ apiRouter.post('/api/job-finder', upload.single('resume'), async (req, res) => {
     return res.status(500).json({
       error: error.message || 'try again after sometime or mail to contact@manavtiwari.in for this error'
     });
+  }
+});
+
+// Checkout simulated payment route
+apiRouter.post('/api/payments/checkout', async (req, res) => {
+  const { email, amount, paymentMethod } = req.body || {};
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email address is required to process payment.' });
+  }
+
+  // Generate a mock transaction ID
+  const prefix = paymentMethod === 'upi' ? 'UPI' : paymentMethod === 'paypal' ? 'PAY' : 'TXN';
+  const transactionId = `${prefix}-${Math.floor(100000 + Math.random() * 900000)}-${Date.now().toString().slice(-4)}`;
+
+  try {
+    // Save successful log
+    await savePaymentLog({
+      email,
+      amount: Number(amount || 200),
+      paymentMethod: paymentMethod || 'card',
+      transactionId,
+      status: 'success'
+    });
+
+    return res.json({
+      success: true,
+      message: 'Payment of ₹200 processed successfully!',
+      transactionId
+    });
+  } catch (error) {
+    console.error('Payment Checkout API Error:', error);
+    return res.status(500).json({ error: 'Failed to process payment. Please try again.' });
+  }
+});
+
+// Check payment access status
+apiRouter.get('/api/payments/check-access/:email', async (req, res) => {
+  const email = String(req.params.email || '').trim().toLowerCase();
+  if (!email) {
+    return res.json({ success: true, hasAccess: false });
+  }
+  try {
+    const hasAccess = await checkJobFinderAccess(email);
+    return res.json({ success: true, hasAccess });
+  } catch (error) {
+    console.error('Check access error:', error);
+    return res.json({ success: false, hasAccess: false, error: error.message });
   }
 });
 

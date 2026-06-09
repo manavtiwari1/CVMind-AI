@@ -22,7 +22,8 @@ import {
   Activity,
   Calendar,
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  CreditCard
 } from 'lucide-react';
 import './Admin.css';
 
@@ -97,6 +98,17 @@ interface AdminStats {
     user: { name: string; email: string };
   }>;
   database: { path: string; updatedAt: string | null };
+  totalPayments?: number;
+  recentPayments?: Array<{
+    id: string;
+    email: string;
+    amount: number;
+    currency: string;
+    paymentMethod: string;
+    transactionId: string;
+    status: string;
+    createdAt: string;
+  }>;
 }
 
 interface AdminProps {
@@ -356,6 +368,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
             <NavItem icon={<Sparkles size={15} />}        label="Portfolio Gen Logs" active={activeSection === 'portfolio-gen-logs'} onClick={() => setActiveSection('portfolio-gen-logs')} />
             <NavItem icon={<Sparkles size={15} />}        label="LinkedIn Post Logs" active={activeSection === 'linkedin-post-logs'} onClick={() => setActiveSection('linkedin-post-logs')} />
             <NavItem icon={<Sparkles size={15} />}        label="AI Job Finder Logs" active={activeSection === 'job-finder-logs'} onClick={() => setActiveSection('job-finder-logs')} />
+            <NavItem icon={<CreditCard size={15} />}      label="Payment Logs"      active={activeSection === 'payment-logs'} onClick={() => setActiveSection('payment-logs')} />
             <NavItem icon={<LogIn size={15} />}           label="Login Logs"        active={activeSection === 'logins'}     onClick={() => setActiveSection('logins')} />
             <NavItem icon={<FileText size={15} />}        label="Resume Builder Logs" active={activeSection === 'resume-logs'} onClick={() => setActiveSection('resume-logs')} />
             <NavItem icon={<FileText size={15} />}        label="Cover Letter Logs"  active={activeSection === 'cl-logs'} onClick={() => setActiveSection('cl-logs')} />
@@ -402,6 +415,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'portfolio-gen-logs' && 'Portfolio Website Generator Logs'}
                 {activeSection === 'linkedin-post-logs' && 'LinkedIn Viral Post Generator Logs'}
                 {activeSection === 'job-finder-logs' && 'AI Job Finder Search Logs'}
+                {activeSection === 'payment-logs' && 'Payment Gateway Logs'}
                 {activeSection === 'logins'     && 'User Authentication & Login Activity Logs'}
                 {activeSection === 'resume-logs' && 'Resume Builder Saved Drafts'}
                 {activeSection === 'cl-logs'     && 'Cover Letter Builder Saved Drafts'}
@@ -493,6 +507,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       <StatCard icon={<Sparkles size={18} />}    label="Portfolios Generated"    value={(stats.totalPortfolioGens ?? 0).toLocaleString()} caption="Personal HTML websites" trendCls="card-indigo" />
                       <StatCard icon={<Sparkles size={18} />}    label="LinkedIn Posts Written"  value={(stats.totalLinkedinPosts ?? 0).toLocaleString()} caption="Viral LinkedIn posts" trendCls="card-emerald" />
                       <StatCard icon={<Sparkles size={18} />}    label="AI Job Finder Searches"  value={(stats.totalJobFinders ?? 0).toLocaleString()} caption="CV-matched job runs" trendCls="card-emerald" />
+                      <StatCard icon={<CreditCard size={18} />}  label="Total Payments"         value={(stats.totalPayments ?? 0).toLocaleString()} caption="Successful modules sales" trendCls="card-purple" />
+                      <StatCard icon={<TrendingUp size={18} />}  label="Total Revenue"          value={`₹${((stats.totalPayments ?? 0) * 200).toLocaleString()}`} caption="Earnings from Job Finder" trendCls="card-cyan" />
                       <StatCard icon={<FileText size={18} />}    label="Resumes Created"        value={(stats.totalResumes ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-cyan" />
                       <StatCard icon={<FileText size={18} />}    label="Cover Letters Created"  value={(stats.totalCoverLetters ?? 0).toLocaleString()} caption="Saved drafts in builder" trendCls="card-rose" />
                       <StatCard icon={<Mail size={18} />}        label="Total Leads"            value={(stats.totalContacts ?? 0).toLocaleString()} caption="User messages via Contact" trendCls="card-amber" />
@@ -1496,6 +1512,61 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                   <td style={{ color: 'var(--admin-text-secondary)' }}>{work.user?.email || 'N/A'}</td>
                                   <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>
                                     {new Date(work.updatedAt || work.createdAt).toLocaleString()}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ PAYMENT LOGS SECTION ─ */}
+                {activeSection === 'payment-logs' && (
+                  <div className="admin-panel glass-card detail-view">
+                    <div className="admin-panel-head">
+                      <h2><CreditCard size={15} /> Payment Gateway Logs</h2>
+                      <span className="panel-badge">{(stats.recentPayments || []).length} transactions</span>
+                    </div>
+                    <div className="admin-panel-body">
+                      {!stats.recentPayments || (stats.recentPayments || []).length === 0 ? (
+                        <div className="panel-empty-state" style={{ padding: '3rem', textAlign: 'center' }}>
+                          <CreditCard size={28} style={{ color: 'var(--admin-cyan)', marginBottom: '1rem', opacity: 0.8 }} />
+                          <p style={{ color: 'var(--admin-text-secondary)' }}>No payment logs recorded in database yet.</p>
+                        </div>
+                      ) : (
+                        <div className="table-responsive" style={{ marginTop: '1rem' }}>
+                          <table className="admin-table">
+                            <thead>
+                              <tr>
+                                <th>Transaction ID</th>
+                                <th>User Email</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th>Timestamp</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {(stats.recentPayments || []).map((pay) => (
+                                <tr key={pay.id || pay.transactionId}>
+                                  <td style={{ fontWeight: 600, fontFamily: 'monospace', color: '#fff' }}>{pay.transactionId}</td>
+                                  <td style={{ color: 'var(--admin-text-secondary)' }}>{pay.email}</td>
+                                  <td>
+                                    <span className="highlight-pill" style={{ color: '#10b981', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
+                                      ₹{pay.amount}
+                                    </span>
+                                  </td>
+                                  <td style={{ textTransform: 'uppercase', fontSize: '0.82rem' }}>{pay.paymentMethod}</td>
+                                  <td>
+                                    <span className="badge badge-success" style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}>
+                                      {pay.status}
+                                    </span>
+                                  </td>
+                                  <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>
+                                    {new Date(pay.createdAt).toLocaleString()}
                                   </td>
                                 </tr>
                               ))}
