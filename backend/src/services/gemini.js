@@ -983,10 +983,10 @@ const jobFinderSchema = {
           },
           salary: { type: 'string', description: 'Estimated salary range (e.g. "$80,000 – $110,000/yr" or "₹8–12 LPA") or "Not disclosed".' },
           applyUrl: { type: 'string', description: 'A real, working URL to apply. Usually LinkedIn or Indeed.' },
-          linkedinUrl: { type: 'string', description: 'LinkedIn search URL. Format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company>%20<URL-encoded-title>%20<URL-encoded-location>' },
-          indeedUrl: { type: 'string', description: 'Indeed search URL. Format: https://www.indeed.com/jobs?q=<URL-encoded-company>%20<URL-encoded-title>&l=<URL-encoded-location>' },
-          naukriUrl: { type: 'string', description: 'Naukri search URL. Format: https://www.naukri.com/jobs?k=<URL-encoded-company>%20<URL-encoded-title>' },
-          workindiaUrl: { type: 'string', description: 'WorkIndia search URL. Format: https://www.workindia.in/jobs-in-india/?search=<URL-encoded-company>%20<URL-encoded-title>' },
+          linkedinUrl: { type: 'string', description: 'LinkedIn search URL. Format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company>%20<URL-encoded-title>%20<URL-encoded-location>. Set to empty string "" if not relevant.' },
+          indeedUrl: { type: 'string', description: 'Indeed search URL. Format: https://www.indeed.com/jobs?q=<URL-encoded-company>%20<URL-encoded-title>&l=<URL-encoded-location>. Set to empty string "" if not relevant.' },
+          naukriUrl: { type: 'string', description: 'Naukri search URL. Format: https://www.naukri.com/jobs?k=<URL-encoded-company>%20<URL-encoded-title>. Set to empty string "" if not relevant or outside India.' },
+          workindiaUrl: { type: 'string', description: 'WorkIndia search URL. Format: https://www.workindia.in/jobs-in-india/?search=<URL-encoded-company>%20<URL-encoded-title>. Set to empty string "" if not relevant or outside India.' },
           postedDate: { type: 'string', description: 'Approximate posting date relative to today, e.g. "2 days ago", "1 week ago", "Today".' },
           experienceRequired: { type: 'string', description: 'Required experience level e.g. "0–1 years", "2–4 years", "5+ years".' }
         },
@@ -1021,13 +1021,17 @@ Your task is to analyze the candidate's resume and their target job description 
 
 RULES:
 1. Experience Level Diversity: You MUST return a mix of Entry-Level (0-2 years), Mid-Level (2-5 years), and Advanced/Senior-Level (5+ years) jobs related to the candidate's core expertise, so they can see opportunities across all experience brackets (e.g. 2 Entry-Level, 2 Mid-Level, and 2 Advanced/Senior jobs).
-2. Each job must be realistic and plausible — use real company names (Google, Microsoft, Infosys, Deloitte, Goldman Sachs, Accenture, TCS, Wipro, etc.) or well-known startups.
-3. For the search/apply URLs, ALWAYS generate real working search URLs for all four platforms listed below:
-   - linkedinUrl: Format: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company>%20<URL-encoded-title>%20<URL-encoded-location>
-   - indeedUrl: Format: https://www.indeed.com/jobs?q=<URL-encoded-company>%20<URL-encoded-title>&l=<URL-encoded-location>
-   - naukriUrl: Format: https://www.naukri.com/jobs?k=<URL-encoded-company>%20<URL-encoded-title>
-   - workindiaUrl: Format: https://www.workindia.in/jobs-in-india/?search=<URL-encoded-company>%20<URL-encoded-title>
-   Replace spaces with %20 and properly URL-encode all search parameters.
+2. Diverse Companies: Do NOT limit yourself to specific giant MNCs (like Google, Microsoft, Infosys). You MUST include all kinds of companies: small local businesses, growing startups, medium enterprises, and large firms that would realistic hire for these roles. Show a realistic variety of company scales.
+3. Platform-Specific Apply Links: Only populate the platform search URLs if the platform is highly relevant for the job role and country. If not, set it to an empty string "".
+   - linkedinUrl & indeedUrl: Include for standard corporate/professional/tech jobs.
+   - naukriUrl: Include ONLY for jobs located in India (IT, corporate, local). If the job location is outside India, set to "".
+   - workindiaUrl: Include ONLY for entry-level, support, blue/grey-collar, or local junior roles in India. If the job is outside India, or if it is a senior/advanced professional role (where WorkIndia does not list jobs), set to "".
+   - Format rules for active URLs:
+     * linkedinUrl: https://www.linkedin.com/jobs/search/?keywords=<URL-encoded-company>%20<URL-encoded-title>%20<URL-encoded-location>
+     * indeedUrl: https://www.indeed.com/jobs?q=<URL-encoded-company>%20<URL-encoded-title>&l=<URL-encoded-location>
+     * naukriUrl: https://www.naukri.com/jobs?k=<URL-encoded-company>%20<URL-encoded-title>
+     * workindiaUrl: https://www.workindia.in/jobs-in-india/?search=<URL-encoded-company>%20<URL-encoded-title>
+     Replace spaces with %20 and properly URL-encode parameters.
 4. Set the primary applyUrl to the most relevant of these four URLs (e.g., the LinkedIn or Indeed URL).
 5. Rank jobs by matchScore (highest first).
 6. ${jobTypeFilter}
