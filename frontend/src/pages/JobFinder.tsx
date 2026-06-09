@@ -710,7 +710,7 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
                         )}
                       </div>
                       <a
-                        href={job.applyUrl}
+                        href={job.applyUrl || job.linkedinUrl || job.indeedUrl || job.naukriUrl || job.workindiaUrl || '#'}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="jf-apply-btn"

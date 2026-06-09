@@ -1032,7 +1032,7 @@ RULES:
      * naukriUrl: https://www.naukri.com/jobs?k=<URL-encoded-company>%20<URL-encoded-title>
      * workindiaUrl: https://www.workindia.in/jobs-in-india/?search=<URL-encoded-company>%20<URL-encoded-title>
      Replace spaces with %20 and properly URL-encode parameters.
-4. Set the primary applyUrl to the most relevant of these four URLs (e.g., the LinkedIn or Indeed URL).
+4. Set the primary applyUrl to the first non-empty platform search URL that is generated (fallback priority order: linkedinUrl -> indeedUrl -> naukriUrl -> workindiaUrl). Ensure it is never empty.
 5. Rank jobs by matchScore (highest first).
 6. ${jobTypeFilter}
 7. Keep matchReasons and requiredSkills very concise (1-2 bullet points max for reasons, 3-4 skills max) to ensure that the entire 15+ job dataset fits within the output token limits.
