@@ -38,6 +38,14 @@ export default function Navbar({
   const [activeModal, setActiveModal] = useState<'profile' | 'works' | 'settings' | null>(null);
   const [user, setUser] = useState<any>(null);
 
+  const isWhitelisted = (() => {
+    if (!user?.email) return false;
+    const allowedEmails = (import.meta.env.VITE_ALLOWED_EMAILS || '')
+      .split(',')
+      .map((e: string) => e.trim().toLowerCase());
+    return allowedEmails.includes(user.email.toLowerCase());
+  })();
+
   // Profile Modal Form States
   const [profileName, setProfileName] = useState('');
   const [profileEmail, setProfileEmail] = useState('');
@@ -357,13 +365,16 @@ export default function Navbar({
                     </div>
                   );
                 }
+                const isLocked = item.page === 'job-finder' && !isWhitelisted;
                 return (
                   <button
                     key={item.page}
                     className={`dropdown-item${currentPage === item.page ? ' active' : ''}`}
                     onClick={() => go(item.page)}
+                    style={isLocked ? { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } : {}}
                   >
                     <span>{item.label}</span>
+                    {isLocked && <Lock size={12} style={{ color: '#ff453a', marginLeft: '8px' }} />}
                   </button>
                 );
               })}
@@ -526,8 +537,10 @@ export default function Navbar({
               <button
                 className={`mobile-drawer-link mobile-sub-link${currentPage === 'job-finder' ? ' active' : ''}`}
                 onClick={() => go('job-finder')}
+                style={!isWhitelisted ? { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } : {}}
               >
-                AI Job Finder
+                <span>AI Job Finder</span>
+                {!isWhitelisted && <Lock size={12} style={{ color: '#ff453a' }} />}
               </button>
 
               {/* SmartPrep AI sub-accordion */}

@@ -1627,7 +1627,18 @@ apiRouter.post('/api/user/password', async (req, res) => {
 
 // AI Job Finder Endpoint
 apiRouter.post('/api/job-finder', upload.single('resume'), async (req, res) => {
-  // Access is open to all users - payment gateway check removed.
+  const reqEmail = String(req.body.email || '').trim().toLowerCase();
+  try {
+    const hasAccess = await checkJobFinderAccess(reqEmail);
+    if (!hasAccess) {
+      return res.status(403).json({
+        success: false,
+        error: 'AI Job Finder access is restricted to authorized beta testers. Please contact contact@manavtiwari.in to request access.'
+      });
+    }
+  } catch (err) {
+    console.error('Job Finder Access Check Error:', err);
+  }
 
   try {
     const { file } = req;

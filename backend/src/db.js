@@ -733,8 +733,18 @@ export async function savePaymentLog({ email, amount, paymentMethod, transaction
 }
 
 export async function checkJobFinderAccess(email) {
-  // Bypassed: Payment gateway removed from AI Job Finder
-  return true;
+  const cleanEmail = String(email || '').trim().toLowerCase();
+
+  // Whitelist check only
+  let WHITELISTED_USERS = {};
+  try {
+    if (process.env.WHITELISTED_USERS) {
+      WHITELISTED_USERS = JSON.parse(process.env.WHITELISTED_USERS);
+    }
+  } catch (err) {
+    // ignore
+  }
+  return Object.keys(WHITELISTED_USERS).includes(cleanEmail);
 }
 
 export async function getWorkById(workId) {
