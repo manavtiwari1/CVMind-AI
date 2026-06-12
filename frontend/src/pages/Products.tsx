@@ -103,8 +103,8 @@ const products: ProductCard[] = [
     features: ['CV-to-Job Match', 'Match Score %', 'Work Type Filters', 'Direct Apply Links'],
     gradient: 'linear-gradient(135deg, #00d4aa 0%, #2997ff 100%)',
     glowColor: 'rgba(0, 212, 170, 0.6)',
-    badge: 'Locked 🔒',
-    badgeClass: 'badge-red',
+    badge: 'New',
+    badgeClass: 'badge-green',
     stats: [{ label: 'Jobs per Search', value: '8–10' }, { label: 'Match Accuracy', value: '95%' }],
   },
 ];
@@ -341,13 +341,13 @@ export default function Products({ setCurrentPage }: ProductsProps) {
                   <div className="card-actions">
                     <button
                       className="card-cta"
-                      style={product.id === 'job-finder' ? { background: 'linear-gradient(135deg, #444 0%, #222 100%)', border: '1px solid rgba(255, 69, 58, 0.3)', boxShadow: 'none' } : { background: product.gradient, boxShadow: `0 4px 24px ${product.glowColor}` }}
+                      style={{ background: product.gradient, boxShadow: `0 4px 24px ${product.glowColor}` }}
                       onClick={(e) => { 
                         e.stopPropagation(); 
                         setCurrentPage(pageMap[product.id] || 'home'); 
                       }}
                     >
-                      {product.id === 'job-finder' ? 'Locked 🔒' : 'Try it Free →'}
+                      Try it Free →
                     </button>
                     <button
                       className="card-flip-btn"
@@ -395,13 +395,13 @@ export default function Products({ setCurrentPage }: ProductsProps) {
                     <div className="card-actions">
                       <button
                         className="card-cta"
-                        style={product.id === 'job-finder' ? { background: 'linear-gradient(135deg, #444 0%, #222 100%)', border: '1px solid rgba(255, 69, 58, 0.3)', boxShadow: 'none' } : { background: product.gradient, boxShadow: `0 4px 24px ${product.glowColor}` }}
+                        style={{ background: product.gradient, boxShadow: `0 4px 24px ${product.glowColor}` }}
                         onClick={(e) => { 
                           e.stopPropagation(); 
                           setCurrentPage(pageMap[product.id] || 'home'); 
                         }}
                       >
-                        {product.id === 'job-finder' ? 'Locked 🔒' : 'Get Started →'}
+                        Get Started →
                       </button>
                       <button
                         className="card-flip-btn"

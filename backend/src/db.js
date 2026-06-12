@@ -733,31 +733,8 @@ export async function savePaymentLog({ email, amount, paymentMethod, transaction
 }
 
 export async function checkJobFinderAccess(email) {
-  await ensureMongoConnection();
-  const cleanEmail = String(email || '').trim().toLowerCase();
-
-  // Whitelist bypass for ease of developer testing
-  let WHITELISTED_USERS = {};
-  try {
-    if (process.env.WHITELISTED_USERS) {
-      WHITELISTED_USERS = JSON.parse(process.env.WHITELISTED_USERS);
-    }
-  } catch (err) {
-    // ignore
-  }
-  if (Object.keys(WHITELISTED_USERS).includes(cleanEmail)) {
-    return true;
-  }
-
-  if (mongoURI && mongoose.connection.readyState === 1) {
-    const log = await PaymentLog.findOne({ email: cleanEmail, status: 'success' });
-    return !!log;
-  }
-
-  const db = readDb();
-  if (!db.paymentLogs) db.paymentLogs = [];
-  const hasPaid = db.paymentLogs.some(log => log.email === cleanEmail && log.status === 'success');
-  return hasPaid;
+  // Bypassed: Payment gateway removed from AI Job Finder
+  return true;
 }
 
 export async function getWorkById(workId) {

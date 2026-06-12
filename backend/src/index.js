@@ -1627,18 +1627,7 @@ apiRouter.post('/api/user/password', async (req, res) => {
 
 // AI Job Finder Endpoint
 apiRouter.post('/api/job-finder', upload.single('resume'), async (req, res) => {
-  const reqEmail = String(req.body.email || '').trim().toLowerCase();
-  try {
-    const hasAccess = await checkJobFinderAccess(reqEmail);
-    if (!hasAccess) {
-      return res.status(403).json({
-        success: false,
-        error: 'AI Job Finder access is locked. Please complete the ₹200 payment to unlock this feature.'
-      });
-    }
-  } catch (err) {
-    console.error('Job Finder Access Check Error:', err);
-  }
+  // Access is open to all users - payment gateway check removed.
 
   try {
     const { file } = req;
