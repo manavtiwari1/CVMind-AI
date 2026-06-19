@@ -42,7 +42,7 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
   const freeBenefits = [
     { text: "All resume templates", checked: true },
     { text: "Basic resume sections", checked: true },
-    { text: "Enhancv branding", checked: true },
+    { text: "CVMind AI branding", checked: true },
     { text: "Maximum 12 section items", checked: true },
     { text: "Access to all design tools", checked: true },
     { text: "Resume Builder", checked: true },
