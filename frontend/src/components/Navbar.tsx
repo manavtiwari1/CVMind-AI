@@ -396,7 +396,7 @@ export default function Navbar({
               {/* 4. Pricing (single link) */}
               <NavigationMenuItem>
                 <NavigationMenuLink
-                  render={<button className={`nav-link${currentPage === 'contact' ? ' active' : ''}`} onClick={() => go('contact')} />}
+                  render={<button className={`nav-link${currentPage === 'pricing' ? ' active' : ''}`} onClick={() => go('pricing')} />}
                 >
                   Pricing
                 </NavigationMenuLink>
@@ -501,6 +501,7 @@ export default function Navbar({
           { label: 'Home', page: 'home' },
           { label: 'Dashboard', page: 'dashboard' },
           { label: 'Resume Builder', page: 'resume-builder' },
+          { label: 'Pricing', page: 'pricing' },
         ].map(({ label, page }) => (
           <button
             key={label}

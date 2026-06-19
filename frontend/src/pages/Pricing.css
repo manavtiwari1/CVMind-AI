@@ -1,0 +1,232 @@
+/* ════════════════════════════════════════════════════════════
+   CVMind AI — Pricing Page Custom Styling
+   ════════════════════════════════════════════════════════════ */
+
+.pricing-wrapper {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Hero header ─────────────────────────────────────────── */
+.pricing-hero {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pricing-badge-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 999px;
+  padding: 0.3rem 0.95rem;
+}
+
+.pricing-pulse-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7c3aed;
+  animation: pricingPulse 1.8s infinite;
+}
+
+@keyframes pricingPulse {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+.pricing-title {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #0d0d0d;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.pricing-subtitle {
+  font-size: 1.05rem;
+  color: #374151;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── Grid Container ──────────────────────────────────────── */
+.pricing-grid-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5rem;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  width: 100%;
+  max-width: 1100px;
+  align-items: stretch;
+}
+
+.pricing-pro-card {
+  transform: scale(1.02);
+}
+
+@media (max-width: 900px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    gap: 2.5rem;
+  }
+  .pricing-pro-card {
+    transform: none;
+  }
+}
+
+/* ── Trust Banner ────────────────────────────────────────── */
+.pricing-trust-section {
+  width: 100%;
+  max-width: 1100px;
+  border-top: 1px solid rgba(124, 58, 237, 0.12);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.12);
+  padding: 2.5rem 1.5rem;
+  margin-bottom: 5rem;
+}
+
+.pricing-trust-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.pricing-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+@media (max-width: 600px) {
+  .pricing-trust-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+}
+
+/* ── FAQ Section ─────────────────────────────────────────── */
+.pricing-faq-section {
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.pricing-faq-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.pricing-faq-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0d0d0d;
+  text-align: center;
+  margin: 0;
+}
+
+.pricing-faq-sub {
+  font-size: 0.98rem;
+  color: #6b7280;
+  text-align: center;
+  margin: 0;
+}
+
+.pricing-faq-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pricing-faq-item {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(124, 58, 237, 0.15);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.02);
+}
+
+.pricing-faq-item:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(124, 58, 237, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.05);
+}
+
+.pricing-faq-item.open {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+.pricing-faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0d0d0d;
+  text-align: left;
+  transition: background 0.2s;
+  border-radius: 0.75rem;
+}
+
+.pricing-faq-chevron {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2dc08d;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.pricing-faq-answer {
+  padding: 0 1.5rem 1.25rem;
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.65;
+}

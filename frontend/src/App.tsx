@@ -26,6 +26,7 @@ import PortfolioGen from './pages/PortfolioGen';
 import Products from './pages/Products';
 import JobFinder from './pages/JobFinder';
 import ResumeBuilderLanding from './pages/ResumeBuilderLanding';
+import Pricing from './pages/Pricing';
 import AuthModal from './components/AuthModal';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
 import './styles/theme.css';
@@ -38,7 +39,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -439,6 +440,8 @@ export default function App() {
         return <ResumeBuilderLanding setCurrentPage={setCurrentPage} />;
       case 'resume-editor':
         return <CoverLetter customApiKey={customApiKey} loadedWork={loadedWork} setLoadedWork={setLoadedWork} />;
+      case 'pricing':
+        return <Pricing setCurrentPage={setCurrentPage} />;
       default:
         return (
           <Home 
