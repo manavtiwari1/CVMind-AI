@@ -1,82 +1,84 @@
-import { PricingCard } from "../components/ui/dark-gradient-pricing"
-import { ShieldCheck } from "lucide-react"
 import { useState } from "react"
+import { Crown } from "lucide-react"
 import "./Pricing.css"
 
 interface PricingProps {
   setCurrentPage: (page: string) => void
 }
 
-export default function Pricing({ setCurrentPage }: PricingProps) {
-  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+type BillingCycle = "monthly" | "quarterly" | "yearly"
 
-  const plans = [
-    {
-      tier: "Free",
-      price: "$0/mo",
-      bestFor: "Ideal for individuals starting their job search",
-      CTA: "Get Started Free",
-      benefits: [
-        { text: "Resume Builder", checked: true },
-        { text: "Resume Checker", checked: true },
-        { text: "Interview Prep AI", checked: true },
-        { text: "Profile PDF Audit", checked: true },
-        { text: "Bio & Banner Generator", checked: true },
-        { text: "Outreach & DM Writer", checked: true },
-        { text: "Limited AI Tokens (20/mo)", checked: true },
-        { text: "Portfolio Generator", checked: false },
-        { text: "Resume Tailor", checked: false },
-        { text: "Voice Practice AI", checked: false },
-        { text: "AI Job Finder", checked: false },
-        { text: "Skills Gap & Courses", checked: false },
-        { text: "Elevator Pitch Builder", checked: false },
-        { text: "Career Roadmaps", checked: false },
-      ],
-      targetPage: "resume-builder",
+export default function Pricing({ setCurrentPage }: PricingProps) {
+  const [activeFaq, setActiveFaq] = useState<number | null>(null)
+  const [proCycle, setProCycle] = useState<BillingCycle>("quarterly")
+
+  // Pro price configurations matching the screenshot
+  const proPricing = {
+    monthly: {
+      priceInt: "250",
+      priceDec: "00",
+      billedText: "Billed monthly",
+      badgeText: "",
+      labelText: "PRO MONTHLY PLAN"
     },
-    {
-      tier: "Pro",
-      price: "$200/mo",
-      bestFor: "Power pack for serious professionals aiming for top roles",
-      CTA: "Upgrade to Pro",
-      benefits: [
-        { text: "Resume Builder", checked: true },
-        { text: "Resume Checker", checked: true },
-        { text: "Portfolio Generator", checked: true },
-        { text: "Resume Tailor", checked: true },
-        { text: "Interview Prep AI", checked: true },
-        { text: "Voice Practice AI", checked: true },
-        { text: "AI Job Finder", checked: true },
-        { text: "Profile PDF Audit", checked: true },
-        { text: "Bio & Banner Generator", checked: true },
-        { text: "Outreach & DM Writer", checked: true },
-        { text: "Skills Gap & Courses", checked: true },
-        { text: "Elevator Pitch Builder", checked: true },
-        { text: "Career Roadmaps", checked: true },
-        { text: "Unlimited AI Tokens", checked: true },
-      ],
-      targetPage: "dashboard",
+    quarterly: {
+      priceInt: "266",
+      priceDec: "67",
+      billedText: "₹800 billed every 3 months",
+      badgeText: "",
+      labelText: "PRO QUARTERLY PLAN"
     },
-    {
-      tier: "Enterprise",
-      price: "Contact Us",
-      bestFor: "Tailored for universities, bootcamps, and recruitment agencies",
-      CTA: "Contact Sales",
-      benefits: [
-        { text: "Everything in Pro version", checked: true },
-        { text: "Unlimited Team Workspaces", checked: true },
-        { text: "Custom AI Model Training", checked: true },
-        { text: "Recruiter Dashboard", checked: true },
-        { text: "SSO & Custom Security", checked: true },
-        { text: "API Access & Integrations", checked: true },
-        { text: "Dedicated Success Manager", checked: true },
-        { text: "Unlimited AI Tokens", checked: true },
-        { text: "White-labeled Portfolios", checked: true },
-        { text: "Volume Candidate Analytics", checked: true },
-      ],
-      targetPage: "contact",
-    },
-  ];
+    yearly: {
+      priceInt: "108",
+      priceDec: "33",
+      billedText: "₹1300 billed every 12 months",
+      badgeText: "₹3000.00 - SAVE 56.67%",
+      labelText: "PRO YEARLY PLAN"
+    }
+  }
+
+  const activePro = proPricing[proCycle]
+
+  const freeBenefits = [
+    { text: "All resume templates", checked: true },
+    { text: "Basic resume sections", checked: true },
+    { text: "Enhancv branding", checked: true },
+    { text: "Maximum 12 section items", checked: true },
+    { text: "Access to all design tools", checked: true },
+    { text: "Resume Builder", checked: true },
+    { text: "Resume Checker", checked: true },
+    { text: "Interview Prep AI", checked: true },
+    { text: "Profile PDF Audit", checked: true },
+    { text: "Bio & Banner Generator", checked: true },
+    { text: "Outreach & DM Writer", checked: true },
+    { text: "Limited AI Tokens (20/mo)", checked: true },
+    { text: "Portfolio Generator", checked: false },
+    { text: "Resume Tailor", checked: false },
+    { text: "Voice Practice AI", checked: false },
+    { text: "AI Job Finder", checked: false },
+    { text: "Skills Gap & Courses", checked: false },
+    { text: "Elevator Pitch Builder", checked: false },
+    { text: "Career Roadmaps", checked: false },
+  ]
+
+  const proBenefits = [
+    { text: "300 resumes and cover letters", checked: true },
+    { text: "All resume templates", checked: true },
+    { text: "Real-time content suggestions", checked: true },
+    { text: "ATS check (Applicant Tracking System)", checked: true },
+    { text: "Pro resume sections", checked: true },
+    { text: "No branding", checked: true },
+    { text: "Unlimited section items", checked: true },
+    { text: "Thousands of design options", checked: true },
+    { text: "Portfolio Generator", checked: true },
+    { text: "Resume Tailor", checked: true },
+    { text: "Voice Practice AI", checked: true },
+    { text: "AI Job Finder", checked: true },
+    { text: "Skills Gap & Courses", checked: true },
+    { text: "Elevator Pitch Builder", checked: true },
+    { text: "Career Roadmaps", checked: true },
+    { text: "Unlimited AI Tokens", checked: true },
+  ]
 
   const faqs = [
     {
@@ -95,59 +97,173 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
       q: "Is my payment information secure?",
       a: "Yes, your payments are processed securely via Stripe. We do not store your credit card information on our servers, and all transaction data is fully encrypted."
     }
-  ];
+  ]
 
   return (
     <div className="pricing-wrapper animate-fade-in-up">
-      {/* Header */}
+      {/* ── 1. HEADER SECTION ───────────────────────────────────── */}
       <section className="pricing-hero">
-        <div className="pricing-badge-wrapper">
-          <span className="pricing-pulse-dot" />
-          <span className="pricing-launch-date">Simple Pricing</span>
-        </div>
-        <h1 className="pricing-title">Find the plan that fits your career</h1>
-        <p className="pricing-subtitle">
-          Whether you are polishing your first CV or scaling a team of recruiters, CVMind AI has a layout tailored to you.
-        </p>
+        <h1 className="pricing-main-title">Build a strikingly powerful<br />resume approved by recruiters</h1>
+        <button className="pricing-main-cta" onClick={() => setCurrentPage('resume-builder')}>
+          Build My Resume Now
+        </button>
       </section>
 
-      {/* Grid container */}
+      {/* ── 2. TWO-COLUMN PLANS GRID ────────────────────────────── */}
       <div className="pricing-grid-container">
-        <div className="pricing-grid">
-          {plans.map((plan, idx) => (
-            <PricingCard
-              key={idx}
-              tier={plan.tier}
-              price={plan.price}
-              bestFor={plan.bestFor}
-              CTA={plan.CTA}
-              benefits={plan.benefits}
-              onClick={() => setCurrentPage(plan.targetPage)}
-              className={plan.tier === "Pro" ? "pricing-pro-card" : ""}
-            />
-          ))}
+        <div className="pricing-card-layout">
+          
+          {/* Left Column: Free Plan */}
+          <div className="pricing-column-card">
+            <div className="pricing-badge-tier">FREE PLAN</div>
+            <div className="pricing-amount-row">
+              <span className="pricing-currency">₹</span>
+              <span className="pricing-value">0</span>
+            </div>
+            <div className="pricing-cycle-sub">Valid for 7 days</div>
+
+            <div className="pricing-benefits-list">
+              {freeBenefits.map((benefit, i) => (
+                <div key={i} className="pricing-benefit-item">
+                  {benefit.checked ? (
+                    <span className="pricing-check-icon check-green">✓</span>
+                  ) : (
+                    <span className="pricing-check-icon check-red">✗</span>
+                  )}
+                  <span className={`pricing-benefit-text${!benefit.checked ? " text-disabled" : ""}`}>
+                    {benefit.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <button className="pricing-card-btn-outline" onClick={() => setCurrentPage('resume-builder')}>
+              Build My Resume
+            </button>
+          </div>
+
+          {/* Right Column: Pro Plan */}
+          <div className="pricing-column-card pricing-pro-highlight">
+            {/* Crown & Badge Header */}
+            <div className="pricing-pro-header-row">
+              <div className="pricing-pro-header-left">
+                <Crown size={15} className="pricing-pro-crown" />
+                <span className="pricing-pro-label">{activePro.labelText}</span>
+              </div>
+              {activePro.badgeText && (
+                <div className="pricing-pro-discount-badge">
+                  {activePro.badgeText}
+                </div>
+              )}
+            </div>
+
+            {/* Price display with decimals superscript */}
+            <div className="pricing-amount-row">
+              <span className="pricing-currency">₹</span>
+              <span className="pricing-value">{activePro.priceInt}</span>
+              <span className="pricing-superscript">
+                <span className="pricing-decimal">{activePro.priceDec}</span>
+                <span className="pricing-mo">/mo</span>
+              </span>
+            </div>
+            <div className="pricing-cycle-sub">{activePro.billedText}</div>
+
+            {/* Cycle Selector Toggles */}
+            <div className="pricing-cycle-selector">
+              <button 
+                className={`pricing-cycle-btn${proCycle === 'monthly' ? ' active' : ''}`}
+                onClick={() => setProCycle('monthly')}
+              >
+                Pro Monthly
+              </button>
+              <button 
+                className={`pricing-cycle-btn${proCycle === 'quarterly' ? ' active' : ''}`}
+                onClick={() => setProCycle('quarterly')}
+              >
+                Pro Quarterly
+              </button>
+              <button 
+                className={`pricing-cycle-btn${proCycle === 'yearly' ? ' active' : ''}`}
+                onClick={() => setProCycle('yearly')}
+              >
+                Pro Yearly
+              </button>
+            </div>
+
+            {/* Benefits */}
+            <div className="pricing-benefits-list">
+              {proBenefits.map((benefit, i) => (
+                <div key={i} className="pricing-benefit-item">
+                  <span className="pricing-check-icon check-green">✓</span>
+                  <span className="pricing-benefit-text">{benefit.text}</span>
+                </div>
+              ))}
+            </div>
+
+            <button className="pricing-card-btn-filled" onClick={() => setCurrentPage('dashboard')}>
+              Upgrade to Pro
+            </button>
+          </div>
+
         </div>
       </div>
 
-      {/* Trust banner */}
-      <section className="pricing-trust-section">
-        <div className="pricing-trust-inner">
-          <div className="pricing-trust-item">
-            <ShieldCheck size={20} className="text-emerald-500" />
-            <span>Secure 256-bit SSL encryption</span>
+      {/* ── 3. BILLING TRUST SECTION ────────────────────────────── */}
+      <section className="pricing-payment-trust">
+        <span className="pricing-trust-header">We accept:</span>
+        <div className="pricing-payment-logos">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Logo_2021.svg" alt="Visa" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="American Express" />
+        </div>
+      </section>
+
+      {/* ── 4. FEATURE INTRO SECTION: Resume Builder ────────────── */}
+      <section className="pricing-intro-section">
+        <div className="pricing-intro-inner">
+          <div className="pricing-intro-content">
+            <h2 className="pricing-intro-title">A feature-packed resume builder that makes resume creation a breeze</h2>
+            <p className="pricing-intro-desc">
+              Create a visually stunning resume with ease. Our resume builder will guide you through the process. We help with content suggestions and choosing the right design and layout, while you focus on presenting yourself.
+            </p>
+            <button className="pricing-intro-cta" onClick={() => setCurrentPage('resume-builder')}>
+              Build My Resume Now
+            </button>
           </div>
-          <div className="pricing-trust-item">
-            <ShieldCheck size={20} className="text-emerald-500" />
-            <span>No hidden fees, cancel anytime</span>
-          </div>
-          <div className="pricing-trust-item">
-            <ShieldCheck size={20} className="text-emerald-500" />
-            <span>Over 50,000+ resumes optimized</span>
+          <div className="pricing-intro-visual">
+            <img 
+              src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=600&auto=format&fit=crop" 
+              alt="Feature Mockups" 
+              className="pricing-intro-img"
+            />
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* ── 5. FEATURE INTRO SECTION: Resume Tailor ─────────────── */}
+      <section className="pricing-tailor-section">
+        <div className="pricing-tailor-inner">
+          <div className="pricing-tailor-visual">
+            <img 
+              src="https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=500&auto=format&fit=crop" 
+              alt="Tailoring visual" 
+              className="pricing-tailor-img"
+            />
+          </div>
+          <div className="pricing-tailor-content">
+            <h2 className="pricing-tailor-title">Tailor your resume to the job with a single click</h2>
+            <p className="pricing-tailor-desc">
+              With our resume tailoring feature you can ensure your resume is relevant to the job you're applying for. Simply copy and paste the job ad in our builder and we'll show you what you need to include in order to pass the ATS screening.
+            </p>
+            <button className="pricing-tailor-cta" onClick={() => setCurrentPage('tailor')}>
+              Build a Tailored Resume
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. FAQ SECTION ──────────────────────────────────────── */}
       <section className="pricing-faq-section">
         <div className="pricing-faq-inner">
           <h2 className="pricing-faq-title">Pricing Frequently Asked Questions</h2>
