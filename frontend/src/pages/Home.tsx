@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { Upload, FileText, CheckCircle2, ShieldAlert, Cpu, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Wand2, FileDown, Pencil, Rocket, Brain, Target, Linkedin, Scissors, Map, Mic } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Upload, FileText, CheckCircle2, ShieldAlert, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles } from 'lucide-react';
+import { HeroSection } from '../components/blocks/hero-section-9';
 import './Home.css';
 import './HomeCarousel.css';
 
@@ -10,311 +11,6 @@ interface HomeProps {
   customApiKey: string;
 }
 
-// Countdown helpers removed
-
-// ─── Product cards data ───────────────────────────────────────────────────
-const homeProducts = [
-  {
-    id: 'resume-checker', icon: 'brain', title: 'AI Resume Checker', tagline: 'Beat Every ATS System',
-    desc: 'Corporate-grade AI audits your resume for formatting, keyword gaps, and delivers professional rewrites.',
-    features: ['ATS Score 0–100', 'Keyword Gap Analysis', 'Bullet Rewriter', 'Before & After View'],
-    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
-    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'Most Popular', badgeClass: 'badge-blue',
-    stats: [{ label: 'Score Boost', value: '+42%' }, { label: 'Keywords', value: '18+' }], page: 'dashboard',
-  },
-  {
-    id: 'interview-prep', icon: 'target', title: 'AI Interview Prep', tagline: 'Ace Every Interview',
-    desc: 'Simulate behavioral questions, get STAR-framework coaching, and score your answers with instant AI feedback.',
-    features: ['Behavioral Simulator', 'STAR Framework', 'Real-time Scoring', 'Voice Mode'],
-    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
-    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'AI-Powered', badgeClass: 'badge-blue',
-    stats: [{ label: 'Questions', value: '500+' }, { label: 'Pass Rate', value: '89%' }], page: 'prep',
-  },
-  {
-    id: 'linkedin', icon: 'linkedin', title: 'LinkedIn Optimizer', tagline: 'Get Noticed by Recruiters',
-    desc: 'AI-generated bios, outreach messages, and viral posts that attract recruiters and build your personal brand.',
-    features: ['Bio Generator', 'Outreach Writer', 'Viral Post Creator', 'Headline Optimizer'],
-    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
-    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'New', badgeClass: 'badge-blue',
-    stats: [{ label: 'Profile Views', value: '3×' }, { label: 'Connection Rate', value: '+67%' }], page: 'linkedin',
-  },
-  {
-    id: 'tailor', icon: 'scissors', title: 'Resume Tailor', tagline: 'Match Any Job Description',
-    desc: 'Upload a job description and AI instantly aligns your resume — keywords, skills, achievements — for max ATS score.',
-    features: ['JD Keyword Match', 'Skills Gap Detector', 'Achievement Rewriter', 'Match Score %'],
-    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
-    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'Smart', badgeClass: 'badge-blue',
-    stats: [{ label: 'Accuracy', value: '96%' }, { label: 'Time Saved', value: '2hrs' }], page: 'tailor',
-  },
-  {
-    id: 'career-roadmap', icon: 'map', title: 'Career Roadmap', tagline: 'Plan Your Next 5 Years',
-    desc: 'Personalized AI career roadmap with step-by-step milestones, certifications, and skill progression paths.',
-    features: ['Goal-based Planning', 'Certification Paths', 'Skill Milestones', 'Timeline View'],
-    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
-    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'Premium', badgeClass: 'badge-blue',
-    stats: [{ label: 'Career Paths', value: '50+' }, { label: 'Satisfaction', value: '4.9★' }], page: 'career-roadmap',
-  },
-  {
-    id: 'voice-prep', icon: 'mic', title: 'Voice Interview Coach', tagline: 'Speak Like a Pro',
-    desc: 'Practice interviews aloud. AI transcribes, detects filler words, scores confidence, and gives real-time coaching.',
-    features: ['Live Transcription', 'Filler Word Detector', 'Confidence Score', 'Instant Feedback'],
-    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
-    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'Live AI', badgeClass: 'badge-blue',
-    stats: [{ label: 'Accuracy', value: '98%' }, { label: 'Improvement', value: '+31%' }], page: 'voice-prep',
-  },
-  {
-    id: 'job-finder', icon: 'search', title: 'AI Job Finder', tagline: 'Match Jobs to Your CV',
-    desc: 'Match your CV against target roles to find 8–10 curated job openings complete with match scores, skills gap lists, and direct apply links.',
-    features: ['CV-to-Job Matching', 'Multi-Platform Links', 'Skills Gap Analysis', 'Salary Estimates'],
-    gradient: 'linear-gradient(135deg, #2997ff 0%, #5ac8fa 100%)',
-    glow: 'rgba(41,151,255,0.45)', color: '#2997ff', badge: 'New Tool', badgeClass: 'badge-blue',
-    stats: [{ label: 'Match Accuracy', value: '95%' }, { label: 'Curated Jobs', value: '8-10' }], page: 'job-finder',
-  },
-];
-
-const getProductIcon = (iconName: string) => {
-  switch (iconName) {
-    case 'brain': return <Brain className="hpc-card-icon-svg" />;
-    case 'target': return <Target className="hpc-card-icon-svg" />;
-    case 'linkedin': return <Linkedin className="hpc-card-icon-svg" />;
-    case 'scissors': return <Scissors className="hpc-card-icon-svg" />;
-    case 'map': return <Map className="hpc-card-icon-svg" />;
-    case 'mic': return <Mic className="hpc-card-icon-svg" />;
-    case 'search': return <Search className="hpc-card-icon-svg" />;
-    default: return null;
-  }
-};
-
-
-function HomeProductCarousel({ setCurrentPage }: { setCurrentPage: (p: string) => void }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStartX, setDragStartX] = useState(0);
-  const [rotationOffset, setRotationOffset] = useState(0);
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const total = homeProducts.length;
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const startAutoRotate = () => {
-    intervalRef.current = setInterval(() => {
-      setActiveIndex(prev => (prev + 1) % total);
-    }, 3500);
-  };
-
-  const stopAutoRotate = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
-  useEffect(() => {
-    startAutoRotate();
-    return () => stopAutoRotate();
-  }, []);
-
-  useEffect(() => {
-    if (isHovered) {
-      stopAutoRotate();
-    } else {
-      stopAutoRotate();
-      startAutoRotate();
-    }
-  }, [isHovered]);
-
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    setIsDragging(true);
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    setDragStartX(clientX);
-    stopAutoRotate();
-  };
-
-  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return;
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const delta = clientX - dragStartX;
-    setRotationOffset(delta * 0.45);
-  };
-
-  const handleDragEnd = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return;
-    setIsDragging(false);
-    const clientX = 'changedTouches' in e ? e.changedTouches[0].clientX : e.clientX;
-    const delta = clientX - dragStartX;
-    if (Math.abs(delta) > 50) {
-      if (delta < 0) {
-        setActiveIndex(prev => (prev + 1) % total);
-      } else {
-        setActiveIndex(prev => (prev - 1 + total) % total);
-      }
-    }
-    setRotationOffset(0);
-    if (!isHovered) startAutoRotate();
-  };
-
-  const getCardStyle = (index: number) => {
-    const angleStep = 360 / total;
-    const angle = ((index - activeIndex) * angleStep + rotationOffset + 360) % 360;
-    const normalizedAngle = angle > 180 ? angle - 360 : angle;
-
-    const isMobile = windowWidth < 600;
-    const radius = isMobile ? 120 : 240;
-    const radians = (normalizedAngle * Math.PI) / 180;
-    const x = Math.sin(radians) * radius * (isMobile ? 0.85 : 1.15); // Spread cards further out horizontally
-    const z = Math.cos(radians) * radius;
-
-    const scale = isMobile
-      ? (0.75 + ((z + radius) / (2 * radius)) * 0.28)
-      : (0.72 + ((z + radius) / (2 * radius)) * 0.33); // Active center is ~1.03, side is ~0.94, back is ~0.72
-
-    const isBackCard = Math.abs(normalizedAngle) > 80;
-    const opacity = isMobile && isBackCard
-      ? 0
-      : (0.3 + ((z + radius) / (2 * radius)) * 0.7);
-
-    const pointerEvents = isMobile && isBackCard ? 'none' : 'auto';
-    const zIndex = Math.round(scale * 100);
-
-    return {
-      transform: `translateX(${x}px) translateZ(${z}px) scale(${scale})`,
-      opacity,
-      zIndex,
-      pointerEvents,
-      transition: isDragging ? 'none' : 'all 0.65s cubic-bezier(0.16, 1, 0.3, 1)',
-    };
-  };
-
-  return (
-    <section className="hpc-section">
-      <div className="hpc-heading">
-        <span className="hpc-eyebrow"><span className="hpc-dot" />Our AI Tools</span>
-        <h2 className="hpc-title">Everything You Need to <span className="hpc-title-grad">Land the Job</span></h2>
-      </div>
-
-      <div
-        className="hpc-carousel-scene"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => { setIsHovered(false); setIsDragging(false); setRotationOffset(0); }}
-        onMouseDown={handleDragStart}
-        onMouseMove={handleDragMove}
-        onMouseUp={handleDragEnd}
-        onTouchStart={handleDragStart}
-        onTouchMove={handleDragMove}
-        onTouchEnd={handleDragEnd}
-      >
-        <div
-          className="hpc-carousel-glow"
-          style={{ background: homeProducts[activeIndex].glow }}
-        />
-
-        <div className="hpc-carousel-3d">
-          {homeProducts.map((p, index) => (
-            <div
-              key={p.id}
-              className={`hpc-flip-card ${index === activeIndex ? 'active' : ''}`}
-              style={{
-                ...getCardStyle(index),
-                '--card-glow': p.glow,
-                '--card-color': p.color
-              } as React.CSSProperties}
-              onClick={() => {
-                if (index !== activeIndex) {
-                  stopAutoRotate();
-                  setActiveIndex(index);
-                  setTimeout(() => { if (!isHovered) startAutoRotate(); }, 4000);
-                }
-              }}
-            >
-              <div className="hpc-flip-inner">
-                {/* FRONT */}
-                <div className="hpc-flip-front">
-                  {p.badge && <span className="hpc-card-badge">{p.badge}</span>}
-                  <div className="hpc-flip-icon">{getProductIcon(p.icon)}</div>
-                  <h3 className="hpc-flip-title">{p.title}</h3>
-                  <div className="hpc-flip-tags">
-                    {p.features.slice(0, 2).map(f => (
-                      <span key={f} className="hpc-flip-tag">{f}</span>
-                    ))}
-                  </div>
-                  <span className="hpc-flip-hint">hover to flip ↻</span>
-                </div>
-
-                {/* BACK */}
-                <div className="hpc-flip-back">
-                  <div className="hpc-flip-back-icon">{getProductIcon(p.icon)}</div>
-                  <h3 className="hpc-flip-back-title">{p.title}</h3>
-                  <p className="hpc-flip-back-desc">{p.desc}</p>
-                  <div className="hpc-flip-back-stats">
-                    {p.stats.map(s => (
-                      <div key={s.label} className="hpc-flip-stat">
-                        <span className="hpc-flip-stat-val">{s.value}</span>
-                        <span className="hpc-flip-stat-lbl">{s.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button className="hpc-flip-cta" onClick={() => setCurrentPage(p.page)}>Try it Free →</button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="hpc-drag-hint">
-          <span>◁</span> drag to explore <span>▷</span>
-        </div>
-      </div>
-
-      <div className="hpc-carousel-nav">
-        <button
-          className="hpc-nav-arrow"
-          onClick={() => {
-            stopAutoRotate();
-            setActiveIndex(p => (p - 1 + total) % total);
-            setTimeout(() => startAutoRotate(), 4000);
-          }}
-        >
-          ‹
-        </button>
-
-        <div className="hpc-nav-dots">
-          {homeProducts.map((p, i) => (
-            <button
-              key={p.id}
-              className={`hpc-nav-dot ${i === activeIndex ? 'active' : ''}`}
-              onClick={() => {
-                stopAutoRotate();
-                setActiveIndex(i);
-                setTimeout(() => startAutoRotate(), 4000);
-              }}
-              aria-label={`Go to ${p.title}`}
-            />
-          ))}
-        </div>
-
-        <button
-          className="hpc-nav-arrow"
-          onClick={() => {
-            stopAutoRotate();
-            setActiveIndex(p => (p + 1) % total);
-            setTimeout(() => startAutoRotate(), 4000);
-          }}
-        >
-          ›
-        </button>
-      </div>
-    </section>
-  );
-}
-
-
 // ─── Home Page ────────────────────────────────────────────────────────────────
 export default function Home({ setCurrentPage, setAnalysisResult, setResumeText, customApiKey }: HomeProps) {
   const [dragActive, setDragActive] = useState(false);
@@ -322,34 +18,12 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const [tiltStyle, setTiltStyle] = useState<{ transform: string }>({ transform: 'rotateY(-14deg) rotateX(8deg)' });
-  const sceneRef = useRef<HTMLDivElement>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState(0);
 
-  const handleMouseMove3D = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!sceneRef.current) return;
-    const rect = sceneRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const rotateY = ((x - centerX) / centerX) * 18 - 14;
-    const rotateX = -(((y - centerY) / centerY) * 14) + 8;
-    
-    setTiltStyle({
-      transform: `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`
-    });
-  };
-
-  const handleMouseLeave3D = () => {
-    setTiltStyle({
-      transform: 'rotateY(-14deg) rotateX(8deg)'
-    });
-  };
+  const fileInputRef  = useRef<HTMLInputElement>(null);
+  const scoreRef      = useRef<HTMLElement>(null);
+  const scrollToScore = () => scoreRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   // Steps to display in sequence during analysis to keep the user engaged
   const analysisSteps = [
@@ -361,12 +35,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
     'Simulating corporate recruiter assessment...',
     'Generating comprehensive scorecard report...'
   ];
-
-  const particleSpots = Array.from({ length: 28 }, (_, index) => ({
-    left: `${(index * 37) % 96}%`,
-    top: `${(index * 53) % 92}%`,
-    delay: `${(index % 7) * 0.45}s`
-  }));
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -382,7 +50,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       validateAndSetFile(e.dataTransfer.files[0]);
     }
@@ -399,20 +66,16 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
     setErrorMsg(null);
     const allowedExtensions = ['pdf', 'docx', 'txt'];
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
-    
     if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
       setErrorMsg('Unsupported file type. Please upload a PDF, DOCX, or TXT file.');
       setSelectedFile(null);
       return;
     }
-    
-    // 5MB limit
     if (file.size > 5 * 1024 * 1024) {
       setErrorMsg('File is too large. Maximum size is 5MB.');
       setSelectedFile(null);
       return;
     }
-
     setSelectedFile(file);
   };
 
@@ -430,17 +93,13 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
 
   const handleAnalyze = async () => {
     if (!selectedFile) return;
-    
     setLoading(true);
     setLoadingStep(0);
     setErrorMsg(null);
 
-    // Dynamic loader step text changes every 1.5 seconds
     const stepInterval = setInterval(() => {
       setLoadingStep((prev) => {
-        if (prev < analysisSteps.length - 1) {
-          return prev + 1;
-        }
+        if (prev < analysisSteps.length - 1) return prev + 1;
         return prev;
       });
     }, 1600);
@@ -449,14 +108,9 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
     formData.append('resume', selectedFile);
 
     try {
-      // Direct integration with the Express backend
-      // We will support a local dev server port OR dynamic environment detection.
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
-      
       const headers: Record<string, string> = {};
-      if (customApiKey) {
-        headers['x-gemini-key'] = customApiKey;
-      }
+      if (customApiKey) headers['x-gemini-key'] = customApiKey;
 
       const response = await fetch(`${baseUrl}/api/analyze`, {
         method: 'POST',
@@ -465,20 +119,12 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       });
 
       const resData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(resData.error || 'Server error during analysis');
-      }
+      if (!response.ok) throw new Error(resData.error || 'Server error during analysis');
 
       if (resData.success && resData.data) {
-        const resultWithMeta = {
-          ...resData.data,
-          fileName: selectedFile.name
-        };
+        const resultWithMeta = { ...resData.data, fileName: selectedFile.name };
         setAnalysisResult(resultWithMeta);
-        if (resData.resumeText) {
-          setResumeText(resData.resumeText);
-        }
+        if (resData.resumeText) setResumeText(resData.resumeText);
         setCurrentPage('dashboard');
       } else {
         throw new Error('Analysis completed, but failed to retrieve proper feedback metrics.');
@@ -492,456 +138,417 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
     }
   };
 
+  // ── Tab data ──
+  const tabs = [
+    { label: 'ATS Check', icon: '🎯' },
+    { label: 'AI Rewrite', icon: '✨' },
+    { label: 'Job Tailor', icon: '🔧' },
+    { label: 'Interview Prep', icon: '🎤' },
+    { label: 'LinkedIn', icon: '💼' },
+    { label: 'Career Map', icon: '🗺️' },
+    { label: 'Job Finder', icon: '🔍' },
+  ];
+
+  const tabPages = ['dashboard', 'dashboard', 'tailor', 'prep', 'linkedin', 'career-roadmap', 'job-finder'];
+
+  // ── FAQ data ──
+  const faqs = [
+    { q: 'How does the AI resume checker work?', a: 'Our AI analyzes your resume against 500+ ATS keyword models, checks formatting, identifies gaps in quantified achievements, and scores your document on a 0–100 scale. You get a full report in seconds.' },
+    { q: 'Is my resume data kept private?', a: 'Yes. Your resume is processed in memory and never stored on our servers. We use end-to-end encrypted connections. Your data is not used for training.' },
+    { q: 'What file formats are supported?', a: 'We support PDF, DOCX, and TXT files up to 5MB. PDF and DOCX give the best results as they preserve formatting information.' },
+    { q: 'How accurate is the ATS score?', a: 'Our ATS score correlates with the most widely used applicant tracking systems including Workday, Greenhouse, Lever, and iCIMS. Users who implement our suggestions see an average 42% improvement in interview callback rates.' },
+    { q: 'Can I use this for multiple jobs?', a: 'Absolutely. Use the Resume Tailor tool to create a custom-tailored version of your resume for each job application. Our AI aligns your skills, keywords, and achievements to each specific job description.' },
+    { q: 'Do I need to create an account?', a: 'No account is required to get your ATS score and basic analysis. Premium features like AI rewriting, DOCX download, and unlimited tailoring are available with a free trial.' },
+  ];
+
   return (
     <div className="home-container animate-fade-in-up">
-      <div className="cyber-stage" aria-hidden="true">
-        <div className="neon-orbit"></div>
-        <div className="scan-beam"></div>
-        {particleSpots.map((spot, index) => (
-          <span
-            key={index}
-            className="pixel-particle"
-            style={{ left: spot.left, top: spot.top, animationDelay: spot.delay }}
-          />
-        ))}
-      </div>
 
-      {/* ── Launch Countdown Banner ─────────────────────────── */}
-      <div className="launch-countdown-banner" role="banner" aria-label="Launch status">
-        <div className="countdown-banner-inner" style={{ justifyContent: 'center', padding: '0.8rem 1.5rem' }}>
-          <div className="countdown-label-left" style={{ justifyContent: 'center', width: 'auto', fontSize: '1.05rem', fontWeight: 800, letterSpacing: '0.08em' }}>
-            <Rocket size={20} className="countdown-rocket-icon" />
-            <span>launching soon</span>
+      {/* ── 1. HERO ──────────────────────────────────────────── */}
+      <HeroSection
+        setCurrentPage={setCurrentPage}
+        onAnalyzeClick={scrollToScore}
+      />
+
+      {/* ── 2. STATS BANNER ──────────────────────────────────── */}
+      <section className="home-stats-banner">
+        <div className="home-stats-inner">
+          {[
+            { value: '50K+', label: 'Resumes Analyzed' },
+            { value: '4.9★', label: 'User Rating' },
+            { value: '+42%', label: 'Interview Rate' },
+            { value: '28K+', label: 'Users This Month' },
+          ].map((stat) => (
+            <div key={stat.label} className="home-stat-item">
+              <div className="home-stat-value">{stat.value}</div>
+              <div className="home-stat-label">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 3. ATS SECTION ───────────────────────────────────── */}
+      <section className="home-ats-section">
+        <div className="home-ats-inner">
+          <div className="home-ats-left">
+            <span className="home-ats-eyebrow">ATS Optimization</span>
+            <h2 className="home-ats-title">Resumes optimized for<br />Applicant Tracking Systems</h2>
+            <p className="home-ats-desc">Every resume template and AI rewrite is tested against leading ATS engines. Clean layouts, matched keywords, and standard section titles — nothing gets filtered out.</p>
+            <ul className="home-ats-bullets">
+              {['Detect keyword and content gaps', 'Get actionable suggestions to pass AI scans', 'Match recruiter bots and human reviewers', 'Beat 90% of applicants with one click'].map(b => (
+                <li key={b}><span className="home-ats-check">✓</span>{b}</li>
+              ))}
+            </ul>
+            <button className="home-ats-cta" onClick={scrollToScore}>Check My ATS Score →</button>
+          </div>
+          <div className="home-ats-right">
+            {[
+              { icon: <Search size={20} />, title: 'Keyword Matrix', desc: 'Matches your resume against 500+ ATS keyword models.' },
+              { icon: <BarChart3 size={20} />, title: 'Full Score Report', desc: 'See exactly what passes, fails, and needs improvement.' },
+              { icon: <CheckCircle2 size={20} />, title: 'Format Compliance', desc: 'Ensures headings, fonts, and structure are ATS-safe.' },
+            ].map(card => (
+              <div key={card.title} className="home-ats-card">
+                <div className="home-ats-card-icon">{card.icon}</div>
+                <div>
+                  <div className="home-ats-card-title">{card.title}</div>
+                  <div className="home-ats-card-desc">{card.desc}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      <section className="hero-section">
-        <div className="hero-grid-container">
-          <div className="hero-left-content">
-            <div className="hero-badge">
-              <Cpu size={13} /> AI-Powered Resume Intelligence
-            </div>
-            <div className="hero-copy">
-              <h1 className="hero-title">
-                Build Resumes That<br />
-                <span className="gradient-word">Get You Hired.</span>
-              </h1>
-              <p className="hero-subtitle">
-                Upload your resume and receive an instant ATS scorecard — keyword gaps, formatting issues, recruiter insights, and AI-powered rewrites in seconds.
-              </p>
-
-              <div className="hero-chip-row" aria-label="CVMind AI capabilities">
-                <span>ATS Score</span>
-                <span>Keyword Analysis</span>
-                <span>AI Rewrites</span>
-                <span>DOCX Export</span>
-              </div>
-
-              <div className="upload-section">
-                <div className="upload-wrapper">
-                  <div 
-                    className={`upload-zone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''} ${loading ? 'is-loading' : ''}`}
-                    onDragEnter={handleDrag}
-                    onDragOver={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDrop={handleDrop}
-                  >
-                    <input 
-                      ref={fileInputRef}
-                      type="file"
-                      className="file-input-hidden"
-                      accept=".pdf,.docx,.txt"
-                      onChange={handleChange}
-                      disabled={loading}
-                    />
-
-                    {loading ? (
-                      <div className="loading-state">
-                        <div className="shimmer-scanner"></div>
-                        <div className="spinner-wrapper">
-                          <div className="premium-spinner"></div>
-                        </div>
-                        <h3 className="loading-title">Analyzing Your Resume</h3>
-                        <p className="loading-step-text animate-pulse">{analysisSteps[loadingStep]}</p>
-                        <div className="progress-bar-container">
-                          <div 
-                            className="progress-bar-fill" 
-                            style={{ width: `${((loadingStep + 1) / analysisSteps.length) * 100}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    ) : selectedFile ? (
-                      <div className="file-selected-state">
-                        <div className="file-icon-wrapper">
-                          <FileText className="file-icon" />
-                        </div>
-                        <div className="file-details">
-                          <span className="file-name">{selectedFile.name}</span>
-                          <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
-                        </div>
-                        <div className="file-actions">
-                          <button className="btn-secondary" onClick={removeFile}>
-                            Remove
-                          </button>
-                          <button className="btn-primary" onClick={handleAnalyze}>
-                            Analyze Resume <ArrowRight size={18} />
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="upload-prompt-state" onClick={onButtonClick}>
-                        <Upload className="upload-icon" />
-                        <button className="upload-cta" type="button">
-                          Upload Your Resume
-                        </button>
-                        <div className="privacy-note">
-                          <Lock size={14} /> Privacy guaranteed
-                        </div>
-                        <div className="file-limits-info">
-                          PDF, DOCX, or TXT up to 5MB
-                        </div>
-
-                        {/* ── or divider ── */}
-                        <div className="upload-or-divider"><span>or</span></div>
-
-                        {/* ── Create Resume ── */}
-                        <button
-                          className="upload-cta create-resume-cta"
-                          id="home-create-resume-btn"
-                          type="button"
-                          onClick={e => { e.stopPropagation(); setCurrentPage('resume-builder'); }}
-                        >
-                          <Pencil size={16} /> Create Resume
-                        </button>
-                        <div className="file-limits-info">
-                          10 ATS templates &nbsp;·&nbsp; Word editor &nbsp;·&nbsp; AI Refine
-                        </div>
-                      </div>
-                    )}
+      {/* ── 4. AI FEATURES ACCORDION ─────────────────────────── */}
+      <section className="home-ai-features-section">
+        <div className="home-ai-features-inner">
+          <div className="home-ai-features-left">
+            <span className="home-ai-eyebrow">Fully equipped for the age of AI</span>
+            <h2 className="home-ai-title">Fully equipped for<br />the age of AI</h2>
+            <div className="home-ai-accordion">
+              {[
+                { title: 'ATS Score & Keyword Analysis', desc: 'Get a 0–100 ATS compatibility score with a complete breakdown of keyword gaps, missing skills, and formatting issues that prevent your resume from passing screening filters.' },
+                { title: 'AI-Powered Resume Rewriting', desc: 'Our AI rewrites weak bullet points with strong action verbs, injects missing keywords, and restructures your experience section for maximum recruiter impact.' },
+                { title: 'One-Click Job Tailoring', desc: 'Paste any job description and our AI instantly realigns your resume — injecting the right keywords, adjusting skills emphasis, and rewriting bullets to match the role.' },
+                { title: 'Instant DOCX Download', desc: 'Download your AI-optimized resume as a professionally formatted DOCX file that is ATS-safe, recruiter-ready, and fully editable.' },
+              ].map((item, i) => (
+                <div key={i} className={`home-ai-accordion-item${activeTab === i ? ' open' : ''}`} onClick={() => setActiveTab(i === activeTab ? -1 : i)}>
+                  <div className="home-ai-accordion-header">
+                    <span className="home-ai-accordion-title">{item.title}</span>
+                    <span className="home-ai-accordion-chevron">{activeTab === i ? '−' : '+'}</span>
                   </div>
+                  {activeTab === i && (
+                    <div className="home-ai-accordion-body">{item.desc}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="home-ai-features-right">
+            <div className="home-ai-mock-ui">
+              <div className="home-ai-mock-header">
+                <div className="home-mock-dot red" /><div className="home-mock-dot yellow" /><div className="home-mock-dot green" />
+                <span className="home-mock-title">AI Resume Analyzer</span>
+              </div>
+              <div className="home-ai-mock-body">
+                <div className="home-ai-score-row">
+                  <div className="home-ai-score-circle">
+                    <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%' }}>
+                      <path fill="none" stroke="#f3f4f6" strokeWidth="3" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path fill="none" stroke="#2dc08d" strokeWidth="3" strokeLinecap="round" strokeDasharray="85, 100" style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <span className="home-ai-score-num">85</span>
+                  </div>
+                  <div>
+                    <div className="home-ai-score-label">ATS Score</div>
+                    <div className="home-ai-score-status">Great match ✓</div>
+                  </div>
+                </div>
+                <div className="home-ai-section-label">Keyword Analysis</div>
+                {[['React.js', 98, '#2dc08d'], ['TypeScript', 92, '#2dc08d'], ['AWS Cloud', 74, '#3b82f6'], ['System Design', 55, '#f59e0b']].map(([skill, pct, color]) => (
+                  <div key={skill as string} className="home-ai-bar-row">
+                    <span className="home-ai-skill">{skill}</span>
+                    <div className="home-ai-track"><div className="home-ai-fill" style={{ width: `${pct}%`, background: color as string }} /></div>
+                    <span className="home-ai-pct">{pct}%</span>
+                  </div>
+                ))}
+                <div className="home-ai-chips">
+                  <span className="home-ai-chip home-ai-chip-green">✓ Format OK</span>
+                  <span className="home-ai-chip home-ai-chip-green">✓ One Page</span>
+                  <span className="home-ai-chip home-ai-chip-amber">⚠ 3 gaps</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                  {errorMsg && (
-                    <div className="error-message-bar animate-fade-in-up">
-                      <ShieldAlert className="error-icon" />
-                      <span>{errorMsg}</span>
+
+      {/* ── 6. ALTERNATING: Proofreading ─────────────────────── */}
+      <section className="home-alt2-section home-alt2-white">
+        <div className="home-alt2-inner">
+          <div className="home-alt2-content">
+            <span className="home-alt2-eyebrow">AI Proofreading</span>
+            <h2 className="home-alt2-title">Leave proofreading<br />to AI tech</h2>
+            <p className="home-alt2-desc">Our AI catches typos, grammar mistakes, weak phrasing, and passive voice — then rewrites everything to sound polished and professional. One click, zero errors.</p>
+            <ul className="home-alt2-bullets">
+              {['Grammar and spelling correction', 'Passive to active voice conversion', 'Weak verb replacement with power verbs', 'Tone alignment for your target industry'].map(b => (
+                <li key={b}><span className="home-check-icon">✓</span>{b}</li>
+              ))}
+            </ul>
+            <button className="home-alt2-btn" onClick={() => setCurrentPage('dashboard')}>Try AI Proofreading →</button>
+          </div>
+          <div className="home-alt2-visual">
+            <div className="home-proof-card">
+              <div className="home-proof-header">
+                <span className="home-proof-badge home-proof-badge-red">Before AI</span>
+              </div>
+              <div className="home-proof-line home-proof-line-strike">Responsible for managing team projects and doing tasks</div>
+              <div className="home-proof-line home-proof-line-strike">Helped with customer service issues and stuff</div>
+              <div className="home-proof-divider">AI Rewritten ✨</div>
+              <div className="home-proof-line home-proof-line-green">Led cross-functional teams, delivering 12 projects 15% under budget</div>
+              <div className="home-proof-line home-proof-line-green">Resolved 200+ customer escalations, achieving 98% satisfaction score</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 7. ALTERNATING: Job Tailoring (reversed) ─────────── */}
+      <section className="home-alt2-section home-alt2-gray">
+        <div className="home-alt2-inner home-alt2-reversed">
+          <div className="home-alt2-visual">
+            <div className="home-mock-panel">
+              <div className="home-mock-header">
+                <div className="home-mock-dot red" /><div className="home-mock-dot yellow" /><div className="home-mock-dot green" />
+                <span className="home-mock-title">Resume Tailor · AI Match</span>
+              </div>
+              <div className="home-mock-body">
+                <div className="home-mock-label">Job Description Paste</div>
+                <div className="home-mock-input">Senior Frontend Engineer at Google — React, TypeScript, AWS...</div>
+                <div className="home-mock-label" style={{ marginTop: '0.85rem' }}>AI Match Results</div>
+                {[['React.js', 98], ['TypeScript', 95], ['AWS Cloud', 78], ['System Design', 62]].map(([skill, pct]) => (
+                  <div key={skill as string} className="home-mock-bar-row">
+                    <span className="home-mock-skill">{skill}</span>
+                    <div className="home-mock-track"><div className="home-mock-fill" style={{ width: `${pct}%`, background: Number(pct) >= 90 ? '#22c55e' : Number(pct) >= 70 ? '#3b82f6' : '#f59e0b' }} /></div>
+                    <span className="home-mock-pct">{pct}%</span>
+                  </div>
+                ))}
+                <div className="home-mock-cta-row">
+                  <span className="home-mock-score-badge">Match Score: 83%</span>
+                  <span className="home-mock-fix-btn">Auto-Fix →</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="home-alt2-content">
+            <span className="home-alt2-eyebrow">Job Tailoring</span>
+            <h2 className="home-alt2-title">Tailor your resume<br />in one click</h2>
+            <p className="home-alt2-desc">Paste a job description and our AI instantly aligns your resume — keywords, skills, achievements — for maximum ATS score and recruiter match.</p>
+            <ul className="home-alt2-bullets">
+              {['JD keyword matching and injection', 'Skills gap detection and fill', 'Achievement rewriting with metrics', 'Match score percentage shown'].map(b => (
+                <li key={b}><span className="home-check-icon">✓</span>{b}</li>
+              ))}
+            </ul>
+            <button className="home-alt2-btn" onClick={() => setCurrentPage('tailor')}>Try Resume Tailoring →</button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. ALTERNATING: ATS Beat ─────────────────────────── */}
+      <section className="home-alt2-section home-alt2-white">
+        <div className="home-alt2-inner">
+          <div className="home-alt2-content">
+            <span className="home-alt2-eyebrow">ATS Beating</span>
+            <h2 className="home-alt2-title">Make sure your resume<br />beats the ATS</h2>
+            <p className="home-alt2-desc">Our AI tests your resume against real ATS engines and tells you exactly what to fix. Stop getting rejected before a human ever sees your resume.</p>
+            <ul className="home-alt2-bullets">
+              {['Real ATS engine simulation', 'Section-by-section breakdown', 'Instant keyword gap list', 'One-click auto-fix suggestions'].map(b => (
+                <li key={b}><span className="home-check-icon">✓</span>{b}</li>
+              ))}
+            </ul>
+            <button className="home-alt2-btn" onClick={scrollToScore}>Get My ATS Score →</button>
+          </div>
+          <div className="home-alt2-visual">
+            <div className="home-ats-visual-card">
+              <div className="home-ats-vc-header">ATS Compatibility Report</div>
+              <div className="home-ats-vc-score-row">
+                <div className="home-ats-vc-score">85<span>/100</span></div>
+                <div className="home-ats-vc-status">Strong Pass ✓</div>
+              </div>
+              <div className="home-ats-vc-checks">
+                {[
+                  { label: 'Keywords Found', status: 'pass', value: '18/22' },
+                  { label: 'Formatting Safe', status: 'pass', value: '✓' },
+                  { label: 'Section Titles', status: 'pass', value: '✓' },
+                  { label: 'Skills Match', status: 'warn', value: '74%' },
+                  { label: 'Missing Keywords', status: 'fail', value: '4 gaps' },
+                ].map(check => (
+                  <div key={check.label} className={`home-ats-vc-check home-ats-vc-check-${check.status}`}>
+                    <span className="home-ats-vc-check-icon">{check.status === 'pass' ? '✓' : check.status === 'warn' ? '⚠' : '✗'}</span>
+                    <span className="home-ats-vc-check-label">{check.label}</span>
+                    <span className="home-ats-vc-check-value">{check.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 9. UPLOAD / SCORE SECTION ────────────────────────── */}
+      <section ref={scoreRef} className="home-score-section">
+        <div className="home-score-inner">
+          <div className="home-score-text">
+            <span className="home-score-eyebrow">Free ATS Check</span>
+            <h2 className="home-score-title">Get Your Resume Score in Seconds</h2>
+            <p className="home-score-sub">Upload your resume and instantly see your ATS compatibility score, keyword gaps, formatting issues, and AI-powered fix suggestions.</p>
+            <div className="home-score-badges">
+              <span className="home-score-badge"><ShieldCheck size={13} /> Privacy guaranteed</span>
+              <span className="home-score-badge"><CheckCircle2 size={13} /> Instant results</span>
+              <span className="home-score-badge"><Sparkles size={13} /> AI-powered</span>
+            </div>
+          </div>
+          <div className="home-score-upload">
+            <div className="upload-section">
+              <div className="upload-wrapper">
+                <div
+                  className={`upload-zone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''} ${loading ? 'is-loading' : ''}`}
+                  onDragEnter={handleDrag}
+                  onDragOver={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDrop={handleDrop}
+                >
+                  <input ref={fileInputRef} type="file" className="file-input-hidden" accept=".pdf,.docx,.txt" onChange={handleChange} disabled={loading} />
+                  {loading ? (
+                    <div className="loading-state">
+                      <div className="shimmer-scanner" /><div className="spinner-wrapper"><div className="premium-spinner" /></div>
+                      <h3 className="loading-title">Analyzing Your Resume</h3>
+                      <p className="loading-step-text animate-pulse">{analysisSteps[loadingStep]}</p>
+                      <div className="progress-bar-container"><div className="progress-bar-fill" style={{ width: `${((loadingStep + 1) / analysisSteps.length) * 100}%` }} /></div>
+                    </div>
+                  ) : selectedFile ? (
+                    <div className="file-selected-state">
+                      <div className="file-icon-wrapper"><FileText className="file-icon" /></div>
+                      <div className="file-details">
+                        <span className="file-name">{selectedFile.name}</span>
+                        <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                      </div>
+                      <div className="file-actions">
+                        <button className="btn-secondary" onClick={removeFile}>Remove</button>
+                        <button className="btn-primary" onClick={handleAnalyze}>Analyze Resume <ArrowRight size={18} /></button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="upload-prompt-state" onClick={onButtonClick}>
+                      <Upload className="upload-icon" />
+                      <button className="upload-cta" type="button">Upload Your Resume</button>
+                      <div className="privacy-note"><Lock size={14} /> Privacy guaranteed</div>
+                      <div className="file-limits-info">PDF, DOCX, or TXT up to 5MB</div>
                     </div>
                   )}
                 </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div 
-            className="hero-right-visual"
-            ref={sceneRef}
-            onMouseMove={handleMouseMove3D}
-            onMouseLeave={handleMouseLeave3D}
-          >
-            <div className="scene-3d-wrapper">
-              <div className="scene-3d" style={tiltStyle}>
-                {/* 1. Profile Badge (floating top-left) */}
-                <div className="floating-element float-profile glass-card">
-                  <div className="profile-avatar-circle">
-                    <img 
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80" 
-                      alt="Profile" 
-                      className="profile-avatar" 
-                    />
+                {errorMsg && (
+                  <div className="error-message-bar animate-fade-in-up">
+                    <ShieldAlert className="error-icon" /><span>{errorMsg}</span>
                   </div>
-                  <div className="profile-info">
-                    <span className="profile-name-tag">Sarah Jenkins</span>
-                    <span className="profile-role-tag">Senior Software Engineer</span>
-                  </div>
-                </div>
-
-                {/* 2. ATS Score Circle Badge (floating top-right) */}
-                <div className="floating-element float-score glass-card">
-                  <div className="score-ring-container-3d">
-                    <svg className="score-ring-svg-3d" viewBox="0 0 36 36">
-                      <path className="ring-bg-3d" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                      <path className="ring-fill-3d" strokeDasharray="88, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    </svg>
-                    <div className="score-ring-text-3d">88</div>
-                  </div>
-                  <div className="score-details-3d">
-                    <span className="score-title-3d">ATS Score</span>
-                    <span className="score-status-3d">Perfect Rank</span>
-                  </div>
-                </div>
-
-                {/* 3. The Main Resume Card (Tilted centerpiece) */}
-                <div className="resume-3d-card glass-card">
-                  <div className="resume-3d-header">
-                    <div className="resume-3d-name-bar">Sarah Jenkins</div>
-                    <div className="resume-3d-sub-bar">Senior Software Engineer • San Francisco, CA • sarah.j@gmail.com</div>
-                  </div>
-                  <div className="resume-3d-body">
-                    <div className="resume-3d-section-title">Professional Summary</div>
-                    <div className="resume-3d-text-line">Highly driven engineer with 6+ years of experience...</div>
-                    <div className="resume-3d-text-line short">Focused on scalable cloud architecture and intuitive interfaces.</div>
-                    
-                    <div className="resume-3d-section-title">Core Experience</div>
-                    <div className="resume-3d-exp-block">
-                      <div className="resume-3d-exp-title">Lead Engineer @ Tech Corp <span className="resume-3d-date">2023 - Pres</span></div>
-                      <div className="resume-3d-text-line">• Spearheaded transition to serverless, reducing latency by 42%.</div>
-                      <div className="resume-3d-text-line short-mid">• Mentored 6 developers, standardizing pipeline architecture.</div>
-                    </div>
-                    <div className="resume-3d-exp-block">
-                      <div className="resume-3d-exp-title">Software Developer @ SaaS Inc <span className="resume-3d-date">2020 - 2023</span></div>
-                      <div className="resume-3d-text-line">• Built complex React dashboards, increasing engagement by 18%.</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 4. Skills Panel Card (floating bottom-left) */}
-                <div className="floating-element float-skills glass-card">
-                  <span className="skills-heading-3d">Matched Keywords</span>
-                  <div className="skills-tags-3d">
-                    <span className="skill-tag-3d green">React.js</span>
-                    <span className="skill-tag-3d green">TypeScript</span>
-                    <span className="skill-tag-3d green">Node.js</span>
-                    <span className="skill-tag-3d purple">AWS Cloud</span>
-                  </div>
-                </div>
-
-                {/* 5. Recruiter Checklist Card (floating bottom-right) */}
-                <div className="floating-element float-checklist glass-card">
-                  <span className="checklist-heading-3d">Format Audit</span>
-                  <div className="checklist-items-3d">
-                    <div className="checklist-item-3d">
-                      <CheckCircle2 size={12} className="check-icon-3d" />
-                      <span>Quantified Metrics (12x)</span>
-                    </div>
-                    <div className="checklist-item-3d">
-                      <CheckCircle2 size={12} className="check-icon-3d" />
-                      <span>Active Action Verbs</span>
-                    </div>
-                    <div className="checklist-item-3d">
-                      <CheckCircle2 size={12} className="check-icon-3d" />
-                      <span>One-Page Rule Safe</span>
-                    </div>
-                  </div>
-                </div>
-
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-           360° Rotating Product Cards Section
-      ══════════════════════════════════════════════════════════ */}
-      <HomeProductCarousel setCurrentPage={setCurrentPage} />
-
-      <section className="security-badges-row">
-        <div className="sec-badge">
-          <ShieldCheck size={16} className="sec-icon" />
-          <span>Private in-memory parsing</span>
-        </div>
-        <div className="sec-badge">
-          <CheckCircle2 size={16} className="sec-icon" />
-          <span>Instant ATS scorecard</span>
-        </div>
-        <div className="sec-badge">
-          <Sparkles size={16} className="sec-icon" />
-          <span>AI rewrite suggestions</span>
-        </div>
-      </section>
-
-      <section className="steps-section">
-        <div className="section-heading-row">
-          <span>How it works</span>
-          <h2 className="section-title">From raw resume to job-ready in five steps</h2>
-          <p className="section-subtitle">Upload once — get a full audit, an AI-rewritten resume, and a recruiter-ready DOCX file.</p>
-        </div>
-        <div className="steps-grid steps-grid-5">
-          <div className="step-card">
-            <div className="step-icon"><Upload size={22} /></div>
-            <span>Step 01</span>
-            <h3>Upload Your Resume</h3>
-            <p>Drop a PDF, DOCX, or TXT file. Your document is parsed entirely in memory — never saved to disk.</p>
-          </div>
-          <div className="step-card">
-            <div className="step-icon"><Search size={22} /></div>
-            <span>Step 02</span>
-            <h3>AI Deep Scan</h3>
-            <p>Our AI checks ATS keyword gaps, weak bullet points, formatting issues, and overall recruiter readability in seconds.</p>
-          </div>
-          <div className="step-card">
-            <div className="step-icon"><BarChart3 size={22} /></div>
-            <span>Step 03</span>
-            <h3>Review Your Scorecard</h3>
-            <p>See your full score, top strengths, major gaps, matched and missing ATS keywords — all in one clear dashboard.</p>
-          </div>
-          <div className="step-card step-card-highlight">
-            <div className="step-icon step-icon-glow"><Wand2 size={22} /></div>
-            <span>Step 04</span>
-            <h3>AI Auto-Fixes Resume</h3>
-            <p>Click <strong>"AI Auto-Fix Resume"</strong> — the AI rewrites your entire resume: injects missing keywords, replaces weak bullets with quantified achievements, and restructures every section for maximum ATS score.</p>
-          </div>
-          <div className="step-card step-card-highlight">
-            <div className="step-icon step-icon-glow"><FileDown size={22} /></div>
-            <span>Step 05</span>
-            <h3>Download as DOCX</h3>
-            <p>Get your AI-optimized resume as a professionally formatted <strong>.docx</strong> Word file — ATS-safe layout, clean section headers, action-verb bullets, ready to send to recruiters.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Way beyond a resume builder section */}
-      <section className="beyond-section animate-fade-in-up">
-        <h2 className="beyond-section-title">Way beyond a resume builder</h2>
-        <p className="beyond-section-subtitle">Discover powerful AI features that elevate your job search and guarantee recruiter callbacks.</p>
-
-        <div className="beyond-grid">
-          
-          {/* Card 1: Step-by-step guidance */}
-          <div className="beyond-card glass-card">
-            <div className="beyond-card-content">
-              <span className="beyond-card-badge">✦ AI-powered</span>
-              <h3 className="beyond-card-title">Step-by-step guidance</h3>
-              <p className="beyond-card-desc">No need to think much. We guide you through every step of the process. We show you what to add, and where to add it. It's clear and simple.</p>
-              <button className="beyond-card-link" onClick={() => setCurrentPage('resume-builder')}>
-                Create my resume <ArrowRight size={14} />
+      {/* ── 10. ONE PLACE TABS ───────────────────────────────── */}
+      <section className="home-tabs-section">
+        <div className="home-tabs-inner">
+          <h2 className="home-tabs-title">One place to run your entire job search</h2>
+          <p className="home-tabs-sub">Every tool you need to go from unemployed to employed — in one AI-powered platform.</p>
+          <div className="home-tabs-nav">
+            {tabs.map((tab, i) => (
+              <button
+                key={tab.label}
+                className={`home-tab-btn${activeTab === i ? ' home-tab-btn-active' : ''}`}
+                onClick={() => setActiveTab(i)}
+              >
+                <span className="home-tab-icon">{tab.icon}</span>
+                {tab.label}
               </button>
-            </div>
-            <div className="beyond-card-visual guidance-visual">
-              <div className="visual-step visual-step-done">
-                <span className="step-check">✓</span>
-                <span className="step-name">Step 1 • Personal Details</span>
-              </div>
-              <div className="visual-step visual-step-done">
-                <span className="step-check">✓</span>
-                <span className="step-name">Step 2 • Professional Summary</span>
-              </div>
-              <div className="visual-step visual-step-active">
-                <span className="step-dot"></span>
-                <span className="step-name">Step 3 • Skills</span>
-                <span className="step-link-icon">🔗</span>
-              </div>
-              <div className="visual-skills-list">
-                <span className="visual-skill-chip">Management Skills <span>+</span></span>
-                <span className="visual-skill-chip">Leadership and Team... <span>+</span></span>
-                <span className="visual-skill-chip">Computer Skills <span>+</span></span>
-                <span className="visual-skill-chip">Analytical Thinking <span>+</span></span>
-              </div>
-            </div>
+            ))}
           </div>
-
-          {/* Card 2: AI writes for you */}
-          <div className="beyond-card glass-card">
-            <div className="beyond-card-content">
-              <span className="beyond-card-badge">✦ AI-powered</span>
-              <h3 className="beyond-card-title">AI writes for you</h3>
-              <p className="beyond-card-desc">Speak into the mic and the AI fixes mistakes. Stuck? Click to add phrases that sound professional.</p>
-            </div>
-            <div className="beyond-card-visual ai-writes-visual">
-              <div className="visual-editor-card">
-                <h4 className="visual-editor-heading">Professional Summary</h4>
-                <p className="visual-editor-sub">Write 2-4 short sentences to interest the reader. Mention your role, experience & most importantly - your biggest achievements.</p>
-                <div className="visual-editor-toolbar">
-                  <span>B</span><span>I</span><span>U</span><span>S</span><span>≡</span><span>≡</span><span>🔗</span><span>A</span>
-                </div>
-                <div className="visual-editor-text">
-                  Experienced and effective Business Development Manager bringing a <span className="text-highlight">significant value and a genuine passion for management.</span> With a proven track record of driving growth and fostering strong client relationships...
-                </div>
+          <div className="home-tabs-content">
+            <div className="home-tabs-panel">
+              <div className="home-tabs-panel-text">
+                <h3 className="home-tabs-panel-title">{tabs[activeTab]?.label}</h3>
+                <p className="home-tabs-panel-desc">
+                  {activeTab === 0 && 'Upload your resume and get an instant ATS score with keyword gap analysis, formatting feedback, and AI-powered suggestions to improve your interview callback rate.'}
+                  {activeTab === 1 && 'Our AI rewrites your entire resume — replacing weak bullets with power verbs, injecting keywords, and restructuring your experience to maximize ATS compatibility.'}
+                  {activeTab === 2 && 'Paste any job description and our AI instantly tailors your resume to match the role — aligning keywords, skills, and achievements for a 90%+ match score.'}
+                  {activeTab === 3 && 'Practice behavioral interviews with our AI coach. Get STAR-framework feedback, confidence scoring, and real-time suggestions to ace any interview.'}
+                  {activeTab === 4 && 'Optimize your LinkedIn profile with AI-generated headlines, summaries, and outreach messages that attract recruiters and triple your profile views.'}
+                  {activeTab === 5 && 'Get a personalized 5-year career roadmap with milestones, certifications, and skill progression paths tailored to your target role.'}
+                  {activeTab === 6 && 'Match your resume against thousands of jobs across LinkedIn, Indeed, and Glassdoor. Get curated job recommendations with match scores and direct apply links.'}
+                </p>
+                <button className="home-tabs-panel-btn" onClick={() => setCurrentPage(tabPages[activeTab] || 'dashboard')}>
+                  Try {tabs[activeTab]?.label} →
+                </button>
               </div>
-            </div>
-          </div>
-
-          {/* Card 3: Instant cover letters */}
-          <div className="beyond-card glass-card">
-            <div className="beyond-card-content">
-              <span className="beyond-card-badge">✦ AI-powered</span>
-              <h3 className="beyond-card-title">Instant cover letters</h3>
-              <p className="beyond-card-desc">Just paste a job link. We create a matching cover letter, using your resume. You're done in 2 mins! Purpose built to impress recruiters.</p>
-            </div>
-            <div className="beyond-card-visual cover-letter-visual">
-              <div className="visual-cl-card">
-                <div className="visual-cl-header">
-                  <span className="cl-avatar-text">JS</span>
-                  <div>
-                    <h5 className="cl-name">JORGE SANDERS</h5>
-                    <span className="cl-role">Financial Analyst</span>
+              <div className="home-tabs-panel-visual">
+                <div className="home-tabs-mock">
+                  <div className="home-tabs-mock-bar">
+                    <div className="home-mock-dot red" /><div className="home-mock-dot yellow" /><div className="home-mock-dot green" />
+                    <span className="home-mock-title">{tabs[activeTab]?.label}</span>
+                  </div>
+                  <div className="home-tabs-mock-body">
+                    <div className="home-tabs-mock-lines">
+                      <div className="home-tabs-mock-line" style={{ width: '90%' }} />
+                      <div className="home-tabs-mock-line" style={{ width: '75%' }} />
+                      <div className="home-tabs-mock-line" style={{ width: '85%' }} />
+                      <div className="home-tabs-mock-line" style={{ width: '60%' }} />
+                    </div>
+                    <div className="home-tabs-mock-badge">{tabs[activeTab]?.icon} Ready</div>
                   </div>
                 </div>
-                <div className="visual-cl-body">
-                  <div className="cl-line" />
-                  <div className="cl-line" />
-                  <div className="cl-line" />
-                  <div className="cl-line-short" />
-                </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Card 4: Paste any job link */}
-          <div className="beyond-card glass-card">
-            <div className="beyond-card-content">
-              <h3 className="beyond-card-title">Paste any job link</h3>
-              <p className="beyond-card-desc">Simple and effective. We have the formula that works for recruiters. Just paste the job description and we pre-build your resume to match.</p>
-            </div>
-            <div className="beyond-card-visual paste-link-visual">
-              <div className="visual-paste-panel">
-                <div className="paste-input-container">
-                  <span className="paste-search-icon">🔍</span>
-                  <span className="paste-url-text">https://www.monster.com/product-designer-meta-2...</span>
-                  <span className="paste-check-icon">✓</span>
-                </div>
-                <div className="paste-tip">Example: https://www.ziprecruiter.com/jobs/company/position</div>
-                <div className="paste-buttons">
-                  <button className="paste-btn-cancel">Cancel</button>
-                  <button className="paste-btn-continue">Continue</button>
-                </div>
+      {/* ── 11. FINAL CTA BANNER ─────────────────────────────── */}
+      <section className="home-final-cta">
+        <div className="home-final-cta-inner">
+          <div className="home-final-stars">{'★★★★★'} <span>Rated 4.9 by 12,400+ users</span></div>
+          <h2 className="home-final-title">Ready to land more interviews?</h2>
+          <p className="home-final-sub">Join 50,000+ job seekers who improved their resume score and got hired faster with AI.</p>
+          <div className="home-final-actions">
+            <button className="home-final-btn-primary" onClick={() => setCurrentPage('resume-builder')}>Build Your Resume Free</button>
+            <button className="home-final-btn-secondary" onClick={scrollToScore}>Get ATS Score</button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 12. FAQ ──────────────────────────────────────────── */}
+      <section className="home-faq-section">
+        <div className="home-faq-inner">
+          <h2 className="home-faq-title">Frequently Asked Questions</h2>
+          <p className="home-faq-sub">Everything you need to know about our AI resume tools.</p>
+          <div className="home-faq-list">
+            {faqs.map((faq, i) => (
+              <div key={i} className={`home-faq-item${openFaq === i ? ' open' : ''}`}>
+                <button className="home-faq-question" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                  <span>{faq.q}</span>
+                  <span className="home-faq-chevron">{openFaq === i ? '−' : '+'}</span>
+                </button>
+                {openFaq === i && (
+                  <div className="home-faq-answer">{faq.a}</div>
+                )}
               </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Feature Section */}
-      <section className="features-section">
-        <div className="section-heading-row">
-          <h2 className="section-title">Deep Resume Diagnostics</h2>
-          <p className="section-subtitle">What our artificial recruiter evaluates in your document:</p>
-        </div>
-        
-        <div className="responsive-grid features-grid">
-          <div className="feature-card glass-card">
-            <div className="feature-header">
-              <span className="feature-number">01</span>
-              <h3 className="feature-card-title">ATS Keyword Matrix</h3>
-            </div>
-            <p className="feature-desc">
-              Scans your resume against top corporate recruitment models. Identifies critical industry skills, toolsets, and terms that are missing.
-            </p>
-          </div>
-
-          <div className="feature-card glass-card">
-            <div className="feature-header">
-              <span className="feature-number">02</span>
-              <h3 className="feature-card-title">Quantified Achievements</h3>
-            </div>
-            <p className="feature-desc">
-              Checks whether your experience contains numbers, growth percentages, or dollar amounts. Replaces passive phrases with high-impact achievements.
-            </p>
-          </div>
-
-          <div className="feature-card glass-card">
-            <div className="feature-header">
-              <span className="feature-number">03</span>
-              <h3 className="feature-card-title">Recruiter Formatting</h3>
-            </div>
-            <p className="feature-desc">
-              Audits document structure, spacing, font hierarchy, layout design, and page budget sizing, ensuring it passes the 6-second recruiter test.
-            </p>
+            ))}
           </div>
         </div>
       </section>
+
+
     </div>
   );
 }

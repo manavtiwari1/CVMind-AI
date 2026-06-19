@@ -249,7 +249,7 @@
 .capability-card:hover {
   transform: translateY(-4px);
   border-color: var(--border-strong);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(41, 151, 255, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 .capability-icon-wrapper {

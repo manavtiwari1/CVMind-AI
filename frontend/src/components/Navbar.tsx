@@ -1,9 +1,20 @@
 import { useState, useEffect } from 'react';
 import { 
-  ChevronDown, ChevronRight, Menu, X, User, Briefcase, Mail, Settings, 
+  ChevronDown, Menu, X, User, Briefcase, Mail, Settings,
   LogOut, Loader2, Trash2, Edit3, Sparkles, MapPin, Key, Lock, AlertCircle, FileText, Camera,
-  Sun, Moon, Globe
+  Globe
 } from 'lucide-react';
+import { 
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuPopup,
+  NavigationMenuPositioner,
+  NavigationMenuTrigger,
+  NavigationMenuArrow,
+} from './ui/navigation-menu-1';
 import cvmindLogo from '../assets/cvmind_logo_transparent.png';
 import './Navbar.css';
 
@@ -16,8 +27,6 @@ interface NavbarProps {
   setShowAuthModal: (show: boolean) => void;
   handleSignOut: () => void;
   setLoadedWork: (work: any) => void;
-  theme: string;
-  toggleTheme: () => void;
 }
 
 export default function Navbar({ 
@@ -26,9 +35,7 @@ export default function Navbar({
   isLoggedIn, 
   setShowAuthModal, 
   handleSignOut,
-  setLoadedWork,
-  theme,
-  toggleTheme
+  setLoadedWork
 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -84,7 +91,8 @@ export default function Navbar({
     }
   }, [isLoggedIn]);
 
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
+  const [_activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
 
   // Click outside listener for dropdowns
   useEffect(() => {
@@ -94,6 +102,13 @@ export default function Navbar({
     };
     window.addEventListener('click', handleOutsideClick);
     return () => window.removeEventListener('click', handleOutsideClick);
+  }, []);
+
+  // Scroll shadow effect
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const go = (page: string) => {
@@ -259,7 +274,7 @@ export default function Navbar({
 
   return (
     <>
-      <header className="navbar-header">
+      <header className={`navbar-header${scrolled ? ' scrolled' : ''}`}>
       <div className="navbar-container">
 
         {/* Brand / Logo */}
@@ -268,156 +283,140 @@ export default function Navbar({
           <span className="navbar-brand-name">CVMind AI</span>
         </div>
 
-        {/* Center Navigation */}
-        <nav className="navbar-nav" aria-label="Main navigation">
-          {[
-            { label: 'Home', page: 'home' },
-            { label: 'Dashboard', page: 'dashboard' },
-          ].map(({ label, page }) => (
-            <button
-              key={page}
-              className={`nav-link${currentPage === page ? ' active' : ''}`}
-              onClick={() => go(page)}
-            >
-              {label}
-            </button>
-          ))}
+        {/* Center Navigation — Enhancv style: 4 clean items */}
+        <div className="navbar-nav" style={{ display: 'flex', alignItems: 'center' }}>
+          <NavigationMenu>
+            <NavigationMenuList>
 
-          {/* Resume Builder nav link */}
-          <button
-            className={`nav-link${currentPage === 'resume-builder' ? ' active' : ''}`}
-            onClick={() => go('resume-builder')}
-          >
-            Resume Builder
-          </button>
-
-          {/* Products Dropdown */}
-          <div className="nav-dropdown-container">
-            <button
-              className={`nav-link dropdown-toggle${['tailor', 'prep', 'voice-prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'portfolio-gen', 'job-finder'].includes(currentPage) ? ' active' : ''}`}
-            >
-              Products <ChevronDown size={12} className="dropdown-arrow" />
-            </button>
-            <div className="nav-dropdown-menu">
-              {[
-                { label: 'AI Resume Analyzer', page: 'home' },
-                { label: 'AI Resume Tailorer', page: 'tailor' },
-                { 
-                  label: 'SmartPrep AI',
-                  submenuKey: 'smartprep',
-                  subItems: [
-                    { label: 'Interview Prep AI', page: 'prep' },
-                    { label: 'Voice Practice AI', page: 'voice-prep' }
-                  ]
-                },
-                { 
-                  label: 'LinkedIn Optimizer',
-                  submenuKey: 'linkedin',
-                  subItems: [
-                    { label: 'Profile PDF Audit', page: 'linkedin' },
-                    { label: 'Bio & Banner Generator', page: 'linkedin-bio' },
-                    { label: 'Outreach & DM Writer', page: 'linkedin-outreach' },
-                    { label: 'Post Generator', page: 'linkedin-post' }
-                  ]
-                },
-                { 
-                  label: 'Career Path AI',
-                  submenuKey: 'career',
-                  subItems: [
-                    { label: 'Skill Gaps & Courses', page: 'career-courses' },
-                    { label: 'Elevator Pitch Builder', page: 'elevator-pitch' },
-                    { label: 'Interactive Career Roadmap', page: 'career-roadmap' }
-                  ]
-                },
-                { label: 'Portfolio Generator', page: 'portfolio-gen' },
-                { label: 'AI Job Finder', page: 'job-finder' },
-              ].map((item: any, idx: number) => {
-                if (item.subItems) {
-                  const isOpen = activeSubmenu === item.submenuKey;
-                  return (
-                    <div className={`nav-subdropdown-container${isOpen ? ' open' : ''}`} key={idx}>
-                      <button 
-                        className="dropdown-item" 
-                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setActiveSubmenu(prev => prev === item.submenuKey ? null : item.submenuKey);
-                        }}
-                      >
-                        {item.label} <ChevronRight size={10} />
-                      </button>
-                      <div className="nav-subdropdown-menu">
-                        {item.subItems.map((sub: any) => (
-                          <button
-                            key={sub.page}
-                            className={`dropdown-item${currentPage === sub.page ? ' active' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              go(sub.page);
-                              setActiveSubmenu(null);
-                            }}
-                          >
-                            {sub.label}
-                          </button>
-                        ))}
-                      </div>
+              {/* 1. Resume ▾ */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger
+                  className={`nav-link nav-link-trigger${['home','resume-builder','tailor','portfolio-gen'].includes(currentPage) ? ' active' : ''}`}
+                >
+                  Resume
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="nav-menu-grid-2cols" style={{ minWidth: '420px' }}>
+                    <div className="nav-menu-column">
+                      <span className="nav-menu-column-header">Build</span>
+                      <NavigationMenuLink render={<button onClick={() => go('resume-builder')} />}>
+                        <div className="font-medium">Resume Builder</div>
+                        <div className="text-muted-foreground">Create a professional resume in minutes.</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('portfolio-gen')} />}>
+                        <div className="font-medium">Portfolio Generator</div>
+                        <div className="text-muted-foreground">Build a shareable portfolio site.</div>
+                      </NavigationMenuLink>
                     </div>
-                  );
-                }
-                const isLocked = item.page === 'job-finder' && !isWhitelisted;
-                return (
-                  <button
-                    key={item.page}
-                    className={`dropdown-item${currentPage === item.page ? ' active' : ''}`}
-                    onClick={() => go(item.page)}
-                    style={isLocked ? { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } : {}}
-                  >
-                    <span>{item.label}</span>
-                    {isLocked && <Lock size={12} style={{ color: '#ff453a', marginLeft: '8px' }} />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                    <div className="nav-menu-column">
+                      <span className="nav-menu-column-header">Optimize</span>
+                      <NavigationMenuLink render={<button onClick={() => go('home')} />}>
+                        <div className="font-medium">Resume Checker</div>
+                        <div className="text-muted-foreground">Audit your ATS score & keywords.</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('tailor')} />}>
+                        <div className="font-medium">Resume Tailorer</div>
+                        <div className="text-muted-foreground">Match any job description instantly.</div>
+                      </NavigationMenuLink>
+                    </div>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
 
-          {[
-            { label: 'About', page: 'about' },
-            { label: 'Contact', page: 'contact' },
-          ].map(({ label, page }) => (
-            <button
-              key={page}
-              className={`nav-link${currentPage === page ? ' active' : ''}`}
-              onClick={() => go(page)}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
+              {/* 2. AI Tools ▾ */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger
+                  className={`nav-link nav-link-trigger${['prep','voice-prep','job-finder'].includes(currentPage) ? ' active' : ''}`}
+                >
+                  AI Tools
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="nav-menu-grid-2cols" style={{ minWidth: '420px' }}>
+                    <div className="nav-menu-column">
+                      <span className="nav-menu-column-header">Interview</span>
+                      <NavigationMenuLink render={<button onClick={() => go('prep')} />}>
+                        <div className="font-medium">Interview Prep AI</div>
+                        <div className="text-muted-foreground">Behavioral & STAR coaching.</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('voice-prep')} />}>
+                        <div className="font-medium">Voice Practice AI</div>
+                        <div className="text-muted-foreground">Real-time speaking feedback.</div>
+                      </NavigationMenuLink>
+                    </div>
+                    <div className="nav-menu-column">
+                      <span className="nav-menu-column-header">Job Search</span>
+                      <NavigationMenuLink render={<button onClick={() => go('job-finder')} disabled={!isWhitelisted} />}>
+                        <div className="font-medium" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          AI Job Finder {!isWhitelisted && <Lock size={10} style={{ color: '#ef4444' }} />}
+                        </div>
+                        <div className="text-muted-foreground">Curated roles matching your profile.</div>
+                      </NavigationMenuLink>
+                    </div>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {/* 3. LinkedIn & Career ▾ */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger
+                  className={`nav-link nav-link-trigger${['linkedin','linkedin-bio','linkedin-outreach','linkedin-post','career-courses','elevator-pitch','career-roadmap'].includes(currentPage) ? ' active' : ''}`}
+                >
+                  Career
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="nav-menu-grid-2cols" style={{ minWidth: '420px' }}>
+                    <div className="nav-menu-column">
+                      <span className="nav-menu-column-header">LinkedIn</span>
+                      <NavigationMenuLink render={<button onClick={() => go('linkedin')} />}>
+                        <div className="font-medium">Profile PDF Audit</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('linkedin-bio')} />}>
+                        <div className="font-medium">Bio & Banner Generator</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('linkedin-outreach')} />}>
+                        <div className="font-medium">Outreach & DM Writer</div>
+                      </NavigationMenuLink>
+                    </div>
+                    <div className="nav-menu-column">
+                      <span className="nav-menu-column-header">Career Path</span>
+                      <NavigationMenuLink render={<button onClick={() => go('career-courses')} />}>
+                        <div className="font-medium">Skill Gaps & Courses</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('elevator-pitch')} />}>
+                        <div className="font-medium">Elevator Pitch Builder</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('career-roadmap')} />}>
+                        <div className="font-medium">Career Roadmap</div>
+                      </NavigationMenuLink>
+                    </div>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {/* 4. Pricing (single link) */}
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  render={<button className={`nav-link${currentPage === 'contact' ? ' active' : ''}`} onClick={() => go('contact')} />}
+                >
+                  Pricing
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+            </NavigationMenuList>
+
+            <NavigationMenuPositioner>
+              <NavigationMenuPopup>
+                <NavigationMenuArrow />
+              </NavigationMenuPopup>
+            </NavigationMenuPositioner>
+          </NavigationMenu>
+        </div>
 
         {/* Right actions */}
         <div className="navbar-actions">
-          <button
-            className="theme-toggle-btn"
-            onClick={toggleTheme}
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
-          <button
-            className="navbar-cta"
-            style={{ 
-              marginRight: '0.25rem',
-              background: 'transparent',
-              border: '1px solid var(--blue)',
-              color: 'var(--blue)'
-            }}
-            onClick={() => go('resume-builder')}
-          >
-            Create Resume
-          </button>
           {isLoggedIn ? (
+            <>
+            <button className="navbar-login-link" onClick={() => go('dashboard')}>Dashboard</button>
             <div className="nav-profile-container" onClick={e => e.stopPropagation()}>
               <button 
                 className="nav-profile-trigger" 
@@ -466,13 +465,22 @@ export default function Navbar({
                 </div>
               )}
             </div>
+            </>
           ) : (
-            <button
-              className="navbar-cta"
-              onClick={() => setShowAuthModal(true)}
-            >
-              Sign In
-            </button>
+            <>
+              <button
+                className="navbar-login-link"
+                onClick={() => setShowAuthModal(true)}
+              >
+                Log in
+              </button>
+              <button
+                className="navbar-cta"
+                onClick={() => go('resume-builder')}
+              >
+                Get Started for free
+              </button>
+            </>
           )}
           {/* Mobile menu toggle */}
           <button
@@ -637,12 +645,13 @@ export default function Navbar({
         {isLoggedIn ? (
           <button
             className="navbar-cta"
-            style={{ 
+            style={{
               width: '100%',
-              background: 'rgba(255, 69, 58, 0.08)', 
-              color: 'var(--red)', 
-              border: '1px solid rgba(255, 69, 58, 0.22)',
-              padding: '0.65rem'
+              background: 'rgba(239, 68, 68, 0.08)',
+              color: '#ef4444',
+              border: '1px solid rgba(239, 68, 68, 0.22)',
+              padding: '0.65rem',
+              boxShadow: 'none'
             }}
             onClick={() => {
               handleSignOut();
@@ -660,7 +669,7 @@ export default function Navbar({
               setMobileOpen(false);
             }}
           >
-            Sign In
+            Get Started for free
           </button>
         )}
       </div>

@@ -11,6 +11,22 @@ export default function Blog({ setCurrentPage }: BlogProps) {
 
   const changelogData = [
     {
+      id: 9,
+      version: 'v2.6.0',
+      date: 'June 19, 2026',
+      title: 'Interactive Theme Transparency & Smooth Footer Transitions',
+      tag: 'UX Polish',
+      description: 'Major polish update to align the Home page, Resume Builder landing page, and global Footer component with the interactive DigitalSerenityBackground. Replaced solid color blocks with beautiful frosted glassmorphism elements.',
+      details: [
+        '<strong>Site-Wide Background Integration:</strong> Removed all solid color bands (#0d0d0d and #ffffff) on the Home page, allowing the serene animated grid background to flow smoothly across the entire viewport.',
+        '<strong>Premium Glassmorphism Panels:</strong> Redesigned the One Place Tab Navigation, active buttons, mockup boxes, and panels as frosted glass elements with high-readability text colors.',
+        '<strong>Frosted Glass FAQ Cards:</strong> Converted the FAQ accordion into a list of individual cards featuring hover lift offsets, subtle purplish borders, and clean layout padding.',
+        '<strong>Seamless Footer Transition:</strong> Transformed the solid footer block into a transparent, glassmorphic container with backdrop blur, resolving the abrupt cut-off when scrolling to the bottom of the screen.'
+      ],
+      icon: Sparkles,
+      badgeColor: 'badge-green'
+    },
+    {
       id: 8,
       version: 'v2.5.0',
       date: 'June 8, 2026',

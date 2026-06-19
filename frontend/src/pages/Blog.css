@@ -453,3 +453,65 @@
   color: var(--border-strong);
   font-weight: 300;
 }
+
+/* ── Light Mode Overrides for Blog Page ── */
+:root[data-theme='light'] .blog-filter-tag {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: var(--text-secondary);
+}
+
+:root[data-theme='light'] .blog-filter-tag:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.18);
+  color: var(--text-primary);
+}
+
+:root[data-theme='light'] .blog-filter-tag.active {
+  background: var(--gradient-brand);
+  border-color: var(--blue);
+  color: #ffffff;
+  box-weight: 700;
+  box-shadow: 0 4px 15px rgba(41, 151, 255, 0.2);
+}
+
+:root[data-theme='light'] .blog-icon-ring {
+  background: #ffffff;
+  border-color: var(--border);
+  color: var(--text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme='light'] .blog-card-item:hover .blog-icon-ring {
+  background: rgba(41, 151, 255, 0.05);
+  border-color: var(--blue);
+  color: var(--blue);
+  box-shadow: 0 0 20px rgba(41, 151, 255, 0.25);
+}
+
+:root[data-theme='light'] .blog-content-card {
+  background: var(--glass-bg);
+  border-color: var(--border);
+}
+
+:root[data-theme='light'] .blog-card-item:hover .blog-content-card {
+  border-color: var(--blue);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 0 15px rgba(41, 151, 255, 0.08);
+}
+
+:root[data-theme='light'] .blog-cta-card {
+  background: linear-gradient(135deg, rgba(41, 151, 255, 0.05) 0%, rgba(191, 90, 242, 0.03) 100%);
+  border-color: rgba(41, 151, 255, 0.12);
+}
+
+:root[data-theme='light'] .cta-btn {
+  background: var(--blue);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(41, 151, 255, 0.35);
+}
+
+:root[data-theme='light'] .cta-btn:hover {
+  background: #3aa5ff;
+  box-shadow: 0 6px 20px rgba(41, 151, 255, 0.45);
+}
+

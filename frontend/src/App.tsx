@@ -25,8 +25,9 @@ import VoicePrep from './pages/VoicePrep';
 import PortfolioGen from './pages/PortfolioGen';
 import Products from './pages/Products';
 import JobFinder from './pages/JobFinder';
+import ResumeBuilderLanding from './pages/ResumeBuilderLanding';
 import AuthModal from './components/AuthModal';
-import ParticleBackground from './components/ParticleBackground';
+import DigitalSerenityBackground from './components/DigitalSerenityBackground';
 import './styles/theme.css';
 import './styles/3d-effects.css';
 
@@ -37,7 +38,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -48,14 +49,12 @@ export default function App() {
     return 'home';
   });
 
-  const [theme, setTheme] = useState<string>(() => {
-    return localStorage.getItem('cvmind_theme') || 'dark';
-  });
+  const theme = 'light';
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('cvmind_theme', theme);
-  }, [theme]);
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('cvmind_theme', 'light');
+  }, []);
 
   // Scroll to top of the page on route changes
   useEffect(() => {
@@ -229,9 +228,7 @@ export default function App() {
     canonicalLink.setAttribute('href', `${domain}${path}`);
   }, [currentPage]);
 
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
-  };
+
   const [customApiKey, setCustomApiKey] = useState<string>(() => {
     return localStorage.getItem('resumetrics_gemini_key') || '';
   });
@@ -278,7 +275,7 @@ export default function App() {
 
   // Private route interceptor to enforce Sign In for product modules
   useEffect(() => {
-    const privatePages = ['tailor', 'prep', 'resume-builder', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'voice-prep', 'portfolio-gen', 'job-finder'];
+    const privatePages = ['tailor', 'prep', 'resume-editor', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'voice-prep', 'portfolio-gen', 'job-finder'];
     if (privatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
       setShowAuthModal(true);
@@ -439,6 +436,8 @@ export default function App() {
         const wId = window.location.pathname.split('/').pop();
         return <Portfolio workId={wId} />;
       case 'resume-builder':
+        return <ResumeBuilderLanding setCurrentPage={setCurrentPage} />;
+      case 'resume-editor':
         return <CoverLetter customApiKey={customApiKey} loadedWork={loadedWork} setLoadedWork={setLoadedWork} />;
       default:
         return (
@@ -458,8 +457,8 @@ export default function App() {
   return (
     <div className={`app-container ${isAdminPage ? 'admin-shell' : ''}`}>
 
-      {/* ── Global Animated 3D Particle Background ──────────── */}
-      {!isMinimalPage && <ParticleBackground theme={theme} />}
+      {/* ── Global Digital Serenity Background (for both dark & light modes) ── */}
+      {!isMinimalPage && <DigitalSerenityBackground theme={theme} />}
 
       {!isMinimalPage && (
         <Navbar 
@@ -471,8 +470,6 @@ export default function App() {
           setShowAuthModal={setShowAuthModal}
           handleSignOut={handleSignOut}
           setLoadedWork={setLoadedWork}
-          theme={theme}
-          toggleTheme={toggleTheme}
         />
       )}
 
