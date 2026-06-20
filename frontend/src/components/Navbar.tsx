@@ -45,13 +45,6 @@ export default function Navbar({
   const [activeModal, setActiveModal] = useState<'profile' | 'works' | 'settings' | null>(null);
   const [user, setUser] = useState<any>(null);
 
-  const isWhitelisted = (() => {
-    if (!user?.email) return false;
-    const allowedEmails = (import.meta.env.VITE_ALLOWED_EMAILS || '')
-      .split(',')
-      .map((e: string) => e.trim().toLowerCase());
-    return allowedEmails.includes(user.email.toLowerCase());
-  })();
 
   // Profile Modal Form States
   const [profileName, setProfileName] = useState('');
@@ -346,9 +339,7 @@ export default function Navbar({
                     <div className="nav-menu-column">
                       <span className="nav-menu-column-header">Job Search</span>
                       <NavigationMenuLink render={<button onClick={() => go('job-finder')} />}>
-                        <div className="font-medium" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          AI Job Finder {!isWhitelisted && <Lock size={10} style={{ color: '#ef4444' }} />}
-                        </div>
+                        <div className="font-medium">AI Job Finder</div>
                         <div className="text-muted-foreground">Curated roles matching your profile.</div>
                       </NavigationMenuLink>
                     </div>
@@ -546,10 +537,8 @@ export default function Navbar({
               <button
                 className={`mobile-drawer-link mobile-sub-link${currentPage === 'job-finder' ? ' active' : ''}`}
                 onClick={() => go('job-finder')}
-                style={!isWhitelisted ? { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } : {}}
               >
-                <span>AI Job Finder</span>
-                {!isWhitelisted && <Lock size={12} style={{ color: '#ff453a' }} />}
+                AI Job Finder
               </button>
 
               {/* SmartPrep AI sub-accordion */}
