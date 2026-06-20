@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { 
+import {
   Sparkles, FileText, Upload, Lock, ShieldAlert, ArrowRight,
   ChevronDown, ChevronUp, Copy, Check, CheckCircle2,
   Building2, HelpCircle, Lightbulb, RefreshCw, FileDown,
   Briefcase, Cpu, Loader2, AlertCircle
 } from 'lucide-react';
+import SkeletonLoader from '../components/SkeletonLoader';
 import './Prep.css';
 
 interface PrepQuestion {
@@ -472,24 +473,14 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
           </div>
         )}
 
-        {/* Loading Scanner */}
         {loading && (
-          <div className="prep-loading-card glass-card">
-            <div className="scan-beam"></div>
-            <div className="spinner-wrapper">
-              <div className="prep-spinner"></div>
-            </div>
-            <h3 className="loading-title">Generating Tailored Questions</h3>
-            <p className="loading-step-text animate-pulse">{loaderSteps[loadingStep]}</p>
-            
-            <div className="progress-bar-container">
-              <div 
-                className="progress-bar-fill" 
-                style={{ width: `${((loadingStep + 1) / loaderSteps.length) * 100}%` }}
-              ></div>
-            </div>
-            <p className="loading-note">Sourcing corporate recruiter strategies & structured STAR responses...</p>
-          </div>
+          <SkeletonLoader
+            type="list"
+            title="Generating Tailored Questions"
+            subtitle={loaderSteps[loadingStep]}
+            step={loadingStep}
+            totalSteps={loaderSteps.length}
+          />
         )}
 
         {/* Results Panel */}

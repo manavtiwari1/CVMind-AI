@@ -3,6 +3,7 @@ import {
   Upload, FileText, Search, RefreshCw, ShieldCheck,
   Briefcase, MapPin, Clock, ExternalLink, AlertCircle, Sparkles, Lock
 } from 'lucide-react';
+import SkeletonLoader from '../components/SkeletonLoader';
 import './JobFinder.css';
 
 interface JobFinderProps {
@@ -375,49 +376,13 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
       </header>
 
       {loading ? (
-        /* ── SCANNING CONSOLE ── */
-        <div className="jf-scanning-console glass-card">
-          <div className="jf-scanning-header">
-            <div className="jf-scanning-dots">
-              <span className="dot dot-red"></span>
-              <span className="dot dot-yellow"></span>
-              <span className="dot dot-green"></span>
-            </div>
-            <span className="jf-scanning-term-title">CVMind AI - Matching Engine v2.4.0</span>
-          </div>
-          <div className="jf-scanning-body">
-            <div className="jf-scanning-radar-wrapper">
-              <div className="jf-scanning-radar">
-                <div className="jf-radar-sweep"></div>
-                <div className="jf-radar-glow"></div>
-                <Search size={32} className="jf-radar-icon" />
-              </div>
-            </div>
-            
-            <h3 className="jf-scanning-status-title">Analysing CV & Job Description</h3>
-            
-            <div className="jf-scanning-steps">
-              {loaderSteps.map((step, idx) => {
-                const isCompleted = idx < loadingStep;
-                const isActive = idx === loadingStep;
-                return (
-                  <div key={idx} className={`jf-scanning-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`}>
-                    <div className="jf-step-indicator">
-                      {isCompleted ? (
-                        <span className="jf-step-check">✓</span>
-                      ) : isActive ? (
-                        <div className="jf-step-spinner"></div>
-                      ) : (
-                        <span className="jf-step-dot"></span>
-                      )}
-                    </div>
-                    <span className="jf-step-text">{step}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        <SkeletonLoader
+          type="jobs"
+          title="Analysing CV & Job Description"
+          subtitle={loaderSteps[loadingStep]}
+          step={loadingStep}
+          totalSteps={loaderSteps.length}
+        />
       ) : !result ? (
         /* ── INPUT WORKSPACE ── */
         <div className="jf-workspace animate-fade-in-up">

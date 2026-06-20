@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, ArrowRight, RefreshCw, ChevronRight, Volume2, Zap, Award, AlertCircle, CheckCircle } from 'lucide-react';
+import SkeletonLoader from '../components/SkeletonLoader';
 import './VoicePrep.css';
 
 interface VoicePrepProps {
@@ -328,13 +329,12 @@ export default function VoicePrep({ customApiKey, resumeText }: VoicePrepProps) 
         </div>
       )}
 
-      {/* Step: Analyzing */}
       {step === 'analyzing' && (
-        <div className="vp-analyzing glass-card">
-          <div className="vp-analyzing-spinner" />
-          <h3>Analyzing your answer...</h3>
-          <p className="animate-pulse">AI is reviewing your response for content, clarity, confidence & structure</p>
-        </div>
+        <SkeletonLoader
+          type="feedback"
+          title="Analyzing your answer..."
+          subtitle="Reviewing response for content, clarity, confidence & structure..."
+        />
       )}
 
       {/* Step: Feedback */}

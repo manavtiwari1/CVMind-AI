@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { 
-  Award, FileText, CheckCircle2, AlertTriangle, 
+import {
+  Award, FileText, CheckCircle2, AlertTriangle,
   RotateCcw, Printer, ArrowRight, Target, Check, AlertCircle, Copy,
-  Sparkles, Download, Loader2, Zap
+  Sparkles, Download, Zap
 } from 'lucide-react';
+import SkeletonLoader from '../components/SkeletonLoader';
 import { downloadResumeAsDocx, downloadResumeAsPdf, downloadResumeAsTxt } from '../utils/generateResumeDocx';
 import './Dashboard.css';
 
@@ -499,13 +500,12 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
               )}
 
               {optimizing && (
-                <div className="optimize-loading">
-                  <div className="optimize-spinner-ring">
-                    <Loader2 size={32} className="spin-icon" />
-                  </div>
-                  <p className="optimize-loading-text">AI is rewriting your resume...</p>
-                  <p className="optimize-loading-sub">Injecting keywords · Strengthening bullets · Restructuring sections</p>
-                </div>
+                <SkeletonLoader
+                  type="sidebar"
+                  title="AI is rewriting your resume..."
+                  subtitle="Injecting keywords · Strengthening bullets · Restructuring sections..."
+                  card={false}
+                />
               )}
 
               {optimizedResume && (

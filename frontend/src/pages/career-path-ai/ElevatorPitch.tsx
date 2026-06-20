@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
+import {
   Copy, Check, ArrowRight, RefreshCw, GraduationCap, Building2, Rocket, Palette
 } from 'lucide-react';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import './ElevatorPitch.css';
 
 interface ElevatorPitchProps {
@@ -214,14 +215,11 @@ export default function ElevatorPitch({ customApiKey, resumeText, loadedWork, se
         )}
 
         {loading && (
-          <div className="elevator-pitch-loading-card glass-card">
-            <div className="scan-beam"></div>
-            <div className="spinner-wrapper">
-              <div className="elevator-pitch-spinner"></div>
-            </div>
-            <h3>Formulating Verbal Pitches...</h3>
-            <p className="animate-pulse">Our AI is structuring dynamic hooks, core metrics, and speakable calls to action...</p>
-          </div>
+          <SkeletonLoader
+            type="text"
+            title="Formulating Verbal Pitches..."
+            subtitle="Structuring dynamic hooks, core metrics, and speakable calls to action..."
+          />
         )}
 
         {result && (

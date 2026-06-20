@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+/* Bridge variables required by glass UI components */
+:root {
+  --background: #ffffff;
+  --foreground: #0d0d0d;
+  --color-chart-1: #2997ff;
+  --color-chart-2: #2dc08d;
+  --color-chart-3: #7c3aed;
+  --color-chart-4: #f59e0b;
+  --color-chart-5: #ef4444;
+  --color-destructive: #ef4444;
+}
+
+:root[data-theme='dark'] {
+  --background: #0f172a;
+  --foreground: #f5f5f7;
+  --color-chart-1: #2997ff;
+  --color-chart-2: #30d158;
+  --color-chart-3: #bf5af2;
+  --color-chart-4: #ff9f0a;
+  --color-chart-5: #ff453a;
+}
+
+/* Tailwind v4 theme — maps shadcn-style utilities to project vars */
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--glass-bg);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--text-tertiary);
+  --color-primary: var(--blue);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--purple);
+  --color-secondary-foreground: #ffffff;
+  --color-destructive: var(--red);
+  --color-muted: var(--bg-secondary);
+}

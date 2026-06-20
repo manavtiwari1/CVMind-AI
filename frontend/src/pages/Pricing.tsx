@@ -4,11 +4,22 @@ import "./Pricing.css"
 
 interface PricingProps {
   setCurrentPage: (page: string) => void
+  isLoggedIn?: boolean
+  setShowAuthModal?: (show: boolean) => void
 }
 
 type BillingCycle = "monthly" | "quarterly" | "yearly"
 
-export default function Pricing({ setCurrentPage }: PricingProps) {
+export default function Pricing({ setCurrentPage, isLoggedIn, setShowAuthModal }: PricingProps) {
+
+  function handleUpgrade() {
+    if (!isLoggedIn) {
+      setShowAuthModal?.(true);
+      return;
+    }
+    setCurrentPage('dashboard');
+  }
+
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [proCycle, setProCycle] = useState<BillingCycle>("quarterly")
 
@@ -51,7 +62,7 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
     { text: "Profile PDF Audit", checked: true },
     { text: "Bio & Banner Generator", checked: true },
     { text: "Outreach & DM Writer", checked: true },
-    { text: "Limited AI Tokens (20/mo)", checked: true },
+    { text: "15,000 AI Tokens (reset every 48 hrs)", checked: true },
     { text: "Portfolio Generator", checked: false },
     { text: "Resume Tailor", checked: false },
     { text: "Voice Practice AI", checked: false },
@@ -77,7 +88,7 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
     { text: "Skills Gap & Courses", checked: true },
     { text: "Elevator Pitch Builder", checked: true },
     { text: "Career Roadmaps", checked: true },
-    { text: "Unlimited AI Tokens", checked: true },
+    { text: "60,000 AI Tokens (reset every 48 hrs)", checked: true },
   ]
 
   const faqs = [
@@ -87,7 +98,7 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
     },
     {
       q: "What are AI Tokens and how do they work?",
-      a: "AI Tokens are used to power our generative features, such as bullet point rewriting, cover letter writing, LinkedIn outreach generation, and portfolio generation. Free accounts get 20 tokens per month, while Pro accounts get unlimited tokens."
+      a: "AI Tokens power our generative features — bullet rewriting, cover letters, LinkedIn outreach, and portfolio generation. Free accounts get 15,000 tokens that reset every 48 hours. Pro accounts get 60,000 tokens, also resetting every 48 hours."
     },
     {
       q: "Do you offer discounts for universities or teams?",
@@ -120,7 +131,7 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
               <span className="pricing-currency">₹</span>
               <span className="pricing-value">0</span>
             </div>
-            <div className="pricing-cycle-sub">Valid for 7 days</div>
+            <div className="pricing-cycle-sub">Free forever · No credit card needed</div>
 
             <div className="pricing-benefits-list">
               {freeBenefits.map((benefit, i) => (
@@ -200,7 +211,7 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
               ))}
             </div>
 
-            <button className="pricing-card-btn-filled" onClick={() => setCurrentPage('dashboard')}>
+            <button className="pricing-card-btn-filled" onClick={handleUpgrade}>
               Upgrade to Pro
             </button>
           </div>

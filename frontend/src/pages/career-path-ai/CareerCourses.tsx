@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
+import {
   ArrowRight, RefreshCw, BookOpen, GraduationCap, Check, HelpCircle
 } from 'lucide-react';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import './CareerCourses.css';
 
 interface CareerCoursesProps {
@@ -202,14 +203,11 @@ export default function CareerCourses({ customApiKey, resumeText, loadedWork, se
         )}
 
         {loading && (
-          <div className="career-courses-loading-card glass-card">
-            <div className="scan-beam"></div>
-            <div className="spinner-wrapper">
-              <div className="career-courses-spinner"></div>
-            </div>
-            <h3>Conducting Skill Gap Audit...</h3>
-            <p className="animate-pulse">Our AI is matching your profile with target skill matrices and mapping online course curricula...</p>
-          </div>
+          <SkeletonLoader
+            type="cards"
+            title="Conducting Skill Gap Audit..."
+            subtitle="Matching your profile with target skill matrices and course curricula..."
+          />
         )}
 
         {result && (

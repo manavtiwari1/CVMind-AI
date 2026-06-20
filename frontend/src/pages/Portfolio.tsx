@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
-  Loader2, AlertCircle, Download, Printer, Globe, ArrowLeft, ArrowUpRight 
+import {
+  AlertCircle, Download, Printer, Globe, ArrowLeft, ArrowUpRight
 } from 'lucide-react';
+import SkeletonLoader from '../components/SkeletonLoader';
 import './Portfolio.css';
 
 interface PortfolioProps {
@@ -86,10 +87,12 @@ export default function Portfolio({ workId }: PortfolioProps) {
   if (loading) {
     return (
       <div className="pf-loading-container">
-        <div className="pf-loading-spinner">
-          <Loader2 size={32} className="cl-spin text-blue" />
-          <span>Loading portfolio resume...</span>
-        </div>
+        <SkeletonLoader
+          type="page"
+          title="Loading portfolio..."
+          subtitle="Fetching your resume and portfolio data..."
+          card={false}
+        />
       </div>
     );
   }

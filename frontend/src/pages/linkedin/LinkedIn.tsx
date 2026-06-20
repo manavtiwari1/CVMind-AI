@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { 
-  Sparkles, ShieldCheck, AlertCircle, Copy, Check, ArrowRight, 
+import {
+  Sparkles, ShieldCheck, AlertCircle, Copy, Check, ArrowRight,
   Linkedin, Award, Star, Compass, Terminal, FileText, CheckCircle2, ChevronRight,
   Upload, Lock
 } from 'lucide-react';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import './LinkedIn.css';
 
 interface LinkedInProps {
@@ -292,20 +293,14 @@ export default function LinkedIn({ customApiKey, loadedWork, setLoadedWork }: Li
           {/* Right panel: Static recruitment guides or Loading state */}
           <div className="li-guide-card glass-card">
             {loading ? (
-              <div className="li-loading-state">
-                <div className="premium-spinner-wrapper">
-                  <div className="premium-spinner"></div>
-                  <div className="pulse-circle"></div>
-                </div>
-                <h3 className="loading-step-title">Analyzing Profile</h3>
-                <p className="loading-step-desc animate-pulse">{loaderSteps[loadingStep]}</p>
-                <div className="li-progress-container">
-                  <div 
-                    className="li-progress-fill" 
-                    style={{ width: `${((loadingStep + 1) / loaderSteps.length) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
+              <SkeletonLoader
+                card={false}
+                type="text"
+                title="Analyzing Profile"
+                subtitle={loaderSteps[loadingStep]}
+                step={loadingStep}
+                totalSteps={loaderSteps.length}
+              />
             ) : result ? (
               <div className="li-score-summary">
                 <div className="li-radial-score-container">

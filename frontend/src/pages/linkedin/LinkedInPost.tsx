@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Copy, Check, Linkedin, ArrowRight, RefreshCw, Zap, Clock, Lightbulb } from 'lucide-react';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import './LinkedInPost.css';
 
 interface LinkedInPostProps {
@@ -181,13 +182,11 @@ export default function LinkedInPost({ customApiKey, resumeText, loadedWork, set
         )}
 
         {loading && (
-          <div className="lp-loading glass-card">
-            <div className="lp-loading-orbs">
-              <div className="orb orb-1" /><div className="orb orb-2" /><div className="orb orb-3" />
-            </div>
-            <h3>Crafting viral LinkedIn posts...</h3>
-            <p className="animate-pulse">AI is writing 3 unique post styles with hooks, emojis & hashtags</p>
-          </div>
+          <SkeletonLoader
+            type="cards"
+            title="Crafting viral LinkedIn posts..."
+            subtitle="Writing 3 unique post styles with hooks, emojis & hashtags..."
+          />
         )}
 
         {result && (

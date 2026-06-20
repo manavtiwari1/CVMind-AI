@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
+import {
   Copy, Check, Linkedin, ArrowRight, RefreshCw
 } from 'lucide-react';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import './LinkedInBio.css';
 
 interface LinkedInBioProps {
@@ -212,14 +213,11 @@ export default function LinkedInBio({ customApiKey, resumeText, loadedWork, setL
         )}
 
         {loading && (
-          <div className="li-bio-loading-card glass-card">
-            <div className="scan-beam"></div>
-            <div className="spinner-wrapper">
-              <div className="li-bio-spinner"></div>
-            </div>
-            <h3>Generating LinkedIn Brand Copy...</h3>
-            <p className="animate-pulse">Our AI is structuring professional bios, custom headers, and banner visual themes...</p>
-          </div>
+          <SkeletonLoader
+            type="text"
+            title="Generating LinkedIn Brand Copy..."
+            subtitle="Structuring professional bios, custom headers, and banner visual themes..."
+          />
         )}
 
         {result && (

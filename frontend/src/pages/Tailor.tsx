@@ -433,11 +433,37 @@ export default function Tailor({ customApiKey }: TailorProps) {
               />
 
               {loading ? (
-                <div className="tailor-loading-state">
-                  <div className="tailor-shimmer"></div>
-                  <div className="tailor-spinner"></div>
-                  <h3 className="loading-title">Tailoring in Progress...</h3>
-                  <p className="loading-text animate-pulse">{loaderSteps[loadingStep]}</p>
+                <div className="skeleton-loading-state">
+                  <div className="skeleton-header-mini">
+                    <p className="skeleton-step-label">{loaderSteps[loadingStep]}</p>
+                    <div className="sk-loader-progress" style={{ width: 'min(260px,100%)' }}>
+                      <div className="sk-loader-progress-fill" style={{ width: `${((loadingStep + 1) / loaderSteps.length) * 100}%` }} />
+                    </div>
+                  </div>
+                  <div className="skeleton-preview">
+                    <div className="skeleton-score-row">
+                      <div className="skeleton-circle skeleton-pulse" />
+                      <div className="skeleton-score-text">
+                        <div className="skeleton-mini-line skeleton-pulse" style={{ width: '100px', height: '13px' }} />
+                        <div className="skeleton-mini-line skeleton-pulse" style={{ width: '68px', height: '10px' }} />
+                      </div>
+                    </div>
+                    <div className="skeleton-bars-mini">
+                      {[85, 70, 58, 44].map((w, i) => (
+                        <div key={i} className="skeleton-bar-row-mini">
+                          <div className="skeleton-bar-label-mini skeleton-pulse" style={{ width: `${36 + i * 8}px` }} />
+                          <div className="skeleton-bar-track-mini">
+                            <div className="skeleton-bar-fill-mini skeleton-pulse" style={{ width: `${w}%` }} />
+                          </div>
+                          <div className="skeleton-bar-pct-mini skeleton-pulse" />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="skeleton-chips-mini">
+                      <div className="skeleton-chip-mini skeleton-pulse" />
+                      <div className="skeleton-chip-mini skeleton-pulse" />
+                    </div>
+                  </div>
                 </div>
               ) : selectedFile ? (
                 <div className="tailor-file-details">

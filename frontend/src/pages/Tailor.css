@@ -135,6 +135,8 @@
   background-color: var(--bg-card-hover);
 }
 
+.tailor-upload-zone.is-loading { min-height: 340px; cursor: default; }
+
 .tailor-upload-zone.has-file,
 .tailor-upload-zone.is-loading {
   border-style: solid;

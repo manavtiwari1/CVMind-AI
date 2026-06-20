@@ -31,6 +31,15 @@ import AuthModal from './components/AuthModal';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
 import './styles/theme.css';
 import './styles/3d-effects.css';
+import './styles/skeleton.css';
+
+const WHITELISTED_EMAILS = ['riturani2005@gmail.com'];
+
+function resolveIsPaid(user: any): boolean {
+  if (!user) return false;
+  if (WHITELISTED_EMAILS.includes((user.email || '').toLowerCase())) return true;
+  return user?.plan === 'pro' || user?.isPro === true || user?.isPaid === true;
+}
 
 export default function App() {
   const [currentPage, setCurrentPageState] = useState<string>(() => {
@@ -240,6 +249,12 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     return localStorage.getItem('cvmind_logged_in') === 'true';
   });
+  const [isPaid, setIsPaid] = useState<boolean>(() => {
+    try {
+      const u = localStorage.getItem('cvmind_user');
+      return resolveIsPaid(u ? JSON.parse(u) : null);
+    } catch { return false; }
+  });
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [loadedWork, setLoadedWork] = useState<any>(null);
 
@@ -274,14 +289,23 @@ export default function App() {
     }
   }, [customApiKey]);
 
-  // Private route interceptor to enforce Sign In for product modules
+  // Private route interceptor — free pages require sign-in, paid pages require subscription
   useEffect(() => {
-    const privatePages = ['tailor', 'prep', 'resume-editor', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'voice-prep', 'portfolio-gen', 'job-finder'];
-    if (privatePages.includes(currentPage) && !isLoggedIn) {
+    const freePrivatePages = ['prep', 'resume-editor', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post'];
+    const paidPages = ['tailor', 'voice-prep', 'portfolio-gen', 'job-finder', 'career-courses', 'elevator-pitch', 'career-roadmap'];
+
+    if (paidPages.includes(currentPage)) {
+      if (!isLoggedIn) {
+        setCurrentPage('home');
+        setShowAuthModal(true);
+      } else if (!isPaid) {
+        setCurrentPage('pricing');
+      }
+    } else if (freePrivatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
       setShowAuthModal(true);
     }
-  }, [currentPage, isLoggedIn]);
+  }, [currentPage, isLoggedIn, isPaid]);
 
   // Auto-detect resetToken in URL and trigger AuthModal password reset popup
   useEffect(() => {
@@ -293,9 +317,17 @@ export default function App() {
     }
   }, []);
 
+  const syncIsPaid = () => {
+    try {
+      const u = localStorage.getItem('cvmind_user');
+      setIsPaid(resolveIsPaid(u ? JSON.parse(u) : null));
+    } catch { setIsPaid(false); }
+  };
+
   const handleSignOut = () => {
     localStorage.removeItem('cvmind_logged_in');
     setIsLoggedIn(false);
+    setIsPaid(false);
     resetAnalysis();
   };
 
@@ -441,7 +473,7 @@ export default function App() {
       case 'resume-editor':
         return <CoverLetter customApiKey={customApiKey} loadedWork={loadedWork} setLoadedWork={setLoadedWork} />;
       case 'pricing':
-        return <Pricing setCurrentPage={setCurrentPage} />;
+        return <Pricing setCurrentPage={setCurrentPage} isLoggedIn={isLoggedIn} setShowAuthModal={setShowAuthModal} />;
       default:
         return (
           <Home 
@@ -483,10 +515,10 @@ export default function App() {
       {!isMinimalPage && <Footer setCurrentPage={setCurrentPage} />}
       {!isMinimalPage && <Chatbot customApiKey={customApiKey} />}
 
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-        onSuccess={() => setIsLoggedIn(true)} 
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => { setIsLoggedIn(true); syncIsPaid(); }}
       />
     </div>
   );

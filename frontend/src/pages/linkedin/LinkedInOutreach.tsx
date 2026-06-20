@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
+import {
   Copy, Check, Linkedin, ArrowRight, RefreshCw, Send, Users, UserCheck
 } from 'lucide-react';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import './LinkedInOutreach.css';
 
 interface LinkedInOutreachProps {
@@ -246,14 +247,11 @@ export default function LinkedInOutreach({ customApiKey, resumeText, loadedWork,
         )}
 
         {loading && (
-          <div className="li-outreach-loading-card glass-card">
-            <div className="scan-beam"></div>
-            <div className="spinner-wrapper">
-              <div className="li-outreach-spinner"></div>
-            </div>
-            <h3>Generating Outreach Copy...</h3>
-            <p className="animate-pulse">Our AI is structuring connection request notes, cold referral pitches, and recruiter DMs...</p>
-          </div>
+          <SkeletonLoader
+            type="text"
+            title="Generating Outreach Copy..."
+            subtitle="Structuring connection request notes, cold referral pitches, and recruiter DMs..."
+          />
         )}
 
         {result && (

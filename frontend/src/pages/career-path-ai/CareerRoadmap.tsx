@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
+import {
   ArrowRight, RefreshCw, GraduationCap, Check, Compass, Flag
 } from 'lucide-react';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import './CareerRoadmap.css';
 
 interface CareerRoadmapProps {
@@ -226,14 +227,11 @@ export default function CareerRoadmap({ customApiKey, resumeText, loadedWork, se
         )}
 
         {loading && (
-          <div className="career-roadmap-loading-card glass-card">
-            <div className="scan-beam"></div>
-            <div className="spinner-wrapper">
-              <div className="career-roadmap-spinner"></div>
-            </div>
-            <h3>Building Career Transition Path...</h3>
-            <p className="animate-pulse">Our AI is mapping milestones, timeframe phases, and skill progression checks...</p>
-          </div>
+          <SkeletonLoader
+            type="list"
+            title="Building Career Transition Path..."
+            subtitle="Mapping milestones, timeframe phases, and skill progression checks..."
+          />
         )}
 
         {result && (

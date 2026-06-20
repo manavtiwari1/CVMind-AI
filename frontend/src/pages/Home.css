@@ -787,42 +787,8 @@
 
 .file-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; justify-content: center; }
 
-/* Loading state */
-.loading-title {
-  color: var(--text-primary);
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 0.5rem 0 0.25rem;
-  letter-spacing: -0.02em;
-}
-
-.loading-step-text {
-  color: var(--text-tertiary);
-  font-size: 0.85rem;
-  min-height: 1.4rem;
-  margin-bottom: 1rem;
-}
-
-.spinner-wrapper { margin-bottom: 0.5rem; }
-
-.premium-spinner {
-  width: 44px;
-  height: 44px;
-  border: 2.5px solid rgba(255,255,255,0.08);
-  border-top-color: var(--blue);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-.shimmer-scanner {
-  width: 100%;
-  max-width: 200px;
-  height: 1.5px;
-  background: linear-gradient(90deg, transparent, var(--blue), transparent);
-  margin-bottom: 1rem;
-  animation: shimmer 2s ease-in-out infinite;
-  overflow: hidden;
-}
+/* ── Upload zone loading override ───────────────────────── */
+.upload-zone.is-loading { min-height: 320px; cursor: default; }
 
 .progress-bar-container {
   width: min(280px, 100%);
@@ -3266,13 +3232,6 @@
   color: #9ca3af !important;
 }
 
-.loading-title {
-  color: #0d0d0d !important;
-}
-
-.loading-step-text {
-  color: #6b7280 !important;
-}
 
 .file-name {
   color: #0d0d0d !important;
