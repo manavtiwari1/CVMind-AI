@@ -123,7 +123,8 @@ export default function Products({ setCurrentPage }: ProductsProps) {
       const allowedEmails = (import.meta.env.VITE_ALLOWED_EMAILS || '')
         .split(',')
         .map((e: string) => e.trim().toLowerCase());
-      return allowedEmails.includes(email);
+      const isPro = parsedUser?.plan === 'pro' || parsedUser?.isPro === true || parsedUser?.isPaid === true;
+      return allowedEmails.includes(email) || isPro;
     } catch (e) {
       return false;
     }

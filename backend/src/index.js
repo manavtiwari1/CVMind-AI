@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini, generateResumeWithGemini, generateProofreadingWithDeepSeek } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, checkAndIncrementUsage, getUserUsageToday, FREE_DAILY_LIMITS } from './db.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, checkAndIncrementUsage, getUserUsageToday, FREE_DAILY_LIMITS, isUserPaid, getWhitelistedEmails, addWhitelistedEmail, deleteWhitelistedEmail } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -103,15 +103,23 @@ apiRouter.post('/api/auth/signup', async (req, res) => {
 
     await saveLoginLog({ email: newUser.email, name: newUser.name, provider: 'signup' });
 
+    const isPaid = await isUserPaid(newUser);
+    const userPayload = {
+      id: newUser.id || newUser._id,
+      name: newUser.name,
+      email: newUser.email,
+      isGoogleUser: newUser.isGoogleUser || false
+    };
+    if (isPaid) {
+      userPayload.plan = 'pro';
+      userPayload.isPro = true;
+      userPayload.isPaid = true;
+    }
+
     return res.json({
       success: true,
       message: 'Account created successfully!',
-      user: {
-        id: newUser.id || newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        isGoogleUser: newUser.isGoogleUser || false
-      }
+      user: userPayload
     });
   } catch (err) {
     console.error('Sign Up Error:', err);
@@ -181,15 +189,23 @@ apiRouter.post('/api/auth/login', async (req, res) => {
 
     await saveLoginLog({ email: user.email, name: user.name, provider: 'password' });
 
+    const isPaid = await isUserPaid(user);
+    const userPayload = {
+      id: user.id || user._id,
+      name: user.name,
+      email: user.email,
+      isGoogleUser: user.isGoogleUser || false
+    };
+    if (isPaid) {
+      userPayload.plan = 'pro';
+      userPayload.isPro = true;
+      userPayload.isPaid = true;
+    }
+
     return res.json({
       success: true,
       message: 'Sign in successful!',
-      user: {
-        id: user.id || user._id,
-        name: user.name,
-        email: user.email,
-        isGoogleUser: user.isGoogleUser || false
-      }
+      user: userPayload
     });
   } catch (err) {
     console.error('Sign In Error:', err);
@@ -343,16 +359,24 @@ apiRouter.post('/api/auth/google', async (req, res) => {
 
     await saveLoginLog({ email: user.email, name: user.name, provider: 'google' });
 
+    const isPaid = await isUserPaid(user);
+    const userPayload = {
+      id: user.id || user._id,
+      name: user.name,
+      email: user.email,
+      avatar: picture || '',
+      isGoogleUser: user.isGoogleUser || false
+    };
+    if (isPaid) {
+      userPayload.plan = 'pro';
+      userPayload.isPro = true;
+      userPayload.isPaid = true;
+    }
+
     return res.json({
       success: true,
       message: 'Sign in with Google successful!',
-      user: {
-        id: user.id || user._id,
-        name: user.name,
-        email: user.email,
-        avatar: picture || '',
-        isGoogleUser: user.isGoogleUser || false
-      }
+      user: userPayload
     });
   } catch (err) {
     console.error('Google Sign In Error:', err);
@@ -377,6 +401,67 @@ apiRouter.post('/api/admin/stats', async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ error: error.message || 'Stats query failed.' });
+  }
+});
+
+// Get whitelisted emails
+apiRouter.get('/api/admin/whitelist', async (req, res) => {
+  const adminSecret = req.headers['x-admin-secret'] || null;
+  const configuredSecret = process.env.ADMIN_SECRET;
+
+  if (!configuredSecret || !adminSecret || adminSecret !== configuredSecret) {
+    return res.status(401).json({ error: 'Unauthorized: Invalid admin secret key.' });
+  }
+
+  try {
+    const list = await getWhitelistedEmails();
+    return res.json({ success: true, emails: list });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Whitelist query failed.' });
+  }
+});
+
+// Add whitelisted email
+apiRouter.post('/api/admin/whitelist', async (req, res) => {
+  const adminSecret = req.headers['x-admin-secret'] || req.body.secret || null;
+  const configuredSecret = process.env.ADMIN_SECRET;
+
+  if (!configuredSecret || !adminSecret || adminSecret !== configuredSecret) {
+    return res.status(401).json({ error: 'Unauthorized: Invalid admin secret key.' });
+  }
+
+  const { email } = req.body || {};
+  if (!email) {
+    return res.status(400).json({ error: 'Email address is required.' });
+  }
+
+  try {
+    const entry = await addWhitelistedEmail(email);
+    return res.json({ success: true, data: entry });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Failed to add whitelisted email.' });
+  }
+});
+
+// Delete whitelisted email
+apiRouter.delete('/api/admin/whitelist/:email', async (req, res) => {
+  const adminSecret = req.headers['x-admin-secret'] || null;
+  const configuredSecret = process.env.ADMIN_SECRET;
+
+  if (!configuredSecret || !adminSecret || adminSecret !== configuredSecret) {
+    return res.status(401).json({ error: 'Unauthorized: Invalid admin secret key.' });
+  }
+
+  const email = req.params.email;
+  if (!email) {
+    return res.status(400).json({ error: 'Email address parameter is required.' });
+  }
+
+  try {
+    await deleteWhitelistedEmail(email);
+    return res.json({ success: true, message: 'Email removed from whitelist.' });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Failed to delete whitelisted email.' });
   }
 });
 
@@ -1627,17 +1712,25 @@ apiRouter.post('/api/user/profile', async (req, res) => {
   }
   try {
     const updated = await updateUserProfile({ userId, name, email, address, avatar });
+    const isPaid = await isUserPaid(updated);
+    const userPayload = {
+      id: updated.id || updated._id,
+      name: updated.name,
+      email: updated.email,
+      address: updated.address || '',
+      avatar: updated.avatar || '',
+      isGoogleUser: updated.isGoogleUser || false
+    };
+    if (isPaid) {
+      userPayload.plan = 'pro';
+      userPayload.isPro = true;
+      userPayload.isPaid = true;
+    }
+
     return res.json({
       success: true,
       message: 'Profile updated successfully!',
-      user: {
-        id: updated.id || updated._id,
-        name: updated.name,
-        email: updated.email,
-        address: updated.address || '',
-        avatar: updated.avatar || '',
-        isGoogleUser: updated.isGoogleUser || false
-      }
+      user: userPayload
     });
   } catch (error) {
     console.error('Update profile error:', error);

@@ -205,6 +205,12 @@ const paymentLogSchema = new mongoose.Schema({
 });
 const PaymentLog = mongoose.models.PaymentLog || mongoose.model('PaymentLog', paymentLogSchema);
 
+const whitelistEmailSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  createdAt: { type: Date, default: Date.now }
+});
+const WhitelistEmail = mongoose.models.WhitelistEmail || mongoose.model('WhitelistEmail', whitelistEmailSchema);
+
 // ─── PER-FEATURE DAILY LIMITS FOR FREE USERS ─────────────────────────────────
 export const FREE_DAILY_LIMITS = {
   'analyze':           3,
@@ -218,13 +224,31 @@ export const FREE_DAILY_LIMITS = {
 
 const WHITELISTED_EMAILS_HARDCODED = ['riturani2005@gmail.com', 'rajendermishra39@gmail.com'];
 
-function isUserPaid(user) {
+export async function isUserPaid(user) {
   if (!user) return false;
   const email = (user.email || '').toLowerCase();
+  
+  // 1. Hardcoded check
   if (WHITELISTED_EMAILS_HARDCODED.includes(email)) return true;
+
+  // 2. Env check
   let envWhitelist = {};
   try { if (process.env.WHITELISTED_USERS) envWhitelist = JSON.parse(process.env.WHITELISTED_USERS); } catch {}
   if (Object.keys(envWhitelist).includes(email)) return true;
+
+  // 3. Dynamic Whitelist check
+  try {
+    const dynamicList = await getWhitelistedEmails();
+    const inDynamicList = dynamicList.some(x => {
+      const itemEmail = typeof x === 'string' ? x : x.email;
+      return String(itemEmail || '').trim().toLowerCase() === email;
+    });
+    if (inDynamicList) return true;
+  } catch (err) {
+    console.error('Dynamic whitelist check error in isUserPaid:', err);
+  }
+
+  // 4. User schema plan check
   return user.plan === 'pro' || user.isPro === true || user.isPaid === true;
 }
 
@@ -756,10 +780,70 @@ export async function savePaymentLog({ email, amount, paymentMethod, transaction
   writeDb(db);
 }
 
+export async function getWhitelistedEmails() {
+  await ensureMongoConnection();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    return await WhitelistEmail.find().sort({ createdAt: -1 });
+  }
+  const db = readDb();
+  if (!db.whitelistedEmails) db.whitelistedEmails = [];
+  return db.whitelistedEmails;
+}
+
+export async function addWhitelistedEmail(email) {
+  await ensureMongoConnection();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  if (!cleanEmail) throw new Error('Email is required');
+
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    try {
+      const existing = await WhitelistEmail.findOne({ email: cleanEmail });
+      if (existing) return existing;
+      const newEntry = new WhitelistEmail({ email: cleanEmail });
+      await newEntry.save();
+      return newEntry;
+    } catch (err) {
+      throw new Error(err.message || 'Failed to add whitelisted email in MongoDB');
+    }
+  }
+
+  const db = readDb();
+  if (!db.whitelistedEmails) db.whitelistedEmails = [];
+  const existing = db.whitelistedEmails.find(x => (typeof x === 'string' ? x : x.email) === cleanEmail);
+  if (existing) return existing;
+  const newEntry = {
+    id: randomUUID(),
+    email: cleanEmail,
+    createdAt: new Date().toISOString()
+  };
+  db.whitelistedEmails.unshift(newEntry);
+  writeDb(db);
+  return newEntry;
+}
+
+export async function deleteWhitelistedEmail(email) {
+  await ensureMongoConnection();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  if (!cleanEmail) throw new Error('Email is required');
+
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    return await WhitelistEmail.deleteOne({ email: cleanEmail });
+  }
+
+  const db = readDb();
+  if (!db.whitelistedEmails) db.whitelistedEmails = [];
+  db.whitelistedEmails = db.whitelistedEmails.filter(x => (typeof x === 'string' ? x : x.email) !== cleanEmail);
+  writeDb(db);
+  return { deletedCount: 1 };
+}
+
 export async function checkJobFinderAccess(email) {
   const cleanEmail = String(email || '').trim().toLowerCase();
 
-  // Whitelist check only
+  // 1. Hardcoded check
+  if (WHITELISTED_EMAILS_HARDCODED.includes(cleanEmail)) return true;
+
+  // 2. Env check
   let WHITELISTED_USERS = {};
   try {
     if (process.env.WHITELISTED_USERS) {
@@ -768,7 +852,21 @@ export async function checkJobFinderAccess(email) {
   } catch (err) {
     // ignore
   }
-  return Object.keys(WHITELISTED_USERS).includes(cleanEmail);
+  if (Object.keys(WHITELISTED_USERS).includes(cleanEmail)) return true;
+
+  // 3. Dynamic Whitelist check
+  try {
+    const list = await getWhitelistedEmails();
+    const inList = list.some(x => {
+      const itemEmail = typeof x === 'string' ? x : x.email;
+      return String(itemEmail || '').trim().toLowerCase() === cleanEmail;
+    });
+    if (inList) return true;
+  } catch (err) {
+    console.error('Job Finder access check error:', err);
+  }
+
+  return false;
 }
 
 export async function getWorkById(workId) {
@@ -1329,7 +1427,7 @@ export async function checkAndIncrementUsage(userId, feature) {
     const user = await User.findById(searchId);
     if (!user) return { allowed: true, used: 0, limit, remaining: limit };
 
-    if (isUserPaid(user)) return { allowed: true, used: 0, limit: 0, remaining: 999 };
+    if (await isUserPaid(user)) return { allowed: true, used: 0, limit: 0, remaining: 999 };
 
     const used = user.usageMap?.get(mapKey) ?? 0;
     if (used >= limit) {
@@ -1346,7 +1444,7 @@ export async function checkAndIncrementUsage(userId, feature) {
   if (!db.users) db.users = [];
   const u = db.users.find(x => x.id === searchId || x._id === searchId);
   if (!u) return { allowed: true, used: 0, limit, remaining: limit };
-  if (isUserPaid(u)) return { allowed: true, used: 0, limit: 0, remaining: 999 };
+  if (await isUserPaid(u)) return { allowed: true, used: 0, limit: 0, remaining: 999 };
 
   if (!u.usageMap) u.usageMap = {};
   const usedJson = u.usageMap[mapKey] ?? 0;
@@ -1372,7 +1470,7 @@ export async function getUserUsageToday(userId) {
     if (mongoURI && mongoose.connection.readyState === 1) {
       const user = searchId ? await User.findById(searchId) : null;
       if (user) {
-        if (isUserPaid(user)) { result[feature].remaining = 999; continue; }
+        if (await isUserPaid(user)) { result[feature].remaining = 999; continue; }
         const used = user.usageMap?.get(mapKey) ?? 0;
         result[feature].used = used;
         result[feature].remaining = Math.max(0, limit - used);
@@ -1381,7 +1479,7 @@ export async function getUserUsageToday(userId) {
       const db = readDb();
       const u = db.users?.find(x => x.id === searchId || x._id === searchId);
       if (u) {
-        if (isUserPaid(u)) { result[feature].remaining = 999; continue; }
+        if (await isUserPaid(u)) { result[feature].remaining = 999; continue; }
         const used = u.usageMap?.[mapKey] ?? 0;
         result[feature].used = used;
         result[feature].remaining = Math.max(0, limit - used);

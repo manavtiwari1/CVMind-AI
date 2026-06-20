@@ -174,6 +174,12 @@ export default function Admin({ setCurrentPage }: AdminProps) {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  const [whitelistedEmails, setWhitelistedEmails] = useState<Array<{ id?: string; email: string; createdAt: string }>>([]);
+  const [whitelistInput, setWhitelistInput] = useState('');
+  const [isWhitelistLoading, setIsWhitelistLoading] = useState(false);
+  const [whitelistError, setWhitelistError] = useState('');
+  const [whitelistSuccess, setWhitelistSuccess] = useState('');
+
   const BACKEND = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
 
   // Live time counter in top bar
@@ -201,6 +207,75 @@ export default function Admin({ setCurrentPage }: AdminProps) {
       setIsFetching(false);
     }
   }, [BACKEND]);
+
+  const fetchWhitelist = useCallback(async (key: string) => {
+    setIsWhitelistLoading(true);
+    setWhitelistError('');
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/whitelist`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'x-admin-secret': key }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch whitelist.');
+      setWhitelistedEmails(data.emails || []);
+    } catch (e) {
+      setWhitelistError(e instanceof Error ? e.message : 'Failed to fetch whitelist.');
+    } finally {
+      setIsWhitelistLoading(false);
+    }
+  }, [BACKEND]);
+
+  const handleAddWhitelist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!whitelistInput.trim()) return;
+    setIsWhitelistLoading(true);
+    setWhitelistError('');
+    setWhitelistSuccess('');
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/whitelist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
+        body: JSON.stringify({ email: whitelistInput.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to add whitelisted email.');
+      setWhitelistSuccess(`Successfully whitelisted: ${whitelistInput.trim()}`);
+      setWhitelistInput('');
+      fetchWhitelist(secret);
+    } catch (e) {
+      setWhitelistError(e instanceof Error ? e.message : 'Add whitelist failed.');
+    } finally {
+      setIsWhitelistLoading(false);
+    }
+  };
+
+  const handleDeleteWhitelist = async (emailToDelete: string) => {
+    if (!window.confirm(`Are you sure you want to remove ${emailToDelete} from the whitelist?`)) return;
+    setIsWhitelistLoading(true);
+    setWhitelistError('');
+    setWhitelistSuccess('');
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/whitelist/${encodeURIComponent(emailToDelete)}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete whitelisted email.');
+      setWhitelistSuccess(`Successfully removed ${emailToDelete} from whitelist.`);
+      fetchWhitelist(secret);
+    } catch (e) {
+      setWhitelistError(e instanceof Error ? e.message : 'Delete whitelist failed.');
+    } finally {
+      setIsWhitelistLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoggedIn && secret && activeSection === 'whitelist') {
+      fetchWhitelist(secret);
+    }
+  }, [isLoggedIn, secret, activeSection, fetchWhitelist]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -376,6 +451,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
 
             <div className="admin-sidebar-section-label">System</div>
             <NavItem icon={<Database size={15} />}        label="Database Health"   active={activeSection === 'database'}   onClick={() => setActiveSection('database')} />
+            <NavItem icon={<Shield size={15} />}          label="Whitelist Access"  active={activeSection === 'whitelist'}  onClick={() => setActiveSection('whitelist')} />
           </div>
 
           <div className="admin-sidebar-user glass-card">
@@ -421,6 +497,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                 {activeSection === 'cl-logs'     && 'Cover Letter Builder Saved Drafts'}
                 {activeSection === 'messages'   && 'Incoming Contact Leads'}
                 {activeSection === 'database'   && 'System Architecture & Health'}
+                {activeSection === 'whitelist'  && 'Gmail Whitelist Access Manager'}
               </h1>
               <p className="admin-topbar-meta">
                 <Clock size={12} style={{ color: 'var(--color-accent)' }} /> 
@@ -650,7 +727,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                   <small className="row-timestamp">{new Date(fix.createdAt).toLocaleString()}</small>
                                 </div>
                                 <div className="table-row-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                  <span className="admin-prior-score-pill" style={{ background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                  <span className="admin-prior-score-pill" style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem' }}>
                                     Prior Score: <strong style={{ color: 'var(--admin-cyan)' }}>{fix.priorScore}/10</strong>
                                   </span>
                                   <span className="badge badge-success">
@@ -889,16 +966,16 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                               </div>
                               
                               <div style={{ marginTop: '0.8rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(0, 245, 255, 0.08)', border: '1px solid rgba(0, 245, 255, 0.2)', padding: '0.25rem 0.65rem', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 800, color: '#a8fbff' }}>
+                                <div className="admin-score-pill high" style={{ borderRadius: '999px', fontSize: '0.8rem' }}>
                                   Match Score: {tailor.score}%
                                 </div>
-                                <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
-                                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)' }}>JD Alignment</span>
+                                <span style={{ color: 'var(--border)' }}>|</span>
+                                <span style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)' }}>JD Alignment</span>
                               </div>
 
                               <div style={{ marginTop: '1rem' }}>
-                                <strong style={{ display: 'block', fontSize: '0.82rem', color: '#ffffff', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Target Job Description:</strong>
-                                <blockquote style={{ margin: 0, padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.015)', borderLeft: '3px solid #00f5ff', borderRadius: '0 8px 8px 0', fontSize: '0.86rem', color: 'rgba(255,255,255,0.72)', maxHeight: '120px', overflowY: 'auto', lineBreak: 'anywhere', whiteSpace: 'pre-wrap' }}>
+                                <strong style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Target Job Description:</strong>
+                                <blockquote style={{ margin: 0, padding: '0.75rem 1rem', background: 'var(--bg-secondary)', borderLeft: '3px solid var(--blue)', borderRadius: '0 8px 8px 0', fontSize: '0.86rem', color: 'var(--text-secondary)', maxHeight: '120px', overflowY: 'auto', lineBreak: 'anywhere', whiteSpace: 'pre-wrap' }}>
                                   {tailor.jobDescription}
                                 </blockquote>
                               </div>
@@ -907,23 +984,23 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                 <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                   {tailor.matchedSkills && tailor.matchedSkills.length > 0 && (
                                     <div>
-                                      <strong style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.3', textTransform: 'uppercase' }}>Matched Keywords:</strong>
+                                      <strong style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-tertiary)', marginBottom: '0.3rem', textTransform: 'uppercase' }}>Matched Keywords:</strong>
                                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                                         {tailor.matchedSkills.slice(0, 8).map(s => (
-                                          <span key={s} style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '999px', background: 'rgba(0, 245, 255, 0.05)', border: '1px solid rgba(0, 245, 255, 0.15)', color: '#a8fbff' }}>{s}</span>
+                                          <span key={s} style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '999px', background: 'var(--blue-dim)', border: '1px solid rgba(41,151,255,0.2)', color: 'var(--blue)' }}>{s}</span>
                                         ))}
-                                        {tailor.matchedSkills.length > 8 && <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)' }}>+{tailor.matchedSkills.length - 8} more</span>}
+                                        {tailor.matchedSkills.length > 8 && <span style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)' }}>+{tailor.matchedSkills.length - 8} more</span>}
                                       </div>
                                     </div>
                                   )}
                                   {tailor.missingSkills && tailor.missingSkills.length > 0 && (
                                     <div>
-                                      <strong style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.3rem', textTransform: 'uppercase' }}>Recommended Additions:</strong>
+                                      <strong style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-tertiary)', marginBottom: '0.3rem', textTransform: 'uppercase' }}>Recommended Additions:</strong>
                                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                                         {tailor.missingSkills.slice(0, 8).map(s => (
-                                          <span key={s} style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.15)', color: '#fbbf24' }}>{s}</span>
+                                          <span key={s} style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '999px', background: 'var(--orange-dim)', border: '1px solid rgba(245,158,11,0.2)', color: 'var(--orange)' }}>{s}</span>
                                         ))}
-                                        {tailor.missingSkills.length > 8 && <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)' }}>+{tailor.missingSkills.length - 8} more</span>}
+                                        {tailor.missingSkills.length > 8 && <span style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)' }}>+{tailor.missingSkills.length - 8} more</span>}
                                       </div>
                                     </div>
                                   )}
@@ -1322,7 +1399,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                   <span>Generated: {new Date(jf.createdAt).toLocaleString()}</span>
                                 </div>
                                 {jf.jobDescription && (
-                                  <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'rgba(255, 255, 255, 0.6)', fontStyle: 'italic' }}>
+                                  <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>
                                     Target JD/Keywords: {jf.jobDescription}
                                   </div>
                                 )}
@@ -1360,6 +1437,98 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ WHITELIST ACCESS SECTION ─ */}
+                {activeSection === 'whitelist' && (
+                  <div className="admin-panel glass-card detail-view" style={{ maxWidth: 800 }}>
+                    <div className="admin-panel-head">
+                      <h2><Shield size={15} /> Gmail Whitelist Access Manager</h2>
+                      <span className="panel-badge">{whitelistedEmails.length} dynamic user{whitelistedEmails.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div className="admin-panel-body" style={{ marginTop: '1rem' }}>
+                      <p style={{ color: 'var(--admin-text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                        Users with these Gmail addresses will be dynamically granted full <strong>Pro Module Access</strong> (including Job Finder and unlimited usages) without any manual codebase modifications.
+                      </p>
+
+                      {/* Add email form */}
+                      <form onSubmit={handleAddWhitelist} className="admin-whitelist-form" style={{ display: 'flex', gap: '0.8rem', marginBottom: '2rem' }}>
+                        <div className="admin-field-wrapper" style={{ flex: 1, margin: 0 }}>
+                          <Mail size={16} className="field-icon" />
+                          <input
+                            type="email"
+                            value={whitelistInput}
+                            onChange={e => setWhitelistInput(e.target.value)}
+                            placeholder="Enter Gmail address to grant access..."
+                            required
+                            disabled={isWhitelistLoading}
+                            style={{ width: '100%' }}
+                          />
+                        </div>
+                        <button type="submit" className="admin-primary-btn" disabled={isWhitelistLoading || !whitelistInput.trim()} style={{ whiteSpace: 'nowrap', width: 'auto', padding: '0 1.5rem' }}>
+                          {isWhitelistLoading ? 'Processing...' : 'Grant Access'}
+                        </button>
+                      </form>
+
+                      {whitelistSuccess && (
+                        <div className="admin-success-msg" style={{ padding: '0.75rem 1rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '6px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.88rem' }}>
+                          <Sparkles size={16} /> {whitelistSuccess}
+                        </div>
+                      )}
+
+                      {whitelistError && (
+                        <div className="admin-error-msg" style={{ padding: '0.75rem 1rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '6px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.88rem' }}>
+                          <AlertTriangle size={16} /> {whitelistError}
+                        </div>
+                      )}
+
+                      {/* Whitelist Table */}
+                      {isWhitelistLoading && whitelistedEmails.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--admin-text-muted)' }}>
+                          <span className="admin-spinner" style={{ display: 'inline-block', marginRight: '0.5rem' }} /> Loading whitelist...
+                        </div>
+                      ) : whitelistedEmails.length === 0 ? (
+                        <div className="panel-empty-state" style={{ padding: '3rem', textAlign: 'center', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                          <Shield size={28} style={{ color: 'var(--admin-cyan)', marginBottom: '1rem', opacity: 0.6 }} />
+                          <p style={{ color: 'var(--admin-text-secondary)' }}>No dynamically whitelisted email addresses found.</p>
+                        </div>
+                      ) : (
+                        <div className="table-responsive">
+                          <table className="admin-table">
+                            <thead>
+                              <tr>
+                                <th>Gmail Address</th>
+                                <th>Access Granted Date</th>
+                                <th style={{ textAlign: 'right' }}>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {whitelistedEmails.map((item, idx) => {
+                                const emailStr = typeof item === 'string' ? item : item.email;
+                                const dateStr = typeof item === 'string' ? 'N/A' : item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A';
+                                return (
+                                  <tr key={item.id || emailStr || idx}>
+                                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{emailStr}</td>
+                                    <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>{dateStr}</td>
+                                    <td style={{ textAlign: 'right' }}>
+                                      <button
+                                        onClick={() => handleDeleteWhitelist(emailStr)}
+                                        className="admin-icon-btn"
+                                        style={{ color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)', background: 'rgba(239, 68, 68, 0.05)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem' }}
+                                        title="Revoke Pro access"
+                                      >
+                                        Revoke Access
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1457,7 +1626,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                             <tbody>
                               {(stats.recentResumes || []).map((work) => (
                                 <tr key={work.id}>
-                                  <td style={{ fontWeight: 600, color: '#fff' }}>{work.title}</td>
+                                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{work.title}</td>
                                   <td>
                                     <span className="highlight-pill">{work.templateId}</span>
                                   </td>
@@ -1504,7 +1673,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                             <tbody>
                               {(stats.recentCoverLetters || []).map((work) => (
                                 <tr key={work.id}>
-                                  <td style={{ fontWeight: 600, color: '#fff' }}>{work.title}</td>
+                                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{work.title}</td>
                                   <td>
                                     <span className="highlight-pill" style={{ color: '#fb7185', background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>{work.templateId}</span>
                                   </td>
@@ -1552,7 +1721,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                             <tbody>
                               {(stats.recentPayments || []).map((pay) => (
                                 <tr key={pay.id || pay.transactionId}>
-                                  <td style={{ fontWeight: 600, fontFamily: 'monospace', color: '#fff' }}>{pay.transactionId}</td>
+                                  <td style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{pay.transactionId}</td>
                                   <td style={{ color: 'var(--admin-text-secondary)' }}>{pay.email}</td>
                                   <td>
                                     <span className="highlight-pill" style={{ color: '#10b981', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
