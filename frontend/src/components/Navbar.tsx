@@ -345,7 +345,7 @@ export default function Navbar({
                     </div>
                     <div className="nav-menu-column">
                       <span className="nav-menu-column-header">Job Search</span>
-                      <NavigationMenuLink render={<button onClick={() => go('job-finder')} disabled={!isWhitelisted} />}>
+                      <NavigationMenuLink render={<button onClick={() => go('job-finder')} />}>
                         <div className="font-medium" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                           AI Job Finder {!isWhitelisted && <Lock size={10} style={{ color: '#ef4444' }} />}
                         </div>

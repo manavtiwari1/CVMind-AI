@@ -28,6 +28,9 @@ import JobFinder from './pages/JobFinder';
 import ResumeBuilderLanding from './pages/ResumeBuilderLanding';
 import Pricing from './pages/Pricing';
 import AuthModal from './components/AuthModal';
+import Terms from './pages/Terms';
+import RefundPolicy from './pages/RefundPolicy';
+import Disclaimer from './pages/Disclaimer';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
 import './styles/theme.css';
 import './styles/3d-effects.css';
@@ -48,7 +51,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing', 'terms', 'refund-policy', 'disclaimer'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -256,6 +259,7 @@ export default function App() {
     } catch { return false; }
   });
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  const [showUpgradeGate, setShowUpgradeGate] = useState<boolean>(false);
   const [loadedWork, setLoadedWork] = useState<any>(null);
 
   const setCurrentPage = (page: string) => {
@@ -300,6 +304,7 @@ export default function App() {
         setShowAuthModal(true);
       } else if (!isPaid) {
         setCurrentPage('pricing');
+        setShowUpgradeGate(true);
       }
     } else if (freePrivatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
@@ -474,6 +479,12 @@ export default function App() {
         return <CoverLetter customApiKey={customApiKey} loadedWork={loadedWork} setLoadedWork={setLoadedWork} />;
       case 'pricing':
         return <Pricing setCurrentPage={setCurrentPage} isLoggedIn={isLoggedIn} setShowAuthModal={setShowAuthModal} />;
+      case 'terms':
+        return <Terms />;
+      case 'refund-policy':
+        return <RefundPolicy />;
+      case 'disclaimer':
+        return <Disclaimer />;
       default:
         return (
           <Home 
@@ -514,6 +525,45 @@ export default function App() {
 
       {!isMinimalPage && <Footer setCurrentPage={setCurrentPage} />}
       {!isMinimalPage && <Chatbot customApiKey={customApiKey} />}
+
+      {/* Upgrade gate — shown when logged-in free user tries a paid feature */}
+      {showUpgradeGate && (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)' }}
+          onClick={() => setShowUpgradeGate(false)}
+        >
+          <div
+            className="glass-card w-full max-w-sm text-center animate-scale-up"
+            style={{ padding: '2rem', maxWidth: '380px' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🔒</div>
+            <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '1.15rem', fontWeight: 700 }}>
+              Pro Feature
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+              This tool is available on the <strong>Pro plan</strong>. Upgrade to unlock all AI career features — portfolio generator, resume tailor, voice practice, job finder, and more.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              <button
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center' }}
+                onClick={() => { setShowUpgradeGate(false); setCurrentPage('pricing'); }}
+              >
+                View Pricing Plans
+              </button>
+              <button
+                className="btn-secondary"
+                style={{ width: '100%', justifyContent: 'center' }}
+                onClick={() => setShowUpgradeGate(false)}
+              >
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AuthModal
         isOpen={showAuthModal}
