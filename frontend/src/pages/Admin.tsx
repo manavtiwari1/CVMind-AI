@@ -1526,7 +1526,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                           Revoke Access
                                         </button>
                                       ) : (
-                                        <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '0.25rem 0.55rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.04em' }}>
+                                        <span style={{ fontSize: '0.69rem', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', padding: '0.22rem 0.52rem', borderRadius: '5px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
                                           System Static
                                         </span>
                                       )}
