@@ -114,7 +114,7 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
     if (userId) formData.append('userId', userId);
 
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
       const headers: Record<string, string> = {};
       if (customApiKey) headers['x-gemini-key'] = customApiKey;
 

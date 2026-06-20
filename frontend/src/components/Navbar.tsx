@@ -143,7 +143,7 @@ export default function Navbar({
     setModalError('');
     setModalSuccess('');
 
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
 
     try {
       const response = await fetch(`${baseUrl}/api/user/profile`, {
@@ -189,7 +189,7 @@ export default function Navbar({
     setModalError('');
     setModalSuccess('');
 
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
 
     try {
       const response = await fetch(`${baseUrl}/api/user/password`, {
@@ -228,7 +228,7 @@ export default function Navbar({
     setModalLoading(true);
     setModalError('');
 
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
 
     try {
       const response = await fetch(`${baseUrl}/api/user/work/${userId}`);
@@ -247,7 +247,7 @@ export default function Navbar({
     const userId = user?.id || user?._id;
     if (!userId || !workId) return;
 
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
 
     try {
       const response = await fetch(`${baseUrl}/api/user/work/${userId}/${workId}`, {

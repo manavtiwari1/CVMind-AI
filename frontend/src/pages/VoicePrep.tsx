@@ -35,7 +35,7 @@ export default function VoicePrep({ customApiKey, resumeText }: VoicePrepProps) 
   const isRecordingRef = useRef(false);
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
-    || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+    || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
 
   const isSpeechSupported = () => typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
 

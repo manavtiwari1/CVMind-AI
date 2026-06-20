@@ -874,7 +874,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
         if (!userId) return;
 
         const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
-          || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+          || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
 
         try {
           setSaving(true);
@@ -953,7 +953,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
 
     setSaving(true);
     const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
-      || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+      || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
 
     try {
       const response = await fetch(`${baseUrl}/api/user/work`, {
@@ -1099,7 +1099,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
       setHistoryText(htmlContent);
 
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
-        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+        || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (customApiKey) headers['x-gemini-key'] = customApiKey;
       const res = await fetch(`${baseUrl}/api/cover-letter/refine`, {
@@ -1128,7 +1128,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
       setHistoryText(htmlContent);
 
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
-        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+        || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (customApiKey) headers['x-gemini-key'] = customApiKey;
       const res = await fetch(`${baseUrl}/api/cover-letter/refine`, {
@@ -1162,7 +1162,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
       setHistoryText(htmlContent);
 
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
-        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+        || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (customApiKey) headers['x-gemini-key'] = customApiKey;
       
@@ -1205,7 +1205,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     setRefineError('');
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
-        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+        || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (customApiKey) headers['x-gemini-key'] = customApiKey;
 

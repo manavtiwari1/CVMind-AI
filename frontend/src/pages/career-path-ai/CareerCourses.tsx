@@ -54,7 +54,7 @@ export default function CareerCourses({ customApiKey, resumeText, loadedWork, se
 
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL 
-        || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+        || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
 
       const userStr = localStorage.getItem('cvmind_user');
       let email = '';

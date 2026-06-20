@@ -29,7 +29,7 @@ export default function PortfolioGen({ customApiKey, resumeText, setCurrentPage 
   useEffect(() => { setLocalResume(resumeText || ''); }, [resumeText]);
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL
-    || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+    || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
 
   const handleGenerate = async () => {
     if (!localResume.trim() || localResume.trim().length < 50) {
