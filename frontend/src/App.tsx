@@ -31,12 +31,13 @@ import AuthModal from './components/AuthModal';
 import Terms from './pages/Terms';
 import RefundPolicy from './pages/RefundPolicy';
 import Disclaimer from './pages/Disclaimer';
+import Proofreading from './pages/Proofreading';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
 import './styles/theme.css';
 import './styles/3d-effects.css';
 import './styles/skeleton.css';
 
-const WHITELISTED_EMAILS = ['riturani2005@gmail.com'];
+const WHITELISTED_EMAILS = ['riturani2005@gmail.com', 'rajendermishra39@gmail.com'];
 
 function resolveIsPaid(user: any): boolean {
   if (!user) return false;
@@ -51,7 +52,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing', 'terms', 'refund-policy', 'disclaimer'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing', 'terms', 'refund-policy', 'disclaimer', 'proofreading'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -191,6 +192,11 @@ export default function App() {
         title: "AI Job Finder | Match Jobs to Your CV - CVMind AI",
         description: "Upload your CV and describe your target role. CVMind AI matches you with 8–10 curated job openings complete with match scores, required skills, salary ranges, and direct apply links.",
         keywords: "AI Job Finder, Job Search, Resume to Jobs, Remote Jobs, Full-time Jobs, Internship Finder, Career Match"
+      },
+      proofreading: {
+        title: "AI Proofreading | Grammar, Tone & Power Verbs - CVMind AI",
+        description: "Let AI proofread your resume, cover letter, or any professional text. Fixes grammar, spelling, passive voice, weak verbs, and aligns tone to your target industry — one click.",
+        keywords: "AI Proofreading, Grammar Checker, Active Voice, Power Verbs, Resume Proofreader, Professional Writing"
       }
     };
 
@@ -295,7 +301,7 @@ export default function App() {
 
   // Private route interceptor — free pages require sign-in, paid pages require subscription
   useEffect(() => {
-    const freePrivatePages = ['prep', 'resume-editor', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post'];
+    const freePrivatePages = ['prep', 'resume-editor', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'proofreading'];
     const paidPages = ['tailor', 'voice-prep', 'portfolio-gen', 'job-finder', 'career-courses', 'elevator-pitch', 'career-roadmap'];
 
     if (paidPages.includes(currentPage)) {
@@ -485,6 +491,8 @@ export default function App() {
         return <RefundPolicy />;
       case 'disclaimer':
         return <Disclaimer />;
+      case 'proofreading':
+        return <Proofreading customApiKey={customApiKey} />;
       default:
         return (
           <Home 
