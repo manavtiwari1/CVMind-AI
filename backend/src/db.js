@@ -228,27 +228,15 @@ export async function isUserPaid(user) {
   if (!user) return false;
   const email = (user.email || '').toLowerCase();
   
-  // 1. Hardcoded check
-  if (WHITELISTED_EMAILS_HARDCODED.includes(email)) return true;
-
-  // 2. Env check
-  let envWhitelist = {};
-  try { if (process.env.WHITELISTED_USERS) envWhitelist = JSON.parse(process.env.WHITELISTED_USERS); } catch {}
-  if (Object.keys(envWhitelist).includes(email)) return true;
-
-  // 3. Dynamic Whitelist check
   try {
-    const dynamicList = await getWhitelistedEmails();
-    const inDynamicList = dynamicList.some(x => {
-      const itemEmail = typeof x === 'string' ? x : x.email;
-      return String(itemEmail || '').trim().toLowerCase() === email;
-    });
-    if (inDynamicList) return true;
+    const list = await getWhitelistedEmails();
+    const isWhitelisted = list.some(x => x.email === email);
+    if (isWhitelisted) return true;
   } catch (err) {
-    console.error('Dynamic whitelist check error in isUserPaid:', err);
+    console.error('Whitelist check error in isUserPaid:', err);
   }
 
-  // 4. User schema plan check
+  // User schema plan check
   return user.plan === 'pro' || user.isPro === true || user.isPaid === true;
 }
 
@@ -782,12 +770,56 @@ export async function savePaymentLog({ email, amount, paymentMethod, transaction
 
 export async function getWhitelistedEmails() {
   await ensureMongoConnection();
+  let dbList = [];
   if (mongoURI && mongoose.connection.readyState === 1) {
-    return await WhitelistEmail.find().sort({ createdAt: -1 });
+    dbList = await WhitelistEmail.find().sort({ createdAt: -1 });
+  } else {
+    const db = readDb();
+    if (!db.whitelistedEmails) db.whitelistedEmails = [];
+    dbList = db.whitelistedEmails;
   }
-  const db = readDb();
-  if (!db.whitelistedEmails) db.whitelistedEmails = [];
-  return db.whitelistedEmails;
+
+  const mergedList = dbList.map(item => {
+    const emailStr = typeof item === 'string' ? item : item.email;
+    const dateVal = typeof item === 'string' ? new Date().toISOString() : item.createdAt || new Date().toISOString();
+    return {
+      email: emailStr,
+      createdAt: dateVal,
+      source: 'database'
+    };
+  });
+
+  // Add env whitelisted users
+  let envWhitelist = {};
+  try {
+    if (process.env.WHITELISTED_USERS) {
+      envWhitelist = JSON.parse(process.env.WHITELISTED_USERS);
+    }
+  } catch {}
+  Object.keys(envWhitelist).forEach(email => {
+    const lowerEmail = email.toLowerCase();
+    if (!mergedList.some(x => x.email === lowerEmail)) {
+      mergedList.push({
+        email: lowerEmail,
+        createdAt: new Date().toISOString(),
+        source: 'env'
+      });
+    }
+  });
+
+  // Add hardcoded users
+  WHITELISTED_EMAILS_HARDCODED.forEach(email => {
+    const lowerEmail = email.toLowerCase();
+    if (!mergedList.some(x => x.email === lowerEmail)) {
+      mergedList.push({
+        email: lowerEmail,
+        createdAt: new Date().toISOString(),
+        source: 'hardcoded'
+      });
+    }
+  });
+
+  return mergedList;
 }
 
 export async function addWhitelistedEmail(email) {
@@ -839,33 +871,13 @@ export async function deleteWhitelistedEmail(email) {
 
 export async function checkJobFinderAccess(email) {
   const cleanEmail = String(email || '').trim().toLowerCase();
-
-  // 1. Hardcoded check
-  if (WHITELISTED_EMAILS_HARDCODED.includes(cleanEmail)) return true;
-
-  // 2. Env check
-  let WHITELISTED_USERS = {};
-  try {
-    if (process.env.WHITELISTED_USERS) {
-      WHITELISTED_USERS = JSON.parse(process.env.WHITELISTED_USERS);
-    }
-  } catch (err) {
-    // ignore
-  }
-  if (Object.keys(WHITELISTED_USERS).includes(cleanEmail)) return true;
-
-  // 3. Dynamic Whitelist check
+  if (!cleanEmail) return false;
   try {
     const list = await getWhitelistedEmails();
-    const inList = list.some(x => {
-      const itemEmail = typeof x === 'string' ? x : x.email;
-      return String(itemEmail || '').trim().toLowerCase() === cleanEmail;
-    });
-    if (inList) return true;
+    return list.some(x => x.email === cleanEmail);
   } catch (err) {
     console.error('Job Finder access check error:', err);
   }
-
   return false;
 }
 

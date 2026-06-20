@@ -174,7 +174,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const [whitelistedEmails, setWhitelistedEmails] = useState<Array<{ id?: string; email: string; createdAt: string }>>([]);
+  const [whitelistedEmails, setWhitelistedEmails] = useState<Array<{ id?: string; email: string; createdAt: string; source?: string }>>([]);
   const [whitelistInput, setWhitelistInput] = useState('');
   const [isWhitelistLoading, setIsWhitelistLoading] = useState(false);
   const [whitelistError, setWhitelistError] = useState('');
@@ -1508,19 +1508,28 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                               {whitelistedEmails.map((item, idx) => {
                                 const emailStr = typeof item === 'string' ? item : item.email;
                                 const dateStr = typeof item === 'string' ? 'N/A' : item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A';
+                                const source = typeof item === 'string' ? 'database' : item.source || 'database';
                                 return (
                                   <tr key={item.id || emailStr || idx}>
                                     <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{emailStr}</td>
-                                    <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>{dateStr}</td>
+                                    <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>
+                                      {source === 'database' ? dateStr : 'Permanent'}
+                                    </td>
                                     <td style={{ textAlign: 'right' }}>
-                                      <button
-                                        onClick={() => handleDeleteWhitelist(emailStr)}
-                                        className="admin-icon-btn"
-                                        style={{ color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)', background: 'rgba(239, 68, 68, 0.05)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem' }}
-                                        title="Revoke Pro access"
-                                      >
-                                        Revoke Access
-                                      </button>
+                                      {source === 'database' ? (
+                                        <button
+                                          onClick={() => handleDeleteWhitelist(emailStr)}
+                                          className="admin-icon-btn"
+                                          style={{ color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)', background: 'rgba(239, 68, 68, 0.05)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem' }}
+                                          title="Revoke Pro access"
+                                        >
+                                          Revoke Access
+                                        </button>
+                                      ) : (
+                                        <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '0.25rem 0.55rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.04em' }}>
+                                          System Static
+                                        </span>
+                                      )}
                                     </td>
                                   </tr>
                                 );
