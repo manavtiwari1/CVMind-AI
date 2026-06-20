@@ -1094,3 +1094,76 @@ export async function generateCareerRoadmapWithGemini({ currentRole, targetRole,
     throw new Error('Career roadmap generation failed. ' + error.message);
   }
 }
+
+// ─── PROOFREADING SCHEMA ──────────────────────────────────────────────────────
+const proofreadingSchema = {
+  type: 'object',
+  properties: {
+    correctedText: { type: 'string', description: 'The fully corrected and polished version of the input text, preserving the original structure and meaning.' },
+    score: { type: 'integer', description: 'Writing quality score from 0 to 100 for the ORIGINAL text, where 100 is perfect professional writing.' },
+    summary: { type: 'string', description: 'A 2-3 sentence summary of the key improvements made and overall writing quality assessment.' },
+    changes: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          type: { type: 'string', description: 'Category of change. Must be one of: grammar, spelling, passive_voice, weak_verb, tone, clarity, punctuation' },
+          original: { type: 'string', description: 'The original phrase or sentence fragment that was changed.' },
+          corrected: { type: 'string', description: 'The corrected and improved version of that phrase.' },
+          explanation: { type: 'string', description: 'Brief, actionable explanation of why this change improves the writing.' }
+        },
+        required: ['type', 'original', 'corrected', 'explanation']
+      },
+      description: 'List of all specific changes made, in order of appearance in the text. Include up to 20 most important changes.'
+    },
+    stats: {
+      type: 'object',
+      properties: {
+        grammarFixes: { type: 'integer', description: 'Number of grammar and punctuation fixes.' },
+        spellingFixes: { type: 'integer', description: 'Number of spelling corrections.' },
+        passiveToActive: { type: 'integer', description: 'Number of passive voice conversions to active voice.' },
+        verbUpgrades: { type: 'integer', description: 'Number of weak verbs upgraded to strong power verbs.' },
+        toneAlignments: { type: 'integer', description: 'Number of tone and clarity adjustments made.' }
+      },
+      required: ['grammarFixes', 'spellingFixes', 'passiveToActive', 'verbUpgrades', 'toneAlignments']
+    }
+  },
+  required: ['correctedText', 'score', 'summary', 'changes', 'stats']
+};
+
+export async function generateProofreadingWithDeepSeek({ text, industry = 'General', customApiKey = null }) {
+  const systemPrompt = `You are an expert writing coach, professional proofreader, and linguist specialising in career documents and professional communications.
+
+Your task is to proofread and rewrite the provided text with the following improvements:
+1. GRAMMAR & PUNCTUATION: Fix all grammatical errors, tense inconsistencies, subject-verb agreement issues, and punctuation mistakes.
+2. SPELLING: Correct all spelling mistakes and typos.
+3. PASSIVE → ACTIVE VOICE: Identify passive-voice constructions and rewrite them in active voice for stronger, clearer communication.
+4. WEAK → POWER VERBS: Replace weak, vague verbs (e.g. "helped", "did", "was responsible for", "worked on") with strong action verbs (e.g. "orchestrated", "spearheaded", "engineered", "delivered", "drove").
+5. TONE ALIGNMENT: Align the tone for ${industry} industry professionals — use appropriate formality and vocabulary.
+6. CLARITY: Simplify overly complex or wordy sentences. Remove redundant words.
+
+Be thorough but preserve the author's original intent and factual content. Do not fabricate metrics or information not present in the original.`;
+
+  const userPrompt = `Please proofread and improve the following text. Target industry: ${industry}.
+
+Text to proofread:
+"""
+${text}
+"""
+
+Analyse every sentence, identify all issues, apply all improvements, and return the structured JSON response.`;
+
+  try {
+    return await callDeepSeek({
+      systemInstruction: systemPrompt,
+      prompt: userPrompt,
+      responseSchema: proofreadingSchema,
+      customApiKey,
+      temperature: 0.2,
+      maxTokens: 3000
+    });
+  } catch (error) {
+    console.error('DeepSeek Proofreading Error:', error);
+    throw new Error('Proofreading failed. ' + error.message);
+  }
+}

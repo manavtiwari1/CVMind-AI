@@ -5,8 +5,8 @@ import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
-import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini, generateResumeWithGemini } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess } from './db.js';
+import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini, generateResumeWithGemini, generateProofreadingWithDeepSeek } from './services/gemini.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, checkAndIncrementUsage, getUserUsageToday, FREE_DAILY_LIMITS } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -437,12 +437,24 @@ apiRouter.post('/api/chat', async (req, res) => {
 apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
   try {
     const { file } = req;
-    
+
     // Check if file was uploaded
     if (!file) {
-      return res.status(400).json({ 
-        error: 'No resume file uploaded. Please upload a PDF, DOCX, or TXT file.' 
+      return res.status(400).json({
+        error: 'No resume file uploaded. Please upload a PDF, DOCX, or TXT file.'
       });
+    }
+
+    // Usage limit check (only for logged-in users)
+    const userId = req.body?.userId || '';
+    if (userId) {
+      const usage = await checkAndIncrementUsage(userId, 'analyze');
+      if (!usage.allowed) {
+        return res.status(429).json({
+          error: `Daily limit reached. Free users can analyze ${FREE_DAILY_LIMITS.analyze} resumes per day. Upgrade to Pro for unlimited access.`,
+          limitReached: true, feature: 'analyze', limit: usage.limit, used: usage.used
+        });
+      }
     }
 
     // Extract custom API key from custom header if present
@@ -603,6 +615,17 @@ apiRouter.post('/api/prep', upload.single('resume'), async (req, res) => {
     const { resumeText } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
 
+    const userId = req.body?.userId || '';
+    if (userId) {
+      const usage = await checkAndIncrementUsage(userId, 'prep');
+      if (!usage.allowed) {
+        return res.status(429).json({
+          error: `Daily limit reached. Free users can generate ${FREE_DAILY_LIMITS.prep} prep sessions per day. Upgrade to Pro for unlimited access.`,
+          limitReached: true, feature: 'prep', limit: usage.limit, used: usage.used
+        });
+      }
+    }
+
     let textToAnalyze = '';
     let fileName = 'Direct Input';
     let fileSize = 0;
@@ -753,6 +776,16 @@ apiRouter.post('/api/linkedin/analyze', upload.single('linkedinPdf'), async (req
     const { email, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
 
+    if (userId) {
+      const usage = await checkAndIncrementUsage(userId, 'linkedin-analyze');
+      if (!usage.allowed) {
+        return res.status(429).json({
+          error: `Daily limit reached. Free users can audit ${FREE_DAILY_LIMITS['linkedin-analyze']} LinkedIn profiles per day. Upgrade to Pro for unlimited access.`,
+          limitReached: true, feature: 'linkedin-analyze', limit: usage.limit, used: usage.used
+        });
+      }
+    }
+
     if (!file) {
       return res.status(400).json({ error: 'No LinkedIn PDF file uploaded. Please upload a PDF file.' });
     }
@@ -809,6 +842,16 @@ apiRouter.post('/api/linkedin/bio', async (req, res) => {
     const { skills, jobTitle, resumeText, email, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
 
+    if (userId) {
+      const usage = await checkAndIncrementUsage(userId, 'linkedin-bio');
+      if (!usage.allowed) {
+        return res.status(429).json({
+          error: `Daily limit reached. Free users can generate ${FREE_DAILY_LIMITS['linkedin-bio']} LinkedIn bios per day. Upgrade to Pro for unlimited access.`,
+          limitReached: true, feature: 'linkedin-bio', limit: usage.limit, used: usage.used
+        });
+      }
+    }
+
     if (!jobTitle) {
       return res.status(400).json({ error: 'Job Title is required.' });
     }
@@ -860,6 +903,16 @@ apiRouter.post('/api/linkedin/outreach', async (req, res) => {
   try {
     const { jobTitle, companyName, context, targetName, email, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (userId) {
+      const usage = await checkAndIncrementUsage(userId, 'linkedin-outreach');
+      if (!usage.allowed) {
+        return res.status(429).json({
+          error: `Daily limit reached. Free users can write ${FREE_DAILY_LIMITS['linkedin-outreach']} outreach messages per day. Upgrade to Pro for unlimited access.`,
+          limitReached: true, feature: 'linkedin-outreach', limit: usage.limit, used: usage.used
+        });
+      }
+    }
 
     if (!jobTitle) {
       return res.status(400).json({ error: 'Job Title is required.' });
@@ -1094,6 +1147,16 @@ apiRouter.post('/api/linkedin/post', async (req, res) => {
   try {
     const { topic, jobTitle, tone, resumeText, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
+
+    if (userId) {
+      const usage = await checkAndIncrementUsage(userId, 'linkedin-post');
+      if (!usage.allowed) {
+        return res.status(429).json({
+          error: `Daily limit reached. Free users can generate ${FREE_DAILY_LIMITS['linkedin-post']} LinkedIn posts per day. Upgrade to Pro for unlimited access.`,
+          limitReached: true, feature: 'linkedin-post', limit: usage.limit, used: usage.used
+        });
+      }
+    }
 
     if (!topic || !jobTitle) {
       return res.status(400).json({ error: 'Topic and Job Title are required.' });
@@ -1737,6 +1800,77 @@ apiRouter.get('/api/payments/check-access/:email', async (req, res) => {
   } catch (error) {
     console.error('Check access error:', error);
     return res.json({ success: false, hasAccess: false, error: error.message });
+  }
+});
+
+// AI Proofreading Endpoint
+apiRouter.post('/api/ai/proofread', upload.single('resume'), async (req, res) => {
+  try {
+    const customApiKey = req.headers['x-gemini-key'] || null;
+    const industry = req.body?.industry || 'General';
+    const userId = req.body?.userId || '';
+
+    let usageInfo = null;
+    if (userId) {
+      const usage = await checkAndIncrementUsage(userId, 'proofread');
+      if (!usage.allowed) {
+        return res.status(429).json({
+          error: `Daily limit reached. Free users can proofread ${FREE_DAILY_LIMITS.proofread} documents per day. Upgrade to Pro for unlimited access.`,
+          limitReached: true, feature: 'proofread', limit: usage.limit, used: usage.used
+        });
+      }
+      usageInfo = usage;
+    }
+
+    let text = req.body?.text || '';
+
+    // If a file was uploaded, extract text from it
+    if (req.file) {
+      const file = req.file;
+      if (file.mimetype === 'application/pdf') {
+        text = await parsePdf(file.buffer);
+      } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        text = await parseDocx(file.buffer);
+      } else if (file.mimetype === 'text/plain') {
+        text = parseTxt(file.buffer);
+      } else {
+        return res.status(400).json({ error: 'Unsupported file format. Please upload PDF, DOCX, or TXT.' });
+      }
+    }
+
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: 'Please provide text or upload a file to proofread.' });
+    }
+
+    if (text.trim().length < 20) {
+      return res.status(400).json({ error: 'Please provide at least 20 characters of text.' });
+    }
+
+    const result = await generateProofreadingWithDeepSeek({
+      text: text.trim(),
+      industry,
+      customApiKey
+    });
+
+    return res.json({ success: true, data: result, extractedText: req.file ? text.trim() : undefined, usage: usageInfo });
+  } catch (error) {
+    console.error('Proofreading API Error:', error);
+    return res.status(500).json({
+      error: error.message || 'AI Proofreading failed. Please try again later.'
+    });
+  }
+});
+
+// User daily usage endpoint
+apiRouter.get('/api/user/usage/:userId', async (req, res) => {
+  try {
+    const userId = String(req.params.userId || '').trim();
+    if (!userId) return res.status(400).json({ error: 'userId is required' });
+    const usage = await getUserUsageToday(userId);
+    return res.json({ success: true, usage, limits: FREE_DAILY_LIMITS });
+  } catch (error) {
+    console.error('Usage fetch error:', error);
+    return res.status(500).json({ error: 'Failed to fetch usage.' });
   }
 });
 

@@ -319,7 +319,7 @@ export default function Navbar({
               {/* 2. AI Tools ▾ */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger
-                  className={`nav-link nav-link-trigger${['prep','voice-prep','job-finder'].includes(currentPage) ? ' active' : ''}`}
+                  className={`nav-link nav-link-trigger${['prep','voice-prep','job-finder','proofreading'].includes(currentPage) ? ' active' : ''}`}
                 >
                   AI Tools
                 </NavigationMenuTrigger>
@@ -334,6 +334,10 @@ export default function Navbar({
                       <NavigationMenuLink render={<button onClick={() => go('voice-prep')} />}>
                         <div className="font-medium">Voice Practice AI</div>
                         <div className="text-muted-foreground">Real-time speaking feedback.</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('proofreading')} />}>
+                        <div className="font-medium">AI Proofreading</div>
+                        <div className="text-muted-foreground">Grammar, tone & power verbs.</div>
                       </NavigationMenuLink>
                     </div>
                     <div className="nav-menu-column">
@@ -544,7 +548,7 @@ export default function Navbar({
               {/* SmartPrep AI sub-accordion */}
               <div className="mobile-sub-accordion">
                 <button
-                  className={`mobile-sub-accordion-trigger${['prep','voice-prep'].includes(currentPage) ? ' open' : ''}`}
+                  className={`mobile-sub-accordion-trigger${['prep','voice-prep','proofreading'].includes(currentPage) ? ' open' : ''}`}
                   onClick={() => setMobileLinkedInOpen(v => !v)}
                 >
                   <span>SmartPrep AI</span>
@@ -557,6 +561,9 @@ export default function Navbar({
                     </button>
                     <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'voice-prep' ? ' active' : ''}`} onClick={() => go('voice-prep')}>
                       Voice Practice AI
+                    </button>
+                    <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'proofreading' ? ' active' : ''}`} onClick={() => go('proofreading')}>
+                      AI Proofreading
                     </button>
                   </div>
                 )}

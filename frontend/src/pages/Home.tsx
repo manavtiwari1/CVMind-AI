@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Upload, FileText, CheckCircle2, ShieldAlert, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles } from 'lucide-react';
 import { HeroSection } from '../components/blocks/hero-section-9';
+import UsageBadge from '../components/UsageBadge';
 import './Home.css';
 import './HomeCarousel.css';
 
@@ -20,6 +21,10 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+
+  const userId = (() => {
+    try { const u = JSON.parse(localStorage.getItem('cvmind_user') || '{}'); return u.id || u._id || ''; } catch { return ''; }
+  })();
 
   const fileInputRef  = useRef<HTMLInputElement>(null);
   const scoreRef      = useRef<HTMLElement>(null);
@@ -106,6 +111,7 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
 
     const formData = new FormData();
     formData.append('resume', selectedFile);
+    if (userId) formData.append('userId', userId);
 
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
@@ -296,7 +302,7 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
                 <li key={b}><span className="home-check-icon">✓</span>{b}</li>
               ))}
             </ul>
-            <button className="home-alt2-btn" onClick={() => setCurrentPage('dashboard')}>Try AI Proofreading →</button>
+            <button className="home-alt2-btn" onClick={() => setCurrentPage('proofreading')}>Try AI Proofreading →</button>
           </div>
           <div className="home-alt2-visual">
             <div className="home-proof-card">
@@ -464,6 +470,9 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
                         <button className="btn-secondary" onClick={removeFile}>Remove</button>
                         <button className="btn-primary" onClick={handleAnalyze}>Analyze Resume <ArrowRight size={18} /></button>
                       </div>
+                      {userId && (
+                        <UsageBadge feature="analyze" userId={userId} className="home-usage-badge" />
+                      )}
                     </div>
                   ) : (
                     <div className="upload-prompt-state" onClick={onButtonClick}>
