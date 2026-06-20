@@ -1,5 +1,5 @@
 {
   "appId": "com.cvmindai.ai",
   "appName": "CV Mind AI",
-  "webDir": "dist"
+  "webDir": "AI Resume Checker/frontend/dist"
 }
