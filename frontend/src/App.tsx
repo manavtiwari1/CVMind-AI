@@ -328,6 +328,57 @@ export default function App() {
     }
   }, []);
 
+  // Auto-sync whitelist access state on mount / login
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const checkAccess = async () => {
+      try {
+        const u = localStorage.getItem('cvmind_user');
+        if (!u) return;
+        const parsedUser = JSON.parse(u);
+        const email = parsedUser?.email;
+        if (!email) return;
+
+        const baseUrl =
+          import.meta.env.VITE_API_BASE_URL ||
+          import.meta.env.VITE_BACKEND_URL ||
+          (window.location.hostname.includes('vercel.app') ? '/_/backend' : 'http://localhost:5000');
+
+        const res = await fetch(`${baseUrl}/api/payments/check-access/${encodeURIComponent(email.toLowerCase())}`);
+        const data = await res.json();
+        if (data.success) {
+          if (data.hasAccess) {
+            setIsPaid(true);
+            const updatedUser = {
+              ...parsedUser,
+              plan: 'pro',
+              isPro: true,
+              isPaid: true
+            };
+            localStorage.setItem('cvmind_user', JSON.stringify(updatedUser));
+          } else {
+            const isHardcoded = WHITELISTED_EMAILS.includes(email.toLowerCase());
+            if (!isHardcoded) {
+              setIsPaid(false);
+              const updatedUser = {
+                ...parsedUser,
+                plan: 'free',
+                isPro: false,
+                isPaid: false
+              };
+              localStorage.setItem('cvmind_user', JSON.stringify(updatedUser));
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error auto-syncing whitelist status:', err);
+      }
+    };
+
+    checkAccess();
+  }, [isLoggedIn]);
+
   const syncIsPaid = () => {
     try {
       const u = localStorage.getItem('cvmind_user');
