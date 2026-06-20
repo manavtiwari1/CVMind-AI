@@ -205,6 +205,29 @@ const paymentLogSchema = new mongoose.Schema({
 });
 const PaymentLog = mongoose.models.PaymentLog || mongoose.model('PaymentLog', paymentLogSchema);
 
+// ─── PER-FEATURE DAILY LIMITS FOR FREE USERS ─────────────────────────────────
+export const FREE_DAILY_LIMITS = {
+  'analyze':           3,
+  'proofread':         5,
+  'prep':              5,
+  'linkedin-analyze':  3,
+  'linkedin-bio':      3,
+  'linkedin-outreach': 5,
+  'linkedin-post':     5,
+};
+
+const WHITELISTED_EMAILS_HARDCODED = ['riturani2005@gmail.com', 'rajendermishra39@gmail.com'];
+
+function isUserPaid(user) {
+  if (!user) return false;
+  const email = (user.email || '').toLowerCase();
+  if (WHITELISTED_EMAILS_HARDCODED.includes(email)) return true;
+  let envWhitelist = {};
+  try { if (process.env.WHITELISTED_USERS) envWhitelist = JSON.parse(process.env.WHITELISTED_USERS); } catch {}
+  if (Object.keys(envWhitelist).includes(email)) return true;
+  return user.plan === 'pro' || user.isPro === true || user.isPaid === true;
+}
+
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -214,7 +237,8 @@ const userSchema = new mongoose.Schema({
   isGoogleUser: { type: Boolean, default: false },
   resetPasswordToken: { type: String, default: '' },
   resetPasswordExpires: { type: Date, default: null },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  usageMap: { type: Map, of: Number, default: new Map() }
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
@@ -1275,6 +1299,96 @@ export async function updateUserPassword(userId, newPasswordHash) {
   u.isGoogleUser = false;
   writeDb(db);
   return u;
+}
+
+// ─── USAGE LIMIT HELPERS ──────────────────────────────────────────────────────
+
+function todayKey() {
+  return new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
+}
+
+/**
+ * Check if userId may use `feature`, and if so increment their count.
+ * Returns { allowed, used, limit, remaining }.
+ * Paid users always return allowed=true with remaining=999.
+ */
+export async function checkAndIncrementUsage(userId, feature) {
+  await ensureMongoConnection();
+
+  const limit = FREE_DAILY_LIMITS[feature];
+  if (limit == null) return { allowed: true, used: 0, limit: 0, remaining: 999 };
+
+  const searchId = String(userId || '').trim();
+  if (!searchId) return { allowed: true, used: 0, limit, remaining: limit };
+
+  const today = todayKey();
+  const mapKey = `${feature}:${today}`;
+
+  // ── MongoDB ───────────────────────────────────────────────────────────
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const user = await User.findById(searchId);
+    if (!user) return { allowed: true, used: 0, limit, remaining: limit };
+
+    if (isUserPaid(user)) return { allowed: true, used: 0, limit: 0, remaining: 999 };
+
+    const used = user.usageMap?.get(mapKey) ?? 0;
+    if (used >= limit) {
+      return { allowed: false, used, limit, remaining: 0 };
+    }
+    user.usageMap.set(mapKey, used + 1);
+    user.markModified('usageMap');
+    await user.save();
+    return { allowed: true, used: used + 1, limit, remaining: limit - (used + 1) };
+  }
+
+  // ── JSON fallback ─────────────────────────────────────────────────────
+  const db = readDb();
+  if (!db.users) db.users = [];
+  const u = db.users.find(x => x.id === searchId || x._id === searchId);
+  if (!u) return { allowed: true, used: 0, limit, remaining: limit };
+  if (isUserPaid(u)) return { allowed: true, used: 0, limit: 0, remaining: 999 };
+
+  if (!u.usageMap) u.usageMap = {};
+  const usedJson = u.usageMap[mapKey] ?? 0;
+  if (usedJson >= limit) return { allowed: false, used: usedJson, limit, remaining: 0 };
+  u.usageMap[mapKey] = usedJson + 1;
+  writeDb(db);
+  return { allowed: true, used: usedJson + 1, limit, remaining: limit - (usedJson + 1) };
+}
+
+/**
+ * Return today's usage counts for all features for a user (for displaying in UI).
+ */
+export async function getUserUsageToday(userId) {
+  await ensureMongoConnection();
+  const searchId = String(userId || '').trim();
+  const today = todayKey();
+
+  const result = {};
+  for (const [feature, limit] of Object.entries(FREE_DAILY_LIMITS)) {
+    const mapKey = `${feature}:${today}`;
+    result[feature] = { limit, used: 0, remaining: limit };
+
+    if (mongoURI && mongoose.connection.readyState === 1) {
+      const user = searchId ? await User.findById(searchId) : null;
+      if (user) {
+        if (isUserPaid(user)) { result[feature].remaining = 999; continue; }
+        const used = user.usageMap?.get(mapKey) ?? 0;
+        result[feature].used = used;
+        result[feature].remaining = Math.max(0, limit - used);
+      }
+    } else {
+      const db = readDb();
+      const u = db.users?.find(x => x.id === searchId || x._id === searchId);
+      if (u) {
+        if (isUserPaid(u)) { result[feature].remaining = 999; continue; }
+        const used = u.usageMap?.[mapKey] ?? 0;
+        result[feature].used = used;
+        result[feature].remaining = Math.max(0, limit - used);
+      }
+    }
+  }
+  return result;
 }
 
 export async function findUserById(userId) {
