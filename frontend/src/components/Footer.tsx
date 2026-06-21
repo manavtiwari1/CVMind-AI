@@ -33,7 +33,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
             <div className="footer-social-row">
               {/* LinkedIn */}
               <a
-                href="https://www.linkedin.com/in/manavtiwari1/"
+                href="https://www.linkedin.com/company/cv-mind-ai/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-btn"
@@ -47,7 +47,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
 
               {/* X (Twitter) */}
               <a
-                href="https://x.com/manavtiwari_in"
+                href="https://x.com/ManavAneja13"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-btn"
@@ -61,7 +61,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
 
               {/* Instagram */}
               <a
-                href="https://www.instagram.com/manavtiwari.in/"
+                href="https://www.instagram.com/cvmind.in?igsh=bDFsNm56bm55MTN6&utm_source=qr"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-btn"
