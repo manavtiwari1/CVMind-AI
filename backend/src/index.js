@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import crypto from 'crypto';
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
@@ -231,8 +232,8 @@ apiRouter.post('/api/auth/forgot-password', async (req, res) => {
       });
     }
 
-    // 1. Generate unique recovery token
-    const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    // 1. Generate cryptographically secure recovery token
+    const resetToken = crypto.randomBytes(32).toString('hex');
     const host = req.headers.origin || 'http://localhost:5173';
     const resetLink = `${host}/?resetToken=${resetToken}&email=${encodeURIComponent(user.email)}`;
 
@@ -1247,8 +1248,8 @@ apiRouter.post('/api/linkedin/post', async (req, res) => {
       return res.status(400).json({ error: 'Topic and Job Title are required.' });
     }
 
-    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error('API key is not configured.');
+    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) throw new Error('DeepSeek API key is not configured.');
 
     const prompt = `You are a LinkedIn content strategist. Generate 3 high-engagement LinkedIn posts for a ${jobTitle} professional.
 
@@ -1325,8 +1326,8 @@ apiRouter.post('/api/voice-prep/question', async (req, res) => {
 
     if (!jobTitle) return res.status(400).json({ error: 'Job Title is required.' });
 
-    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error('API key is not configured.');
+    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) throw new Error('DeepSeek API key is not configured.');
 
     const prompt = `Generate ONE realistic interview question for a ${level || 'Mid-level'} ${jobTitle} role.
 Category: ${category || 'Behavioral'}
@@ -1365,8 +1366,8 @@ apiRouter.post('/api/voice-prep/analyze', async (req, res) => {
 
     if (!question || !transcript) return res.status(400).json({ error: 'Question and transcript are required.' });
 
-    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error('API key is not configured.');
+    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) throw new Error('DeepSeek API key is not configured.');
 
     const prompt = `You are a senior interviewer. Analyze this interview answer:
 
@@ -1440,8 +1441,8 @@ apiRouter.post('/api/portfolio/generate-site', async (req, res) => {
       return res.status(400).json({ error: 'Resume text is required (minimum 50 characters).' });
     }
 
-    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error('API key is not configured.');
+    const apiKey = customApiKey || process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) throw new Error('DeepSeek API key is not configured.');
 
     const themeColors = {
       'dark-pro': { bg: '#0a0a0f', card: '#12121a', accent: '#6366f1', text: '#e2e8f0', secondary: '#94a3b8' },
@@ -1757,10 +1758,10 @@ apiRouter.post('/api/user/password', async (req, res) => {
     // by trying to verify with a fallback sentinel pattern.
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-      // For Google OAuth users, their password cannot be guessed. Check if this looks like a
-      // Google-auto-created account by checking if there's no way to verify (allow reset without old pass)
-      // We detect this by seeing if currentPassword field is explicitly set to 'google-oauth' sentinel.
-      if (currentPassword === 'google-oauth-bypass') {
+      // Allow Google OAuth users who have never set a password to create one.
+      // Guard is enforced server-side via the isGoogleUser flag in the database,
+      // so a client sending the sentinel for a non-Google account is rejected.
+      if (currentPassword === 'google-oauth-bypass' && user.isGoogleUser === true) {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
         await updateUserPassword(userId, hashedPassword);

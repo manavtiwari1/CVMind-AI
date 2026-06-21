@@ -42,6 +42,7 @@ export default function Navbar({
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const [mobileLinkedInOpen, setMobileLinkedInOpen] = useState(false);
   const [mobileCareerOpen, setMobileCareerOpen] = useState(false);
+  const [mobileCareerAiOpen, setMobileCareerAiOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'profile' | 'works' | 'settings' | null>(null);
   const [user, setUser] = useState<any>(null);
 
@@ -599,13 +600,13 @@ export default function Navbar({
               {/* Career Path AI sub-accordion */}
               <div className="mobile-sub-accordion">
                 <button
-                  className={`mobile-sub-accordion-trigger${mobileCareerOpen ? ' open' : ''}`}
-                  onClick={() => setMobileCareerOpen(v => !v)}
+                  className={`mobile-sub-accordion-trigger${mobileCareerAiOpen ? ' open' : ''}`}
+                  onClick={() => setMobileCareerAiOpen(v => !v)}
                 >
                   <span>Career Path AI</span>
-                  <ChevronDown size={12} className={`mobile-accordion-arrow${mobileCareerOpen ? ' rotated' : ''}`} />
+                  <ChevronDown size={12} className={`mobile-accordion-arrow${mobileCareerAiOpen ? ' rotated' : ''}`} />
                 </button>
-                {mobileCareerOpen && (
+                {mobileCareerAiOpen && (
                   <div className="mobile-sub-accordion-content">
                     <button className={`mobile-drawer-link mobile-sub-sub-link${currentPage === 'career-courses' ? ' active' : ''}`} onClick={() => go('career-courses')}>
                       Skill Gaps &amp; Courses
