@@ -68,6 +68,12 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
+  const [isWebView, setIsWebView] = useState(false);
+
+  useEffect(() => {
+    setIsWebView(checkIsWebView());
+  }, []);
+
   const [mode, setMode] = useState<AuthMode>('signIn');
   const [step, setStep] = useState(0);
 
@@ -226,12 +232,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   }
 
   /* Google OAuth ───────────────────────────────────────────────── */
-
-  const [isWebView, setIsWebView] = useState(false);
-
-  useEffect(() => {
-    setIsWebView(checkIsWebView());
-  }, []);
 
   function checkIsWebView() {
     if (typeof window === 'undefined') return false;
