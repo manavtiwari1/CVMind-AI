@@ -595,7 +595,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                     <div className="h-px flex-1" style={{ background: 'var(--border)' }} />
                   </div>
                   <div className="flex justify-center w-full">
-                    {isWebView ? (
+                    {isWebView && (
                       <button
                         type="button"
                         onClick={startGoogleRedirectFlow}
@@ -627,7 +627,9 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                         </svg>
                         Continue with Google
                       </button>
-                    ) : (
+                    )}
+                    
+                    <div style={{ display: isWebView ? 'none' : 'block' }}>
                       <GoogleLogin
                         onSuccess={cr => { if (cr.credential) handleGoogle(cr.credential); }}
                         onError={() => setErrorMsg('Google login failed. Please try again.')}
@@ -636,7 +638,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                         size="large"
                         width="370px"
                       />
-                    )}
+                    </div>
                   </div>
                 </motion.div>
               )}
