@@ -16,6 +16,79 @@ const PORT = process.env.PORT || 5000;
 // Initialize Resend Client
 const resend = new Resend(process.env.RESEND_API_KEY || '');
 
+// Helper to send Welcome Email upon sign-up
+const sendWelcomeEmail = async (email, name, origin) => {
+  if (!resend || !process.env.RESEND_API_KEY) {
+    console.warn('[WELCOME EMAIL] Skipping send - RESEND_API_KEY is not configured.');
+    return;
+  }
+
+  const isLocal = origin && (origin.includes('localhost') || origin.includes('127.0.0.1'));
+  const host = isLocal ? origin : 'https://cv-mind-ai.vercel.app';
+  const createResumeLink = `${host}`;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'CVMind AI <no-reply@manavtiwari.in>',
+      to: [email],
+      subject: 'Welcome to CVMind AI! ✨',
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff; color: #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 25px;">
+            <h2 style="color: #2997ff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">CVMind AI</h2>
+            <span style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Your AI-Powered Career Partner</span>
+          </div>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 15px;">Hi <strong>${name}</strong>,</p>
+          
+          <p style="font-size: 15px; line-height: 1.6; margin-bottom: 20px;">
+            Welcome to <strong>CVMind AI</strong>! We are absolutely thrilled to have you join us. 
+            CVMind AI is a state-of-the-art career suite designed to empower job seekers like you with advanced AI intelligence and ATS optimization tools.
+          </p>
+          
+          <div style="background-color: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 1px solid #f1f5f9;">
+            <h3 style="margin-top: 0; color: #0f172a; font-size: 16px;">Here is how CVMind AI accelerates your job search:</h3>
+            <ul style="padding-left: 20px; margin: 0; font-size: 14px; line-height: 1.8; color: #334155;">
+              <li><strong>ATS Resume Scanner & Scorecard:</strong> Get instant recruiter-grade scores, structural audits, and missing keyword analyses.</li>
+              <li><strong>AI-Powered Optimizer:</strong> Rewrite weak bullet points and enhance your resume's metrics with one click.</li>
+              <li><strong>Job Tailoring:</strong> Instantly match and adapt your profile to target job descriptions to beat the resume filters.</li>
+              <li><strong>SmartPrep Mock Interviews:</strong> Practice with dynamic AI-generated interview questions and receive instant evaluations.</li>
+              <li><strong>LinkedIn Optimizer:</strong> Elevate your profile, create compelling bios, and write high-impact outreach messages.</li>
+            </ul>
+          </div>
+          
+          <p style="font-size: 15px; line-height: 1.6; margin-bottom: 30px; text-align: center;">
+            Ready to take the next step in your career? Create a standout resume that lands interviews today!
+          </p>
+          
+          <div style="margin: 30px 0; text-align: center;">
+            <a href="${createResumeLink}" style="background: linear-gradient(135deg, #2997ff 0%, #bf5af2 100%); color: #ffffff; padding: 14px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 15px rgba(41, 151, 255, 0.3); font-size: 16px;">Create Beautiful Resume Now</a>
+          </div>
+          
+          <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-top: 25px;">
+            If you ever have any questions, feedback, or need help with your career tools, simply reply to this email. We're here to help you succeed!
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0 20px 0;" />
+          
+          <p style="font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; margin: 0;">
+            Designed & engineered by Manav Tiwari.<br />
+            © ${new Date().getFullYear()} CVMind AI. Secure applicant tracking systems and resume optimization.
+          </p>
+        </div>
+      `
+    });
+
+    if (error) {
+      console.error('[WELCOME EMAIL] Resend Dispatch Error:', error);
+    } else {
+      console.log(`[WELCOME EMAIL] Sent successfully to: ${email}, ID: ${data?.id}`);
+    }
+  } catch (err) {
+    console.error('[WELCOME EMAIL] Exception during dispatch:', err);
+  }
+};
+
 // Enable CORS for all requests, allow credentials and specific headers
 app.use(cors({
   origin: '*', 
@@ -104,6 +177,9 @@ apiRouter.post('/api/auth/signup', async (req, res) => {
 
     await saveLoginLog({ email: newUser.email, name: newUser.name, provider: 'signup' });
 
+    // Send welcome email asynchronously
+    sendWelcomeEmail(newUser.email, newUser.name, req.headers.origin);
+
     const isPaid = await isUserPaid(newUser);
     const userPayload = {
       id: newUser.id || newUser._id,
@@ -163,6 +239,9 @@ apiRouter.post('/api/auth/login', async (req, res) => {
           password: hashedPassword,
           isGoogleUser: false
         });
+
+        // Send welcome email asynchronously for whitelisted user creation
+        sendWelcomeEmail(user.email, user.name, req.headers.origin);
       } else {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
@@ -356,6 +435,9 @@ apiRouter.post('/api/auth/google', async (req, res) => {
         password: mockPasswordHash,
         isGoogleUser: true
       });
+
+      // Send welcome email asynchronously for Google signup
+      sendWelcomeEmail(user.email, user.name, req.headers.origin);
     }
 
     await saveLoginLog({ email: user.email, name: user.name, provider: 'google' });
