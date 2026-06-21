@@ -68,6 +68,11 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'light');
     localStorage.setItem('cvmind_theme', 'light');
+    
+    // Check if running inside the mobile app WebView
+    if (window.location.search.includes('platform=app')) {
+      localStorage.setItem('is_cvmind_app', 'true');
+    }
   }, []);
 
   // Scroll to top of the page on route changes
@@ -327,6 +332,48 @@ export default function App() {
       setShowAuthModal(true);
     }
   }, []);
+
+  // Handle Google OAuth Redirect Callback
+  useEffect(() => {
+    const handleGoogleRedirect = async () => {
+      const hash = window.location.hash;
+      if (!hash) return;
+
+      const params = new URLSearchParams(hash.substring(1));
+      const idToken = params.get('id_token');
+      if (!idToken) return;
+
+      // Clear the hash from address bar immediately
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+
+      try {
+        const baseUrl =
+          import.meta.env.VITE_API_BASE_URL ||
+          import.meta.env.VITE_BACKEND_URL ||
+          (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
+
+        const res = await fetch(`${baseUrl}/api/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: idToken }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Google login failed.');
+
+        localStorage.setItem('cvmind_logged_in', 'true');
+        localStorage.setItem('cvmind_user', JSON.stringify(data.user));
+        setIsLoggedIn(true);
+        syncIsPaid();
+        setCurrentPage('dashboard');
+      } catch (err: any) {
+        console.error('Google Redirect Auth Error:', err);
+      }
+    };
+
+    handleGoogleRedirect();
+  }, []);
+
 
   // Auto-sync whitelist access state on mount / login
   useEffect(() => {
