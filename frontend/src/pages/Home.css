@@ -787,6 +787,10 @@
 
 .file-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; justify-content: center; }
 
+/* ── Link input zone (Home-specific overrides) ───────────── */
+.upload-zone.link-input-zone { cursor: default; min-height: 220px; }
+.upload-zone.link-input-zone:hover { border-color: rgba(255,255,255,0.12); background: var(--glass-bg); }
+
 /* ── Upload zone loading override ───────────────────────── */
 .upload-zone.is-loading { min-height: 320px; cursor: default; }
 

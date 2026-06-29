@@ -3,7 +3,7 @@ import {
   Sparkles, FileText, Upload, Lock, ShieldAlert, ArrowRight,
   ChevronDown, ChevronUp, Copy, Check, CheckCircle2,
   Building2, HelpCircle, Lightbulb, RefreshCw, FileDown,
-  Briefcase, Cpu, Loader2, AlertCircle
+  Briefcase, Cpu, Loader2, AlertCircle, Link
 } from 'lucide-react';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './Prep.css';
@@ -27,6 +27,8 @@ interface PrepProps {
 
 export default function Prep({ customApiKey, resumeText, setResumeText, setCurrentPage, loadedWork, setLoadedWork }: PrepProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadMode, setUploadMode] = useState<'file' | 'link'>('file');
+  const [prepResumeUrl, setPrepResumeUrl] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
@@ -261,7 +263,7 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
   };
 
   const generateQuestions = async (useCached = false) => {
-    if (!selectedFile && (!useCached || !resumeText)) return;
+    if (!selectedFile && !prepResumeUrl && (!useCached || !resumeText)) return;
 
     setLoading(true);
     setLoadingStep(0);
@@ -295,6 +297,14 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
       } else if (selectedFile) {
         const formData = new FormData();
         formData.append('resume', selectedFile);
+        response = await fetch(`${baseUrl}/api/prep`, {
+          method: 'POST',
+          headers,
+          body: formData
+        });
+      } else if (prepResumeUrl) {
+        const formData = new FormData();
+        formData.append('resumeUrl', prepResumeUrl.trim());
         response = await fetch(`${baseUrl}/api/prep`, {
           method: 'POST',
           headers,
@@ -413,55 +423,84 @@ export default function Prep({ customApiKey, resumeText, setResumeText, setCurre
             {/* Upload Zone */}
             <div className="prep-drop-zone">
               <div className="divider-or"><span>OR UPLOAD NEW CV</span></div>
-              
-              <div 
-                className={`prep-upload-area ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''}`}
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-              >
-                <input 
-                  ref={fileInputRef}
-                  type="file"
-                  className="file-input-hidden"
-                  accept=".pdf,.docx,.txt"
-                  onChange={handleChange}
-                />
 
-                {selectedFile ? (
-                  <div className="file-selected-state">
-                    <div className="file-icon-wrapper">
-                      <FileText className="file-icon" />
-                    </div>
-                    <div className="file-details">
-                      <span className="file-name">{selectedFile.name}</span>
-                      <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
-                    </div>
-                    <div className="file-actions">
-                      <button className="btn-secondary" onClick={removeFile}>
-                        Remove
-                      </button>
-                      <button className="btn-primary" onClick={() => generateQuestions(false)}>
-                        Scan & Prep <ArrowRight size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="upload-prompt-state" onClick={triggerUpload}>
-                    <Upload className="upload-icon" />
-                    <button className="upload-cta" type="button">
-                      Upload Resume Document
-                    </button>
-                    <div className="privacy-note">
-                      <Lock size={13} /> Secure local sandboxed evaluation
-                    </div>
-                    <div className="file-limits-info">
-                      PDF, DOCX, or TXT up to 5MB
-                    </div>
-                  </div>
-                )}
+              {/* Mode toggle */}
+              <div className="upload-mode-toggle">
+                <button
+                  className={`upload-mode-btn${uploadMode === 'file' ? ' active' : ''}`}
+                  onClick={() => { setUploadMode('file'); setErrorMsg(null); }}
+                >
+                  <Upload size={14} /> Upload File
+                </button>
+                <button
+                  className={`upload-mode-btn${uploadMode === 'link' ? ' active' : ''}`}
+                  onClick={() => { setUploadMode('link'); setErrorMsg(null); }}
+                >
+                  <Link size={14} /> Paste Link
+                </button>
               </div>
+
+              {uploadMode === 'file' ? (
+                <div
+                  className={`prep-upload-area ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''}`}
+                  onDragEnter={handleDrag}
+                  onDragOver={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDrop={handleDrop}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="file-input-hidden"
+                    accept=".pdf,.docx,.txt"
+                    onChange={handleChange}
+                  />
+                  {selectedFile ? (
+                    <div className="file-selected-state">
+                      <div className="file-icon-wrapper"><FileText className="file-icon" /></div>
+                      <div className="file-details">
+                        <span className="file-name">{selectedFile.name}</span>
+                        <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                      </div>
+                      <div className="file-actions">
+                        <button className="btn-secondary" onClick={removeFile}>Remove</button>
+                        <button className="btn-primary" onClick={() => generateQuestions(false)}>
+                          Scan & Prep <ArrowRight size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="upload-prompt-state" onClick={triggerUpload}>
+                      <Upload className="upload-icon" />
+                      <button className="upload-cta" type="button">Upload Resume Document</button>
+                      <div className="privacy-note"><Lock size={13} /> Secure local sandboxed evaluation</div>
+                      <div className="file-limits-info">PDF, DOCX, or TXT up to 5MB</div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="prep-upload-area link-input-zone" style={{ cursor: 'default', minHeight: '160px' }}>
+                  <div className="link-input-state">
+                    <Link size={26} className="link-input-icon" />
+                    <p className="link-input-label">Paste a shareable link to your resume</p>
+                    <input
+                      type="url"
+                      className="resume-link-input"
+                      placeholder="https://drive.google.com/... or any direct PDF/DOCX link"
+                      value={prepResumeUrl}
+                      onChange={(e) => setPrepResumeUrl(e.target.value)}
+                    />
+                    <p className="link-input-hint">Supports Google Drive, Dropbox, OneDrive, or any direct link</p>
+                    <button
+                      className="btn-primary"
+                      onClick={() => generateQuestions(false)}
+                      disabled={!prepResumeUrl.trim()}
+                    >
+                      Scan & Prep <ArrowRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {errorMsg && (
                 <div className="error-message-bar">

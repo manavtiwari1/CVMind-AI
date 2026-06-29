@@ -201,6 +201,9 @@
   background: var(--blue-dim, rgba(41, 151, 255, 0.06));
 }
 
+.prep-upload-area.link-input-zone { cursor: default; }
+.prep-upload-area.link-input-zone:hover { border-color: rgba(255,255,255,0.12); background: var(--bg-input, rgba(255,255,255,0.06)); transform: none; }
+
 /* ── Loading card ── */
 .prep-loading-card {
   display: flex;

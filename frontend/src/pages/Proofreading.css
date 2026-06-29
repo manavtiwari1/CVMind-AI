@@ -182,6 +182,18 @@
   background: rgba(16, 185, 129, 0.04);
 }
 
+.proofread-link-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1.4rem 1rem;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  text-align: center;
+}
+
 .proofread-upload-prompt {
   display: flex;
   flex-direction: column;

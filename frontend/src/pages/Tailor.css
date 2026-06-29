@@ -136,6 +136,8 @@
 }
 
 .tailor-upload-zone.is-loading { min-height: 340px; cursor: default; }
+.tailor-upload-zone.link-input-zone { cursor: default; }
+.tailor-upload-zone.link-input-zone:hover { transform: none; border-color: var(--border-strong); background-color: var(--bg-card); }
 
 .tailor-upload-zone.has-file,
 .tailor-upload-zone.is-loading {

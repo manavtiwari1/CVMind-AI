@@ -5,7 +5,7 @@ import cors from 'cors';
 import multer from 'multer';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
-import { parsePdf, parseDocx, parseTxt } from './services/parser.js';
+import { parsePdf, parseDocx, parseTxt, fetchResumeFromUrl } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini, generateResumeWithGemini, generateProofreadingWithDeepSeek } from './services/gemini.js';
 import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, checkAndIncrementUsage, getUserUsageToday, FREE_DAILY_LIMITS, isUserPaid, getWhitelistedEmails, addWhitelistedEmail, deleteWhitelistedEmail } from './db.js';
 import { Resend } from 'resend';
@@ -601,13 +601,32 @@ apiRouter.post('/api/chat', async (req, res) => {
   }
 });
 
+// Shared helper: extract text from an uploaded file or a URL
+async function extractResumeText(file, resumeUrl) {
+  let buffer, mimetype;
+  if (file) {
+    buffer = file.buffer;
+    mimetype = file.mimetype;
+  } else if (resumeUrl) {
+    ({ buffer, mimetype } = await fetchResumeFromUrl(resumeUrl));
+  } else {
+    throw Object.assign(new Error('No resume file uploaded and no link provided. Please upload a PDF, DOCX, or TXT file, or paste a shareable link.'), { status: 400 });
+  }
+
+  if (mimetype === 'application/pdf') return await parsePdf(buffer);
+  if (mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return await parseDocx(buffer);
+  if (mimetype === 'text/plain') return parseTxt(buffer);
+  throw Object.assign(new Error('Unsupported file format. Please upload PDF, DOCX, or TXT.'), { status: 400 });
+}
+
 // Resume Analysis Endpoint
 apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
   try {
     const { file } = req;
+    const resumeUrl = req.body?.resumeUrl || '';
 
-    // Check if file was uploaded
-    if (!file) {
+    // Check if file was uploaded or URL provided
+    if (!file && !resumeUrl) {
       return res.status(400).json({
         error: 'No resume file uploaded. Please upload a PDF, DOCX, or TXT file.'
       });
@@ -630,17 +649,10 @@ apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
 
     let extractedText = '';
 
-    // Route text parsing based on MIME type
-    if (file.mimetype === 'application/pdf') {
-      extractedText = await parsePdf(file.buffer);
-    } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-      extractedText = await parseDocx(file.buffer);
-    } else if (file.mimetype === 'text/plain') {
-      extractedText = parseTxt(file.buffer);
-    } else {
-      return res.status(400).json({ 
-        error: 'Unsupported file format. Please upload PDF, DOCX, or TXT.' 
-      });
+    try {
+      extractedText = await extractResumeText(file, resumeUrl);
+    } catch (parseErr) {
+      return res.status(parseErr.status || 400).json({ error: parseErr.message });
     }
 
     // Verify extracted text is not empty or too short
@@ -726,10 +738,10 @@ apiRouter.post('/api/optimize', async (req, res) => {
 apiRouter.post('/api/tailor', upload.single('resume'), async (req, res) => {
   try {
     const { file } = req;
-    const { jobDescription } = req.body || {};
+    const { jobDescription, resumeUrl } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
 
-    if (!file) {
+    if (!file && !resumeUrl) {
       return res.status(400).json({ error: 'No resume file uploaded. Please upload a PDF, DOCX, or TXT file.' });
     }
 
@@ -738,14 +750,10 @@ apiRouter.post('/api/tailor', upload.single('resume'), async (req, res) => {
     }
 
     let extractedText = '';
-    if (file.mimetype === 'application/pdf') {
-      extractedText = await parsePdf(file.buffer);
-    } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-      extractedText = await parseDocx(file.buffer);
-    } else if (file.mimetype === 'text/plain') {
-      extractedText = parseTxt(file.buffer);
-    } else {
-      return res.status(400).json({ error: 'Unsupported file format. Please upload PDF, DOCX, or TXT.' });
+    try {
+      extractedText = await extractResumeText(file, resumeUrl);
+    } catch (parseErr) {
+      return res.status(parseErr.status || 400).json({ error: parseErr.message });
     }
 
     if (!extractedText || extractedText.trim().length < 50) {
@@ -780,7 +788,7 @@ apiRouter.post('/api/tailor', upload.single('resume'), async (req, res) => {
 apiRouter.post('/api/prep', upload.single('resume'), async (req, res) => {
   try {
     const { file } = req;
-    const { resumeText } = req.body || {};
+    const { resumeText, resumeUrl } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
 
     const userId = req.body?.userId || '';
@@ -798,17 +806,13 @@ apiRouter.post('/api/prep', upload.single('resume'), async (req, res) => {
     let fileName = 'Direct Input';
     let fileSize = 0;
 
-    if (file) {
-      fileName = file.originalname;
-      fileSize = file.size;
-      if (file.mimetype === 'application/pdf') {
-        textToAnalyze = await parsePdf(file.buffer);
-      } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        textToAnalyze = await parseDocx(file.buffer);
-      } else if (file.mimetype === 'text/plain') {
-        textToAnalyze = parseTxt(file.buffer);
-      } else {
-        return res.status(400).json({ error: 'Unsupported file format. Please upload PDF, DOCX, or TXT.' });
+    if (file || resumeUrl) {
+      if (file) { fileName = file.originalname; fileSize = file.size; }
+      else { fileName = 'Link Upload'; }
+      try {
+        textToAnalyze = await extractResumeText(file, resumeUrl);
+      } catch (parseErr) {
+        return res.status(parseErr.status || 400).json({ error: parseErr.message });
       }
     } else if (resumeText && typeof resumeText === 'string' && resumeText.trim().length >= 50) {
       textToAnalyze = resumeText;
@@ -1999,18 +2003,14 @@ apiRouter.post('/api/ai/proofread', upload.single('resume'), async (req, res) =>
     }
 
     let text = req.body?.text || '';
+    const resumeUrl = req.body?.resumeUrl || '';
 
-    // If a file was uploaded, extract text from it
-    if (req.file) {
-      const file = req.file;
-      if (file.mimetype === 'application/pdf') {
-        text = await parsePdf(file.buffer);
-      } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        text = await parseDocx(file.buffer);
-      } else if (file.mimetype === 'text/plain') {
-        text = parseTxt(file.buffer);
-      } else {
-        return res.status(400).json({ error: 'Unsupported file format. Please upload PDF, DOCX, or TXT.' });
+    // If a file or URL was provided, extract text from it
+    if (req.file || resumeUrl) {
+      try {
+        text = await extractResumeText(req.file || null, resumeUrl || null);
+      } catch (parseErr) {
+        return res.status(parseErr.status || 400).json({ error: parseErr.message });
       }
     }
 
@@ -2028,7 +2028,7 @@ apiRouter.post('/api/ai/proofread', upload.single('resume'), async (req, res) =>
       customApiKey
     });
 
-    return res.json({ success: true, data: result, extractedText: req.file ? text.trim() : undefined, usage: usageInfo });
+    return res.json({ success: true, data: result, extractedText: (req.file || resumeUrl) ? text.trim() : undefined, usage: usageInfo });
   } catch (error) {
     console.error('Proofreading API Error:', error);
     return res.status(500).json({

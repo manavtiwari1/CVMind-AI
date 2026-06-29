@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, FileText, CheckCircle2, ShieldAlert, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, ShieldAlert, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Link } from 'lucide-react';
 import { HeroSection } from '../components/blocks/hero-section-9';
 import UsageBadge from '../components/UsageBadge';
 import './Home.css';
@@ -16,6 +16,8 @@ interface HomeProps {
 export default function Home({ setCurrentPage, setAnalysisResult, setResumeText, customApiKey }: HomeProps) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadMode, setUploadMode] = useState<'file' | 'link'>('file');
+  const [resumeUrl, setResumeUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -97,7 +99,11 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   };
 
   const handleAnalyze = async () => {
-    if (!selectedFile) return;
+    if (uploadMode === 'file' && !selectedFile) return;
+    if (uploadMode === 'link' && !resumeUrl.trim()) {
+      setErrorMsg('Please paste a link to your resume.');
+      return;
+    }
     setLoading(true);
     setLoadingStep(0);
     setErrorMsg(null);
@@ -110,7 +116,11 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
     }, 1600);
 
     const formData = new FormData();
-    formData.append('resume', selectedFile);
+    if (uploadMode === 'file' && selectedFile) {
+      formData.append('resume', selectedFile);
+    } else {
+      formData.append('resumeUrl', resumeUrl.trim());
+    }
     if (userId) formData.append('userId', userId);
 
     try {
@@ -128,7 +138,7 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       if (!response.ok) throw new Error(resData.error || 'Server error during analysis');
 
       if (resData.success && resData.data) {
-        const resultWithMeta = { ...resData.data, fileName: selectedFile.name };
+        const resultWithMeta = { ...resData.data, fileName: selectedFile?.name || resumeUrl };
         setAnalysisResult(resultWithMeta);
         if (resData.resumeText) setResumeText(resData.resumeText);
         setCurrentPage('dashboard');
@@ -417,72 +427,154 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
           <div className="home-score-upload">
             <div className="upload-section">
               <div className="upload-wrapper">
-                <div
-                  className={`upload-zone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''} ${loading ? 'is-loading' : ''}`}
-                  onDragEnter={handleDrag}
-                  onDragOver={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDrop={handleDrop}
-                >
-                  <input ref={fileInputRef} type="file" className="file-input-hidden" accept=".pdf,.docx,.txt" onChange={handleChange} disabled={loading} />
-                  {loading ? (
-                    <div className="skeleton-loading-state">
-                      <div className="skeleton-header-mini">
-                        <p className="skeleton-step-label">{analysisSteps[loadingStep]}</p>
-                        <div className="progress-bar-container">
-                          <div className="progress-bar-fill" style={{ width: `${((loadingStep + 1) / analysisSteps.length) * 100}%` }} />
-                        </div>
-                      </div>
-                      <div className="skeleton-preview">
-                        <div className="skeleton-score-row">
-                          <div className="skeleton-circle skeleton-pulse" />
-                          <div className="skeleton-score-text">
-                            <div className="skeleton-mini-line skeleton-pulse" style={{ width: '110px', height: '13px' }} />
-                            <div className="skeleton-mini-line skeleton-pulse" style={{ width: '72px', height: '10px' }} />
+                {/* Mode toggle */}
+                <div className="upload-mode-toggle">
+                  <button
+                    className={`upload-mode-btn${uploadMode === 'file' ? ' active' : ''}`}
+                    onClick={() => { setUploadMode('file'); setErrorMsg(null); }}
+                    disabled={loading}
+                  >
+                    <Upload size={14} /> Upload File
+                  </button>
+                  <button
+                    className={`upload-mode-btn${uploadMode === 'link' ? ' active' : ''}`}
+                    onClick={() => { setUploadMode('link'); setErrorMsg(null); }}
+                    disabled={loading}
+                  >
+                    <Link size={14} /> Paste Link
+                  </button>
+                </div>
+
+                {uploadMode === 'file' ? (
+                  <div
+                    className={`upload-zone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''} ${loading ? 'is-loading' : ''}`}
+                    onDragEnter={handleDrag}
+                    onDragOver={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDrop={handleDrop}
+                  >
+                    <input ref={fileInputRef} type="file" className="file-input-hidden" accept=".pdf,.docx,.txt" onChange={handleChange} disabled={loading} />
+                    {loading ? (
+                      <div className="skeleton-loading-state">
+                        <div className="skeleton-header-mini">
+                          <p className="skeleton-step-label">{analysisSteps[loadingStep]}</p>
+                          <div className="progress-bar-container">
+                            <div className="progress-bar-fill" style={{ width: `${((loadingStep + 1) / analysisSteps.length) * 100}%` }} />
                           </div>
                         </div>
-                        <div className="skeleton-bars-mini">
-                          {[88, 74, 61, 46].map((w, i) => (
-                            <div key={i} className="skeleton-bar-row-mini">
-                              <div className="skeleton-bar-label-mini skeleton-pulse" style={{ width: `${38 + i * 8}px` }} />
-                              <div className="skeleton-bar-track-mini">
-                                <div className="skeleton-bar-fill-mini skeleton-pulse" style={{ width: `${w}%` }} />
-                              </div>
-                              <div className="skeleton-bar-pct-mini skeleton-pulse" />
+                        <div className="skeleton-preview">
+                          <div className="skeleton-score-row">
+                            <div className="skeleton-circle skeleton-pulse" />
+                            <div className="skeleton-score-text">
+                              <div className="skeleton-mini-line skeleton-pulse" style={{ width: '110px', height: '13px' }} />
+                              <div className="skeleton-mini-line skeleton-pulse" style={{ width: '72px', height: '10px' }} />
                             </div>
-                          ))}
+                          </div>
+                          <div className="skeleton-bars-mini">
+                            {[88, 74, 61, 46].map((w, i) => (
+                              <div key={i} className="skeleton-bar-row-mini">
+                                <div className="skeleton-bar-label-mini skeleton-pulse" style={{ width: `${38 + i * 8}px` }} />
+                                <div className="skeleton-bar-track-mini">
+                                  <div className="skeleton-bar-fill-mini skeleton-pulse" style={{ width: `${w}%` }} />
+                                </div>
+                                <div className="skeleton-bar-pct-mini skeleton-pulse" />
+                              </div>
+                            ))}
+                          </div>
+                          <div className="skeleton-chips-mini">
+                            <div className="skeleton-chip-mini skeleton-pulse" />
+                            <div className="skeleton-chip-mini skeleton-pulse" />
+                            <div className="skeleton-chip-mini skeleton-pulse" />
+                          </div>
                         </div>
-                        <div className="skeleton-chips-mini">
-                          <div className="skeleton-chip-mini skeleton-pulse" />
-                          <div className="skeleton-chip-mini skeleton-pulse" />
-                          <div className="skeleton-chip-mini skeleton-pulse" />
+                      </div>
+                    ) : selectedFile ? (
+                      <div className="file-selected-state">
+                        <div className="file-icon-wrapper"><FileText className="file-icon" /></div>
+                        <div className="file-details">
+                          <span className="file-name">{selectedFile.name}</span>
+                          <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                        </div>
+                        <div className="file-actions">
+                          <button className="btn-secondary" onClick={removeFile}>Remove</button>
+                          <button className="btn-primary" onClick={handleAnalyze}>Analyze Resume <ArrowRight size={18} /></button>
+                        </div>
+                        {userId && (
+                          <UsageBadge feature="analyze" userId={userId} className="home-usage-badge" />
+                        )}
+                      </div>
+                    ) : (
+                      <div className="upload-prompt-state" onClick={onButtonClick}>
+                        <Upload className="upload-icon" />
+                        <button className="upload-cta" type="button">Upload Your Resume</button>
+                        <div className="privacy-note"><Lock size={14} /> Privacy guaranteed</div>
+                        <div className="file-limits-info">PDF, DOCX, or TXT up to 5MB</div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className={`upload-zone link-input-zone ${loading ? 'is-loading' : ''}`}>
+                    {loading ? (
+                      <div className="skeleton-loading-state">
+                        <div className="skeleton-header-mini">
+                          <p className="skeleton-step-label">{analysisSteps[loadingStep]}</p>
+                          <div className="progress-bar-container">
+                            <div className="progress-bar-fill" style={{ width: `${((loadingStep + 1) / analysisSteps.length) * 100}%` }} />
+                          </div>
+                        </div>
+                        <div className="skeleton-preview">
+                          <div className="skeleton-score-row">
+                            <div className="skeleton-circle skeleton-pulse" />
+                            <div className="skeleton-score-text">
+                              <div className="skeleton-mini-line skeleton-pulse" style={{ width: '110px', height: '13px' }} />
+                              <div className="skeleton-mini-line skeleton-pulse" style={{ width: '72px', height: '10px' }} />
+                            </div>
+                          </div>
+                          <div className="skeleton-bars-mini">
+                            {[88, 74, 61, 46].map((w, i) => (
+                              <div key={i} className="skeleton-bar-row-mini">
+                                <div className="skeleton-bar-label-mini skeleton-pulse" style={{ width: `${38 + i * 8}px` }} />
+                                <div className="skeleton-bar-track-mini">
+                                  <div className="skeleton-bar-fill-mini skeleton-pulse" style={{ width: `${w}%` }} />
+                                </div>
+                                <div className="skeleton-bar-pct-mini skeleton-pulse" />
+                              </div>
+                            ))}
+                          </div>
+                          <div className="skeleton-chips-mini">
+                            <div className="skeleton-chip-mini skeleton-pulse" />
+                            <div className="skeleton-chip-mini skeleton-pulse" />
+                            <div className="skeleton-chip-mini skeleton-pulse" />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ) : selectedFile ? (
-                    <div className="file-selected-state">
-                      <div className="file-icon-wrapper"><FileText className="file-icon" /></div>
-                      <div className="file-details">
-                        <span className="file-name">{selectedFile.name}</span>
-                        <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                    ) : (
+                      <div className="link-input-state">
+                        <Link size={28} className="link-input-icon" />
+                        <p className="link-input-label">Paste a shareable link to your resume</p>
+                        <input
+                          type="url"
+                          className="resume-link-input"
+                          placeholder="https://drive.google.com/... or any direct PDF/DOCX link"
+                          value={resumeUrl}
+                          onChange={(e) => setResumeUrl(e.target.value)}
+                          disabled={loading}
+                        />
+                        <p className="link-input-hint">Supports Google Drive, Dropbox, OneDrive, or any direct link</p>
+                        <button
+                          className="btn-primary"
+                          onClick={handleAnalyze}
+                          disabled={!resumeUrl.trim()}
+                        >
+                          Analyze Resume <ArrowRight size={18} />
+                        </button>
+                        {userId && (
+                          <UsageBadge feature="analyze" userId={userId} className="home-usage-badge" />
+                        )}
                       </div>
-                      <div className="file-actions">
-                        <button className="btn-secondary" onClick={removeFile}>Remove</button>
-                        <button className="btn-primary" onClick={handleAnalyze}>Analyze Resume <ArrowRight size={18} /></button>
-                      </div>
-                      {userId && (
-                        <UsageBadge feature="analyze" userId={userId} className="home-usage-badge" />
-                      )}
-                    </div>
-                  ) : (
-                    <div className="upload-prompt-state" onClick={onButtonClick}>
-                      <Upload className="upload-icon" />
-                      <button className="upload-cta" type="button">Upload Your Resume</button>
-                      <div className="privacy-note"><Lock size={14} /> Privacy guaranteed</div>
-                      <div className="file-limits-info">PDF, DOCX, or TXT up to 5MB</div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
                 {errorMsg && (
                   <div className="error-message-bar animate-fade-in-up">
                     <ShieldAlert className="error-icon" /><span>{errorMsg}</span>

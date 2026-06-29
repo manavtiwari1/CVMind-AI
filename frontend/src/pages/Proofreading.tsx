@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import {
   CheckCircle2, Copy, Check, ArrowRight, RefreshCw, FileText,
-  AlertCircle, Zap, MessageSquare, BookOpen, Target, Upload, X
+  AlertCircle, Zap, MessageSquare, BookOpen, Target, Upload, X, Link
 } from 'lucide-react';
 import SkeletonLoader from '../components/SkeletonLoader';
 import UsageBadge from '../components/UsageBadge';
@@ -31,9 +31,10 @@ interface ProofreadingProps {
 }
 
 export default function Proofreading({ customApiKey }: ProofreadingProps) {
-  const [inputMode, setInputMode] = useState<'text' | 'file'>('text');
+  const [inputMode, setInputMode] = useState<'text' | 'file' | 'link'>('text');
   const [inputText, setInputText] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [resumeUrl, setResumeUrl] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [industry, setIndustry] = useState('General');
   const [loading, setLoading] = useState(false);
@@ -85,6 +86,10 @@ export default function Proofreading({ customApiKey }: ProofreadingProps) {
       setErrorMsg('Please upload a resume file to proofread.');
       return;
     }
+    if (inputMode === 'link' && !resumeUrl.trim()) {
+      setErrorMsg('Please paste a link to your resume.');
+      return;
+    }
 
     setLoading(true);
     setErrorMsg(null);
@@ -102,6 +107,12 @@ export default function Proofreading({ customApiKey }: ProofreadingProps) {
       if (inputMode === 'file' && selectedFile) {
         const fd = new FormData();
         fd.append('resume', selectedFile);
+        fd.append('industry', industry);
+        if (userId) fd.append('userId', userId);
+        body = fd;
+      } else if (inputMode === 'link') {
+        const fd = new FormData();
+        fd.append('resumeUrl', resumeUrl.trim());
         fd.append('industry', industry);
         if (userId) fd.append('userId', userId);
         body = fd;
@@ -136,6 +147,7 @@ export default function Proofreading({ customApiKey }: ProofreadingProps) {
     setResult(null);
     setInputText('');
     setSelectedFile(null);
+    setResumeUrl('');
     setErrorMsg(null);
   };
 
@@ -209,6 +221,12 @@ export default function Proofreading({ customApiKey }: ProofreadingProps) {
               >
                 <Upload size={14} /> Upload Resume
               </button>
+              <button
+                className={`proofread-mode-tab${inputMode === 'link' ? ' active' : ''}`}
+                onClick={() => { setInputMode('link'); setErrorMsg(null); }}
+              >
+                <Link size={14} /> Paste Link
+              </button>
             </div>
 
             <div className="proofread-form">
@@ -224,7 +242,7 @@ export default function Proofreading({ customApiKey }: ProofreadingProps) {
                   />
                   <div className="char-count">{inputText.length} characters</div>
                 </div>
-              ) : (
+              ) : inputMode === 'file' ? (
                 <div className="form-group">
                   <label>Upload Resume (PDF, DOCX, TXT)</label>
                   <div
@@ -267,6 +285,21 @@ export default function Proofreading({ customApiKey }: ProofreadingProps) {
                     )}
                   </div>
                 </div>
+              ) : (
+                <div className="form-group">
+                  <label>Paste a shareable link to your resume</label>
+                  <div className="proofread-link-zone">
+                    <Link size={22} className="link-input-icon" />
+                    <input
+                      type="url"
+                      className="resume-link-input"
+                      placeholder="https://drive.google.com/... or any direct PDF/DOCX link"
+                      value={resumeUrl}
+                      onChange={(e) => setResumeUrl(e.target.value)}
+                    />
+                    <p className="link-input-hint">Supports Google Drive, Dropbox, OneDrive, or any direct link</p>
+                  </div>
+                </div>
               )}
 
               <div className="form-group">
@@ -291,9 +324,13 @@ export default function Proofreading({ customApiKey }: ProofreadingProps) {
               <button
                 className="btn-primary proofread-submit-btn"
                 onClick={handleProofread}
-                disabled={inputMode === 'text' ? !inputText.trim() : !selectedFile}
+                disabled={
+                  inputMode === 'text' ? !inputText.trim() :
+                  inputMode === 'file' ? !selectedFile :
+                  !resumeUrl.trim()
+                }
               >
-                Proofread My {inputMode === 'file' ? 'Resume' : 'Text'} <ArrowRight size={16} />
+                Proofread My {inputMode === 'text' ? 'Text' : 'Resume'} <ArrowRight size={16} />
               </button>
 
               {userId && (

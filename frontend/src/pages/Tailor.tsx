@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, FileText, ChevronRight, Check, Copy, Sparkles, BrainCircuit, RefreshCw, Cpu, CheckCircle2, ShieldCheck, FileCheck, Download, ChevronDown } from 'lucide-react';
+import { Upload, FileText, ChevronRight, Check, Copy, Sparkles, BrainCircuit, RefreshCw, Cpu, CheckCircle2, ShieldCheck, FileCheck, Download, ChevronDown, Link } from 'lucide-react';
 import './Tailor.css';
 
 interface TailorProps {
@@ -16,6 +16,8 @@ interface TailorResult {
 
 export default function Tailor({ customApiKey }: TailorProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadMode, setUploadMode] = useState<'file' | 'link'>('file');
+  const [resumeUrl, setResumeUrl] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -95,8 +97,12 @@ export default function Tailor({ customApiKey }: TailorProps) {
   };
 
   const handleTailor = async () => {
-    if (!selectedFile) {
+    if (uploadMode === 'file' && !selectedFile) {
       setErrorMsg('Please upload your current CV first.');
+      return;
+    }
+    if (uploadMode === 'link' && !resumeUrl.trim()) {
+      setErrorMsg('Please paste a link to your CV.');
       return;
     }
     if (!jobDescription.trim() || jobDescription.trim().length < 15) {
@@ -116,7 +122,11 @@ export default function Tailor({ customApiKey }: TailorProps) {
     }, 1500);
 
     const formData = new FormData();
-    formData.append('resume', selectedFile);
+    if (uploadMode === 'file' && selectedFile) {
+      formData.append('resume', selectedFile);
+    } else {
+      formData.append('resumeUrl', resumeUrl.trim());
+    }
     formData.append('jobDescription', jobDescription.trim());
 
     try {
@@ -391,6 +401,7 @@ export default function Tailor({ customApiKey }: TailorProps) {
   const handleReset = () => {
     setResult(null);
     setJobDescription('');
+    setResumeUrl('');
     removeFile();
   };
 
@@ -415,77 +426,119 @@ export default function Tailor({ customApiKey }: TailorProps) {
         <div className="tailor-workspace">
           <div className="tailor-inputs-wrapper glass-card">
             <h2 className="workspace-card-title">1. Upload Your Current CV</h2>
-            
-            <div 
-              className={`tailor-upload-zone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''} ${loading ? 'is-loading' : ''}`}
-              onDragEnter={handleDrag}
-              onDragOver={handleDrag}
-              onDragLeave={handleDrag}
-              onDrop={handleDrop}
-            >
-              <input 
-                ref={fileInputRef}
-                type="file"
-                className="tailor-hidden-input"
-                accept=".pdf,.docx,.txt"
-                onChange={handleFileChange}
-                disabled={loading}
-              />
 
-              {loading ? (
-                <div className="skeleton-loading-state">
-                  <div className="skeleton-header-mini">
-                    <p className="skeleton-step-label">{loaderSteps[loadingStep]}</p>
-                    <div className="sk-loader-progress" style={{ width: 'min(260px,100%)' }}>
-                      <div className="sk-loader-progress-fill" style={{ width: `${((loadingStep + 1) / loaderSteps.length) * 100}%` }} />
-                    </div>
-                  </div>
-                  <div className="skeleton-preview">
-                    <div className="skeleton-score-row">
-                      <div className="skeleton-circle skeleton-pulse" />
-                      <div className="skeleton-score-text">
-                        <div className="skeleton-mini-line skeleton-pulse" style={{ width: '100px', height: '13px' }} />
-                        <div className="skeleton-mini-line skeleton-pulse" style={{ width: '68px', height: '10px' }} />
+            {/* Mode toggle */}
+            <div className="upload-mode-toggle" style={{ marginBottom: '0.75rem' }}>
+              <button
+                className={`upload-mode-btn${uploadMode === 'file' ? ' active' : ''}`}
+                onClick={() => { setUploadMode('file'); setErrorMsg(null); }}
+                disabled={loading}
+              >
+                <Upload size={14} /> Upload File
+              </button>
+              <button
+                className={`upload-mode-btn${uploadMode === 'link' ? ' active' : ''}`}
+                onClick={() => { setUploadMode('link'); setErrorMsg(null); }}
+                disabled={loading}
+              >
+                <Link size={14} /> Paste Link
+              </button>
+            </div>
+
+            {uploadMode === 'file' ? (
+              <div
+                className={`tailor-upload-zone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''} ${loading ? 'is-loading' : ''}`}
+                onDragEnter={handleDrag}
+                onDragOver={handleDrag}
+                onDragLeave={handleDrag}
+                onDrop={handleDrop}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="tailor-hidden-input"
+                  accept=".pdf,.docx,.txt"
+                  onChange={handleFileChange}
+                  disabled={loading}
+                />
+                {loading ? (
+                  <div className="skeleton-loading-state">
+                    <div className="skeleton-header-mini">
+                      <p className="skeleton-step-label">{loaderSteps[loadingStep]}</p>
+                      <div className="sk-loader-progress" style={{ width: 'min(260px,100%)' }}>
+                        <div className="sk-loader-progress-fill" style={{ width: `${((loadingStep + 1) / loaderSteps.length) * 100}%` }} />
                       </div>
                     </div>
-                    <div className="skeleton-bars-mini">
-                      {[85, 70, 58, 44].map((w, i) => (
-                        <div key={i} className="skeleton-bar-row-mini">
-                          <div className="skeleton-bar-label-mini skeleton-pulse" style={{ width: `${36 + i * 8}px` }} />
-                          <div className="skeleton-bar-track-mini">
-                            <div className="skeleton-bar-fill-mini skeleton-pulse" style={{ width: `${w}%` }} />
-                          </div>
-                          <div className="skeleton-bar-pct-mini skeleton-pulse" />
+                    <div className="skeleton-preview">
+                      <div className="skeleton-score-row">
+                        <div className="skeleton-circle skeleton-pulse" />
+                        <div className="skeleton-score-text">
+                          <div className="skeleton-mini-line skeleton-pulse" style={{ width: '100px', height: '13px' }} />
+                          <div className="skeleton-mini-line skeleton-pulse" style={{ width: '68px', height: '10px' }} />
                         </div>
-                      ))}
+                      </div>
+                      <div className="skeleton-bars-mini">
+                        {[85, 70, 58, 44].map((w, i) => (
+                          <div key={i} className="skeleton-bar-row-mini">
+                            <div className="skeleton-bar-label-mini skeleton-pulse" style={{ width: `${36 + i * 8}px` }} />
+                            <div className="skeleton-bar-track-mini">
+                              <div className="skeleton-bar-fill-mini skeleton-pulse" style={{ width: `${w}%` }} />
+                            </div>
+                            <div className="skeleton-bar-pct-mini skeleton-pulse" />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="skeleton-chips-mini">
+                        <div className="skeleton-chip-mini skeleton-pulse" />
+                        <div className="skeleton-chip-mini skeleton-pulse" />
+                      </div>
                     </div>
-                    <div className="skeleton-chips-mini">
-                      <div className="skeleton-chip-mini skeleton-pulse" />
-                      <div className="skeleton-chip-mini skeleton-pulse" />
+                  </div>
+                ) : selectedFile ? (
+                  <div className="tailor-file-details">
+                    <div className="tailor-file-icon"><FileText size={32} /></div>
+                    <div className="tailor-file-meta">
+                      <span className="file-name">{selectedFile.name}</span>
+                      <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                    </div>
+                    <button className="btn-secondary remove-file-btn" onClick={removeFile}>Remove File</button>
+                  </div>
+                ) : (
+                  <div className="tailor-prompt" onClick={triggerUpload}>
+                    <Upload className="upload-icon" />
+                    <button className="upload-cta-btn" type="button">Select CV File</button>
+                    <p className="file-formats-note">PDF, DOCX, or TXT (Max 5MB)</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="tailor-upload-zone link-input-zone" style={{ cursor: 'default', minHeight: '140px' }}>
+                {loading ? (
+                  <div className="skeleton-loading-state">
+                    <div className="skeleton-header-mini">
+                      <p className="skeleton-step-label">{loaderSteps[loadingStep]}</p>
+                      <div className="sk-loader-progress" style={{ width: 'min(260px,100%)' }}>
+                        <div className="sk-loader-progress-fill" style={{ width: `${((loadingStep + 1) / loaderSteps.length) * 100}%` }} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : selectedFile ? (
-                <div className="tailor-file-details">
-                  <div className="tailor-file-icon">
-                    <FileText size={32} />
+                ) : (
+                  <div className="link-input-state">
+                    <Link size={24} className="link-input-icon" />
+                    <p className="link-input-label">Paste a shareable link to your CV</p>
+                    <input
+                      type="url"
+                      className="resume-link-input"
+                      placeholder="https://drive.google.com/... or any direct PDF/DOCX link"
+                      value={resumeUrl}
+                      onChange={(e) => setResumeUrl(e.target.value)}
+                      disabled={loading}
+                    />
+                    <p className="link-input-hint">Supports Google Drive, Dropbox, OneDrive, or any direct link</p>
                   </div>
-                  <div className="tailor-file-meta">
-                    <span className="file-name">{selectedFile.name}</span>
-                    <span className="file-size">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
-                  </div>
-                  <button className="btn-secondary remove-file-btn" onClick={removeFile}>
-                    Remove File
-                  </button>
-                </div>
-              ) : (
-                <div className="tailor-prompt" onClick={triggerUpload}>
-                  <Upload className="upload-icon" />
-                  <button className="upload-cta-btn" type="button">Select CV File</button>
-                  <p className="file-formats-note">PDF, DOCX, or TXT (Max 5MB)</p>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
             <h2 className="workspace-card-title mt-4">2. Paste Target Job Description (JD)</h2>
             <textarea
@@ -502,10 +555,10 @@ export default function Tailor({ customApiKey }: TailorProps) {
               </div>
             )}
 
-            <button 
-              className="btn-primary tailor-submit-btn" 
-              onClick={handleTailor} 
-              disabled={loading || !selectedFile || !jobDescription.trim()}
+            <button
+              className="btn-primary tailor-submit-btn"
+              onClick={handleTailor}
+              disabled={loading || (uploadMode === 'file' ? !selectedFile : !resumeUrl.trim()) || !jobDescription.trim()}
             >
               Tailor Resume <ChevronRight size={18} />
             </button>
