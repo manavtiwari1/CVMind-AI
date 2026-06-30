@@ -87,9 +87,9 @@ export default function Contact() {
               className="info-detail-item" 
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if ((window as any).$crisp) {
-                  (window as any).$crisp.push(['do', 'chat:show']);
-                  (window as any).$crisp.push(['do', 'chat:open']);
+                if ((window as any).Tawk_API) {
+                  (window as any).Tawk_API.showWidget();
+                  (window as any).Tawk_API.maximize();
                 }
               }}
             >

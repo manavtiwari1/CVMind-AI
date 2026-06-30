@@ -33,7 +33,7 @@ import RefundPolicy from './pages/RefundPolicy';
 import Disclaimer from './pages/Disclaimer';
 import Proofreading from './pages/Proofreading';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
-import CrispChat from './components/CrispChat';
+import TawkChat from './components/TawkChat';
 import { applySEO } from './utils/seo';
 import './styles/theme.css';
 import './styles/3d-effects.css';
@@ -554,7 +554,7 @@ export default function App() {
 
       {!isMinimalPage && <Footer setCurrentPage={setCurrentPage} />}
       {!isMinimalPage && <Chatbot customApiKey={customApiKey} />}
-      {!isMinimalPage && <CrispChat />}
+      {!isMinimalPage && <TawkChat />}
 
       <AuthModal
         isOpen={showAuthModal}
