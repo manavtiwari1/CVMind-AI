@@ -320,12 +320,12 @@ export default function Navbar({
               {/* 2. AI Tools ▾ */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger
-                  className={`nav-link nav-link-trigger${['prep','voice-prep','job-finder','proofreading'].includes(currentPage) ? ' active' : ''}`}
+                  className={`nav-link nav-link-trigger${['prep','voice-prep','job-finder','proofreading','auto-apply'].includes(currentPage) ? ' active' : ''}`}
                 >
                   AI Tools
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="nav-menu-grid-2cols" style={{ minWidth: '420px' }}>
+                  <div className="nav-menu-grid-2cols" style={{ minWidth: '440px' }}>
                     <div className="nav-menu-column">
                       <span className="nav-menu-column-header">Interview</span>
                       <NavigationMenuLink render={<button onClick={() => go('prep')} />}>
@@ -346,6 +346,13 @@ export default function Navbar({
                       <NavigationMenuLink render={<button onClick={() => go('job-finder')} />}>
                         <div className="font-medium">AI Job Finder</div>
                         <div className="text-muted-foreground">Curated roles matching your profile.</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('auto-apply')} />}>
+                        <div className="font-medium" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          Auto Apply Agent
+                          <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: '99px', background: 'linear-gradient(135deg,#2997ff,#bf5af2)', color: '#fff', letterSpacing: '0.04em' }}>NEW</span>
+                        </div>
+                        <div className="text-muted-foreground">AI applies to jobs for you automatically.</div>
                       </NavigationMenuLink>
                     </div>
                   </div>
@@ -568,6 +575,12 @@ export default function Navbar({
                 onClick={() => go('job-finder')}
               >
                 AI Job Finder
+              </button>
+              <button
+                className={`mobile-drawer-link mobile-sub-link${currentPage === 'auto-apply' ? ' active' : ''}`}
+                onClick={() => go('auto-apply')}
+              >
+                Auto Apply Agent ✨
               </button>
 
               {/* SmartPrep AI sub-accordion */}

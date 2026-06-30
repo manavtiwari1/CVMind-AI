@@ -47,7 +47,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing', 'terms', 'refund-policy', 'disclaimer', 'proofreading'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing', 'terms', 'refund-policy', 'disclaimer', 'proofreading', 'auto-apply'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -298,7 +298,7 @@ export default function App() {
 
   // Private route interceptor — all private pages require sign-in only (no paid gating)
   useEffect(() => {
-    const privatePages = ['prep', 'resume-editor', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'proofreading', 'tailor', 'voice-prep', 'portfolio-gen', 'job-finder', 'career-courses', 'elevator-pitch', 'career-roadmap'];
+    const privatePages = ['prep', 'resume-editor', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'proofreading', 'tailor', 'voice-prep', 'portfolio-gen', 'job-finder', 'career-courses', 'elevator-pitch', 'career-roadmap', 'auto-apply'];
 
     if (privatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
@@ -514,6 +514,16 @@ export default function App() {
         return <Disclaimer />;
       case 'proofreading':
         return <Proofreading customApiKey={customApiKey} />;
+      case 'auto-apply':
+        return (
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'70vh',gap:'18px',textAlign:'center',padding:'40px 24px'}}>
+            <div style={{fontSize:'3rem'}}>🚀</div>
+            <h2 style={{fontSize:'1.8rem',fontWeight:800,margin:0}}>Auto Apply Agent</h2>
+            <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'linear-gradient(135deg,#ff9f0a,#ff453a)',color:'#fff',padding:'4px 14px',borderRadius:'99px',fontSize:'0.78rem',fontWeight:700,letterSpacing:'0.05em'}}>COMING SOON</div>
+            <p style={{color:'#6e6e73',fontSize:'1rem',maxWidth:'420px',lineHeight:1.6,margin:0}}>We're building an AI agent that automatically applies to jobs on your behalf — tailored resume, cover letter, and real form submission. Stay tuned!</p>
+            <button onClick={() => setCurrentPage('home')} style={{marginTop:'8px',padding:'12px 28px',borderRadius:'12px',border:'none',background:'#1d1d1f',color:'#fff',fontWeight:600,fontSize:'0.95rem',cursor:'pointer'}}>← Go Home</button>
+          </div>
+        );
       default:
         return (
           <Home 

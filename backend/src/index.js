@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import crypto from 'crypto';
 import express from 'express';
+import autoApplyRouter from './routes/autoApply.js';
 import cors from 'cors';
 import multer from 'multer';
 import bcrypt from 'bcryptjs';
@@ -1965,6 +1966,8 @@ apiRouter.get('/api/user/usage/:userId', async (req, res) => {
 
 app.use('/_/backend', apiRouter);
 app.use('/', apiRouter);
+app.use('/api/auto-apply', autoApplyRouter);
+app.use('/_/backend/api/auto-apply', autoApplyRouter);
 
 // Handle 404
 app.use((req, res) => {
