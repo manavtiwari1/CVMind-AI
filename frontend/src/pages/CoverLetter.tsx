@@ -904,6 +904,190 @@ Sincerely,<br><br><br>
 </div>
 </div>
 </div>`
+  },
+  {
+    id: 'sales-cl',
+    name: 'Sales & Marketing',
+    tag: 'Sales · Growth · Confident',
+    icon: '📊',
+    color: '#e65100',
+    accent: 'rgba(230,81,0,0.12)',
+    description: 'A confident, results-led cover letter built for sales, growth, and marketing roles.',
+    highlights: ['Numbers-First', 'Confident Tone', 'Quota Crushers'],
+    type: 'cover-letter',
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:36px;color:#1a1a1a;line-height:1.65;">
+<div style="border-bottom:3px solid #e65100;padding-bottom:12px;margin-bottom:20px;">
+<div style="font-size:24px;font-weight:800;color:#e65100;">John Doe</div>
+<div style="font-size:12px;color:#666;margin-top:3px;">john.doe@email.com &nbsp;·&nbsp; +91 9876543210 &nbsp;·&nbsp; New Delhi, India</div>
+</div>
+<div style="font-size:13px;color:#555;margin-bottom:18px;"><b>Date:</b> June 2, 2026 &nbsp;·&nbsp; <b>Attention:</b> Hiring Manager, [Company Name]</div>
+<p style="font-size:13.5px;margin:0 0 12px;">Dear Hiring Manager,</p>
+<p style="font-size:13.5px;margin:0 0 12px;">Last year I closed $2M+ in new business and beat quota by 150% — and I want to bring that same energy to [Company Name]'s [Job Title] team. I thrive on building pipeline from scratch and turning cold prospects into long-term accounts.</p>
+<p style="font-size:13.5px;margin:0 0 12px;">At [Previous Company], I owned a book of 80+ enterprise accounts and grew retention to 95% through proactive relationship management. I'm confident my numbers, paired with a genuine curiosity about [Company Name]'s product, make me a strong fit for your growth targets this year.</p>
+<p style="font-size:13.5px;margin:0 0 25px;">I'd welcome a conversation to discuss how I can help hit your next quarter's number. Thank you for your consideration.</p>
+<div style="font-size:13.5px;">
+Best regards,<br><br><br>
+<b>John Doe</b>
+</div>
+</div>`
+  },
+  {
+    id: 'dev-cl',
+    name: 'Software Engineer',
+    tag: 'Engineering · Direct · Technical',
+    icon: '💻',
+    color: '#16a34a',
+    accent: 'rgba(22,163,74,0.12)',
+    description: 'A direct, no-fluff cover letter for engineers — leads with what you shipped, not adjectives.',
+    highlights: ['Direct Tone', 'GitHub-Ready', 'Impact Metrics'],
+    type: 'cover-letter',
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:0;background:#fff;color:#1a1a1a;line-height:1.65;">
+<div style="background:#0d1117;color:#39d353;padding:20px 28px;font-family:'Courier New',monospace;">
+<div style="font-size:20px;font-weight:700;color:#fff;">John Doe</div>
+<div style="font-size:11.5px;color:#8b949e;margin-top:4px;">github.com/johndoe &nbsp;|&nbsp; john.doe@email.com &nbsp;|&nbsp; +91 9876543210</div>
+</div>
+<div style="padding:24px 28px;">
+<div style="font-size:13px;color:#555;margin-bottom:18px;"><b>Date:</b> June 2, 2026 &nbsp;·&nbsp; <b>Re:</b> [Job Title] Application</div>
+<p style="font-size:13.5px;margin:0 0 12px;">Hi [Team / Hiring Manager],</p>
+<p style="font-size:13.5px;margin:0 0 12px;">I'm a full-stack engineer who's spent the last [X] years shipping production systems in [Tech Stack]. At [Previous Company], I built a microservice handling 10M+ requests/day at 99.99% uptime, and cut API latency by 45% through query and caching improvements.</p>
+<p style="font-size:13.5px;margin:0 0 12px;">I came across [Company Name]'s engineering blog post on [specific topic] and it's exactly the kind of problem I want to work on next. I write clean, tested code, review PRs thoughtfully, and care about the systems I build outliving me.</p>
+<p style="font-size:13.5px;margin:0 0 25px;">Happy to walk through any of my GitHub projects or past architecture decisions on a call. Thanks for considering my application.</p>
+<div style="font-size:13.5px;">
+Best,<br><br><br>
+<b>John Doe</b>
+</div>
+</div>
+</div>`
+  },
+  {
+    id: 'clinical-cl',
+    name: 'Clinical & Healthcare',
+    tag: 'Nursing · Allied Health · Compassionate',
+    icon: '🩺',
+    color: '#00838f',
+    accent: 'rgba(0,131,143,0.12)',
+    description: 'A compassionate, licensure-forward cover letter for nurses and allied health professionals.',
+    highlights: ['Licensure Mention', 'Patient-Care Tone', 'Clinical Detail'],
+    type: 'cover-letter',
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:36px;color:#1a1a1a;line-height:1.65;">
+<div style="border-bottom:3px solid #00838f;padding-bottom:12px;margin-bottom:20px;">
+<div style="font-size:23px;font-weight:800;color:#00838f;">John Doe, RN</div>
+<div style="font-size:12px;color:#666;margin-top:3px;">License No. [XXXXXX] &nbsp;·&nbsp; john.doe@email.com &nbsp;·&nbsp; +91 9876543210</div>
+</div>
+<div style="font-size:13px;color:#555;margin-bottom:18px;"><b>Date:</b> June 2, 2026 &nbsp;·&nbsp; <b>Attention:</b> Nurse Recruitment, [Hospital/Clinic Name]</div>
+<p style="font-size:13.5px;margin:0 0 12px;">Dear Hiring Manager,</p>
+<p style="font-size:13.5px;margin:0 0 12px;">I am a licensed Registered Nurse with [X] years of critical care experience, writing to apply for the [Job Title] position at [Hospital/Clinic Name]. At [Previous Hospital], I managed care for 8+ critical patients per shift in a 20-bed ICU while maintaining a zero medication-error record.</p>
+<p style="font-size:13.5px;margin:0 0 12px;">Beyond clinical skill, I bring a calm, patient-first bedside manner that consistently earns high satisfaction scores from patients and families. I am BLS &amp; ACLS certified and committed to continued learning in [specialization area].</p>
+<p style="font-size:13.5px;margin:0 0 25px;">I would welcome the opportunity to bring this same level of care to your team. Thank you for your time and consideration.</p>
+<div style="font-size:13.5px;">
+Sincerely,<br><br><br>
+<b>John Doe, RN</b>
+</div>
+</div>`
+  },
+  {
+    id: 'legal-cl',
+    name: 'Legal Counsel',
+    tag: 'Law · Formal · Gold Accent',
+    icon: '⚖️',
+    color: '#1a237e',
+    accent: 'rgba(26,35,126,0.12)',
+    description: 'A formal, precise cover letter for legal and compliance professionals.',
+    highlights: ['Formal Tone', 'Bar Mention', 'Conservative'],
+    type: 'cover-letter',
+    html: `<div style="font-family:'Times New Roman',serif;max-width:720px;margin:0 auto;padding:38px;color:#111;line-height:1.6;">
+<div style="text-align:center;border-bottom:3px double #1a237e;padding-bottom:12px;margin-bottom:20px;">
+<div style="font-size:22px;font-weight:700;letter-spacing:1px;color:#1a237e;">JOHN DOE, ESQ.</div>
+<div style="font-size:12px;color:#555;margin-top:4px;">john.doe@email.com &nbsp;|&nbsp; +91 9876543210 &nbsp;|&nbsp; New Delhi, India</div>
+</div>
+<div style="font-size:13px;color:#444;margin-bottom:18px;"><b>Date:</b> June 2, 2026<br><b>To:</b> Hiring Partner / Recruitment Committee, [Firm Name]</div>
+<p style="font-size:13.5px;margin:0 0 12px;">Dear Hiring Committee,</p>
+<p style="font-size:13.5px;margin:0 0 12px;text-align:justify;">I am writing to apply for the [Job Title] position at [Firm Name]. I am enrolled with the Bar Council of [State] (Enrollment No. [XXXXX]) and have [X] years of experience advising on [Practice Area], including transactions exceeding $50M in aggregate value.</p>
+<p style="font-size:13.5px;margin:0 0 12px;text-align:justify;">At [Previous Firm], I drafted and negotiated commercial contracts for 30+ clients and advised on regulatory compliance matters across multiple jurisdictions. I bring meticulous attention to detail and sound judgment under deadline pressure.</p>
+<p style="font-size:13.5px;margin:0 0 25px;text-align:justify;">I would welcome the opportunity to discuss how my background can serve [Firm Name]'s clients. Thank you for your consideration.</p>
+<div style="font-size:13.5px;">
+Respectfully,<br><br><br>
+<b>John Doe, Esq.</b>
+</div>
+</div>`
+  },
+  {
+    id: 'academic-cl',
+    name: 'Academic & Research',
+    tag: 'Academia · Formal Serif',
+    icon: '🎓',
+    color: '#7a1f2b',
+    accent: 'rgba(122,31,43,0.12)',
+    description: 'A formal cover letter for faculty, postdoc, and research positions.',
+    highlights: ['Research-Focused', 'Formal Serif', 'Faculty-Ready'],
+    type: 'cover-letter',
+    html: `<div style="font-family:Georgia,serif;max-width:720px;margin:0 auto;padding:38px;color:#1a1a1a;line-height:1.7;">
+<div style="text-align:center;border-bottom:2px solid #7a1f2b;padding-bottom:12px;margin-bottom:20px;">
+<div style="font-size:22px;font-weight:700;color:#7a1f2b;">Dr. John Doe</div>
+<div style="font-size:12px;color:#666;margin-top:4px;font-style:italic;">john.doe@university.edu &nbsp;·&nbsp; +91 9876543210 &nbsp;·&nbsp; Department of [Field]</div>
+</div>
+<div style="font-size:13px;color:#555;margin-bottom:18px;"><b>Date:</b> June 2, 2026 &nbsp;·&nbsp; <b>To:</b> Search Committee, Department of [Field], [University Name]</div>
+<p style="font-size:13.5px;margin:0 0 12px;">Dear Members of the Search Committee,</p>
+<p style="font-size:13.5px;margin:0 0 12px;text-align:justify;">I am writing to apply for the [Position Title] in the Department of [Field] at [University Name]. My research focuses on [Research Area], and I have published in venues including [Journal/Conference Name], with [X] citations to date.</p>
+<p style="font-size:13.5px;margin:0 0 12px;text-align:justify;">During my Ph.D. and postdoctoral work, I secured [Grant/Fellowship Name] funding of ₹[Amount] and taught [Course Name] to over [X] students, receiving strong teaching evaluations. I am excited by the opportunity to build a research program at [University Name] that complements the department's strengths in [related area].</p>
+<p style="font-size:13.5px;margin:0 0 25px;text-align:justify;">I have enclosed my CV, research statement, and teaching portfolio for your review, and would welcome the opportunity to discuss my candidacy further.</p>
+<div style="font-size:13.5px;">
+Sincerely,<br><br><br>
+<b>Dr. John Doe</b>
+</div>
+</div>`
+  },
+  {
+    id: 'hospitality-cl',
+    name: 'Hospitality & Service',
+    tag: 'Hospitality · Warm · Guest-First',
+    icon: '🛎️',
+    color: '#c2410c',
+    accent: 'rgba(194,65,12,0.12)',
+    description: 'A warm, guest-focused cover letter for hospitality and customer-facing roles.',
+    highlights: ['Warm Tone', 'Guest-Focused', 'Friendly'],
+    type: 'cover-letter',
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:0;background:#fff;color:#1a1a1a;line-height:1.65;">
+<div style="background:#fff7ed;padding:22px 28px;border-bottom:3px solid #c2410c;">
+<div style="font-size:23px;font-weight:800;color:#c2410c;">John Doe</div>
+<div style="font-size:12px;color:#777;margin-top:3px;">john.doe@email.com &nbsp;·&nbsp; +91 9876543210 &nbsp;·&nbsp; New Delhi, India</div>
+</div>
+<div style="padding:24px 28px;">
+<div style="font-size:13px;color:#555;margin-bottom:18px;"><b>Date:</b> June 2, 2026 &nbsp;·&nbsp; <b>Attention:</b> Hiring Manager, [Hotel/Property Name]</div>
+<p style="font-size:13.5px;margin:0 0 12px;">Dear Hiring Manager,</p>
+<p style="font-size:13.5px;margin:0 0 12px;">I'm writing to apply for the [Job Title] role at [Hotel/Property Name]. Hospitality is about making people feel taken care of, and over [X] years in guest-facing roles I've maintained a 4.9/5 guest satisfaction score while leading front-of-house teams at 5-star properties.</p>
+<p style="font-size:13.5px;margin:0 0 12px;">At [Previous Property], I personally resolved escalations for VIP guests and helped improve repeat bookings by 18% through small, thoughtful touches that turned one-time stays into loyal relationships. I'd love to bring that same warmth to your team.</p>
+<p style="font-size:13.5px;margin:0 0 25px;">Thank you for considering my application — I'd welcome the chance to meet your team in person.</p>
+<div style="font-size:13.5px;">
+Warmly,<br><br><br>
+<b>John Doe</b>
+</div>
+</div>
+</div>`
+  },
+  {
+    id: 'minimal-cl',
+    name: 'Minimal Plain',
+    tag: 'Ultra ATS-Safe · No Graphics',
+    icon: '📝',
+    color: '#212121',
+    accent: 'rgba(33,33,33,0.08)',
+    description: 'A plain, distraction-free letter format for government, PSU, and highly conservative ATS systems.',
+    highlights: ['Zero Graphics', 'Plain Text', 'PSU Friendly'],
+    type: 'cover-letter',
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:32px;color:#000;line-height:1.65;">
+<div style="margin-bottom:18px;"><b>John Doe</b><br>john.doe@email.com &nbsp;|&nbsp; +91 9876543210 &nbsp;|&nbsp; New Delhi, India</div>
+<div style="margin-bottom:18px;">Date: June 2, 2026<br><br>To,<br>The Hiring Manager<br>[Company / Organization Name]<br>[City, State]</div>
+<div style="font-weight:700;margin-bottom:14px;">Subject: Application for the post of [Job Title]</div>
+<p style="font-size:13.5px;margin:0 0 12px;">Respected Sir/Madam,</p>
+<p style="font-size:13.5px;margin:0 0 12px;text-align:justify;">I wish to apply for the post of [Job Title] advertised by [Company/Organization Name]. I hold a [Degree] from [Institution] and have [X] years of relevant experience in [Field].</p>
+<p style="font-size:13.5px;margin:0 0 12px;text-align:justify;">In my current/previous role at [Company Name], I was responsible for [key responsibility], during which I [key accomplishment]. I am confident that my qualifications and experience make me a suitable candidate for this position.</p>
+<p style="font-size:13.5px;margin:0 0 25px;text-align:justify;">I have enclosed my resume and supporting documents for your kind perusal. I would be grateful for the opportunity to discuss my candidacy further.</p>
+<div style="font-size:13.5px;">
+Yours faithfully,<br><br><br>
+<b>John Doe</b>
+</div>
+</div>`
   }
 ];
 
