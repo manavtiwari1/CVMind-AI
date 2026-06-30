@@ -320,7 +320,7 @@ export default function Navbar({
               {/* 2. AI Tools ▾ */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger
-                  className={`nav-link nav-link-trigger${['prep','voice-prep','job-finder','proofreading','auto-apply'].includes(currentPage) ? ' active' : ''}`}
+                  className={`nav-link nav-link-trigger${['prep','voice-prep','job-finder','proofreading','auto-apply','career-copilot'].includes(currentPage) ? ' active' : ''}`}
                 >
                   AI Tools
                 </NavigationMenuTrigger>
@@ -353,6 +353,13 @@ export default function Navbar({
                           <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: '99px', background: 'linear-gradient(135deg,#2997ff,#bf5af2)', color: '#fff', letterSpacing: '0.04em' }}>NEW</span>
                         </div>
                         <div className="text-muted-foreground">AI applies to jobs for you automatically.</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('career-copilot')} />}>
+                        <div className="font-medium" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          AI Career Copilot
+                          <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: '99px', background: 'linear-gradient(135deg,#bf5af2,#ff9f0a)', color: '#fff', letterSpacing: '0.04em' }}>SOON</span>
+                        </div>
+                        <div className="text-muted-foreground">9 AI agents managing your entire career.</div>
                       </NavigationMenuLink>
                     </div>
                   </div>
@@ -581,6 +588,12 @@ export default function Navbar({
                 onClick={() => go('auto-apply')}
               >
                 Auto Apply Agent ✨
+              </button>
+              <button
+                className={`mobile-drawer-link mobile-sub-link${currentPage === 'career-copilot' ? ' active' : ''}`}
+                onClick={() => go('career-copilot')}
+              >
+                AI Career Copilot 🧠
               </button>
 
               {/* SmartPrep AI sub-accordion */}
