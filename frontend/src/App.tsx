@@ -33,6 +33,7 @@ import RefundPolicy from './pages/RefundPolicy';
 import Disclaimer from './pages/Disclaimer';
 import Proofreading from './pages/Proofreading';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
+import CrispChat from './components/CrispChat';
 import './styles/theme.css';
 import './styles/3d-effects.css';
 import './styles/skeleton.css';
@@ -548,6 +549,7 @@ export default function App() {
 
       {!isMinimalPage && <Footer setCurrentPage={setCurrentPage} />}
       {!isMinimalPage && <Chatbot customApiKey={customApiKey} />}
+      {!isMinimalPage && <CrispChat />}
 
       <AuthModal
         isOpen={showAuthModal}
