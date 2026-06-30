@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { Send, CheckCircle2, Mail, MapPin, Globe, User } from 'lucide-react';
+import { Send, CheckCircle2, Mail, MessageSquare, Globe } from 'lucide-react';
 import './Contact.css';
 
 export default function Contact() {
@@ -75,16 +75,6 @@ export default function Contact() {
           <div className="info-details-list">
             <div className="info-detail-item">
               <div className="info-icon-circle">
-                <User size={16} />
-              </div>
-              <div className="info-text-group">
-                <span className="info-label">Contact Person</span>
-                <span className="info-value">Manav</span>
-              </div>
-            </div>
-
-            <div className="info-detail-item">
-              <div className="info-icon-circle">
                 <Mail size={16} />
               </div>
               <div className="info-text-group">
@@ -93,13 +83,24 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="info-detail-item">
+            <div 
+              className="info-detail-item" 
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                if ((window as any).$crisp) {
+                  (window as any).$crisp.push(['do', 'chat:show']);
+                  (window as any).$crisp.push(['do', 'chat:open']);
+                }
+              }}
+            >
               <div className="info-icon-circle">
-                <MapPin size={16} />
+                <MessageSquare size={16} />
               </div>
               <div className="info-text-group">
-                <span className="info-label">Headquarters</span>
-                <span className="info-value">D-122, First Floor, K-1 Extn, Near Gurudwara Road, Mohan Garden, DK Mohan Garden, West Delhi – 110059</span>
+                <span className="info-label">Live Support</span>
+                <span className="info-value" style={{ color: 'var(--blue)' }}>
+                  Chat with our team 24/7
+                </span>
               </div>
             </div>
 

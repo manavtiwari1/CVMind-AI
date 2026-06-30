@@ -5,8 +5,8 @@
   display: flex;
   gap: 0.4rem;
   margin-bottom: 0.75rem;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.3rem;
 }
@@ -20,15 +20,15 @@
   border-radius: 7px;
   border: none;
   background: transparent;
-  color: var(--text-secondary, #8e9ab0);
+  color: var(--text-secondary);
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
 .upload-mode-btn.active {
-  background: rgba(41,151,255,0.15);
-  color: #2997ff;
+  background: var(--blue-dim);
+  color: var(--blue);
 }
 .upload-mode-btn:disabled { opacity: 0.5; cursor: default; }
 
@@ -40,23 +40,23 @@
   gap: 0.75rem;
   text-align: center;
 }
-.link-input-icon { color: #2997ff; opacity: 0.85; }
-.link-input-label { font-size: 0.9rem; color: var(--text-secondary, #8e9ab0); margin: 0; }
+.link-input-icon { color: var(--blue); opacity: 0.85; }
+.link-input-label { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
 .resume-link-input {
   width: 100%;
   max-width: 460px;
   padding: 0.65rem 1rem;
   border-radius: 10px;
-  border: 1.5px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.05);
-  color: var(--text-primary, #f0f4ff);
+  border: 1.5px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
   font-size: 0.875rem;
   outline: none;
   transition: border-color 0.2s;
 }
-.resume-link-input:focus { border-color: #2997ff; }
-.resume-link-input::placeholder { color: var(--text-tertiary, #5a6681); }
-.link-input-hint { font-size: 0.78rem; color: var(--text-tertiary, #5a6681); margin: -0.25rem 0 0; }
+.resume-link-input:focus { border-color: var(--blue); }
+.resume-link-input::placeholder { color: var(--text-tertiary); }
+.link-input-hint { font-size: 0.78rem; color: var(--text-tertiary); margin: -0.25rem 0 0; }
 
 /* Bridge variables required by glass UI components */
 :root {
