@@ -33,6 +33,7 @@ import RefundPolicy from './pages/RefundPolicy';
 import Disclaimer from './pages/Disclaimer';
 import Proofreading from './pages/Proofreading';
 import AutoApply from './pages/AutoApply';
+import CareerCopilot from './pages/CareerCopilot';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
 import TawkChat from './components/TawkChat';
 import { applySEO } from './utils/seo';
@@ -48,7 +49,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing', 'terms', 'refund-policy', 'disclaimer', 'proofreading', 'auto-apply'];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing', 'terms', 'refund-policy', 'disclaimer', 'proofreading', 'auto-apply', 'career-copilot'];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -261,6 +262,9 @@ export default function App() {
   const [hasAutoApplyAccess, setHasAutoApplyAccess] = useState<boolean>(() => {
     return localStorage.getItem('cvmind_aa_access') === 'true';
   });
+  const [hasCareerCopilotAccess, setHasCareerCopilotAccess] = useState<boolean>(() => {
+    return localStorage.getItem('cvmind_cc_access') === 'true';
+  });
 
   // Authentication State
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
@@ -270,12 +274,18 @@ export default function App() {
   const [loadedWork, setLoadedWork] = useState<any>(null);
 
   useEffect(() => {
-    if (!isLoggedIn) { setHasAutoApplyAccess(false); localStorage.removeItem('cvmind_aa_access'); return; }
     const base = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
+    if (!isLoggedIn) {
+      setHasAutoApplyAccess(false); localStorage.removeItem('cvmind_aa_access');
+      setHasCareerCopilotAccess(false); localStorage.removeItem('cvmind_cc_access');
+      return;
+    }
     const user = JSON.parse(localStorage.getItem('cvmind_user') || '{}');
     if (!user?.email) return;
     fetch(`${base}/api/auto-apply/check-access?email=${encodeURIComponent(user.email)}`)
       .then(r => r.json()).then(d => { setHasAutoApplyAccess(!!d.hasAccess); localStorage.setItem('cvmind_aa_access', d.hasAccess ? 'true' : 'false'); }).catch(() => {});
+    fetch(`${base}/api/career-copilot/check-access?email=${encodeURIComponent(user.email)}`)
+      .then(r => r.json()).then(d => { setHasCareerCopilotAccess(!!d.hasAccess); localStorage.setItem('cvmind_cc_access', d.hasAccess ? 'true' : 'false'); }).catch(() => {});
   }, [isLoggedIn]);
 
   const setCurrentPage = (page: string) => {
@@ -311,7 +321,7 @@ export default function App() {
 
   // Private route interceptor — all private pages require sign-in only (no paid gating)
   useEffect(() => {
-    const privatePages = ['prep', 'resume-editor', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'proofreading', 'tailor', 'voice-prep', 'portfolio-gen', 'job-finder', 'career-courses', 'elevator-pitch', 'career-roadmap', 'auto-apply'];
+    const privatePages = ['prep', 'resume-editor', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'proofreading', 'tailor', 'voice-prep', 'portfolio-gen', 'job-finder', 'career-courses', 'elevator-pitch', 'career-roadmap', 'auto-apply', 'career-copilot'];
 
     if (privatePages.includes(currentPage) && !isLoggedIn) {
       setCurrentPage('home');
@@ -527,6 +537,18 @@ export default function App() {
         return <Disclaimer />;
       case 'proofreading':
         return <Proofreading customApiKey={customApiKey} />;
+      case 'career-copilot':
+        return hasCareerCopilotAccess ? (
+          <CareerCopilot customApiKey={customApiKey} resumeText={resumeText} setResumeText={setResumeText} />
+        ) : (
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'70vh',gap:'18px',textAlign:'center',padding:'40px 24px'}}>
+            <div style={{fontSize:'3rem'}}>🧠</div>
+            <h2 style={{fontSize:'1.8rem',fontWeight:800,margin:0}}>AI Career Copilot</h2>
+            <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'linear-gradient(135deg,#2997ff,#bf5af2)',color:'#fff',padding:'4px 14px',borderRadius:'99px',fontSize:'0.78rem',fontWeight:700,letterSpacing:'0.05em'}}>COMING SOON</div>
+            <p style={{color:'#6e6e73',fontSize:'1rem',maxWidth:'460px',lineHeight:1.6,margin:0}}>9 AI agents working together to manage your entire career — resume, jobs, LinkedIn, skills, interviews, networking, salary, and analytics. All in one place.</p>
+            <button onClick={() => setCurrentPage('home')} style={{marginTop:'8px',padding:'12px 28px',borderRadius:'12px',border:'none',background:'#1d1d1f',color:'#fff',fontWeight:600,fontSize:'0.95rem',cursor:'pointer'}}>← Go Home</button>
+          </div>
+        );
       case 'auto-apply':
         return hasAutoApplyAccess ? (
           <AutoApply customApiKey={customApiKey} resumeText={resumeText} setResumeText={setResumeText} />

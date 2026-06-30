@@ -177,6 +177,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
   const [whitelistedEmails, setWhitelistedEmails] = useState<Array<{ id?: string; email: string; createdAt: string; source?: string }>>([]);
   const [whitelistInput, setWhitelistInput] = useState('');
   const [autoApplyEmails, setAutoApplyEmails] = useState<Set<string>>(new Set());
+  const [careerCopilotEmails, setCareerCopilotEmails] = useState<Set<string>>(new Set());
   const [isWhitelistLoading, setIsWhitelistLoading] = useState(false);
   const [whitelistError, setWhitelistError] = useState('');
   const [whitelistSuccess, setWhitelistSuccess] = useState('');
@@ -217,6 +218,14 @@ export default function Admin({ setCurrentPage }: AdminProps) {
     } catch {}
   }, [BACKEND]);
 
+  const fetchCareerCopilotAccess = useCallback(async (key: string) => {
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/career-copilot-access`, { headers: { 'x-admin-secret': key } });
+      const data = await res.json();
+      if (data.success) setCareerCopilotEmails(new Set((data.data || []).map((x: { email: string }) => x.email)));
+    } catch {}
+  }, [BACKEND]);
+
   const toggleAutoApplyAccess = async (email: string, hasAccess: boolean) => {
     try {
       if (hasAccess) {
@@ -225,6 +234,18 @@ export default function Admin({ setCurrentPage }: AdminProps) {
       } else {
         await fetch(`${BACKEND}/api/admin/auto-apply-access`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret }, body: JSON.stringify({ email }) });
         setAutoApplyEmails(prev => new Set([...prev, email]));
+      }
+    } catch {}
+  };
+
+  const toggleCareerCopilotAccess = async (email: string, hasAccess: boolean) => {
+    try {
+      if (hasAccess) {
+        await fetch(`${BACKEND}/api/admin/career-copilot-access/${encodeURIComponent(email)}`, { method: 'DELETE', headers: { 'x-admin-secret': secret } });
+        setCareerCopilotEmails(prev => { const s = new Set(prev); s.delete(email); return s; });
+      } else {
+        await fetch(`${BACKEND}/api/admin/career-copilot-access`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret }, body: JSON.stringify({ email }) });
+        setCareerCopilotEmails(prev => new Set([...prev, email]));
       }
     } catch {}
   };
@@ -241,12 +262,13 @@ export default function Admin({ setCurrentPage }: AdminProps) {
       if (!res.ok) throw new Error(data.error || 'Failed to fetch whitelist.');
       setWhitelistedEmails(data.emails || []);
       fetchAutoApplyAccess(key);
+      fetchCareerCopilotAccess(key);
     } catch (e) {
       setWhitelistError(e instanceof Error ? e.message : 'Failed to fetch whitelist.');
     } finally {
       setIsWhitelistLoading(false);
     }
-  }, [BACKEND, fetchAutoApplyAccess]);
+  }, [BACKEND, fetchAutoApplyAccess, fetchCareerCopilotAccess]);
 
   const handleAddWhitelist = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1524,6 +1546,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                 <th>Gmail Address</th>
                                 <th>Access Granted Date</th>
                                 <th style={{ textAlign: 'center' }}>Auto Apply Agent</th>
+                                <th style={{ textAlign: 'center' }}>Career Copilot</th>
                                 <th style={{ textAlign: 'right' }}>Actions</th>
                               </tr>
                             </thead>
@@ -1548,6 +1571,18 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                         }}
                                       >
                                         {autoApplyEmails.has(emailStr) ? '✓ Granted' : 'Grant'}
+                                      </button>
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                      <button
+                                        onClick={() => toggleCareerCopilotAccess(emailStr, careerCopilotEmails.has(emailStr))}
+                                        style={{
+                                          padding: '4px 12px', borderRadius: '99px', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700,
+                                          background: careerCopilotEmails.has(emailStr) ? 'rgba(41,151,255,0.15)' : 'rgba(142,142,147,0.12)',
+                                          color: careerCopilotEmails.has(emailStr) ? '#2997ff' : '#8e8e93',
+                                        }}
+                                      >
+                                        {careerCopilotEmails.has(emailStr) ? '✓ Granted' : 'Grant'}
                                       </button>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
