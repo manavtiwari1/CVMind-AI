@@ -228,6 +228,83 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
         </div>
       </section>
 
+      {/* ── 2b. RESUME TEMPLATES CAROUSEL ────────────────────── */}
+      <section className="home-tpl-section">
+        <h2 className="home-tpl-title">Pick a template and build your resume in minutes!</h2>
+
+        <div className="home-tpl-carousel-wrap">
+          <button className="home-tpl-arrow home-tpl-arrow-left" onClick={() => scrollTplCarousel('left')} aria-label="Previous templates">
+            <ChevronLeft size={20} />
+          </button>
+
+          <div className="home-tpl-carousel" ref={tplCarouselRef} onScroll={handleTplScroll}>
+            {TEMPLATE_PREVIEWS.map((t) => (
+              <div key={t.name} className="home-tpl-card" onClick={() => setCurrentPage('resume-builder')}>
+                <div className={`home-tpl-mock ${t.sidebar ? 'home-tpl-mock-sidebar' : ''}`}>
+                  {t.sidebar ? (
+                    <div className="home-tpl-mock-side" style={{ background: t.color }}>
+                      <div className="home-tpl-mock-avatar" />
+                      <div className="home-tpl-mock-sline" style={{ width: '70%' }} />
+                      <div className="home-tpl-mock-sline" style={{ width: '50%' }} />
+                      <div className="home-tpl-mock-sline" style={{ width: '60%' }} />
+                    </div>
+                  ) : (
+                    <div className="home-tpl-mock-header" style={{ background: t.color }}>
+                      <div className="home-tpl-mock-avatar" />
+                      <div>
+                        <div className="home-tpl-mock-nameline" />
+                        <div className="home-tpl-mock-roleline" />
+                      </div>
+                    </div>
+                  )}
+                  <div className="home-tpl-mock-body">
+                    <div className="home-tpl-mock-label" style={{ background: t.color }} />
+                    <div className="home-tpl-mock-line" style={{ width: '92%' }} />
+                    <div className="home-tpl-mock-line" style={{ width: '78%' }} />
+                    <div className="home-tpl-mock-line" style={{ width: '85%' }} />
+                    <div className="home-tpl-mock-label" style={{ background: t.color, marginTop: '0.5rem' }} />
+                    <div className="home-tpl-mock-line" style={{ width: '70%' }} />
+                    <div className="home-tpl-mock-line" style={{ width: '60%' }} />
+                  </div>
+                </div>
+                <div className="home-tpl-card-overlay">
+                  <span className="home-tpl-card-btn">Start With This Template</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button className="home-tpl-arrow home-tpl-arrow-right" onClick={() => scrollTplCarousel('right')} aria-label="Next templates">
+            <ChevronRight size={20} />
+          </button>
+        </div>
+
+        <div className="home-tpl-dots">
+          {TEMPLATE_PREVIEWS.map((_, i) => (
+            <span key={i} className={`home-tpl-dot ${i === tplActiveIndex ? 'active' : ''}`} />
+          ))}
+        </div>
+
+        <div className="home-tpl-features">
+          <div className="home-tpl-feature">
+            <CheckCircle2 size={28} className="home-tpl-feature-icon home-tpl-feature-icon-green" />
+            <p>ATS-friendly professionally designed resumes</p>
+          </div>
+          <div className="home-tpl-feature">
+            <Palette size={28} className="home-tpl-feature-icon home-tpl-feature-icon-teal" />
+            <p>Customizable sections, fonts, colors, and backgrounds</p>
+          </div>
+          <div className="home-tpl-feature">
+            <Columns2 size={28} className="home-tpl-feature-icon home-tpl-feature-icon-purple" />
+            <p>Single-column, double-column, and multiple-page layouts</p>
+          </div>
+        </div>
+
+        <button className="home-tpl-browse-link" onClick={() => setCurrentPage('resume-builder')}>
+          Browse Resume Templates <ArrowRight size={15} />
+        </button>
+      </section>
+
       {/* ── 3. ATS SECTION ───────────────────────────────────── */}
       <section className="home-ats-section">
         <div className="home-ats-inner">
@@ -659,83 +736,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
             </div>
           </div>
         </div>
-      </section>
-
-      {/* ── 10b. RESUME TEMPLATES CAROUSEL ───────────────────── */}
-      <section className="home-tpl-section">
-        <h2 className="home-tpl-title">Pick a template and build your resume in minutes!</h2>
-
-        <div className="home-tpl-carousel-wrap">
-          <button className="home-tpl-arrow home-tpl-arrow-left" onClick={() => scrollTplCarousel('left')} aria-label="Previous templates">
-            <ChevronLeft size={20} />
-          </button>
-
-          <div className="home-tpl-carousel" ref={tplCarouselRef} onScroll={handleTplScroll}>
-            {TEMPLATE_PREVIEWS.map((t) => (
-              <div key={t.name} className="home-tpl-card" onClick={() => setCurrentPage('resume-builder')}>
-                <div className={`home-tpl-mock ${t.sidebar ? 'home-tpl-mock-sidebar' : ''}`}>
-                  {t.sidebar ? (
-                    <div className="home-tpl-mock-side" style={{ background: t.color }}>
-                      <div className="home-tpl-mock-avatar" />
-                      <div className="home-tpl-mock-sline" style={{ width: '70%' }} />
-                      <div className="home-tpl-mock-sline" style={{ width: '50%' }} />
-                      <div className="home-tpl-mock-sline" style={{ width: '60%' }} />
-                    </div>
-                  ) : (
-                    <div className="home-tpl-mock-header" style={{ background: t.color }}>
-                      <div className="home-tpl-mock-avatar" />
-                      <div>
-                        <div className="home-tpl-mock-nameline" />
-                        <div className="home-tpl-mock-roleline" />
-                      </div>
-                    </div>
-                  )}
-                  <div className="home-tpl-mock-body">
-                    <div className="home-tpl-mock-label" style={{ background: t.color }} />
-                    <div className="home-tpl-mock-line" style={{ width: '92%' }} />
-                    <div className="home-tpl-mock-line" style={{ width: '78%' }} />
-                    <div className="home-tpl-mock-line" style={{ width: '85%' }} />
-                    <div className="home-tpl-mock-label" style={{ background: t.color, marginTop: '0.5rem' }} />
-                    <div className="home-tpl-mock-line" style={{ width: '70%' }} />
-                    <div className="home-tpl-mock-line" style={{ width: '60%' }} />
-                  </div>
-                </div>
-                <div className="home-tpl-card-overlay">
-                  <span className="home-tpl-card-btn">Start With This Template</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <button className="home-tpl-arrow home-tpl-arrow-right" onClick={() => scrollTplCarousel('right')} aria-label="Next templates">
-            <ChevronRight size={20} />
-          </button>
-        </div>
-
-        <div className="home-tpl-dots">
-          {TEMPLATE_PREVIEWS.map((_, i) => (
-            <span key={i} className={`home-tpl-dot ${i === tplActiveIndex ? 'active' : ''}`} />
-          ))}
-        </div>
-
-        <div className="home-tpl-features">
-          <div className="home-tpl-feature">
-            <CheckCircle2 size={28} className="home-tpl-feature-icon home-tpl-feature-icon-green" />
-            <p>ATS-friendly professionally designed resumes</p>
-          </div>
-          <div className="home-tpl-feature">
-            <Palette size={28} className="home-tpl-feature-icon home-tpl-feature-icon-teal" />
-            <p>Customizable sections, fonts, colors, and backgrounds</p>
-          </div>
-          <div className="home-tpl-feature">
-            <Columns2 size={28} className="home-tpl-feature-icon home-tpl-feature-icon-purple" />
-            <p>Single-column, double-column, and multiple-page layouts</p>
-          </div>
-        </div>
-
-        <button className="home-tpl-browse-link" onClick={() => setCurrentPage('resume-builder')}>
-          Browse Resume Templates <ArrowRight size={15} />
-        </button>
       </section>
 
       {/* ── 11. FINAL CTA BANNER ─────────────────────────────── */}
