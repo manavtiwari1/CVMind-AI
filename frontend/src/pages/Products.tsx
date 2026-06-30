@@ -114,22 +114,6 @@ interface ProductsProps {
 }
 
 export default function Products({ setCurrentPage }: ProductsProps) {
-  const isWhitelisted = (() => {
-    const userStr = localStorage.getItem('cvmind_user');
-    if (!userStr) return false;
-    try {
-      const parsedUser = JSON.parse(userStr);
-      const email = parsedUser?.email?.toLowerCase() || '';
-      const allowedEmails = (import.meta.env.VITE_ALLOWED_EMAILS || '')
-        .split(',')
-        .map((e: string) => e.trim().toLowerCase());
-      const isPro = parsedUser?.plan === 'pro' || parsedUser?.isPro === true || parsedUser?.isPaid === true;
-      return allowedEmails.includes(email) || isPro;
-    } catch (e) {
-      return false;
-    }
-  })();
-
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -315,8 +299,8 @@ export default function Products({ setCurrentPage }: ProductsProps) {
                   <div className="card-shine"></div>
 
                   {/* Badge */}
-                  <div className={`card-badge badge ${product.id === 'job-finder' && !isWhitelisted ? 'badge-red' : product.badgeClass}`}>
-                    {product.id === 'job-finder' && !isWhitelisted ? 'Locked 🔒' : product.badge}
+                  <div className={`card-badge badge ${product.badgeClass}`}>
+                    {product.badge}
                   </div>
 
                   {/* Icon */}
@@ -359,13 +343,13 @@ export default function Products({ setCurrentPage }: ProductsProps) {
                   <div className="card-actions">
                     <button
                       className="card-cta"
-                      style={product.id === 'job-finder' && !isWhitelisted ? { background: 'linear-gradient(135deg, #444 0%, #222 100%)', border: '1px solid rgba(255, 69, 58, 0.3)', boxShadow: 'none' } : { background: product.gradient, boxShadow: `0 4px 24px ${product.glowColor}` }}
-                      onClick={(e) => { 
-                        e.stopPropagation(); 
-                        setCurrentPage(pageMap[product.id] || 'home'); 
+                      style={{ background: product.gradient, boxShadow: `0 4px 24px ${product.glowColor}` }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentPage(pageMap[product.id] || 'home');
                       }}
                     >
-                      {product.id === 'job-finder' && !isWhitelisted ? 'Locked 🔒' : 'Try it Free →'}
+                      Try it Free →
                     </button>
                     <button
                       className="card-flip-btn"
@@ -413,13 +397,13 @@ export default function Products({ setCurrentPage }: ProductsProps) {
                     <div className="card-actions">
                       <button
                         className="card-cta"
-                        style={product.id === 'job-finder' && !isWhitelisted ? { background: 'linear-gradient(135deg, #444 0%, #222 100%)', border: '1px solid rgba(255, 69, 58, 0.3)', boxShadow: 'none' } : { background: product.gradient, boxShadow: `0 4px 24px ${product.glowColor}` }}
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          setCurrentPage(pageMap[product.id] || 'home'); 
+                        style={{ background: product.gradient, boxShadow: `0 4px 24px ${product.glowColor}` }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentPage(pageMap[product.id] || 'home');
                         }}
                       >
-                        {product.id === 'job-finder' && !isWhitelisted ? 'Locked 🔒' : 'Get Started →'}
+                        Get Started →
                       </button>
                       <button
                         className="card-flip-btn"
@@ -500,7 +484,7 @@ export default function Products({ setCurrentPage }: ProductsProps) {
       {/* ── Bottom CTA ── */}
       <div className="products-cta-section">
         <h2 className="cta-title">Ready to Transform Your Career?</h2>
-        <p className="cta-sub">Join thousands of professionals who landed their dream jobs with CVMind AI</p>
+        <p className="cta-sub">Join thousands of professionals who landed their dream jobs with CV Mind</p>
         <div className="cta-buttons">
           <button className="btn-primary cta-btn-primary" onClick={() => setCurrentPage('home')}>
             ⚡ Start for Free

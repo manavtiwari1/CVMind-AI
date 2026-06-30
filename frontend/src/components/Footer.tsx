@@ -19,7 +19,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
           {/* Brand info */}
           <div className="footer-info">
             <div className="footer-logo-row">
-              <img src={cvmindLogo} alt="CVMind AI Logo" className="footer-logo-img" />
+              <img src={cvmindLogo} alt="CV Mind Logo" className="footer-logo-img" />
             </div>
             <p className="footer-tagline">
               Futuristic resume intelligence for ATS scoring, keyword discovery, recruiter-focused rewrites, and career-ready reports.
@@ -83,21 +83,20 @@ export default function Footer({ setCurrentPage }: FooterProps) {
               <button className="footer-link" onClick={() => setCurrentPage('home')}>AI Analyzer</button>
               <button className="footer-link" onClick={() => setCurrentPage('dashboard')}>Score Dashboard</button>
               <button className="footer-link" onClick={() => setCurrentPage('resume-builder')}>Resume Builder</button>
-              <button className="footer-link" onClick={() => setCurrentPage('pricing')}>Pricing Plans</button>
               <button className="footer-link" onClick={() => setCurrentPage('tailor')}>Resume Tailorer</button>
               <button className="footer-link" onClick={() => setCurrentPage('job-finder')}>AI Job Finder</button>
               <button className="footer-link" onClick={() => setCurrentPage('proofreading')}>AI Proofreading</button>
               <button className="footer-link" onClick={() => setCurrentPage('about')}>How it Works</button>
             </div>
 
-            {/* Company column */}
+            {/* Resources column */}
             <div className="footer-column">
-              <h4 className="footer-heading">Company</h4>
+              <h4 className="footer-heading">Resources</h4>
               <button className="footer-link" onClick={() => setCurrentPage('about')}>About Us</button>
-              <button className="footer-link" onClick={() => setCurrentPage('contact')}>Contact</button>
-              <button className="footer-link" onClick={() => setCurrentPage('privacy')}>Privacy</button>
+              <button className="footer-link" onClick={() => setCurrentPage('contact')}>Contact Us</button>
               <button className="footer-link" onClick={() => setCurrentPage('faq')}>FAQ's</button>
               <button className="footer-link" onClick={() => setCurrentPage('blog')}>Blog</button>
+              <button className="footer-link" onClick={() => setCurrentPage('privacy')}>Privacy</button>
             </div>
 
             {/* Legal column */}
@@ -114,7 +113,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
         {/* Bottom bar */}
         <div className="footer-bottom">
           <p className="footer-copyright">
-            &copy; {currentYear} CVMind AI. Designed and engineered by <a href="https://www.manavtiwari.in" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline', transition: 'color 0.2s' }}>Manav Tiwari</a>.
+            &copy; {currentYear} CV Mind. Designed and engineered by <a href="https://www.manavtiwari.in" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline', transition: 'color 0.2s' }}>Manav Tiwari</a>.
           </p>
           <div className="footer-credits">
             <span className="credits-text">

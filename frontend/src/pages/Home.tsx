@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { Upload, FileText, CheckCircle2, ShieldAlert, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Link } from 'lucide-react';
 import { HeroSection } from '../components/blocks/hero-section-9';
-import UsageBadge from '../components/UsageBadge';
 import './Home.css';
 import './HomeCarousel.css';
 
@@ -499,9 +498,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
                           <button className="btn-secondary" onClick={removeFile}>Remove</button>
                           <button className="btn-primary" onClick={handleAnalyze}>Analyze Resume <ArrowRight size={18} /></button>
                         </div>
-                        {userId && (
-                          <UsageBadge feature="analyze" userId={userId} className="home-usage-badge" />
-                        )}
                       </div>
                     ) : (
                       <div className="upload-prompt-state" onClick={onButtonClick}>
@@ -568,9 +564,6 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
                         >
                           Analyze Resume <ArrowRight size={18} />
                         </button>
-                        {userId && (
-                          <UsageBadge feature="analyze" userId={userId} className="home-usage-badge" />
-                        )}
                       </div>
                     )}
                   </div>

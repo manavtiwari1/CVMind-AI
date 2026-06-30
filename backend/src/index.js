@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt, fetchResumeFromUrl } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini, generateResumeWithGemini, generateProofreadingWithDeepSeek } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, checkAndIncrementUsage, getUserUsageToday, FREE_DAILY_LIMITS, isUserPaid, getWhitelistedEmails, addWhitelistedEmail, deleteWhitelistedEmail } from './db.js';
+import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, getUserUsageToday, FREE_DAILY_LIMITS, isUserPaid, getWhitelistedEmails, addWhitelistedEmail, deleteWhitelistedEmail } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -29,25 +29,25 @@ const sendWelcomeEmail = async (email, name, origin) => {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'CVMind AI <no-reply@manavtiwari.in>',
+      from: 'CV Mind <no-reply@manavtiwari.in>',
       to: [email],
-      subject: 'Welcome to CVMind AI! ✨',
+      subject: 'Welcome to CV Mind! ✨',
       html: `
         <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff; color: #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 25px;">
-            <h2 style="color: #2997ff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">CVMind AI</h2>
+            <h2 style="color: #2997ff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">CV Mind</h2>
             <span style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Your AI-Powered Career Partner</span>
           </div>
           
           <p style="font-size: 16px; line-height: 1.6; margin-bottom: 15px;">Hi <strong>${name}</strong>,</p>
           
           <p style="font-size: 15px; line-height: 1.6; margin-bottom: 20px;">
-            Welcome to <strong>CVMind AI</strong>! We are absolutely thrilled to have you join us. 
-            CVMind AI is a state-of-the-art career suite designed to empower job seekers like you with advanced AI intelligence and ATS optimization tools.
+            Welcome to <strong>CV Mind</strong>! We are absolutely thrilled to have you join us. 
+            CV Mind is a state-of-the-art career suite designed to empower job seekers like you with advanced AI intelligence and ATS optimization tools.
           </p>
           
           <div style="background-color: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 1px solid #f1f5f9;">
-            <h3 style="margin-top: 0; color: #0f172a; font-size: 16px;">Here is how CVMind AI accelerates your job search:</h3>
+            <h3 style="margin-top: 0; color: #0f172a; font-size: 16px;">Here is how CV Mind accelerates your job search:</h3>
             <ul style="padding-left: 20px; margin: 0; font-size: 14px; line-height: 1.8; color: #334155;">
               <li><strong>ATS Resume Scanner & Scorecard:</strong> Get instant recruiter-grade scores, structural audits, and missing keyword analyses.</li>
               <li><strong>AI-Powered Optimizer:</strong> Rewrite weak bullet points and enhance your resume's metrics with one click.</li>
@@ -73,7 +73,7 @@ const sendWelcomeEmail = async (email, name, origin) => {
           
           <p style="font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; margin: 0;">
             Designed & engineered by Manav Tiwari.<br />
-            © ${new Date().getFullYear()} CVMind AI. Secure applicant tracking systems and resume optimization.
+            © ${new Date().getFullYear()} CV Mind. Secure applicant tracking systems and resume optimization.
           </p>
         </div>
       `
@@ -124,7 +124,7 @@ const upload = multer({
 apiRouter.get('/', (req, res) => {
   res.json({
     status: 'online',
-    message: 'CVMind AI Backend API is running smoothly.',
+    message: 'CV Mind Backend API is running smoothly.',
     timestamp: new Date()
   });
 });
@@ -321,17 +321,17 @@ apiRouter.post('/api/auth/forgot-password', async (req, res) => {
 
     // 2. Dispatch email using Resend and user's verified manavtiwari.in domain
     const { data, error } = await resend.emails.send({
-      from: 'CVMind AI <no-reply@manavtiwari.in>',
+      from: 'CV Mind <no-reply@manavtiwari.in>',
       to: [email],
-      subject: 'Reset your CVMind AI Password',
+      subject: 'Reset your CV Mind Password',
       html: `
         <div style="font-family: Arial, sans-serif; padding: 25px; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
           <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #2997ff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">CVMind AI</h2>
+            <h2 style="color: #2997ff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">CV Mind</h2>
             <span style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Password Recovery Portal</span>
           </div>
           <p style="font-size: 15px; line-height: 1.6; margin-bottom: 15px;">Hi <strong>${user.name}</strong>,</p>
-          <p style="font-size: 15px; line-height: 1.6; margin-bottom: 20px;">We received a secure request to reset your CVMind AI account password. Click the button below to set a new password. This link is valid for **1 hour**:</p>
+          <p style="font-size: 15px; line-height: 1.6; margin-bottom: 20px;">We received a secure request to reset your CV Mind account password. Click the button below to set a new password. This link is valid for **1 hour**:</p>
           <div style="margin: 30px 0; text-align: center;">
             <a href="${resetLink}" style="background: linear-gradient(135deg, #2997ff 0%, #bf5af2 100%); color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 15px rgba(41, 151, 255, 0.25);">Reset My Password</a>
           </div>
@@ -339,7 +339,7 @@ apiRouter.post('/api/auth/forgot-password', async (req, res) => {
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0 20px 0;" />
           <p style="font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; margin: 0;">
             Designed & engineered by Manav Tiwari.<br />
-            © ${new Date().getFullYear()} CVMind AI. Secure applicant tracking systems and resume optimization.
+            © ${new Date().getFullYear()} CV Mind. Secure applicant tracking systems and resume optimization.
           </p>
         </div>
       `
@@ -632,18 +632,6 @@ apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
       });
     }
 
-    // Usage limit check (only for logged-in users)
-    const userId = req.body?.userId || '';
-    if (userId) {
-      const usage = await checkAndIncrementUsage(userId, 'analyze');
-      if (!usage.allowed) {
-        return res.status(429).json({
-          error: `Daily limit reached. Free users can analyze ${FREE_DAILY_LIMITS.analyze} resumes per day. Upgrade to Pro for unlimited access.`,
-          limitReached: true, feature: 'analyze', limit: usage.limit, used: usage.used
-        });
-      }
-    }
-
     // Extract custom API key from custom header if present
     const customApiKey = req.headers['x-gemini-key'] || null;
 
@@ -668,9 +656,9 @@ apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
     // Persist admin analytics after successful parsing.
     if (evaluation && evaluation.score) {
       saveScan({
-        fileName: file.originalname,
-        fileType: file.mimetype,
-        fileSize: file.size,
+        fileName: file ? file.originalname : 'Link Upload',
+        fileType: file ? file.mimetype : 'link',
+        fileSize: file ? file.size : 0,
         evaluation
       });
     }
@@ -764,8 +752,8 @@ apiRouter.post('/api/tailor', upload.single('resume'), async (req, res) => {
 
     // Record the tailoring event in MongoDB / Local DB
     saveTailorLog({
-      fileName: file.originalname,
-      fileSize: file.size,
+      fileName: file ? file.originalname : 'Link Upload',
+      fileSize: file ? file.size : 0,
       score: result.matchScore,
       jobDescription: jobDescription,
       matchedSkills: result.matchedSkills,
@@ -790,17 +778,6 @@ apiRouter.post('/api/prep', upload.single('resume'), async (req, res) => {
     const { file } = req;
     const { resumeText, resumeUrl } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
-
-    const userId = req.body?.userId || '';
-    if (userId) {
-      const usage = await checkAndIncrementUsage(userId, 'prep');
-      if (!usage.allowed) {
-        return res.status(429).json({
-          error: `Daily limit reached. Free users can generate ${FREE_DAILY_LIMITS.prep} prep sessions per day. Upgrade to Pro for unlimited access.`,
-          limitReached: true, feature: 'prep', limit: usage.limit, used: usage.used
-        });
-      }
-    }
 
     let textToAnalyze = '';
     let fileName = 'Direct Input';
@@ -948,16 +925,6 @@ apiRouter.post('/api/linkedin/analyze', upload.single('linkedinPdf'), async (req
     const { email, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
 
-    if (userId) {
-      const usage = await checkAndIncrementUsage(userId, 'linkedin-analyze');
-      if (!usage.allowed) {
-        return res.status(429).json({
-          error: `Daily limit reached. Free users can audit ${FREE_DAILY_LIMITS['linkedin-analyze']} LinkedIn profiles per day. Upgrade to Pro for unlimited access.`,
-          limitReached: true, feature: 'linkedin-analyze', limit: usage.limit, used: usage.used
-        });
-      }
-    }
-
     if (!file) {
       return res.status(400).json({ error: 'No LinkedIn PDF file uploaded. Please upload a PDF file.' });
     }
@@ -1014,16 +981,6 @@ apiRouter.post('/api/linkedin/bio', async (req, res) => {
     const { skills, jobTitle, resumeText, email, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
 
-    if (userId) {
-      const usage = await checkAndIncrementUsage(userId, 'linkedin-bio');
-      if (!usage.allowed) {
-        return res.status(429).json({
-          error: `Daily limit reached. Free users can generate ${FREE_DAILY_LIMITS['linkedin-bio']} LinkedIn bios per day. Upgrade to Pro for unlimited access.`,
-          limitReached: true, feature: 'linkedin-bio', limit: usage.limit, used: usage.used
-        });
-      }
-    }
-
     if (!jobTitle) {
       return res.status(400).json({ error: 'Job Title is required.' });
     }
@@ -1075,16 +1032,6 @@ apiRouter.post('/api/linkedin/outreach', async (req, res) => {
   try {
     const { jobTitle, companyName, context, targetName, email, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
-
-    if (userId) {
-      const usage = await checkAndIncrementUsage(userId, 'linkedin-outreach');
-      if (!usage.allowed) {
-        return res.status(429).json({
-          error: `Daily limit reached. Free users can write ${FREE_DAILY_LIMITS['linkedin-outreach']} outreach messages per day. Upgrade to Pro for unlimited access.`,
-          limitReached: true, feature: 'linkedin-outreach', limit: usage.limit, used: usage.used
-        });
-      }
-    }
 
     if (!jobTitle) {
       return res.status(400).json({ error: 'Job Title is required.' });
@@ -1319,16 +1266,6 @@ apiRouter.post('/api/linkedin/post', async (req, res) => {
   try {
     const { topic, jobTitle, tone, resumeText, userId } = req.body || {};
     const customApiKey = req.headers['x-gemini-key'] || null;
-
-    if (userId) {
-      const usage = await checkAndIncrementUsage(userId, 'linkedin-post');
-      if (!usage.allowed) {
-        return res.status(429).json({
-          error: `Daily limit reached. Free users can generate ${FREE_DAILY_LIMITS['linkedin-post']} LinkedIn posts per day. Upgrade to Pro for unlimited access.`,
-          limitReached: true, feature: 'linkedin-post', limit: usage.limit, used: usage.used
-        });
-      }
-    }
 
     if (!topic || !jobTitle) {
       return res.status(400).json({ error: 'Topic and Job Title are required.' });
@@ -1749,7 +1686,7 @@ ${education.length > 0 ? `
 </section>` : ''}
 
 <footer>
-  <p>Made with ❤️ by <span class="footer-name">${name || 'Me'}</span> · Generated by <span class="footer-name">CVMind AI</span></p>
+  <p>Made with ❤️ by <span class="footer-name">${name || 'Me'}</span> · Generated by <span class="footer-name">CV Mind</span></p>
 </footer>
 </body>
 </html>`;
@@ -1870,19 +1807,6 @@ apiRouter.post('/api/user/password', async (req, res) => {
 
 // AI Job Finder Endpoint
 apiRouter.post('/api/job-finder', upload.single('resume'), async (req, res) => {
-  const reqEmail = String(req.body.email || '').trim().toLowerCase();
-  try {
-    const hasAccess = await checkJobFinderAccess(reqEmail);
-    if (!hasAccess) {
-      return res.status(403).json({
-        success: false,
-        error: 'AI Job Finder access is restricted to authorized beta testers. Please contact contact@manavtiwari.in to request access.'
-      });
-    }
-  } catch (err) {
-    console.error('Job Finder Access Check Error:', err);
-  }
-
   try {
     const { file } = req;
     const { jobDescription, jobType } = req.body || {};
@@ -1988,19 +1912,8 @@ apiRouter.post('/api/ai/proofread', upload.single('resume'), async (req, res) =>
   try {
     const customApiKey = req.headers['x-gemini-key'] || null;
     const industry = req.body?.industry || 'General';
-    const userId = req.body?.userId || '';
 
-    let usageInfo = null;
-    if (userId) {
-      const usage = await checkAndIncrementUsage(userId, 'proofread');
-      if (!usage.allowed) {
-        return res.status(429).json({
-          error: `Daily limit reached. Free users can proofread ${FREE_DAILY_LIMITS.proofread} documents per day. Upgrade to Pro for unlimited access.`,
-          limitReached: true, feature: 'proofread', limit: usage.limit, used: usage.used
-        });
-      }
-      usageInfo = usage;
-    }
+    const usageInfo = null;
 
     let text = req.body?.text || '';
     const resumeUrl = req.body?.resumeUrl || '';

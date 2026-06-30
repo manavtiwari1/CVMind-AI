@@ -273,8 +273,8 @@ export default function Navbar({
 
         {/* Brand / Logo */}
         <div className="navbar-brand" onClick={() => go('home')}>
-          <img src={cvmindLogo} alt="CVMind AI" className="navbar-logo-img" />
-          <span className="navbar-brand-name">CVMind AI</span>
+          <img src={cvmindLogo} alt="CV Mind" className="navbar-logo-img" />
+          <span className="navbar-brand-name">CV Mind</span>
         </div>
 
         {/* Center Navigation — Enhancv style: 4 clean items */}
@@ -389,13 +389,38 @@ export default function Navbar({
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              {/* 4. Pricing (single link) */}
+              {/* 4. Resources ▾ */}
               <NavigationMenuItem>
-                <NavigationMenuLink
-                  render={<button className={`nav-link${currentPage === 'pricing' ? ' active' : ''}`} onClick={() => go('pricing')} />}
+                <NavigationMenuTrigger
+                  className={`nav-link nav-link-trigger${['about','contact','faq','blog','privacy'].includes(currentPage) ? ' active' : ''}`}
                 >
-                  Pricing
-                </NavigationMenuLink>
+                  Resources
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="nav-menu-grid-2cols" style={{ minWidth: '420px' }}>
+                    <div className="nav-menu-column">
+                      <span className="nav-menu-column-header">Company</span>
+                      <NavigationMenuLink render={<button onClick={() => go('about')} />}>
+                        <div className="font-medium">About Us</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('contact')} />}>
+                        <div className="font-medium">Contact Us</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('faq')} />}>
+                        <div className="font-medium">FAQ's</div>
+                      </NavigationMenuLink>
+                    </div>
+                    <div className="nav-menu-column">
+                      <span className="nav-menu-column-header">More</span>
+                      <NavigationMenuLink render={<button onClick={() => go('blog')} />}>
+                        <div className="font-medium">Blog</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('privacy')} />}>
+                        <div className="font-medium">Privacy</div>
+                      </NavigationMenuLink>
+                    </div>
+                  </div>
+                </NavigationMenuContent>
               </NavigationMenuItem>
 
             </NavigationMenuList>
@@ -497,7 +522,6 @@ export default function Navbar({
           { label: 'Home', page: 'home' },
           { label: 'Dashboard', page: 'dashboard' },
           { label: 'Resume Builder', page: 'resume-builder' },
-          { label: 'Pricing', page: 'pricing' },
         ].map(({ label, page }) => (
           <button
             key={label}
@@ -626,8 +650,11 @@ export default function Navbar({
 
         {/* Remaining links */}
         {[
-          { label: 'About CVMind AI', page: 'about' },
+          { label: 'About CV Mind', page: 'about' },
           { label: 'Contact Support', page: 'contact' },
+          { label: "FAQ's", page: 'faq' },
+          { label: 'Blog', page: 'blog' },
+          { label: 'Privacy', page: 'privacy' },
         ].map(({ label, page }) => (
           <button
             key={label}

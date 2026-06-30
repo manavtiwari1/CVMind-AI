@@ -4,7 +4,6 @@ import {
   AlertCircle, Zap, MessageSquare, BookOpen, Target, Upload, X, Link
 } from 'lucide-react';
 import SkeletonLoader from '../components/SkeletonLoader';
-import UsageBadge from '../components/UsageBadge';
 import './Proofreading.css';
 
 const INDUSTRIES = [
@@ -332,10 +331,6 @@ export default function Proofreading({ customApiKey }: ProofreadingProps) {
               >
                 Proofread My {inputMode === 'text' ? 'Text' : 'Resume'} <ArrowRight size={16} />
               </button>
-
-              {userId && (
-                <UsageBadge feature="proofread" userId={userId} />
-              )}
             </div>
           </div>
         )}

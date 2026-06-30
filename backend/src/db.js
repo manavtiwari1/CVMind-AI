@@ -225,19 +225,8 @@ export const FREE_DAILY_LIMITS = {
 const WHITELISTED_EMAILS_HARDCODED = ['riturani2005@gmail.com', 'rajendermishra39@gmail.com'];
 
 export async function isUserPaid(user) {
-  if (!user) return false;
-  const email = (user.email || '').toLowerCase();
-  
-  try {
-    const list = await getWhitelistedEmails();
-    const isWhitelisted = list.some(x => x.email === email);
-    if (isWhitelisted) return true;
-  } catch (err) {
-    console.error('Whitelist check error in isUserPaid:', err);
-  }
-
-  // User schema plan check
-  return user.plan === 'pro' || user.isPro === true || user.isPaid === true;
+  // All features are currently free for every user.
+  return true;
 }
 
 const userSchema = new mongoose.Schema({
@@ -870,15 +859,8 @@ export async function deleteWhitelistedEmail(email) {
 }
 
 export async function checkJobFinderAccess(email) {
-  const cleanEmail = String(email || '').trim().toLowerCase();
-  if (!cleanEmail) return false;
-  try {
-    const list = await getWhitelistedEmails();
-    return list.some(x => x.email === cleanEmail);
-  } catch (err) {
-    console.error('Job Finder access check error:', err);
-  }
-  return false;
+  // Job Finder is currently open to everyone.
+  return true;
 }
 
 export async function getWorkById(workId) {
@@ -1423,80 +1405,17 @@ function todayKey() {
  * Paid users always return allowed=true with remaining=999.
  */
 export async function checkAndIncrementUsage(userId, feature) {
-  await ensureMongoConnection();
-
-  const limit = FREE_DAILY_LIMITS[feature];
-  if (limit == null) return { allowed: true, used: 0, limit: 0, remaining: 999 };
-
-  const searchId = String(userId || '').trim();
-  if (!searchId) return { allowed: true, used: 0, limit, remaining: limit };
-
-  const today = todayKey();
-  const mapKey = `${feature}:${today}`;
-
-  // ── MongoDB ───────────────────────────────────────────────────────────
-  if (mongoURI && mongoose.connection.readyState === 1) {
-    const user = await User.findById(searchId);
-    if (!user) return { allowed: true, used: 0, limit, remaining: limit };
-
-    if (await isUserPaid(user)) return { allowed: true, used: 0, limit: 0, remaining: 999 };
-
-    const used = user.usageMap?.get(mapKey) ?? 0;
-    if (used >= limit) {
-      return { allowed: false, used, limit, remaining: 0 };
-    }
-    user.usageMap.set(mapKey, used + 1);
-    user.markModified('usageMap');
-    await user.save();
-    return { allowed: true, used: used + 1, limit, remaining: limit - (used + 1) };
-  }
-
-  // ── JSON fallback ─────────────────────────────────────────────────────
-  const db = readDb();
-  if (!db.users) db.users = [];
-  const u = db.users.find(x => x.id === searchId || x._id === searchId);
-  if (!u) return { allowed: true, used: 0, limit, remaining: limit };
-  if (await isUserPaid(u)) return { allowed: true, used: 0, limit: 0, remaining: 999 };
-
-  if (!u.usageMap) u.usageMap = {};
-  const usedJson = u.usageMap[mapKey] ?? 0;
-  if (usedJson >= limit) return { allowed: false, used: usedJson, limit, remaining: 0 };
-  u.usageMap[mapKey] = usedJson + 1;
-  writeDb(db);
-  return { allowed: true, used: usedJson + 1, limit, remaining: limit - (usedJson + 1) };
+  // Usage limits are currently disabled for all features.
+  return { allowed: true, used: 0, limit: 0, remaining: 999 };
 }
 
 /**
  * Return today's usage counts for all features for a user (for displaying in UI).
  */
 export async function getUserUsageToday(userId) {
-  await ensureMongoConnection();
-  const searchId = String(userId || '').trim();
-  const today = todayKey();
-
   const result = {};
-  for (const [feature, limit] of Object.entries(FREE_DAILY_LIMITS)) {
-    const mapKey = `${feature}:${today}`;
-    result[feature] = { limit, used: 0, remaining: limit };
-
-    if (mongoURI && mongoose.connection.readyState === 1) {
-      const user = searchId ? await User.findById(searchId) : null;
-      if (user) {
-        if (await isUserPaid(user)) { result[feature].remaining = 999; continue; }
-        const used = user.usageMap?.get(mapKey) ?? 0;
-        result[feature].used = used;
-        result[feature].remaining = Math.max(0, limit - used);
-      }
-    } else {
-      const db = readDb();
-      const u = db.users?.find(x => x.id === searchId || x._id === searchId);
-      if (u) {
-        if (await isUserPaid(u)) { result[feature].remaining = 999; continue; }
-        const used = u.usageMap?.[mapKey] ?? 0;
-        result[feature].used = used;
-        result[feature].remaining = Math.max(0, limit - used);
-      }
-    }
+  for (const feature of Object.keys(FREE_DAILY_LIMITS)) {
+    result[feature] = { limit: 0, used: 0, remaining: 999 };
   }
   return result;
 }

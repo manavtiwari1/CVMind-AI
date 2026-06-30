@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Upload, FileText, Search, RefreshCw, ShieldCheck,
-  Briefcase, MapPin, Clock, ExternalLink, AlertCircle, Sparkles, Lock
+  Briefcase, MapPin, Clock, ExternalLink, AlertCircle, Sparkles
 } from 'lucide-react';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './JobFinder.css';
@@ -110,48 +110,6 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
     }
     return '';
   });
-
-  const [hasAccess, setHasAccess] = useState<boolean>(false);
-  const [checkingAccess, setCheckingAccess] = useState<boolean>(true);
-
-  useEffect(() => {
-    const checkAccessStatus = async () => {
-      if (!currentUserEmail) {
-        setHasAccess(false);
-        setCheckingAccess(false);
-        return;
-      }
-
-      // Whitelist bypass in frontend
-      const allowedEmails = (import.meta.env.VITE_ALLOWED_EMAILS || '')
-        .split(',')
-        .map((e: string) => e.trim().toLowerCase());
-      if (allowedEmails.includes(currentUserEmail)) {
-        setHasAccess(true);
-        setCheckingAccess(false);
-        return;
-      }
-
-      const baseUrl =
-        import.meta.env.VITE_API_BASE_URL ||
-        import.meta.env.VITE_BACKEND_URL ||
-        (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
-
-      try {
-        const res = await fetch(`${baseUrl}/api/payments/check-access/${currentUserEmail}`);
-        const data = await res.json();
-        if (data.success) {
-          setHasAccess(data.hasAccess);
-        }
-      } catch (err) {
-        console.error('Error checking access:', err);
-      } finally {
-        setCheckingAccess(false);
-      }
-    };
-
-    checkAccessStatus();
-  }, [currentUserEmail]);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState('');
@@ -276,52 +234,6 @@ export default function JobFinder({ customApiKey }: JobFinderProps) {
   const availableTypes = result
     ? ['All', ...Array.from(new Set(result.jobs.map(j => j.jobType).filter(Boolean)))]
     : ['All'];
-
-  if (checkingAccess) {
-    return (
-      <div className="jf-page animate-fade-in-up" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="jf-stage" aria-hidden="true">
-          <div className="jf-glow-left" />
-          <div className="jf-glow-right" />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-          <div className="jf-step-spinner" style={{ width: '40px', height: '40px', borderWidth: '3px' }}></div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 500 }}>Verifying Access Rights...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!hasAccess) {
-    return (
-      <div className="jf-page animate-fade-in-up" style={{ minHeight: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
-        <div className="jf-stage" aria-hidden="true">
-          <div className="jf-glow-left" />
-          <div className="jf-glow-right" />
-        </div>
-
-        <div className="glass-card" style={{ maxWidth: '540px', width: '100%', padding: '3rem 2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: '1.5rem', boxShadow: '0 10px 40px rgba(0,0,0,0.5)', textAlign: 'center' }}>
-          <div style={{ width: '56px', height: '56px', background: 'rgba(255, 69, 58, 0.08)', border: '1px solid rgba(255, 69, 58, 0.2)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
-            <Lock size={24} style={{ color: '#ff453a' }} />
-          </div>
-          <div>
-            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem' }}>AI Job Finder Beta Access</h2>
-            <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
-              This feature is currently in private beta and limited to authorized whitelisted users. If you are an approved beta tester, please make sure you are signed in with your registered email.
-            </p>
-          </div>
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px' }}>
-            <p style={{ color: '#a1a1aa', fontSize: '0.8rem', margin: 0 }}>
-              To request access, please contact our support team:
-            </p>
-            <a href="mailto:contact@manavtiwari.in" style={{ color: '#2997ff', fontWeight: 600, fontSize: '0.95rem', display: 'inline-block', marginTop: '0.25rem', textDecoration: 'none' }}>
-              contact@manavtiwari.in
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="jf-page animate-fade-in-up">
