@@ -34,6 +34,7 @@ import Disclaimer from './pages/Disclaimer';
 import Proofreading from './pages/Proofreading';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
 import CrispChat from './components/CrispChat';
+import { applySEO } from './utils/seo';
 import './styles/theme.css';
 import './styles/3d-effects.css';
 import './styles/skeleton.css';
@@ -62,12 +63,16 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'light');
     localStorage.setItem('cvmind_theme', 'light');
-    
+
     // Check if running inside the mobile app WebView
     if (window.location.search.includes('platform=app')) {
       localStorage.setItem('is_cvmind_app', 'true');
     }
   }, []);
+
+  useEffect(() => {
+    applySEO(currentPage);
+  }, [currentPage]);
 
   // Scroll to top of the page on route changes
   useEffect(() => {
