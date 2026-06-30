@@ -80,14 +80,14 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
 
   // Determine score color classes
   const getScoreColorClass = (val: number) => {
-    if (val >= 8) return 'score-success';
-    if (val >= 6) return 'score-warning';
+    if (val >= 80) return 'score-success';
+    if (val >= 60) return 'score-warning';
     return 'score-danger';
   };
 
   const getScoreText = (val: number) => {
-    if (val >= 8) return 'Excellent';
-    if (val >= 6) return 'Good Effort';
+    if (val >= 80) return 'Excellent';
+    if (val >= 60) return 'Good Effort';
     return 'Needs Attention';
   };
 
@@ -156,7 +156,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
   const stroke = 8;
   const normalizedRadius = radius - stroke * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (score / 10) * circumference;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
 
   return (
     <div className="dashboard-container animate-fade-in-up">
@@ -208,7 +208,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
             </svg>
             <div className="radial-content">
               <span className="score-number-display">{score}</span>
-              <span className="score-total">/10</span>
+              <span className="score-total">/100</span>
             </div>
           </div>
           <div className="radial-label-group">
@@ -265,7 +265,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
       <div className="print-exclusive-header">
         <div className="print-title-row">
           <h2>CV Mind Resume Audit Report</h2>
-          <div className="print-score-pill">Score: {score}/10</div>
+          <div className="print-score-pill">Score: {score}/100</div>
         </div>
         <p className="print-summary">{summary}</p>
       </div>
@@ -333,7 +333,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
               <div className="panel-header-row">
                 <h4 className="panel-title">ATS Optimization Index</h4>
                 <div className={`tab-score-badge badge ${getScoreColorClass(atsKeywords.score)}`}>
-                  ATS Score: {atsKeywords.score}/10
+                  ATS Score: {atsKeywords.score}/100
                 </div>
               </div>
               
@@ -377,7 +377,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
               <div className="panel-header-row">
                 <h4 className="panel-title">Experience Impact Analyzer</h4>
                 <div className={`tab-score-badge badge ${getScoreColorClass(contentAndImpact.score)}`}>
-                  Impact Rating: {contentAndImpact.score}/10
+                  Impact Rating: {contentAndImpact.score}/100
                 </div>
               </div>
 
@@ -436,7 +436,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
               <div className="panel-header-row">
                 <h4 className="panel-title">Visual Layout Audits</h4>
                 <div className={`tab-score-badge badge ${getScoreColorClass(formattingAndStyle.score)}`}>
-                  Layout Score: {formattingAndStyle.score}/10
+                  Layout Score: {formattingAndStyle.score}/100
                 </div>
               </div>
 

@@ -569,7 +569,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                     {/* KPI cards */}
                     <div className="admin-stat-grid">
                       <StatCard icon={<FileText size={18} />}    label="Total Resumes Scanned" value={stats.totalScans.toLocaleString()} caption="Evaluated against ATS rules" trendCls="card-purple" />
-                      <StatCard icon={<TrendingUp size={18} />}  label="Average Score"          value={stats.averageScore ? `${stats.averageScore}/10` : '—'} caption={`${highRate}% scored 8 or above`} trendCls="card-cyan" />
+                      <StatCard icon={<TrendingUp size={18} />}  label="Average Score"          value={stats.averageScore ? `${stats.averageScore}/100` : '—'} caption={`${highRate}% scored 80 or above`} trendCls="card-cyan" />
                       <StatCard icon={<Search size={18} />}      label="Skills Monitored"       value={stats.keywordTrends.length.toString()} caption="Unique missing ATS keywords" trendCls="card-indigo" />
                       <StatCard icon={<BrainCircuit size={18} />} label="Resumes Auto-Fixed"     value={(stats.totalFixes ?? 0).toLocaleString()} caption="ATS-optimized by AI" trendCls="card-emerald" />
                       <StatCard icon={<Sparkles size={18} />}    label="Resumes Tailored"       value={(stats.totalTailors ?? 0).toLocaleString()} caption="Aligned to target JDs" trendCls="card-rose" />
@@ -606,9 +606,9 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                             </div>
                           ) : (
                             <div className="score-bars-container">
-                              <ScoreBar label="High Match (8–10)"  count={stats.scoreDistribution.high}   total={total} barCls="admin-bar-high" />
-                              <ScoreBar label="Medium Match (6–7)" count={stats.scoreDistribution.medium} total={total} barCls="admin-bar-mid" />
-                              <ScoreBar label="Low Match (< 6)"    count={stats.scoreDistribution.low}    total={total} barCls="admin-bar-low" />
+                              <ScoreBar label="High Match (80–100)"  count={stats.scoreDistribution.high}   total={total} barCls="admin-bar-high" />
+                              <ScoreBar label="Medium Match (60–79)" count={stats.scoreDistribution.medium} total={total} barCls="admin-bar-mid" />
+                              <ScoreBar label="Low Match (< 60)"    count={stats.scoreDistribution.low}    total={total} barCls="admin-bar-low" />
                             </div>
                           )}
                         </div>
@@ -664,8 +664,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                     <strong className="row-filename">{scan.fileName}</strong>
                                     <small className="row-timestamp">{new Date(scan.createdAt).toLocaleString()}</small>
                                   </div>
-                                  <span className={`admin-score-pill ${scan.score >= 8 ? 'high' : scan.score >= 6 ? 'mid' : 'low'}`}>
-                                    {scan.score}/10
+                                  <span className={`admin-score-pill ${scan.score >= 80 ? 'high' : scan.score >= 60 ? 'mid' : 'low'}`}>
+                                    {scan.score}/100
                                   </span>
                                 </div>
                               ))}
@@ -728,7 +728,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                 </div>
                                 <div className="table-row-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                   <span className="admin-prior-score-pill" style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem' }}>
-                                    Prior Score: <strong style={{ color: 'var(--admin-cyan)' }}>{fix.priorScore}/10</strong>
+                                    Prior Score: <strong style={{ color: 'var(--admin-cyan)' }}>{fix.priorScore}/100</strong>
                                   </span>
                                   <span className="badge badge-success">
                                     Fixed
@@ -759,15 +759,15 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                       ) : (
                         <div className="score-details-layout">
                           <div className="visual-dist-bars">
-                            <ScoreBar label="High Match (8–10)"  count={stats.scoreDistribution.high}   total={total} barCls="admin-bar-high" />
-                            <ScoreBar label="Medium Match (6–7)" count={stats.scoreDistribution.medium} total={total} barCls="admin-bar-mid" />
-                            <ScoreBar label="Low Match (< 6)"    count={stats.scoreDistribution.low}    total={total} barCls="admin-bar-low" />
+                            <ScoreBar label="High Match (80–100)"  count={stats.scoreDistribution.high}   total={total} barCls="admin-bar-high" />
+                            <ScoreBar label="Medium Match (60–79)" count={stats.scoreDistribution.medium} total={total} barCls="admin-bar-mid" />
+                            <ScoreBar label="Low Match (< 60)"    count={stats.scoreDistribution.low}    total={total} barCls="admin-bar-low" />
                           </div>
                           <div className="score-matrix-summary glass-card">
                             <h3>Analytics Summary</h3>
                             <div className="summary-stat-row">
                               <span>Average Quality Assessment Score:</span>
-                              <strong className="highlight-cyan">{stats.averageScore}/10</strong>
+                              <strong className="highlight-cyan">{stats.averageScore}/100</strong>
                             </div>
                             <div className="summary-stat-row">
                               <span>Top Tier Ratio (ATS Ready):</span>
@@ -850,8 +850,8 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                 )}
                               </div>
                               <div className="table-row-right">
-                                <span className={`admin-score-pill large ${scan.score >= 8 ? 'high' : scan.score >= 6 ? 'mid' : 'low'}`}>
-                                  {scan.score}/10
+                                <span className={`admin-score-pill large ${scan.score >= 80 ? 'high' : scan.score >= 60 ? 'mid' : 'low'}`}>
+                                  {scan.score}/100
                                 </span>
                               </div>
                             </div>
@@ -889,7 +889,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                               </div>
                               <div className="table-row-right" style={{ display: 'flex', alignItems: 'center' }}>
                                 <span className="admin-prior-score-pill">
-                                  Prior Score: <strong>{fix.priorScore}/10</strong>
+                                  Prior Score: <strong>{fix.priorScore}/100</strong>
                                 </span>
                                 <span className="badge badge-success" style={{ marginLeft: '1rem', padding: '0.45rem 0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                                   <Sparkles size={11} /> Auto-Fixed

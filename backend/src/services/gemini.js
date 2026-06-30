@@ -6,9 +6,9 @@ dotenv.config();
 const resumeSchema = {
   type: 'object',
   properties: {
-    score: { 
-      type: 'integer', 
-      description: 'Overall rating of the resume from 1 to 10.' 
+    score: {
+      type: 'integer',
+      description: 'Overall rating of the resume from 1 to 100.'
     },
     summary: { 
       type: 'string', 
@@ -17,9 +17,9 @@ const resumeSchema = {
     atsKeywords: {
       type: 'object',
       properties: {
-        score: { 
-          type: 'integer', 
-          description: 'ATS optimization and keyword compatibility score from 1 to 10.' 
+        score: {
+          type: 'integer',
+          description: 'ATS optimization and keyword compatibility score from 1 to 100.'
         },
         matched: { 
           type: 'array', 
@@ -41,9 +41,9 @@ const resumeSchema = {
     contentAndImpact: {
       type: 'object',
       properties: {
-        score: { 
-          type: 'integer', 
-          description: 'Score reflecting the action-oriented phrasing, impact measurement, and results-driven writing from 1 to 10.' 
+        score: {
+          type: 'integer',
+          description: 'Score reflecting the action-oriented phrasing, impact measurement, and results-driven writing from 1 to 100.'
         },
         feedback: { 
           type: 'string', 
@@ -67,9 +67,9 @@ const resumeSchema = {
     formattingAndStyle: {
       type: 'object',
       properties: {
-        score: { 
-          type: 'integer', 
-          description: 'Score reflecting document flow, consistency, font readability, and professional style from 1 to 10.' 
+        score: {
+          type: 'integer',
+          description: 'Score reflecting document flow, consistency, font readability, and professional style from 1 to 100.'
         },
         feedback: { 
           type: 'string', 
@@ -440,7 +440,7 @@ async function callDeepSeek({
 export async function analyzeResumeWithGemini(resumeText, customApiKey = null) {
   const systemInstruction = `You are an elite corporate Recruiter, Talent Acquisition Director, and Applicant Tracking System (ATS) optimization specialist. 
   Your task is to conduct an extremely thorough, candid, and high-value assessment of the candidate's resume.
-  Provide realistic scores out of 10. Avoid giving high scores (like 9 or 10) unless the resume is truly outstanding. 
+  Provide realistic scores out of 100. Avoid giving high scores (90+) unless the resume is truly outstanding.
   Deliver precise, constructive feedback, highlight concrete gaps, and write practical "Before & After" rewrite recommendations. 
   You MUST strictly respond with a JSON object that conforms to the specified schema.`;
 

@@ -933,9 +933,9 @@ export async function getAdminStats() {
         {
           $group: {
             _id: null,
-            high: { $sum: { $cond: [{ $gte: ["$score", 8] }, 1, 0] } },
-            medium: { $sum: { $cond: [{ $and: [{ $gte: ["$score", 6] }, { $lt: ["$score", 8] }] }, 1, 0] } },
-            low: { $sum: { $cond: [{ $lt: ["$score", 6] }, 1, 0] } }
+            high: { $sum: { $cond: [{ $gte: ["$score", 80] }, 1, 0] } },
+            medium: { $sum: { $cond: [{ $and: [{ $gte: ["$score", 60] }, { $lt: ["$score", 80] }] }, 1, 0] } },
+            low: { $sum: { $cond: [{ $lt: ["$score", 60] }, 1, 0] } }
           }
         }
       ]);
@@ -1181,8 +1181,8 @@ export async function getAdminStats() {
   const scoreDistribution = scans.reduce(
     (acc, scan) => {
       const score = Number(scan.score || 0);
-      if (score >= 8) acc.high += 1;
-      else if (score >= 6) acc.medium += 1;
+      if (score >= 80) acc.high += 1;
+      else if (score >= 60) acc.medium += 1;
       else acc.low += 1;
       return acc;
     },
