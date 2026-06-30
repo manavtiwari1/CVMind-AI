@@ -33,17 +33,92 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   const scrollToScore = () => scoreRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   const tplCarouselRef = useRef<HTMLDivElement>(null);
-  const TEMPLATE_PREVIEWS = [
-    { name: 'Executive Sidebar', color: '#0f172a', sidebar: true },
-    { name: 'Modern Blue', color: '#1565c0' },
-    { name: 'Creative Bold', color: '#6a1b9a' },
-    { name: 'Data Scientist', color: '#bf360c' },
-    { name: 'Fresh Graduate', color: '#0277bd' },
-    { name: 'Sales & Marketing KPI', color: '#e65100' },
-    { name: 'Startup Product Lead', color: '#059669' },
-    { name: 'UX / Product Designer', color: '#ff6f61' },
-    { name: 'Developer Terminal', color: '#16a34a' },
-    { name: 'Hospitality & Service', color: '#c2410c' },
+  const TEMPLATE_PREVIEWS: {
+    id: string; name: string; color: string; sidebar?: boolean;
+    person: string; role: string;
+    exp: { title: string; company: string; date: string; bullets: string[] };
+    edu: string; skills: string[];
+  }[] = [
+    {
+      id: 'executive-sidebar', name: 'Executive Sidebar', color: '#0f172a', sidebar: true,
+      person: 'Maeve Delaney', role: 'Strategic Sourcing Leader | Procurement Specialist | Team Management',
+      exp: { title: 'Senior Sourcing Manager', company: 'Premier Inc.', date: '03/2021 – Present',
+        bullets: ['Implemented AI-powered category management strategy, automating sourcing decisions for 130+ supplier categories.', 'Negotiated long-term supply contracts, generating $4.2M in annual savings.'] },
+      edu: 'Duke University · Master of Business Administration',
+      skills: ['Category Management', 'Vendor Negotiation', 'Supply Chain'],
+    },
+    {
+      id: 'modern-blue', name: 'Modern Blue', color: '#1565c0',
+      person: 'Ellen Johnson', role: 'Digital Marketing Manager | Growth Hacking | Data Analysis',
+      exp: { title: 'Senior Digital Specialist', company: 'Northwind Media', date: '01/2022 – Present',
+        bullets: ['Led paid acquisition strategy across 5 channels, cutting CAC by 34% while scaling spend 2x.', 'Built attribution dashboard adopted company-wide for marketing ROI tracking.'] },
+      edu: 'UC Berkeley · Master of Science in Marketing Analytics',
+      skills: ['Google Ads', 'SQL', 'A/B Testing'],
+    },
+    {
+      id: 'creative-bold', name: 'Creative Bold', color: '#6a1b9a',
+      person: 'Grace Jackson', role: 'Data Scientist | Machine Learning | AI Research',
+      exp: { title: 'Data Scientist II', company: 'Vertex Analytics', date: '06/2021 – Present',
+        bullets: ['Built recommendation engine increasing checkout conversion by 19% across 2M+ users.', 'Mentored 4 junior data scientists on model deployment best practices.'] },
+      edu: 'Carnegie Mellon · M.S. in Machine Learning',
+      skills: ['Python', 'TensorFlow', 'MLOps'],
+    },
+    {
+      id: 'data-scientist', name: 'Data Scientist', color: '#bf360c',
+      person: 'Priya Sharma', role: 'Data Scientist | ML Engineer | AI Researcher',
+      exp: { title: 'Senior Data Scientist', company: 'Tech Unicorn', date: '02/2022 – Present',
+        bullets: ['Built fraud detection model (XGBoost + LSTM) saving ₹8Cr monthly.', 'Led A/B testing framework adopted by 8 product teams.'] },
+      edu: 'IIT Bombay · M.Tech in Data Science',
+      skills: ['PyTorch', 'Spark', 'AWS SageMaker'],
+    },
+    {
+      id: 'fresh-graduate', name: 'Fresh Graduate', color: '#0277bd',
+      person: 'Arjun Mehta', role: 'B.Tech Computer Science · Class of 2024',
+      exp: { title: 'Software Engineering Intern', company: 'Quantum Labs', date: '05/2023 – 08/2023',
+        bullets: ['Built feature using React + Node.js, adopted by 5,000+ users in first month.', 'Received Pre-Placement Offer (PPO) at end of internship.'] },
+      edu: 'NIT Surathkal · B.Tech in Computer Science',
+      skills: ['Java', 'React', 'SQL'],
+    },
+    {
+      id: 'sales-kpi', name: 'Sales & Marketing KPI', color: '#e65100',
+      person: 'Brandon Hale', role: 'Senior Business Development Director',
+      exp: { title: 'Senior Account Executive', company: 'Apex Solutions', date: '04/2021 – Present',
+        bullets: ['Closed $2M+ in new business, exceeding quota by 150% for 3 consecutive years.', 'Built and managed pipeline of 80+ enterprise accounts.'] },
+      edu: 'NYU Stern · MBA in Marketing',
+      skills: ['Salesforce', 'Negotiation', 'Account Growth'],
+    },
+    {
+      id: 'startup-product', name: 'Startup Product Lead', color: '#059669',
+      person: 'Naomi Carter', role: 'Product Manager | 0-to-1 Builder | Growth',
+      exp: { title: 'Senior Product Manager', company: 'Lumen Startup', date: '09/2022 – Present',
+        bullets: ['Launched feature driving 40% increase in DAU within 2 quarters.', 'Owned roadmap for a product generating $5M ARR.'] },
+      edu: 'Stanford University · B.S. in Computer Science',
+      skills: ['Roadmapping', 'SQL', 'User Research'],
+    },
+    {
+      id: 'ux-designer', name: 'UX / Product Designer', color: '#ff6f61',
+      person: 'Liam Foster', role: 'Product Designer & UX Researcher',
+      exp: { title: 'Senior Product Designer', company: 'Studio Nine', date: '07/2021 – Present',
+        bullets: ['Redesigned core onboarding flow, lifting activation by 31%.', "Built and scaled the company's first design system."] },
+      edu: 'Pratt Institute · B.Des in Interaction Design',
+      skills: ['Figma', 'Prototyping', 'Design Systems'],
+    },
+    {
+      id: 'dev-terminal', name: 'Developer Terminal', color: '#16a34a',
+      person: 'Rohan Verma', role: 'Full-Stack Software Engineer',
+      exp: { title: 'Senior Software Engineer', company: 'CloudByte', date: '03/2022 – Present',
+        bullets: ['Built microservices handling 10M+ requests/day at 99.99% uptime.', 'Reduced API latency by 45% via caching and query optimization.'] },
+      edu: 'BITS Pilani · B.E. in Computer Science',
+      skills: ['TypeScript', 'Node.js', 'Docker'],
+    },
+    {
+      id: 'hospitality-warm', name: 'Hospitality & Service', color: '#c2410c',
+      person: 'Sophia Bennett', role: 'Hospitality & Guest Relations Manager',
+      exp: { title: 'Guest Relations Manager', company: 'Azure Hotel Group', date: '11/2021 – Present',
+        bullets: ['Maintained 4.9/5 guest satisfaction score across 200+ rooms.', 'Resolved VIP escalations, improving repeat bookings by 18%.'] },
+      edu: 'Cornell University · BA in Hospitality Management',
+      skills: ['Guest Relations', 'Team Training', 'Opera PMS'],
+    },
   ];
   const scrollTplCarousel = (dir: 'left' | 'right') => {
     const el = tplCarouselRef.current;
@@ -239,32 +314,53 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
 
           <div className="home-tpl-carousel" ref={tplCarouselRef} onScroll={handleTplScroll}>
             {TEMPLATE_PREVIEWS.map((t) => (
-              <div key={t.name} className="home-tpl-card" onClick={() => setCurrentPage('resume-builder')}>
-                <div className={`home-tpl-mock ${t.sidebar ? 'home-tpl-mock-sidebar' : ''}`}>
-                  {t.sidebar ? (
-                    <div className="home-tpl-mock-side" style={{ background: t.color }}>
-                      <div className="home-tpl-mock-avatar" />
-                      <div className="home-tpl-mock-sline" style={{ width: '70%' }} />
-                      <div className="home-tpl-mock-sline" style={{ width: '50%' }} />
-                      <div className="home-tpl-mock-sline" style={{ width: '60%' }} />
-                    </div>
-                  ) : (
-                    <div className="home-tpl-mock-header" style={{ background: t.color }}>
-                      <div className="home-tpl-mock-avatar" />
-                      <div>
-                        <div className="home-tpl-mock-nameline" />
-                        <div className="home-tpl-mock-roleline" />
-                      </div>
-                    </div>
-                  )}
-                  <div className="home-tpl-mock-body">
-                    <div className="home-tpl-mock-label" style={{ background: t.color }} />
-                    <div className="home-tpl-mock-line" style={{ width: '92%' }} />
-                    <div className="home-tpl-mock-line" style={{ width: '78%' }} />
-                    <div className="home-tpl-mock-line" style={{ width: '85%' }} />
-                    <div className="home-tpl-mock-label" style={{ background: t.color, marginTop: '0.5rem' }} />
-                    <div className="home-tpl-mock-line" style={{ width: '70%' }} />
-                    <div className="home-tpl-mock-line" style={{ width: '60%' }} />
+              <div key={t.id} className="home-tpl-card" onClick={() => setCurrentPage('resume-builder')}>
+                <div className="home-tpl-mock-window">
+                  <div className={`home-tpl-doc ${t.sidebar ? 'home-tpl-doc-sidebar' : ''}`}>
+                    {t.sidebar ? (
+                      <>
+                        <div className="home-tpl-doc-side" style={{ background: t.color }}>
+                          <div className="home-tpl-doc-avatar" />
+                          <div className="home-tpl-doc-side-label">CONTACTS</div>
+                          <div className="home-tpl-doc-side-text">Phone · Email · LinkedIn</div>
+                          <div className="home-tpl-doc-side-label">KEY ACHIEVEMENTS</div>
+                          {t.exp.bullets.map((b, i) => <div key={i} className="home-tpl-doc-side-text">★ {b}</div>)}
+                          <div className="home-tpl-doc-side-label">SKILLS</div>
+                          <div className="home-tpl-doc-side-text">{t.skills.join(' · ')}</div>
+                        </div>
+                        <div className="home-tpl-doc-main">
+                          <div className="home-tpl-doc-name">{t.person}</div>
+                          <div className="home-tpl-doc-role" style={{ color: t.color }}>{t.role}</div>
+                          <div className="home-tpl-doc-section" style={{ color: t.color }}>EXPERIENCE</div>
+                          <div className="home-tpl-doc-job">{t.exp.title}</div>
+                          <div className="home-tpl-doc-company">{t.exp.company} · {t.exp.date}</div>
+                          <div className="home-tpl-doc-section" style={{ color: t.color, marginTop: '6px' }}>EDUCATION</div>
+                          <div className="home-tpl-doc-company">{t.edu}</div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="home-tpl-doc-header" style={{ background: t.color }}>
+                          <div className="home-tpl-doc-avatar home-tpl-doc-avatar-light" />
+                          <div>
+                            <div className="home-tpl-doc-name home-tpl-doc-name-light">{t.person}</div>
+                            <div className="home-tpl-doc-role-light">{t.role}</div>
+                          </div>
+                        </div>
+                        <div className="home-tpl-doc-body">
+                          <div className="home-tpl-doc-section" style={{ color: t.color }}>EXPERIENCE</div>
+                          <div className="home-tpl-doc-job">{t.exp.title}</div>
+                          <div className="home-tpl-doc-company">{t.exp.company} · {t.exp.date}</div>
+                          {t.exp.bullets.map((b, i) => <div key={i} className="home-tpl-doc-bullet">• {b}</div>)}
+                          <div className="home-tpl-doc-section" style={{ color: t.color, marginTop: '6px' }}>EDUCATION</div>
+                          <div className="home-tpl-doc-company">{t.edu}</div>
+                          <div className="home-tpl-doc-section" style={{ color: t.color, marginTop: '6px' }}>SKILLS</div>
+                          <div className="home-tpl-doc-skills">
+                            {t.skills.map((s) => <span key={s} className="home-tpl-doc-chip" style={{ background: t.color }}>{s}</span>)}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="home-tpl-card-overlay">
