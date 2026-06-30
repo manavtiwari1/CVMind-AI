@@ -1,6 +1,6 @@
-# CVMind AI - Resume Intelligence & ATS Optimizer
+# CV Mind - Resume Intelligence & ATS Optimizer
 
-CVMind AI is a state-of-the-art, premium SPA tool designed to parse, analyze, and optimize resumes against corporate applicant tracking systems (ATS). Built using a high-end cyber-stage layout, transparent brand vectors, professional metrics dashboards, and a hybrid database fallback, it delivers an instant corporate recruiter audit scorecard, structural alerts, missing keyword matrices, and AI-powered bullet rewrites in seconds.
+CV Mind is a state-of-the-art, premium SPA tool designed to parse, analyze, and optimize resumes against corporate applicant tracking systems (ATS). Built using a high-end cyber-stage layout, transparent brand vectors, professional metrics dashboards, and a hybrid database fallback, it delivers an instant corporate recruiter audit scorecard, structural alerts, missing keyword matrices, and AI-powered bullet rewrites in seconds.
 
 ---
 

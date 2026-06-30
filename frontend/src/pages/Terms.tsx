@@ -13,12 +13,12 @@ export default function Terms() {
 
         <section className="legal-section">
           <h2>1. Acceptance of Terms</h2>
-          <p>By accessing or using CVMind AI ("the Service", "we", "us"), you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our service. These terms apply to all visitors, users, and others who access or use the Service.</p>
+          <p>By accessing or using CV Mind ("the Service", "we", "us"), you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our service. These terms apply to all visitors, users, and others who access or use the Service.</p>
         </section>
 
         <section className="legal-section">
           <h2>2. Description of Service</h2>
-          <p>CVMind AI provides AI-powered resume analysis, career tools, LinkedIn optimisation, interview preparation, and related career-development features (collectively, "the Service"). The Service is provided on an "as is" basis and may be updated, modified, or discontinued at any time without notice.</p>
+          <p>CV Mind provides AI-powered resume analysis, career tools, LinkedIn optimisation, interview preparation, and related career-development features (collectively, "the Service"). The Service is provided on an "as is" basis and may be updated, modified, or discontinued at any time without notice.</p>
         </section>
 
         <section className="legal-section">
@@ -34,7 +34,7 @@ export default function Terms() {
 
         <section className="legal-section">
           <h2>4. Subscription Plans and Payments</h2>
-          <p>CVMind AI offers a Free plan and a Pro subscription plan. Pro plan billing is processed securely through our payment provider. By subscribing you authorise us to charge the applicable fees on the billing cycle you selected (monthly, quarterly, or yearly). All prices are in Indian Rupees (₹) unless stated otherwise.</p>
+          <p>CV Mind offers a Free plan and a Pro subscription plan. Pro plan billing is processed securely through our payment provider. By subscribing you authorise us to charge the applicable fees on the billing cycle you selected (monthly, quarterly, or yearly). All prices are in Indian Rupees (₹) unless stated otherwise.</p>
           <p>Subscription fees are non-refundable except as described in our <strong>Refund Policy</strong>. We may change pricing with 30 days' notice.</p>
         </section>
 
@@ -51,7 +51,7 @@ export default function Terms() {
 
         <section className="legal-section">
           <h2>6. Intellectual Property</h2>
-          <p>All content, branding, AI models, and software comprising CVMind AI are the intellectual property of CVMind AI and its licensors. You retain ownership of any resume or document you upload. By uploading content you grant us a limited, non-exclusive licence to process that content solely to provide the Service to you.</p>
+          <p>All content, branding, AI models, and software comprising CV Mind are the intellectual property of CV Mind and its licensors. You retain ownership of any resume or document you upload. By uploading content you grant us a limited, non-exclusive licence to process that content solely to provide the Service to you.</p>
         </section>
 
         <section className="legal-section">
@@ -66,7 +66,7 @@ export default function Terms() {
 
         <section className="legal-section">
           <h2>9. Limitation of Liability</h2>
-          <p>To the fullest extent permitted by law, CVMind AI shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service, including but not limited to loss of employment opportunities, loss of data, or business interruption.</p>
+          <p>To the fullest extent permitted by law, CV Mind shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service, including but not limited to loss of employment opportunities, loss of data, or business interruption.</p>
         </section>
 
         <section className="legal-section">

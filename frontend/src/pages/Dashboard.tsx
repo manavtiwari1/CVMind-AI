@@ -264,7 +264,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
       {/* PRINT VIEW EXCLUSIVE SECTION (Always visible during print) */}
       <div className="print-exclusive-header">
         <div className="print-title-row">
-          <h2>CVMind AI Resume Audit Report</h2>
+          <h2>CV Mind Resume Audit Report</h2>
           <div className="print-score-pill">Score: {score}/10</div>
         </div>
         <p className="print-summary">{summary}</p>

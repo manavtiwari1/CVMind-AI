@@ -1761,7 +1761,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
           </div>
 
           <div className="admin-footer">
-            CVMind AI Admin Dashboard Console · Designed & Engineered by <a href="https://www.manavtiwari.in" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Manav Tiwari</a> · Session Secured via local memory keys
+            CV Mind Admin Dashboard Console · Designed & Engineered by <a href="https://www.manavtiwari.in" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Manav Tiwari</a> · Session Secured via local memory keys
           </div>
         </div>
       </div>

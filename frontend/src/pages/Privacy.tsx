@@ -43,7 +43,7 @@ export default function Privacy() {
       icon: <Cpu size={24} />,
       title: "Zero Machine Learning Training",
       type: "secure",
-      desc: "We believe your career data is yours. Unlike massive public services that ingest user inputs to train public LLM models, CVMind AI uses enterprise API connections. None of your resume text, prompts, or interview answers are ever used to train public or private models."
+      desc: "We believe your career data is yours. Unlike massive public services that ingest user inputs to train public LLM models, CV Mind uses enterprise API connections. None of your resume text, prompts, or interview answers are ever used to train public or private models."
     }
   ];
 
@@ -61,7 +61,7 @@ export default function Privacy() {
         </div>
         <h1 className="privacy-title">Privacy Principles & Sovereignty</h1>
         <p className="privacy-subtitle">
-          At CVMind AI, privacy isn't a checkbox—it is a core pillar of our system architecture. We are transparent about what we log and absolute about what we protect.
+          At CV Mind, privacy isn't a checkbox—it is a core pillar of our system architecture. We are transparent about what we log and absolute about what we protect.
         </p>
       </section>
 
@@ -88,7 +88,7 @@ export default function Privacy() {
         </div>
 
         <p className="constitution-text">
-          Article 21 guarantees the fundamental Right to Life and Personal Liberty. In honoring this constitutional mandate, CVMind AI incorporates <strong>"Privacy by Design."</strong> We believe that your professional achievements, personal background, and career aspirations are sacred assets. Our platform is engineered to respect your autonomy, enforce structural boundaries on data access, and uphold the dignity of modern professionals in the digital age.
+          Article 21 guarantees the fundamental Right to Life and Personal Liberty. In honoring this constitutional mandate, CV Mind incorporates <strong>"Privacy by Design."</strong> We believe that your professional achievements, personal background, and career aspirations are sacred assets. Our platform is engineered to respect your autonomy, enforce structural boundaries on data access, and uphold the dignity of modern professionals in the digital age.
         </p>
       </section>
 

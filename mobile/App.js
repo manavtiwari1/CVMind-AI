@@ -35,7 +35,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0e17', // Match the CVMind AI Dark Theme
+    backgroundColor: '#0a0e17', // Match the CV Mind Dark Theme
   },
   webViewContainer: {
     flex: 1,

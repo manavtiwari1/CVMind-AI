@@ -35,12 +35,12 @@ export default function About() {
 
       {/* Tech Stack details */}
       <section className="about-info-block glass-card">
-        <h3 className="info-title">Why CVMind AI?</h3>
+        <h3 className="info-title">Why CV Mind?</h3>
         <p className="info-text">
           Modern recruitment is broken. Over 75% of resumes are discarded by Applicant Tracking Systems (ATS) before a human recruiter even looks at them. Of the remaining 25%, the average recruiter spends less than 6 seconds reviewing each document.
         </p>
         <p className="info-text">
-          CVMind AI was built to solve this asymmetry. By deploying advanced Large Language Models, we give you immediate access to corporate-level resume diagnostics. You receive instant, comprehensive, and hyper-actionable feedback that aligns your profile with what recruiters and algorithms search for.
+          CV Mind was built to solve this asymmetry. By deploying advanced Large Language Models, we give you immediate access to corporate-level resume diagnostics. You receive instant, comprehensive, and hyper-actionable feedback that aligns your profile with what recruiters and algorithms search for.
         </p>
       </section>
 

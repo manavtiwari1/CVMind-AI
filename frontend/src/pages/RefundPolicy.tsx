@@ -13,7 +13,7 @@ export default function RefundPolicy() {
 
         <section className="legal-section">
           <h2>1. Overview</h2>
-          <p>At CVMind AI, we want you to be completely satisfied with your subscription. This Refund Policy explains when and how you may request a refund for a Pro plan subscription.</p>
+          <p>At CV Mind, we want you to be completely satisfied with your subscription. This Refund Policy explains when and how you may request a refund for a Pro plan subscription.</p>
         </section>
 
         <section className="legal-section">

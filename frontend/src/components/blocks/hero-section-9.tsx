@@ -187,7 +187,7 @@ export const Logo = ({ className }: { className?: string }) => (
     <svg viewBox="0 0 110 28" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn('h-7 w-auto', className)}>
         <rect width="28" height="28" rx="6" fill="url(#logo-g)" />
         <path d="M7 8h5l3 9 3-9h5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-        <text x="34" y="20" fontFamily="Inter,sans-serif" fontSize="14" fontWeight="700" fill="currentColor" letterSpacing="-0.5">CVMind AI</text>
+        <text x="34" y="20" fontFamily="Inter,sans-serif" fontSize="14" fontWeight="700" fill="currentColor" letterSpacing="-0.5">CV Mind</text>
         <defs>
             <linearGradient id="logo-g" x1="0" y1="0" x2="28" y2="28">
                 <stop stopColor="#7c3aed"/><stop offset="1" stopColor="#06b6d4"/>

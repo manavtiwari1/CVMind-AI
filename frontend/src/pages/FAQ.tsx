@@ -54,7 +54,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
           content: (
             <div className="article-body">
               <p className="lead-paragraph">
-                CVMind AI’s proprietary Applicant Tracking System (ATS) scoring engine evaluates your resume against standard filters used by fortune 500 recruiters.
+                CV Mind’s proprietary Applicant Tracking System (ATS) scoring engine evaluates your resume against standard filters used by fortune 500 recruiters.
               </p>
               <h3>Scoring Vectors & Criteria</h3>
               <p>Your resume is audited across five fundamental categories:</p>
@@ -74,13 +74,13 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
         {
           id: 2,
           question: 'Can I design and build a resume from scratch?',
-          title: 'Building a Resume From Scratch in CVMind AI',
+          title: 'Building a Resume From Scratch in CV Mind',
           editedTime: 'Edited 1 month ago',
           tags: ['builder', 'design', 'templates', 'resume'],
           content: (
             <div className="article-body">
               <p>
-                Yes! CVMind AI includes an advanced, interactive <strong>Resume Builder</strong> designed strictly within ATS compliance guidelines.
+                Yes! CV Mind includes an advanced, interactive <strong>Resume Builder</strong> designed strictly within ATS compliance guidelines.
               </p>
               <h3>Step-by-Step Resume Building Process:</h3>
               <ol>
@@ -102,7 +102,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
           content: (
             <div className="article-body">
               <p>
-                CVMind AI supports professional downloads optimized for standard recruitment systems and human resource pipelines.
+                CV Mind supports professional downloads optimized for standard recruitment systems and human resource pipelines.
               </p>
               <h3>Available Download Formats</h3>
               <ul>
@@ -125,7 +125,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
           content: (
             <div className="article-body">
               <p>
-                When uploading an existing resume to CVMind AI for quick ATS auditing, rating, and keyword scoring, our parser accepts the following formats:
+                When uploading an existing resume to CV Mind for quick ATS auditing, rating, and keyword scoring, our parser accepts the following formats:
               </p>
               <ul>
                 <li><strong>PDF Documents (.pdf)</strong></li>
@@ -134,7 +134,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
               </ul>
               <h3>Uploading Limits</h3>
               <p>
-                The maximum allowed file size is <strong>5MB</strong>. To maintain absolute safety and user trust, files are processed **strictly in-memory** and immediately flushed. Your physical resume documents are never written to disk or stored on CVMind AI servers.
+                The maximum allowed file size is <strong>5MB</strong>. To maintain absolute safety and user trust, files are processed **strictly in-memory** and immediately flushed. Your physical resume documents are never written to disk or stored on CV Mind servers.
               </p>
             </div>
           )
@@ -170,14 +170,14 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
       articles: [
         {
           id: 6,
-          question: 'Do I need to sign up to use CVMind AI?',
+          question: 'Do I need to sign up to use CV Mind?',
           title: 'Account Sign-Up Requirements & Benefits',
           editedTime: 'Edited 4 months ago',
           tags: ['signup', 'login', 'free', 'account'],
           content: (
             <div className="article-body">
               <p className="lead-paragraph">
-                CVMind AI is built with user autonomy in mind. You can perform quick resume audits directly on the homepage without registering.
+                CV Mind is built with user autonomy in mind. You can perform quick resume audits directly on the homepage without registering.
               </p>
               <h3>Why Create a Free Account?</h3>
               <p>To access our advanced professional suites, a secure login is required. An account unlocks:</p>
@@ -199,7 +199,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
           content: (
             <div className="article-body">
               <p className="lead-paragraph">
-                CVMind AI supports real-time cloud synchronization, allowing you to access, edit, and export your career documents from any device.
+                CV Mind supports real-time cloud synchronization, allowing you to access, edit, and export your career documents from any device.
               </p>
               <h3>Multi-Device Editing & Sync Guidelines</h3>
               <ul>
@@ -219,7 +219,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
           content: (
             <div className="article-body">
               <p>
-                To guarantee high-speed responsiveness for all candidates and prevent AI server congestion, CVMind AI sets standard daily usage credits on free accounts.
+                To guarantee high-speed responsiveness for all candidates and prevent AI server congestion, CV Mind sets standard daily usage credits on free accounts.
               </p>
               <h3>How Usage Credits Reset</h3>
               <ul>
@@ -253,14 +253,14 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
         },
         {
           id: 10,
-          question: 'Is CVMind AI compliant with privacy laws?',
+          question: 'Is CV Mind compliant with privacy laws?',
           title: 'Privacy by Design Compliance & Article 21',
           editedTime: 'Edited 2 months ago',
           tags: ['legal', 'privacy', 'article 21', 'gdpr', 'constitution'],
           content: (
             <div className="article-body">
               <p>
-                Yes. CVMind AI is engineered under "Privacy by Design" guidelines.
+                Yes. CV Mind is engineered under "Privacy by Design" guidelines.
               </p>
               <h3>Constitutional Sovereignty</h3>
               <p>
@@ -419,7 +419,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
           content: (
             <div className="article-body">
               <p>
-                CVMind AI supports automatic cloud synchronization so you never lose your progress or experience formatting glitches.
+                CV Mind supports automatic cloud synchronization so you never lose your progress or experience formatting glitches.
               </p>
               <h3>Auto-Save and Deletion Safety Workflows</h3>
               <ul>
@@ -509,7 +509,7 @@ export default function FAQ({ setCurrentPage }: FAQProps) {
           content: (
             <div className="article-body">
               <p>
-                To make your job search highly relevant to your lifestyle, CVMind AI lets you filter results by work preferences.
+                To make your job search highly relevant to your lifestyle, CV Mind lets you filter results by work preferences.
               </p>
               <h3>Selecting Preferences</h3>
               <p>

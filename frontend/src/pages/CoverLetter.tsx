@@ -1288,7 +1288,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
           <Loader2 size={40} className="cl-spin" style={{ color: 'var(--blue)', marginBottom: '1.5rem' }} />
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.8rem' }}>AI is Crafting Your Resume</h2>
           <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '1.8rem' }}>
-            CVMind AI is optimizing your qualifications, experience points, and skillsets into an ATS-friendly layout. This will take up to 60 seconds...
+            CV Mind is optimizing your qualifications, experience points, and skillsets into an ATS-friendly layout. This will take up to 60 seconds...
           </p>
           <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '999px', overflow: 'hidden', position: 'relative' }}>
             <div className="rw-progress-bar-fill" />
@@ -1823,8 +1823,8 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
         <div className="cl-footer-right">
           <span className="cl-footer-hint">
             <Sparkles size={12} /> {selectedTemplate?.type === 'cover-letter' 
-              ? 'AI Refine polishes your entire cover letter with CVMind AI' 
-              : 'AI Refine polishes your entire resume with CVMind AI'}
+              ? 'AI Refine polishes your entire cover letter with CV Mind' 
+              : 'AI Refine polishes your entire resume with CV Mind'}
           </span>
           <button className="cl-ai-btn-lg" disabled={refining} onClick={handleRefine}
             style={{ '--ac': selectedTemplate?.color || '#2997ff' } as React.CSSProperties}>

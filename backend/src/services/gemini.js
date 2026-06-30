@@ -491,18 +491,18 @@ export async function chatWithCVMind(message, history = [], customApiKey = null)
       return 'Career Path AI provides Skill Gap checks with Coursera/Udemy suggestions, a 60-second Elevator Pitch builder, and visual 4-step transition roadmaps to benchmark your milestones.';
     }
     if (lower.includes('save') || lower.includes('delete') || lower.includes('work')) {
-      return 'CVMind AI supports Silent Auto-Save. It saves cover letters, tailored resumes, and mock interviews automatically in the background every 4 seconds. Deleted files automatically clear current state screens instantly.';
+      return 'CV Mind supports Silent Auto-Save. It saves cover letters, tailored resumes, and mock interviews automatically in the background every 4 seconds. Deleted files automatically clear current state screens instantly.';
     }
     if (lower.includes('launch') || lower.includes('date') || lower.includes('when')) {
-      return 'CVMind AI is launch-ready and going live officially on June 17, 2026 at 5:00 PM IST (Evening)!';
+      return 'CV Mind is launch-ready and going live officially on June 17, 2026 at 5:00 PM IST (Evening)!';
     }
     if (lower.includes('privacy') || lower.includes('safe') || lower.includes('data')) {
       return 'Privacy is our core pillar. Resumes are parsed in-memory and flushed immediately. We adhere to the constitutional Right to Privacy under Article 21, securing all user data under TLS 1.3.';
     }
-    return 'I am the CVMind AI assistant. I can guide you through our Career Suite: AI Resume Scanners, Tailorers, SmartPrep Mock Interviews, LinkedIn Optimizers, Career Path transition tools, and the new AI Job Finder tool.';
+    return 'I am the CV Mind assistant. I can guide you through our Career Suite: AI Resume Scanners, Tailorers, SmartPrep Mock Interviews, LinkedIn Optimizers, Career Path transition tools, and the new AI Job Finder tool.';
   }
 
-  const systemInstruction = `You are CVMind AI's elite, friendly, and professional conversational assistant. You help users navigate the CVMind AI ecosystem, which is launching officially on June 17, 2026 at 5:00 PM IST. Always respond in clear, concise English.
+  const systemInstruction = `You are CV Mind's elite, friendly, and professional conversational assistant. You help users navigate the CV Mind ecosystem, which is launching officially on June 17, 2026 at 5:00 PM IST. Always respond in clear, concise English.
 
 Our comprehensive, end-to-end career suite includes the following features:
 1. AI Resume Analyzer: Upload a resume (PDF/DOCX/TXT) to scan ATS scores, missing keywords, and formatting feedback.

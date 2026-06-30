@@ -219,7 +219,7 @@ export default function ResumeWizard({ templateName, onBack, onSkip, onGenerate 
         <form className="rw-form-column" onSubmit={handleSubmit}>
           <div className="rw-hero-text">
             <h2>Let's build your <span className="rw-gradient-text">ATS Resume</span></h2>
-            <p>Fill in some basic details and our CVMind AI will optimize them into a beautiful, recruiter-ready resume layout.</p>
+            <p>Fill in some basic details and our CV Mind will optimize them into a beautiful, recruiter-ready resume layout.</p>
           </div>
 
           {/* SECTION 1: Personal Info */}

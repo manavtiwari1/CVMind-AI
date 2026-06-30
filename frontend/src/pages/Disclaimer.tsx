@@ -13,12 +13,12 @@ export default function Disclaimer() {
 
         <section className="legal-section">
           <h2>1. General Information Only</h2>
-          <p>The information provided by CVMind AI ("the Service") is for general career-assistance and informational purposes only. All content — including AI-generated resume feedback, interview questions, LinkedIn copy, career roadmaps, and job recommendations — is provided in good faith but does not constitute professional career counselling, legal, financial, or recruitment advice.</p>
+          <p>The information provided by CV Mind ("the Service") is for general career-assistance and informational purposes only. All content — including AI-generated resume feedback, interview questions, LinkedIn copy, career roadmaps, and job recommendations — is provided in good faith but does not constitute professional career counselling, legal, financial, or recruitment advice.</p>
         </section>
 
         <section className="legal-section">
           <h2>2. No Guarantee of Employment</h2>
-          <p>CVMind AI does not guarantee that use of the Service will result in job interviews, employment offers, or career advancement. Resume scoring, ATS compatibility analysis, and AI suggestions are estimates based on general hiring patterns and publicly available data. Actual outcomes vary based on individual qualifications, market conditions, and employer preferences.</p>
+          <p>CV Mind does not guarantee that use of the Service will result in job interviews, employment offers, or career advancement. Resume scoring, ATS compatibility analysis, and AI suggestions are estimates based on general hiring patterns and publicly available data. Actual outcomes vary based on individual qualifications, market conditions, and employer preferences.</p>
         </section>
 
         <section className="legal-section">
@@ -33,17 +33,17 @@ export default function Disclaimer() {
 
         <section className="legal-section">
           <h2>4. Third-Party Links and Resources</h2>
-          <p>The Service may contain links to third-party websites, job boards, or course providers. These links are provided for convenience only. CVMind AI does not endorse, control, or take responsibility for the content, privacy practices, or availability of any third-party websites.</p>
+          <p>The Service may contain links to third-party websites, job boards, or course providers. These links are provided for convenience only. CV Mind does not endorse, control, or take responsibility for the content, privacy practices, or availability of any third-party websites.</p>
         </section>
 
         <section className="legal-section">
           <h2>5. Job Listings and Salary Data</h2>
-          <p>Job listings, salary ranges, and company information displayed within the AI Job Finder feature are aggregated from publicly available sources. CVMind AI does not verify the accuracy, completeness, or currency of this data. Job availability and compensation figures may change without notice.</p>
+          <p>Job listings, salary ranges, and company information displayed within the AI Job Finder feature are aggregated from publicly available sources. CV Mind does not verify the accuracy, completeness, or currency of this data. Job availability and compensation figures may change without notice.</p>
         </section>
 
         <section className="legal-section">
           <h2>6. Limitation of Liability</h2>
-          <p>To the maximum extent permitted by applicable law, CVMind AI, its founders, employees, and partners shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising from your use of or reliance on the Service, including but not limited to:</p>
+          <p>To the maximum extent permitted by applicable law, CV Mind, its founders, employees, and partners shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising from your use of or reliance on the Service, including but not limited to:</p>
           <ul>
             <li>Failure to secure employment or interviews.</li>
             <li>Loss of data or resume content.</li>

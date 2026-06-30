@@ -161,7 +161,7 @@ export default function Portfolio({ workId }: PortfolioProps) {
       {/* Watermark brand footer */}
       <div className="pf-watermark">
         <span>Powered by </span>
-        <a href="/" className="pf-watermark-link">CVMind AI</a>
+        <a href="/" className="pf-watermark-link">CV Mind</a>
         <span> · High-impact ATS Resume Intelligence.</span>
       </div>
     </div>

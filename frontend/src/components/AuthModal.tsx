@@ -256,7 +256,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
   const headings: Record<AuthMode, string[]> = {
     signIn:         ['Welcome back.', 'Great to see you.', 'Sign in below.'],
-    signUp:         ['Create your account.', 'Join CVMind AI.', 'Get started today.'],
+    signUp:         ['Create your account.', 'Join CV Mind.', 'Get started today.'],
     forgotPassword: ['Forgot password?', 'No worries.', 'Reset it now.'],
     resetPassword:  ['Choose a new password.', 'Almost done.', 'Make it strong.'],
   };
@@ -300,7 +300,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               <Sparkles size={15} className="text-white" />
             </div>
             <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-              CVMind AI
+              CV Mind
             </span>
           </div>
           <button

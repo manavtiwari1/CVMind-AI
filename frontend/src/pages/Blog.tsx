@@ -98,9 +98,9 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       id: 1,
       version: 'v2.1.0',
       date: 'June 3, 2026',
-      title: 'Big Product Update: CVMind AI is now Launch-Ready!',
+      title: 'Big Product Update: CV Mind is now Launch-Ready!',
       tag: 'Core Upgrade',
-      description: 'Over the last few days, we have completely transformed CVMind AI from a simple resume reviewer into a comprehensive, end-to-end career suite. We have deployed major features and updates across product navigation, our core engine, and dashboard UX.',
+      description: 'Over the last few days, we have completely transformed CV Mind from a simple resume reviewer into a comprehensive, end-to-end career suite. We have deployed major features and updates across product navigation, our core engine, and dashboard UX.',
       details: [
         '<strong>1. SmartPrep AI (HR & Technical Interview Coach)</strong><br/>Cracking interviews is now easier than ever! SmartPrep AI parses your resume and curates tailored interview questions based on your targeted job profile and domain checklists:',
         '<span class="sub-bullet"><strong>Practice Sandbox:</strong> Practice by typing your answers question-by-question.</span>',
@@ -198,7 +198,7 @@ export default function Blog({ setCurrentPage }: BlogProps) {
           <span className="blog-pulse-dot"></span>
           <span className="blog-launch-date">Launching Soon</span>
         </div>
-        <h1 className="blog-title">CVMind AI Changelog</h1>
+        <h1 className="blog-title">CV Mind Changelog</h1>
         <p className="blog-subtitle">
           Follow our build progress, features deployment, and system updates from Day 1 to our production-ready release.
         </p>
@@ -265,10 +265,10 @@ export default function Blog({ setCurrentPage }: BlogProps) {
           <div className="cta-content">
             <h3 className="cta-title">Launching Soon</h3>
             <p className="cta-desc">
-              CVMind AI has completed rigorous performance optimizations, CORS resolutions, and TypeScript compilations. We are officially going live soon.
+              CV Mind has completed rigorous performance optimizations, CORS resolutions, and TypeScript compilations. We are officially going live soon.
             </p>
             <button className="cta-btn" onClick={() => setCurrentPage('home')}>
-              Try CVMind AI Now <ArrowRight size={16} />
+              Try CV Mind Now <ArrowRight size={16} />
             </button>
           </div>
         </div>

@@ -24,7 +24,7 @@ export default function Chatbot({ customApiKey }: ChatbotProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Hello! I am the CVMind AI assistant. Ask me anything about resume analysis, ATS scores, keyword optimization, formatting, or your report.'
+      content: 'Hello! I am the CV Mind assistant. Ask me anything about resume analysis, ATS scores, keyword optimization, formatting, or your report.'
     }
   ]);
   const [input, setInput] = useState('');
@@ -93,14 +93,14 @@ export default function Chatbot({ customApiKey }: ChatbotProps) {
   return (
     <div className={`chatbot ${isOpen ? 'is-open' : ''}`}>
       {isOpen && (
-        <section className="chatbot-panel" aria-label="CVMind AI chat assistant">
+        <section className="chatbot-panel" aria-label="CV Mind chat assistant">
           <header className="chatbot-header">
             <div className="chatbot-title">
               <div className="chatbot-avatar">
-                <img src={cvmindLogo} alt="CVMind AI Logo" className="chatbot-logo-img" />
+                <img src={cvmindLogo} alt="CV Mind Logo" className="chatbot-logo-img" />
               </div>
               <div>
-                <span>CVMind AI</span>
+                <span>CV Mind</span>
                 <small>Online resume assistant</small>
               </div>
             </div>
@@ -149,7 +149,7 @@ export default function Chatbot({ customApiKey }: ChatbotProps) {
       <button className="chatbot-launcher" onClick={() => setIsOpen((value) => !value)}>
         {!isOpen && <span className="chatbot-pulse-dot"></span>}
         {isOpen ? <X size={22} /> : <Sparkles size={22} />}
-        <span>{isOpen ? 'Close' : 'Ask CVMind AI'}</span>
+        <span>{isOpen ? 'Close' : 'Ask CV Mind'}</span>
       </button>
     </div>
   );

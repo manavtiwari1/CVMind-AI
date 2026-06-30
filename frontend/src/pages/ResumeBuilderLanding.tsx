@@ -22,12 +22,12 @@ const TESTIMONIALS = [
 ];
 
 const FAQS = [
-  { q: 'What is an AI resume builder?', a: 'An AI resume builder uses machine learning to help you write, format, and optimize your resume. CVMind AI provides real-time feedback, rewrites weak bullet points, checks ATS compatibility, and tailors your resume to specific job descriptions.' },
+  { q: 'What is an AI resume builder?', a: 'An AI resume builder uses machine learning to help you write, format, and optimize your resume. CV Mind provides real-time feedback, rewrites weak bullet points, checks ATS compatibility, and tailors your resume to specific job descriptions.' },
   { q: 'Is CVMind\'s resume builder ATS-friendly?', a: 'Yes. Every template is tested against major ATS systems including Workday, Greenhouse, and Lever. We use clean formatting with no tables, graphics, or text-in-images that can confuse parsers.' },
   { q: 'How does AI resume tailoring work?', a: 'Paste any job description and our AI analyzes the required keywords, skills, and experience. It then rewrites your resume sections to match — boosting your match score and ATS ranking for that specific role.' },
   { q: 'Can I use CVMind for free?', a: 'Yes! The resume checker, ATS score, and keyword analysis are free. Premium features like unlimited AI rewrites, DOCX export, and job tailoring require an account.' },
   { q: 'How is CVMind different from Canva or Google Docs?', a: 'Design tools create pretty resumes that often fail ATS scans. CVMind is built specifically for job seekers — every template is ATS-tested, and the AI actively improves your content, not just the design.' },
-  { q: 'Can recruiters detect AI-written resumes?', a: 'CVMind AI enhances and refines your existing content rather than generating generic text. The result reads as authentically yours — just more polished, quantified, and keyword-optimized.' },
+  { q: 'Can recruiters detect AI-written resumes?', a: 'CV Mind enhances and refines your existing content rather than generating generic text. The result reads as authentically yours — just more polished, quantified, and keyword-optimized.' },
 ];
 
 const FEATURES = [
@@ -386,7 +386,7 @@ export default function ResumeBuilderLanding({ setCurrentPage }: ResumeBuilderLa
       <section className="rbl-final-cta">
         <div className="rbl-final-inner">
           <h2 className="rbl-final-h2">Your Resume Is the First Impression.<br />Make It Count.</h2>
-          <p className="rbl-final-sub">Join 50,000+ job seekers who landed more interviews with CVMind AI.</p>
+          <p className="rbl-final-sub">Join 50,000+ job seekers who landed more interviews with CV Mind.</p>
           <div className="rbl-final-actions">
             <button className="rbl-btn-primary rbl-btn-large" onClick={() => setCurrentPage('resume-editor')}>
               Build Your Resume Now <ArrowRight size={18} />
