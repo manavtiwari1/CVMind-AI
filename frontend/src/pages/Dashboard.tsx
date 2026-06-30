@@ -186,7 +186,7 @@ export default function Dashboard({ setCurrentPage, analysisResult, resumeText, 
           <div className="radial-wrapper">
             <svg height={radius * 2} width={radius * 2} className="radial-svg">
               <circle
-                stroke="rgba(255,255,255,0.03)"
+                stroke="var(--border)"
                 fill="transparent"
                 strokeWidth={stroke}
                 r={normalizedRadius}
