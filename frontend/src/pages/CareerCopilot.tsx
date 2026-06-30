@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import {
   Sparkles, Upload, Target, Brain, Briefcase, TrendingUp, Users, BarChart3,
   MessageSquare, DollarSign, BookOpen, CheckCircle2, ChevronRight, ChevronLeft,
-  RefreshCw, Zap, Star, ArrowRight, Bell, Calendar, Award, Globe, Code2,
-  FileText, Linkedin, Github, AlertCircle, Play, LayoutDashboard,
+  RefreshCw, Zap, Star, ArrowRight, Bell, Award, Globe, Code2,
+  FileText, Linkedin, AlertCircle, Play, LayoutDashboard,
   GraduationCap, Activity, Rocket, Shield, Bot, Search
 } from 'lucide-react';
 import './CareerCopilot.css';
