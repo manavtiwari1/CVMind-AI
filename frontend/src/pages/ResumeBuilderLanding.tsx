@@ -253,7 +253,7 @@ export default function ResumeBuilderLanding({ setCurrentPage }: ResumeBuilderLa
         <div className="rbl-section-inner">
           <div className="rbl-section-tag">Resume Templates</div>
           <h2 className="rbl-section-h2">Start from a Recruiter-Reviewed Layout</h2>
-          <p className="rbl-section-sub">15 ATS-tested templates with 90%+ parsing rate — no graphics, no text-in-images, no ATS traps.</p>
+          <p className="rbl-section-sub">22 ATS-tested templates with 90%+ parsing rate — no graphics, no text-in-images, no ATS traps.</p>
           <div className="rbl-templates-grid">
             {TEMPLATES.map(({ name, color }) => (
               <div key={name} className="rbl-template-card" onClick={() => setCurrentPage('resume-editor')}>
@@ -284,7 +284,7 @@ export default function ResumeBuilderLanding({ setCurrentPage }: ResumeBuilderLa
           </div>
           <div className="rbl-templates-cta">
             <button className="rbl-btn-primary" onClick={() => setCurrentPage('resume-editor')}>
-              View All 15 Templates <ArrowRight size={16} />
+              View All 22 Templates <ArrowRight size={16} />
             </button>
           </div>
         </div>

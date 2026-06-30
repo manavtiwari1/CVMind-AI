@@ -52,7 +52,7 @@ const HIGHLIGHT_COLORS = [
 ];
 
 // ─────────────────────────────────────────────────────────────────
-// ATS Resume Templates (10 designs)
+// ATS Resume Templates (22 designs)
 // ─────────────────────────────────────────────────────────────────
 const TEMPLATES: Template[] = [
   {
@@ -462,6 +462,298 @@ const TEMPLATES: Template[] = [
 <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#0277bd;margin-bottom:6px;">Achievements</div>
 <div style="font-size:12.5px;line-height:2;">🏅 Smart India Hackathon Winner<br>📊 ACM ICPC Regionalist 2022<br>⭐ Academic Excellence Award</div></div>
 </div>
+</div>`
+  },
+  {
+    id: 'executive-sidebar',
+    name: 'Executive Sidebar',
+    tag: 'Leadership · Two-Column · Navy',
+    icon: '🧭',
+    color: '#0f172a',
+    accent: 'rgba(15,23,42,0.12)',
+    description: 'Premium two-column layout with a dark navy sidebar for achievements and skills — built for senior leadership roles.',
+    highlights: ['Two-Column', 'Sidebar Skills', 'Premium Look'],
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;display:flex;background:#fff;color:#1a1a1a;line-height:1.55;">
+<div style="width:34%;background:#0f172a;color:#fff;padding:30px 20px;">
+<div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:16px;">👤</div>
+<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7dd3fc;margin-bottom:8px;">Contact</div>
+<div style="font-size:11.5px;line-height:2;color:#cbd5e1;">📞 Phone<br>✉️ Email<br>🔗 LinkedIn/Portfolio<br>📍 Location</div>
+<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7dd3fc;margin:18px 0 8px;">Key Achievements</div>
+<div style="font-size:11.5px;line-height:1.9;color:#cbd5e1;">★ Led [Initiative] driving 35% growth<br>🚀 Scaled team from 5 to 40+<br>⚡ Cut operational costs by 28%</div>
+<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7dd3fc;margin:18px 0 8px;">Skills</div>
+<div style="font-size:11.5px;line-height:1.9;color:#cbd5e1;">Strategic Planning<br>P&amp;L Management<br>Stakeholder Relations<br>Team Leadership</div>
+<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7dd3fc;margin:18px 0 8px;">Courses</div>
+<div style="font-size:11.5px;line-height:1.9;color:#cbd5e1;">Executive Leadership Program<br>MBA Strategy Elective</div>
+</div>
+<div style="width:66%;padding:30px 26px;">
+<div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;">Your Name</div>
+<div style="font-size:13.5px;color:#0f172a;font-weight:600;margin-bottom:14px;">The Role You Are Applying For</div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#0f172a;border-bottom:1px solid #e2e8f0;padding-bottom:3px;margin-bottom:6px;">Summary</div>
+<p style="font-size:12.5px;margin:0 0 14px;color:#334155;">Senior leader with 10+ years building and scaling high-performing teams. Proven record driving revenue growth, operational efficiency, and cross-functional alignment at enterprise scale.</p>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#0f172a;border-bottom:1px solid #e2e8f0;padding-bottom:3px;margin-bottom:8px;">Experience</div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">Title</b><span style="font-size:11.5px;color:#64748b;">Date period</span></div><div style="font-size:12px;color:#0f172a;font-weight:600;margin-bottom:3px;">Company Name</div><ul style="margin:0;padding-left:16px;font-size:12.5px;color:#334155;"><li>Highlight your accomplishments, using numbers if possible.</li></ul></div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">Title</b><span style="font-size:11.5px;color:#64748b;">Date period</span></div><div style="font-size:12px;color:#0f172a;font-weight:600;margin-bottom:3px;">Company Name</div><ul style="margin:0;padding-left:16px;font-size:12.5px;color:#334155;"><li>Highlight your accomplishments, using numbers if possible.</li></ul></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#0f172a;border-bottom:1px solid #e2e8f0;padding-bottom:3px;margin-bottom:6px;">Education</div>
+<div style="display:flex;justify-content:space-between;font-size:12.5px;"><b>Degree and Field of Study</b><span style="color:#64748b;">Date period</span></div>
+<div style="font-size:12px;color:#64748b;">School or University</div>
+</div>
+</div>`
+  },
+  {
+    id: 'sales-kpi',
+    name: 'Sales & Marketing KPI',
+    tag: 'Sales · Growth · Metrics',
+    icon: '📊',
+    color: '#e65100',
+    accent: 'rgba(230,81,0,0.12)',
+    description: 'Stat-card layout that puts your revenue numbers and growth metrics front and center.',
+    highlights: ['Stat Cards', 'Metrics-First', 'Quota Crushers'],
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:32px;background:#fff;color:#1a1a1a;line-height:1.6;">
+<div style="margin-bottom:14px;"><div style="font-size:27px;font-weight:900;letter-spacing:-1px;">John Doe</div><div style="font-size:14px;color:#e65100;font-weight:700;">Senior Sales / Marketing Manager</div><div style="font-size:12px;color:#555;margin-top:4px;">john.doe@email.com &nbsp;|&nbsp; +91 9876543210 &nbsp;|&nbsp; New Delhi, India</div></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;">
+<div style="background:#fff3e0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#e65100;">150%</div><div style="font-size:10.5px;color:#7a4a17;text-transform:uppercase;letter-spacing:0.5px;">Quota Achieved</div></div>
+<div style="background:#fff3e0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#e65100;">₹12Cr</div><div style="font-size:10.5px;color:#7a4a17;text-transform:uppercase;letter-spacing:0.5px;">Revenue Closed</div></div>
+<div style="background:#fff3e0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#e65100;">95%</div><div style="font-size:10.5px;color:#7a4a17;text-transform:uppercase;letter-spacing:0.5px;">Client Retention</div></div>
+</div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#e65100;border-bottom:1px solid #ffd9b3;padding-bottom:3px;margin-bottom:8px;">Experience</div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">Senior Account Executive</b><span style="font-size:12px;color:#555;">2021–Present</span></div><div style="font-size:12px;color:#e65100;font-weight:600;margin-bottom:4px;">Company Name · New Delhi</div><ul style="margin:0;padding-left:16px;font-size:13px;"><li>Closed $2M+ in new business, exceeding quota by 150% for 3 consecutive years.</li><li>Built and managed pipeline of 80+ enterprise accounts.</li></ul></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#e65100;border-bottom:1px solid #ffd9b3;padding-bottom:3px;margin-bottom:6px;">Skills</div>
+<div style="display:flex;flex-wrap:wrap;gap:5px;font-size:12px;margin-bottom:14px;"><span style="background:#e65100;color:#fff;padding:3px 9px;border-radius:99px;">Salesforce</span><span style="background:#e65100;color:#fff;padding:3px 9px;border-radius:99px;">Negotiation</span><span style="background:#e65100;color:#fff;padding:3px 9px;border-radius:99px;">Pipeline Mgmt</span><span style="background:#e65100;color:#fff;padding:3px 9px;border-radius:99px;">Account Growth</span></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#e65100;border-bottom:1px solid #ffd9b3;padding-bottom:3px;margin-bottom:6px;">Education</div>
+<div style="font-size:13px;"><b>MBA in Marketing</b> &nbsp;·&nbsp; University &nbsp;·&nbsp; 2017–2019</div>
+</div>`
+  },
+  {
+    id: 'minimalist-serif',
+    name: 'Minimalist Serif',
+    tag: 'Elegant · ATS-Safe · Quiet',
+    icon: '✒️',
+    color: '#1a1a1a',
+    accent: 'rgba(26,26,26,0.08)',
+    description: 'Ultra-clean serif typography with generous whitespace — maximum readability, zero distraction.',
+    highlights: ['Pure Typography', 'No Graphics', 'Maximum ATS Score'],
+    html: `<div style="font-family:Georgia,serif;max-width:720px;margin:0 auto;padding:44px;color:#1a1a1a;line-height:1.7;">
+<div style="text-align:center;margin-bottom:22px;"><div style="font-size:25px;letter-spacing:1px;">John Doe</div><div style="font-size:12.5px;color:#555;margin-top:4px;">john.doe@email.com &nbsp;·&nbsp; +91 9876543210 &nbsp;·&nbsp; New Delhi, India</div></div>
+<div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin:18px 0 8px;color:#444;">Summary</div>
+<p style="font-size:13px;text-align:center;max-width:540px;margin:0 auto 18px;color:#333;">A dedicated professional with a track record of delivering thoughtful, measurable results across [Domain]. Known for clarity of thought and quiet excellence in execution.</p>
+<div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin:18px 0 10px;color:#444;">Experience</div>
+<div style="margin-bottom:14px;text-align:center;"><div style="font-size:14px;font-style:italic;">[Job Title]</div><div style="font-size:12px;color:#777;margin-bottom:5px;">Company Name &nbsp;·&nbsp; 2021 – Present</div><p style="font-size:13px;color:#333;max-width:520px;margin:0 auto;">Delivered [Project] resulting in [measurable outcome]. Partnered across teams to improve [Metric] by [X]%.</p></div>
+<div style="margin-bottom:14px;text-align:center;"><div style="font-size:14px;font-style:italic;">[Job Title]</div><div style="font-size:12px;color:#777;margin-bottom:5px;">Previous Company &nbsp;·&nbsp; 2018 – 2021</div><p style="font-size:13px;color:#333;max-width:520px;margin:0 auto;">Owned [Responsibility], improving [Metric] while mentoring a team of [N].</p></div>
+<div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin:18px 0 8px;color:#444;">Education</div>
+<div style="text-align:center;font-size:13px;">Degree, Field of Study &nbsp;·&nbsp; University &nbsp;·&nbsp; 2014 – 2018</div>
+<div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin:18px 0 8px;color:#444;">Skills</div>
+<div style="text-align:center;font-size:13px;color:#333;">Skill One &nbsp;·&nbsp; Skill Two &nbsp;·&nbsp; Skill Three &nbsp;·&nbsp; Skill Four &nbsp;·&nbsp; Skill Five</div>
+</div>`
+  },
+  {
+    id: 'startup-product',
+    name: 'Startup Product Lead',
+    tag: 'Product · Growth · Founder-Mode',
+    icon: '🚀',
+    color: '#059669',
+    accent: 'rgba(5,150,105,0.12)',
+    description: 'Energetic modern layout for product managers, founders, and 0-to-1 builders.',
+    highlights: ['Modern Rounded', 'Metrics-Driven', 'Founder-Ready'],
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:0;background:#fff;color:#1a1a1a;line-height:1.6;">
+<div style="background:linear-gradient(135deg,#059669 0%,#10b981 100%);border-radius:0 0 18px 18px;padding:26px 30px;color:#fff;">
+<div style="font-size:26px;font-weight:900;">John Doe</div>
+<div style="font-size:13.5px;opacity:0.92;margin-top:2px;">Product Manager &nbsp;·&nbsp; 0-to-1 Builder &nbsp;·&nbsp; Growth</div>
+<div style="font-size:11.5px;opacity:0.85;margin-top:8px;display:flex;gap:12px;flex-wrap:wrap;"><span>john.doe@email.com</span><span>+91 9876543210</span><span>producthunt.com/@johndoe</span></div>
+</div>
+<div style="padding:22px 30px;">
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#059669;margin-bottom:6px;">Summary</div>
+<p style="font-size:13px;margin:0 0 14px;">Product leader who has shipped 0-to-1 products used by 2M+ users. Obsessed with user research, rapid iteration, and metrics that matter.</p>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#059669;margin-bottom:8px;">Experience</div>
+<div style="background:#ecfdf5;border-radius:10px;padding:12px 14px;margin-bottom:10px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">Senior Product Manager</b><span style="font-size:12px;color:#059669;font-weight:600;">2022–Present</span></div><div style="font-size:12px;color:#555;margin-bottom:4px;">Startup Inc. · Remote</div><ul style="margin:0;padding-left:16px;font-size:13px;"><li>Launched [Feature] driving 40% increase in DAU within 2 quarters.</li><li>Owned roadmap for a product generating $5M ARR.</li></ul></div>
+<div style="background:#ecfdf5;border-radius:10px;padding:12px 14px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">Product Manager</b><span style="font-size:12px;color:#059669;font-weight:600;">2019–2022</span></div><div style="font-size:12px;color:#555;margin-bottom:4px;">Tech Co. · Bangalore</div><ul style="margin:0;padding-left:16px;font-size:13px;"><li>Drove A/B testing program improving conversion by 22%.</li></ul></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#059669;margin:14px 0 6px;">Skills</div>
+<div style="display:flex;flex-wrap:wrap;gap:5px;font-size:12px;"><span style="background:#059669;color:#fff;padding:3px 9px;border-radius:99px;">Roadmapping</span><span style="background:#059669;color:#fff;padding:3px 9px;border-radius:99px;">SQL</span><span style="background:#059669;color:#fff;padding:3px 9px;border-radius:99px;">A/B Testing</span><span style="background:#059669;color:#fff;padding:3px 9px;border-radius:99px;">User Research</span></div>
+</div>
+</div>`
+  },
+  {
+    id: 'legal-counsel',
+    name: 'Legal Counsel',
+    tag: 'Law · Formal · Gold Accent',
+    icon: '⚖️',
+    color: '#1a237e',
+    accent: 'rgba(26,35,126,0.12)',
+    description: 'Conservative, formal layout with gold accents tailored for legal and compliance professionals.',
+    highlights: ['Bar-Ready', 'Formal Tone', 'Conservative'],
+    html: `<div style="font-family:'Times New Roman',serif;max-width:720px;margin:0 auto;padding:38px;color:#1a1a1a;line-height:1.6;">
+<div style="text-align:center;border-bottom:3px double #1a237e;padding-bottom:12px;margin-bottom:16px;"><div style="font-size:25px;font-weight:700;letter-spacing:1px;color:#1a237e;">JOHN DOE, ESQ.</div><div style="font-size:13px;color:#555;margin-top:4px;">john.doe@email.com &nbsp;|&nbsp; +91 9876543210 &nbsp;|&nbsp; New Delhi, India</div></div>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1a237e;border-bottom:1px solid #c9a227;padding-bottom:3px;margin-bottom:8px;">Bar Admission</div>
+<p style="font-size:13px;margin:0 0 14px;">Bar Council of [State], Enrollment No. [XXXXX] &nbsp;·&nbsp; Admitted [Year]</p>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1a237e;border-bottom:1px solid #c9a227;padding-bottom:3px;margin-bottom:8px;">Professional Experience</div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">Associate / Counsel</b><span style="font-size:12px;color:#555;">2021 – Present</span></div><div style="font-size:12px;color:#1a237e;font-weight:600;margin-bottom:4px;">Law Firm Name · New Delhi</div><ul style="margin:0;padding-left:18px;font-size:13px;"><li>Advised on M&amp;A transactions exceeding $50M in aggregate value.</li><li>Drafted and negotiated commercial contracts for 30+ clients.</li></ul></div>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1a237e;border-bottom:1px solid #c9a227;padding-bottom:3px;margin-bottom:8px;">Education</div>
+<div style="display:flex;justify-content:space-between;font-size:13px;"><b>B.A. LL.B. (Hons.)</b><span style="font-size:12px;color:#555;">2016 – 2021</span></div>
+<div style="font-size:12px;color:#555;margin-bottom:12px;">National Law University &nbsp;·&nbsp; City, India</div>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1a237e;border-bottom:1px solid #c9a227;padding-bottom:3px;margin-bottom:6px;">Practice Areas</div>
+<p style="font-size:13px;margin:0;">Corporate Law &nbsp;·&nbsp; Contract Negotiation &nbsp;·&nbsp; Compliance &nbsp;·&nbsp; Intellectual Property</p>
+</div>`
+  },
+  {
+    id: 'ux-designer',
+    name: 'UX / Product Designer',
+    tag: 'Design · Portfolio-First',
+    icon: '🎯',
+    color: '#ff6f61',
+    accent: 'rgba(255,111,97,0.12)',
+    description: 'Bold typographic header with soft accent blocks — built to lead with your design portfolio.',
+    highlights: ['Portfolio Link', 'Bold Type', 'Case-Study Ready'],
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:36px;background:#fff;color:#1a1a1a;line-height:1.6;">
+<div style="margin-bottom:18px;"><div style="font-size:32px;font-weight:900;letter-spacing:-1.5px;color:#1a1a1a;">John Doe</div><div style="font-size:14px;color:#ff6f61;font-weight:700;margin-top:2px;">Product Designer &amp; UX Researcher</div><div style="font-size:12px;color:#666;margin-top:6px;">john.doe@email.com &nbsp;·&nbsp; +91 9876543210 &nbsp;·&nbsp; figma.com/@johndoe &nbsp;·&nbsp; New Delhi</div></div>
+<div style="background:#fff1ef;border-radius:10px;padding:14px 16px;margin-bottom:16px;"><p style="font-size:13px;margin:0;">Product designer with 6+ years crafting human-centered experiences for B2C apps used by 5M+ people. Strong in research, prototyping, and design systems.</p></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#ff6f61;margin-bottom:8px;">Experience</div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">Senior Product Designer</b><span style="font-size:12px;color:#888;">2021–Present</span></div><div style="font-size:12px;color:#555;margin-bottom:4px;">Design Studio · Remote</div><ul style="margin:0;padding-left:16px;font-size:13px;"><li>Redesigned core onboarding flow, lifting activation by 31%.</li><li>Built and scaled the company's first design system.</li></ul></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#ff6f61;margin:14px 0 6px;">Tools</div>
+<div style="display:flex;flex-wrap:wrap;gap:5px;font-size:12px;margin-bottom:14px;"><span style="background:#ff6f61;color:#fff;padding:3px 9px;border-radius:99px;">Figma</span><span style="background:#ff6f61;color:#fff;padding:3px 9px;border-radius:99px;">Maze</span><span style="background:#ff6f61;color:#fff;padding:3px 9px;border-radius:99px;">Notion</span><span style="background:#ff6f61;color:#fff;padding:3px 9px;border-radius:99px;">Webflow</span></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#ff6f61;margin-bottom:6px;">Education</div>
+<div style="font-size:13px;"><b>B.Des, Interaction Design</b> &nbsp;·&nbsp; NID/Pearl Academy &nbsp;·&nbsp; 2015–2019</div>
+</div>`
+  },
+  {
+    id: 'gov-ats-safe',
+    name: 'Government / PSU Safe',
+    tag: 'Ultra ATS-Safe · Plain Format',
+    icon: '🏛️',
+    color: '#212121',
+    accent: 'rgba(33,33,33,0.08)',
+    description: 'Absolutely plain black-and-white structure designed for government, PSU, and bureaucratic ATS systems.',
+    highlights: ['Zero Graphics', 'Form-Style', 'PSU Friendly'],
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:32px;color:#000;line-height:1.6;">
+<div style="text-align:center;margin-bottom:16px;"><div style="font-size:20px;font-weight:700;text-transform:uppercase;">JOHN DOE</div><div style="font-size:12.5px;margin-top:3px;">Email: john.doe@email.com &nbsp;|&nbsp; Phone: +91 9876543210 &nbsp;|&nbsp; Address: New Delhi, India</div></div>
+<table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:14px;">
+<tr><td style="border:1px solid #000;padding:5px 8px;font-weight:700;width:30%;">Position Applied For</td><td style="border:1px solid #000;padding:5px 8px;">[Position Title]</td></tr>
+<tr><td style="border:1px solid #000;padding:5px 8px;font-weight:700;">Date of Birth</td><td style="border:1px solid #000;padding:5px 8px;">DD/MM/YYYY</td></tr>
+<tr><td style="border:1px solid #000;padding:5px 8px;font-weight:700;">Nationality</td><td style="border:1px solid #000;padding:5px 8px;">Indian</td></tr>
+</table>
+<div style="font-size:12.5px;font-weight:700;text-transform:uppercase;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px;">1. Professional Summary</div>
+<p style="font-size:13px;margin:0 0 12px;">Dedicated professional with [X] years of experience in [Domain], seeking to contribute analytical and administrative skills to [Organization].</p>
+<div style="font-size:12.5px;font-weight:700;text-transform:uppercase;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px;">2. Work Experience</div>
+<p style="font-size:13px;margin:0 0 4px;"><b>[Job Title]</b>, Company Name, City — [Start Date] to [End Date]</p>
+<ul style="margin:0 0 12px;padding-left:18px;font-size:13px;"><li>Responsibility or accomplishment one.</li><li>Responsibility or accomplishment two.</li></ul>
+<div style="font-size:12.5px;font-weight:700;text-transform:uppercase;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px;">3. Educational Qualifications</div>
+<p style="font-size:13px;margin:0 0 12px;">[Degree], [Institution], [Year] — [Percentage/CGPA]</p>
+<div style="font-size:12.5px;font-weight:700;text-transform:uppercase;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px;">4. Skills</div>
+<p style="font-size:13px;margin:0;">Skill 1, Skill 2, Skill 3, Skill 4</p>
+</div>`
+  },
+  {
+    id: 'clinical-allied',
+    name: 'Clinical Specialist',
+    tag: 'Nursing · Allied Health · Licensure',
+    icon: '🩺',
+    color: '#00838f',
+    accent: 'rgba(0,131,143,0.12)',
+    description: 'Built for nurses and allied health professionals, with licensure and clinical rotation details up front.',
+    highlights: ['Licensure Block', 'Clinical Hours', 'Patient-Care Metrics'],
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:36px;background:#fff;color:#1a1a1a;line-height:1.6;">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #00838f;padding-bottom:12px;margin-bottom:14px;">
+<div><div style="font-size:25px;font-weight:800;color:#00838f;">John Doe, RN</div><div style="font-size:13px;color:#444;font-weight:600;">Registered Nurse · Critical Care</div></div>
+<div style="text-align:right;font-size:11.5px;color:#555;">License No. [XXXXXX]<br>john.doe@email.com<br>+91 9876543210</div>
+</div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#00838f;margin-bottom:6px;">Summary</div>
+<p style="font-size:13px;margin:0 0 14px;">Licensed Registered Nurse with 5+ years in critical care, delivering compassionate patient care with a record of zero medication errors and 98% patient satisfaction.</p>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#00838f;margin-bottom:8px;">Clinical Experience</div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">ICU Staff Nurse</b><span style="font-size:12px;color:#555;">2021–Present</span></div><div style="font-size:12px;color:#00838f;font-weight:600;margin-bottom:4px;">City Hospital · New Delhi</div><ul style="margin:0;padding-left:16px;font-size:13px;"><li>Managed care for 8+ critical patients per shift in a 20-bed ICU.</li><li>Trained 6 new graduate nurses on protocol compliance.</li></ul></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#00838f;margin-bottom:6px;">Certifications</div>
+<p style="font-size:13px;margin:0 0 12px;">BLS &amp; ACLS Certified &nbsp;·&nbsp; Critical Care Nursing Certificate &nbsp;·&nbsp; Infection Control Training</p>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#00838f;margin-bottom:6px;">Education</div>
+<div style="font-size:13px;"><b>B.Sc. Nursing</b> &nbsp;·&nbsp; Nursing College &nbsp;·&nbsp; 2016–2020</div>
+</div>`
+  },
+  {
+    id: 'dev-terminal',
+    name: 'Developer Terminal',
+    tag: 'Engineering · Dark Header · Code-Inspired',
+    icon: '💻',
+    color: '#16a34a',
+    accent: 'rgba(22,163,74,0.12)',
+    description: 'A terminal-inspired dark header gives this engineering resume instant technical credibility.',
+    highlights: ['Terminal Header', 'Mono Accents', 'GitHub-Ready'],
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:0;background:#fff;color:#1a1a1a;line-height:1.6;">
+<div style="background:#0d1117;padding:20px 28px;color:#39d353;font-family:'Courier New',monospace;">
+<div style="font-size:13px;opacity:0.7;">$ whoami</div>
+<div style="font-size:22px;font-weight:700;color:#fff;margin:2px 0 4px;">john_doe</div>
+<div style="font-size:12.5px;color:#39d353;">// Full-Stack Software Engineer</div>
+<div style="font-size:11.5px;color:#8b949e;margin-top:6px;">github.com/johndoe &nbsp;|&nbsp; john.doe@email.com &nbsp;|&nbsp; +91 9876543210</div>
+</div>
+<div style="padding:22px 28px;">
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#16a34a;margin-bottom:6px;">Summary</div>
+<p style="font-size:13px;margin:0 0 14px;">Full-stack engineer with 5+ years shipping scalable systems in React, Node.js, and Go. Active open-source contributor with 1,200+ GitHub stars across personal projects.</p>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#16a34a;margin-bottom:8px;">Experience</div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">Senior Software Engineer</b><span style="font-size:12px;color:#555;font-family:'Courier New',monospace;">2022–Present</span></div><div style="font-size:12px;color:#16a34a;font-weight:600;margin-bottom:4px;">Tech Company · Remote</div><ul style="margin:0;padding-left:16px;font-size:13px;"><li>Built microservices handling 10M+ requests/day with 99.99% uptime.</li><li>Reduced API latency by 45% through caching and query optimization.</li></ul></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#16a34a;margin:14px 0 6px;">Tech Stack</div>
+<div style="display:flex;flex-wrap:wrap;gap:5px;font-size:12px;font-family:'Courier New',monospace;"><span style="background:#16a34a;color:#fff;padding:3px 8px;border-radius:4px;">TypeScript</span><span style="background:#16a34a;color:#fff;padding:3px 8px;border-radius:4px;">React</span><span style="background:#16a34a;color:#fff;padding:3px 8px;border-radius:4px;">Node.js</span><span style="background:#16a34a;color:#fff;padding:3px 8px;border-radius:4px;">PostgreSQL</span><span style="background:#16a34a;color:#fff;padding:3px 8px;border-radius:4px;">Docker</span></div>
+</div>
+</div>`
+  },
+  {
+    id: 'consulting-mba',
+    name: 'Consulting / MBA',
+    tag: 'Strategy · Big-4 Style · Impact Bullets',
+    icon: '📐',
+    color: '#1b2a4a',
+    accent: 'rgba(27,42,74,0.12)',
+    description: 'McKinsey-inspired structure leading every bullet with quantified business impact.',
+    highlights: ['Impact-First', 'Big-4 Style', 'Quant-Heavy'],
+    html: `<div style="font-family:'Times New Roman',serif;max-width:720px;margin:0 auto;padding:38px;color:#111;line-height:1.55;">
+<div style="border-bottom:2px solid #1b2a4a;padding-bottom:10px;margin-bottom:16px;"><div style="font-size:25px;font-weight:700;color:#1b2a4a;">John Doe</div><div style="font-size:13px;color:#444;margin-top:3px;">john.doe@email.com &nbsp;|&nbsp; +91 9876543210 &nbsp;|&nbsp; New Delhi, India</div></div>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1b2a4a;margin-bottom:6px;">Professional Experience</div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13.5px;">Senior Consultant</b><span style="font-size:12px;color:#555;">2021 – Present</span></div><div style="font-size:12.5px;color:#1b2a4a;font-weight:600;margin-bottom:4px;">Consulting Firm · Mumbai</div><ul style="margin:0;padding-left:18px;font-size:13px;"><li>Drove $4M cost-reduction program for Fortune 500 retail client through process re-engineering.</li><li>Led 6-person team delivering market-entry strategy generating $20M projected revenue.</li><li>Presented findings to C-suite, securing buy-in for 3 strategic initiatives.</li></ul></div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13.5px;">Business Analyst</b><span style="font-size:12px;color:#555;">2019 – 2021</span></div><div style="font-size:12.5px;color:#1b2a4a;font-weight:600;margin-bottom:4px;">Consulting Firm · Mumbai</div><ul style="margin:0;padding-left:18px;font-size:13px;"><li>Built financial models supporting $150M M&amp;A due-diligence engagement.</li></ul></div>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1b2a4a;margin:14px 0 6px;">Education</div>
+<div style="display:flex;justify-content:space-between;font-size:13px;"><b>MBA, Strategy &amp; Finance</b><span style="color:#555;">2017 – 2019</span></div>
+<div style="font-size:12px;color:#555;margin-bottom:10px;">Top Business School &nbsp;·&nbsp; City, India</div>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1b2a4a;margin-bottom:6px;">Core Skills</div>
+<p style="font-size:13px;margin:0;">Financial Modeling &nbsp;·&nbsp; Market Strategy &nbsp;·&nbsp; Stakeholder Management &nbsp;·&nbsp; Process Optimization</p>
+</div>`
+  },
+  {
+    id: 'hospitality-warm',
+    name: 'Hospitality & Service',
+    tag: 'Hospitality · Customer-First · Warm',
+    icon: '🛎️',
+    color: '#c2410c',
+    accent: 'rgba(194,65,12,0.12)',
+    description: 'A warm, friendly layout for hospitality, travel, and customer-facing service professionals.',
+    highlights: ['Guest-Focused', 'Warm Palette', 'Friendly Tone'],
+    html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;padding:36px;background:#fff;color:#1a1a1a;line-height:1.6;">
+<div style="text-align:center;margin-bottom:16px;"><div style="font-size:26px;font-weight:800;color:#c2410c;">John Doe</div><div style="font-size:13.5px;color:#555;font-weight:600;">Hospitality &amp; Guest Relations Manager</div><div style="font-size:12px;color:#777;margin-top:4px;">john.doe@email.com &nbsp;·&nbsp; +91 9876543210 &nbsp;·&nbsp; New Delhi, India</div></div>
+<div style="background:#fff7ed;border-radius:10px;padding:14px 16px;margin-bottom:16px;text-align:center;"><p style="font-size:13px;margin:0;">Warm, detail-oriented hospitality professional with 6+ years creating memorable guest experiences and leading front-of-house teams at 5-star properties.</p></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#c2410c;margin-bottom:8px;">Experience</div>
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><b style="font-size:13px;">Guest Relations Manager</b><span style="font-size:12px;color:#888;">2021–Present</span></div><div style="font-size:12px;color:#c2410c;font-weight:600;margin-bottom:4px;">Luxury Hotel Group · Goa</div><ul style="margin:0;padding-left:16px;font-size:13px;"><li>Maintained 4.9/5 guest satisfaction score across 200+ rooms.</li><li>Resolved escalations for VIP guests, improving repeat bookings by 18%.</li></ul></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#c2410c;margin:14px 0 6px;">Skills</div>
+<div style="display:flex;flex-wrap:wrap;gap:5px;font-size:12px;margin-bottom:14px;justify-content:center;"><span style="background:#c2410c;color:#fff;padding:3px 9px;border-radius:99px;">Guest Relations</span><span style="background:#c2410c;color:#fff;padding:3px 9px;border-radius:99px;">Team Training</span><span style="background:#c2410c;color:#fff;padding:3px 9px;border-radius:99px;">Conflict Resolution</span><span style="background:#c2410c;color:#fff;padding:3px 9px;border-radius:99px;">Opera PMS</span></div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#c2410c;margin-bottom:6px;text-align:center;">Education</div>
+<div style="font-size:13px;text-align:center;"><b>BA in Hospitality Management</b> &nbsp;·&nbsp; Institute Name &nbsp;·&nbsp; 2015–2018</div>
+</div>`
+  },
+  {
+    id: 'academic-cv',
+    name: 'Academic Research CV',
+    tag: 'Academia · Publications · Formal',
+    icon: '🎓',
+    color: '#7a1f2b',
+    accent: 'rgba(122,31,43,0.12)',
+    description: 'Long-form academic CV structure covering publications, research, grants, and teaching experience.',
+    highlights: ['Publications List', 'Grants Section', 'Formal Serif'],
+    html: `<div style="font-family:Georgia,serif;max-width:720px;margin:0 auto;padding:38px;color:#1a1a1a;line-height:1.6;">
+<div style="text-align:center;border-bottom:2px solid #7a1f2b;padding-bottom:10px;margin-bottom:16px;"><div style="font-size:24px;font-weight:700;color:#7a1f2b;">Dr. John Doe</div><div style="font-size:12.5px;color:#555;margin-top:3px;">john.doe@university.edu &nbsp;|&nbsp; +91 9876543210 &nbsp;|&nbsp; Department of [Field], University Name</div></div>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7a1f2b;margin-bottom:6px;">Research Interests</div>
+<p style="font-size:13px;margin:0 0 14px;">[Research Area 1], [Research Area 2], [Research Area 3]</p>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7a1f2b;margin-bottom:6px;">Education</div>
+<div style="font-size:13px;margin-bottom:3px;"><b>Ph.D. in [Field]</b>, University Name, 2024</div>
+<div style="font-size:13px;margin-bottom:12px;"><b>M.Sc. in [Field]</b>, University Name, 2019</div>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7a1f2b;margin-bottom:6px;">Selected Publications</div>
+<p style="font-size:12.5px;margin:0 0 5px;">Doe, J., et al. (2024). "[Paper Title]." <i>Journal Name</i>, Vol. X.</p>
+<p style="font-size:12.5px;margin:0 0 12px;">Doe, J., et al. (2022). "[Paper Title]." <i>Conference Proceedings</i>.</p>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7a1f2b;margin-bottom:6px;">Grants &amp; Awards</div>
+<p style="font-size:13px;margin:0 0 12px;">[Grant/Fellowship Name], [Funding Body], [Year] — ₹[Amount]</p>
+<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7a1f2b;margin-bottom:6px;">Teaching Experience</div>
+<p style="font-size:13px;margin:0;">Teaching Assistant, [Course Name], University Name, [Years]</p>
 </div>`
   },
   {
@@ -1316,8 +1608,8 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
             Choose Your <span className="cl-gradient-text">{activeTab === 'resume' ? 'ATS Template' : 'Cover Letter'}</span>
           </h1>
           <p className="cl-hero-sub">
-            {activeTab === 'resume' 
-              ? '10 powerful ATS-optimized resume templates. Select one and customize with our full Word-like editor — fonts, tables, colors, headings & more.'
+            {activeTab === 'resume'
+              ? '22 powerful ATS-optimized resume templates. Select one and customize with our full Word-like editor — fonts, tables, colors, headings & more.'
               : 'Select a premium cover letter layout and edit using our professional writing environment. Perfect format, zero guesswork.'}
           </p>
         </div>
@@ -1346,8 +1638,8 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
               {/* Premium High-Resolution Template Layout Preview */}
               <div className="cl-card-visual-wrapper">
                 <div className="cl-card-mini-document" style={{ overflow: 'hidden' }}>
-                  <img 
-                    src={`/templates/${t.id}.png`} 
+                  <img
+                    src={`/templates/${t.id}.png`}
                     alt={t.name}
                     style={{
                       width: '100%',
@@ -1356,8 +1648,19 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
                       display: 'block'
                     }}
                     onError={(e) => {
-                      // fallback logic
-                      (e.target as HTMLElement).style.display = 'none';
+                      // No screenshot generated yet for this template — show a styled fallback instead.
+                      const img = e.target as HTMLImageElement;
+                      const wrapper = img.parentElement;
+                      img.style.display = 'none';
+                      if (wrapper) {
+                        wrapper.style.background = `linear-gradient(135deg, ${t.accent} 0%, ${t.color}22 100%)`;
+                        wrapper.style.display = 'flex';
+                        wrapper.style.flexDirection = 'column';
+                        wrapper.style.alignItems = 'center';
+                        wrapper.style.justifyContent = 'center';
+                        wrapper.style.gap = '8px';
+                        wrapper.innerHTML = `<span style="font-size:40px;line-height:1;">${t.icon}</span><span style="font-size:12px;font-weight:700;color:${t.color};text-align:center;padding:0 10px;">${t.name}</span>`;
+                      }
                     }}
                   />
                 </div>
