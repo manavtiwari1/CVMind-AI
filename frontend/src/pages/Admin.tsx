@@ -176,6 +176,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
 
   const [whitelistedEmails, setWhitelistedEmails] = useState<Array<{ id?: string; email: string; createdAt: string; source?: string }>>([]);
   const [whitelistInput, setWhitelistInput] = useState('');
+  const [autoApplyEmails, setAutoApplyEmails] = useState<Set<string>>(new Set());
   const [isWhitelistLoading, setIsWhitelistLoading] = useState(false);
   const [whitelistError, setWhitelistError] = useState('');
   const [whitelistSuccess, setWhitelistSuccess] = useState('');
@@ -208,6 +209,26 @@ export default function Admin({ setCurrentPage }: AdminProps) {
     }
   }, [BACKEND]);
 
+  const fetchAutoApplyAccess = useCallback(async (key: string) => {
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/auto-apply-access`, { headers: { 'x-admin-secret': key } });
+      const data = await res.json();
+      if (data.success) setAutoApplyEmails(new Set((data.data || []).map((x: { email: string }) => x.email)));
+    } catch {}
+  }, [BACKEND]);
+
+  const toggleAutoApplyAccess = async (email: string, hasAccess: boolean) => {
+    try {
+      if (hasAccess) {
+        await fetch(`${BACKEND}/api/admin/auto-apply-access/${encodeURIComponent(email)}`, { method: 'DELETE', headers: { 'x-admin-secret': secret } });
+        setAutoApplyEmails(prev => { const s = new Set(prev); s.delete(email); return s; });
+      } else {
+        await fetch(`${BACKEND}/api/admin/auto-apply-access`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret }, body: JSON.stringify({ email }) });
+        setAutoApplyEmails(prev => new Set([...prev, email]));
+      }
+    } catch {}
+  };
+
   const fetchWhitelist = useCallback(async (key: string) => {
     setIsWhitelistLoading(true);
     setWhitelistError('');
@@ -219,12 +240,13 @@ export default function Admin({ setCurrentPage }: AdminProps) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch whitelist.');
       setWhitelistedEmails(data.emails || []);
+      fetchAutoApplyAccess(key);
     } catch (e) {
       setWhitelistError(e instanceof Error ? e.message : 'Failed to fetch whitelist.');
     } finally {
       setIsWhitelistLoading(false);
     }
-  }, [BACKEND]);
+  }, [BACKEND, fetchAutoApplyAccess]);
 
   const handleAddWhitelist = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1501,6 +1523,7 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                               <tr>
                                 <th>Gmail Address</th>
                                 <th>Access Granted Date</th>
+                                <th style={{ textAlign: 'center' }}>Auto Apply Agent</th>
                                 <th style={{ textAlign: 'right' }}>Actions</th>
                               </tr>
                             </thead>
@@ -1514,6 +1537,18 @@ export default function Admin({ setCurrentPage }: AdminProps) {
                                     <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{emailStr}</td>
                                     <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>
                                       {source === 'database' ? dateStr : 'Permanent'}
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                      <button
+                                        onClick={() => toggleAutoApplyAccess(emailStr, autoApplyEmails.has(emailStr))}
+                                        style={{
+                                          padding: '4px 12px', borderRadius: '99px', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700,
+                                          background: autoApplyEmails.has(emailStr) ? 'rgba(48,209,88,0.15)' : 'rgba(142,142,147,0.12)',
+                                          color: autoApplyEmails.has(emailStr) ? '#30d158' : '#8e8e93',
+                                        }}
+                                      >
+                                        {autoApplyEmails.has(emailStr) ? '✓ Granted' : 'Grant'}
+                                      </button>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                       {source === 'database' ? (

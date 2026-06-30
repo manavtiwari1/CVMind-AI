@@ -32,6 +32,7 @@ import Terms from './pages/Terms';
 import RefundPolicy from './pages/RefundPolicy';
 import Disclaimer from './pages/Disclaimer';
 import Proofreading from './pages/Proofreading';
+import AutoApply from './pages/AutoApply';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
 import TawkChat from './components/TawkChat';
 import { applySEO } from './utils/seo';
@@ -257,6 +258,9 @@ export default function App() {
   });
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [resumeText, setResumeText] = useState<string>('');
+  const [hasAutoApplyAccess, setHasAutoApplyAccess] = useState<boolean>(() => {
+    return localStorage.getItem('cvmind_aa_access') === 'true';
+  });
 
   // Authentication State
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
@@ -264,6 +268,15 @@ export default function App() {
   });
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [loadedWork, setLoadedWork] = useState<any>(null);
+
+  useEffect(() => {
+    if (!isLoggedIn) { setHasAutoApplyAccess(false); localStorage.removeItem('cvmind_aa_access'); return; }
+    const base = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
+    const user = JSON.parse(localStorage.getItem('cvmind_user') || '{}');
+    if (!user?.email) return;
+    fetch(`${base}/api/auto-apply/check-access?email=${encodeURIComponent(user.email)}`)
+      .then(r => r.json()).then(d => { setHasAutoApplyAccess(!!d.hasAccess); localStorage.setItem('cvmind_aa_access', d.hasAccess ? 'true' : 'false'); }).catch(() => {});
+  }, [isLoggedIn]);
 
   const setCurrentPage = (page: string) => {
     setCurrentPageState(page);
@@ -515,7 +528,9 @@ export default function App() {
       case 'proofreading':
         return <Proofreading customApiKey={customApiKey} />;
       case 'auto-apply':
-        return (
+        return hasAutoApplyAccess ? (
+          <AutoApply customApiKey={customApiKey} resumeText={resumeText} setResumeText={setResumeText} />
+        ) : (
           <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'70vh',gap:'18px',textAlign:'center',padding:'40px 24px'}}>
             <div style={{fontSize:'3rem'}}>🚀</div>
             <h2 style={{fontSize:'1.8rem',fontWeight:800,margin:0}}>Auto Apply Agent</h2>

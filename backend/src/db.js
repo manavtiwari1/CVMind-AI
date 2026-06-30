@@ -211,6 +211,12 @@ const whitelistEmailSchema = new mongoose.Schema({
 });
 const WhitelistEmail = mongoose.models.WhitelistEmail || mongoose.model('WhitelistEmail', whitelistEmailSchema);
 
+const autoApplyAccessSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  grantedAt: { type: Date, default: Date.now }
+});
+const AutoApplyAccess = mongoose.models.AutoApplyAccess || mongoose.model('AutoApplyAccess', autoApplyAccessSchema);
+
 // ─── PER-FEATURE DAILY LIMITS FOR FREE USERS ─────────────────────────────────
 export const FREE_DAILY_LIMITS = {
   'analyze':           3,
@@ -1454,6 +1460,56 @@ export async function saveUserResetToken(email, token, expiresMs) {
   u.resetPasswordExpires = (expiresMs != null && expiresMs > 0) ? new Date(expiresMs).toISOString() : null;
   writeDb(db);
   return u;
+}
+
+export async function getAutoApplyAccessList() {
+  await ensureMongoConnection();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const list = await AutoApplyAccess.find().sort({ grantedAt: -1 });
+    return list.map(e => ({ email: e.email, grantedAt: e.grantedAt }));
+  }
+  const db = readDb();
+  return (db.autoApplyAccess || []);
+}
+
+export async function grantAutoApplyAccess(email) {
+  await ensureMongoConnection();
+  const clean = String(email || '').trim().toLowerCase();
+  if (!clean) throw new Error('Email is required');
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const existing = await AutoApplyAccess.findOne({ email: clean });
+    if (existing) return existing;
+    const entry = new AutoApplyAccess({ email: clean });
+    await entry.save();
+    return entry;
+  }
+  const db = readDb();
+  if (!db.autoApplyAccess) db.autoApplyAccess = [];
+  if (db.autoApplyAccess.find(x => x.email === clean)) return;
+  db.autoApplyAccess.unshift({ email: clean, grantedAt: new Date().toISOString() });
+  writeDb(db);
+}
+
+export async function revokeAutoApplyAccess(email) {
+  await ensureMongoConnection();
+  const clean = String(email || '').trim().toLowerCase();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    return await AutoApplyAccess.deleteOne({ email: clean });
+  }
+  const db = readDb();
+  db.autoApplyAccess = (db.autoApplyAccess || []).filter(x => x.email !== clean);
+  writeDb(db);
+}
+
+export async function hasAutoApplyAccess(email) {
+  await ensureMongoConnection();
+  const clean = String(email || '').trim().toLowerCase();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const found = await AutoApplyAccess.findOne({ email: clean });
+    return !!found;
+  }
+  const db = readDb();
+  return (db.autoApplyAccess || []).some(x => x.email === clean);
 }
 
 export async function findUserByResetToken(token) {

@@ -85,7 +85,6 @@ export default function AutoApply({ customApiKey, resumeText: initialResumeText 
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
   const [error, setError] = useState('');
-  const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [applyingJobId, setApplyingJobId] = useState<string | null>(null);
   const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
   const [filterScore, setFilterScore] = useState(0);
@@ -737,11 +736,11 @@ export default function AutoApply({ customApiKey, resumeText: initialResumeText 
                 </div>
                 <div className="aa-profile-section aa-profile-full">
                   <label className="aa-label"><Code2 size={14} />Skills <span className="aa-label-hint">(comma-separated)</span></label>
-                  <textarea className="aa-textarea" rows={3} value={(editProfile.skills || []).join(', ')} onChange={e => setEditProfile({ ...editProfile, skills: e.target.value.split(',').map(s => s.trim()) })} onBlur={e => setEditProfile(p => ({ ...p, skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))} />
+                  <textarea className="aa-textarea" rows={3} value={(editProfile.skills || []).join(', ')} onChange={e => setEditProfile({ ...editProfile, skills: e.target.value.split(',').map(s => s.trim()) })} onBlur={e => setEditProfile(p => p ? { ...p, skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean) } : p)} />
                 </div>
                 <div className="aa-profile-section aa-profile-full">
                   <label className="aa-label"><Target size={14} />Preferred Roles <span className="aa-label-hint">(comma-separated)</span></label>
-                  <textarea className="aa-textarea" rows={2} value={(editProfile.preferredRoles || []).join(', ')} onChange={e => setEditProfile({ ...editProfile, preferredRoles: e.target.value.split(',').map(s => s.trim()) })} onBlur={e => setEditProfile(p => ({ ...p, preferredRoles: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))} />
+                  <textarea className="aa-textarea" rows={2} value={(editProfile.preferredRoles || []).join(', ')} onChange={e => setEditProfile({ ...editProfile, preferredRoles: e.target.value.split(',').map(s => s.trim()) })} onBlur={e => setEditProfile(p => p ? { ...p, preferredRoles: e.target.value.split(',').map(s => s.trim()).filter(Boolean) } : p)} />
                 </div>
               </div>
               <div className="aa-wizard-nav">
