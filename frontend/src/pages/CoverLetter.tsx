@@ -475,7 +475,7 @@ const TEMPLATES: Template[] = [
     highlights: ['Two-Column', 'Sidebar Skills', 'Premium Look'],
     html: `<div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;display:flex;background:#fff;color:#1a1a1a;line-height:1.55;">
 <div style="width:34%;background:#0f172a;color:#fff;padding:30px 20px;">
-<div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:16px;">👤</div>
+<div data-photo-placeholder="true" title="Click to add your photo" style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:16px;cursor:pointer;overflow:hidden;">👤</div>
 <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7dd3fc;margin-bottom:8px;">Contact</div>
 <div style="font-size:11.5px;line-height:2;color:#cbd5e1;">📞 Phone<br>✉️ Email<br>🔗 LinkedIn/Portfolio<br>📍 Location</div>
 <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7dd3fc;margin:18px 0 8px;">Key Achievements</div>
@@ -989,6 +989,7 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
   const [showImageModal, setShowImageModal] = useState(false);
   const [pendingImageBase64, setPendingImageBase64] = useState<string>('');
   const [editingImageEl, setEditingImageEl] = useState<HTMLImageElement | null>(null);
+  const [editingPlaceholderEl, setEditingPlaceholderEl] = useState<HTMLElement | null>(null);
   const [imgWidth, setImgWidth] = useState('150');
   const [imgHeight, setImgHeight] = useState('');
   const [imgAlign, setImgAlign] = useState<'inline' | 'left' | 'center' | 'right'>('inline');
@@ -1002,6 +1003,13 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     fileInputRef.current?.click();
   };
 
+  // Photo placeholder (e.g. the avatar circle on sidebar templates) — clicking it
+  // uploads straight into that slot instead of opening the full image modal.
+  const triggerPlaceholderUpload = (el: HTMLElement) => {
+    setEditingPlaceholderEl(el);
+    fileInputRef.current?.click();
+  };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1010,6 +1018,15 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
     reader.onload = (event) => {
       const base64 = event.target?.result as string;
       if (!base64) return;
+
+      if (editingPlaceholderEl) {
+        editingPlaceholderEl.innerHTML = `<img src="${base64}" style="width:100%;height:100%;object-fit:cover;" alt="Profile photo" />`;
+        setEditingPlaceholderEl(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        countWords();
+        return;
+      }
+
       // Show the image properties modal instead of immediately inserting
       setPendingImageBase64(base64);
       setEditingImageEl(null);
@@ -1098,6 +1115,13 @@ export default function CoverLetter({ customApiKey, loadedWork, setLoadedWork }:
   // Helper to open links or image editor if clicked inside editor
   const handleEditorClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
+    // Click on a photo placeholder (e.g. avatar circle) → upload straight into it
+    const placeholderEl = target.closest('[data-photo-placeholder]') as HTMLElement | null;
+    if (placeholderEl) {
+      e.preventDefault();
+      triggerPlaceholderUpload(placeholderEl);
+      return;
+    }
     // Click on img → open image properties modal
     if (target.tagName === 'IMG') {
       e.preventDefault();
