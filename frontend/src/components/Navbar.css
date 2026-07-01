@@ -437,6 +437,17 @@
   color: #ef4444;
 }
 
+.nav-profile-dropdown-item.delete-account-item {
+  color: #ef4444;
+  opacity: 0.75;
+}
+
+.nav-profile-dropdown-item.delete-account-item:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  opacity: 1;
+}
+
 /* Modal Styling */
 .nav-modal-overlay {
   position: fixed;
@@ -956,5 +967,94 @@
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
+}
+
+/* ── Delete Account Modal ─────────────────────────────────── */
+.delete-account-card {
+  max-width: 420px;
+}
+
+.delete-account-icon {
+  color: #ef4444;
+}
+
+.delete-account-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 0 0.25rem;
+}
+
+.delete-account-label {
+  font-size: 0.88rem;
+  color: #374151;
+  margin: 0;
+}
+
+.delete-account-input {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.6rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #fafafa;
+  color: #111;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.delete-account-input:focus {
+  border-color: #ef4444;
+}
+
+.delete-account-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
+}
+
+.delete-account-cancel-btn {
+  padding: 0.6rem 1.2rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.6rem;
+  background: #fff;
+  color: #374151;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.delete-account-cancel-btn:hover {
+  background: #f3f4f6;
+}
+
+.delete-account-confirm-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.delete-account-confirm-btn:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.delete-account-confirm-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 

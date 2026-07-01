@@ -1348,6 +1348,21 @@ export async function deleteUserWork(workId, userId) {
   return { deletedCount: 1 };
 }
 
+export async function deleteAccount(userId) {
+  await ensureMongoConnection();
+  const cleanId = String(userId || '').trim();
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    await Work.deleteMany({ userId: cleanId });
+    await LoginLog.deleteMany({ $or: [{ userId: cleanId }] });
+    await User.deleteOne({ _id: cleanId });
+    return;
+  }
+  const db = readDb();
+  if (db.works) db.works = db.works.filter(w => w.userId !== cleanId);
+  if (db.users) db.users = db.users.filter(u => (u.id || u._id) !== cleanId);
+  writeDb(db);
+}
+
 export async function updateUserProfile({ userId, name, email, address, avatar = null }) {
   await ensureMongoConnection();
   const cleanUserId = String(userId || '').trim();
