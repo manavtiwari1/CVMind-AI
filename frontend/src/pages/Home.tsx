@@ -270,11 +270,15 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   // ── FAQ data ──
   const faqs = [
     { q: 'How does the AI resume checker work?', a: 'Our AI analyzes your resume against 500+ ATS keyword models, checks formatting, identifies gaps in quantified achievements, and scores your document on a 0–100 scale. You get a full report in seconds.' },
-    { q: 'Is my resume data kept private?', a: 'Yes. Your resume is processed in memory and never stored on our servers. We use end-to-end encrypted connections. Your data is not used for training.' },
+    { q: 'What is the AI Career Copilot?', a: 'AI Career Copilot is your personal job-search command center with 9 specialized AI agents working in parallel — Resume Agent, Job Discovery, Skill Coach, Interview Coach, Application Intel, Career Analytics, LinkedIn Agent, Networking Agent, and Salary Intel. It extracts your profile from your resume, computes a Career Health Score (0–100), and activates all agents to handle different parts of your job search simultaneously.' },
+    { q: 'Can AI auto-fix my resume from the suggestions?', a: 'Yes. In the Resume Center, after your analysis is complete, click "AI Fix Resume" and our AI will automatically rewrite your entire resume incorporating all the suggestions. You can then download the fixed version as a PDF or DOCX instantly, or open it in the in-app resume editor to polish it further.' },
     { q: 'What file formats are supported?', a: 'We support PDF, DOCX, and TXT files up to 5MB. PDF and DOCX give the best results as they preserve formatting information.' },
     { q: 'How accurate is the ATS score?', a: 'Our ATS score correlates with the most widely used applicant tracking systems including Workday, Greenhouse, Lever, and iCIMS. Users who implement our suggestions see an average 42% improvement in interview callback rates.' },
     { q: 'Can I use this for multiple jobs?', a: 'Absolutely. Use the Resume Tailor tool to create a custom-tailored version of your resume for each job application. Our AI aligns your skills, keywords, and achievements to each specific job description.' },
-    { q: 'Do I need to create an account?', a: 'No account is required to get your ATS score and basic analysis. Premium features like AI rewriting, DOCX download, and unlimited tailoring are available with a free trial.' },
+    { q: 'How does the Job Discovery agent work?', a: 'The Job Discovery agent in AI Career Copilot scans across LinkedIn, Indeed, Glassdoor, and other platforms to find roles that match your extracted profile. Each match comes with a compatibility score, required skills, salary range, and a direct apply link — filtered by role type, location, and remote preference.' },
+    { q: 'Is my resume data kept private?', a: 'Yes. Your resume is processed in memory and never stored on our servers without your consent. We use end-to-end encrypted connections and your data is never used for AI training.' },
+    { q: 'Do I need to create an account?', a: 'No account is required to get your ATS score and basic analysis. Features like AI Career Copilot, saved works, and resume downloads require a free account. You can sign up with Google OAuth or email in seconds.' },
+    { q: 'Can I delete my account and all my data?', a: 'Yes. Go to the profile dropdown in the top-right corner → click "Delete Account" → type DELETE to confirm. This permanently removes your account, all saved works, and all associated data from our servers immediately.' },
   ];
 
   return (

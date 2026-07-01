@@ -11,6 +11,77 @@ export default function Blog({ setCurrentPage }: BlogProps) {
 
   const changelogData = [
     {
+      id: 13,
+      version: 'v3.3.0',
+      date: 'July 1, 2026',
+      title: 'Delete Account, Google OAuth Fix & Email Branding Update',
+      tag: 'Security & Help',
+      description: 'Users can now permanently delete their account from the profile dropdown with a typed confirmation guard. Google OAuth redirect URIs updated for the cvmind.online domain, and all transactional emails now link to the correct branded domain.',
+      details: [
+        '<strong>Delete My Account:</strong> A new "Delete Account" option in the profile dropdown opens a confirmation modal. Users must type "DELETE" to activate the button — on confirm, all user data, saved works, and login logs are wiped from MongoDB instantly.',
+        '<strong>Google OAuth Domain Fix:</strong> Added https://www.cvmind.online and https://cvmind.online as Authorized JavaScript Origins and Redirect URIs in Google Cloud Console, resolving the Error 400: redirect_uri_mismatch for production users.',
+        '<strong>Welcome Email Domain Update:</strong> Transactional welcome emails now correctly link to https://www.cvmind.online instead of the old Vercel preview URL.',
+        '<strong>Irreversible Action Guard:</strong> The confirm button remains disabled until the exact word "DELETE" is typed, preventing accidental account deletion.'
+      ],
+      icon: ShieldCheck,
+      badgeColor: 'badge-orange'
+    },
+    {
+      id: 12,
+      version: 'v3.2.0',
+      date: 'July 1, 2026',
+      title: 'AI Career Copilot Section on Home Page',
+      tag: 'UX Polish',
+      description: 'The main landing page now features a dedicated AI Career Copilot section with a live agent status mockup — showcasing the 9-agent system, Career Health Score ring, and animated active-agent indicators to drive feature discovery.',
+      details: [
+        '<strong>Landing Page Section:</strong> A new alternating feature block between "ATS Beating" and the upload section highlights the AI Career Copilot with a purple accent CTA button linking directly to the Copilot dashboard.',
+        '<strong>Live Agent Mockup:</strong> An interactive card mockup displays Career Health Score (ring chart at 82), 4 agent rows (Resume Agent, Job Discovery, Interview Coach, Application Intel), and animated pulsing dots for active agents.',
+        '<strong>Reversed Layout:</strong> The visual appears on the left side for visual variety, maintaining the alternating section rhythm of the home page.',
+        '<strong>Animated Pulse Dots:</strong> Active agents show a pulsing purple dot with CSS keyframe animation, giving the mockup a real-time "live" feel.'
+      ],
+      icon: Sparkles,
+      badgeColor: 'badge-green'
+    },
+    {
+      id: 11,
+      version: 'v3.1.0',
+      date: 'June 30, 2026',
+      title: 'AI Fix & Download, Resume Builder Editor & Active Agents',
+      tag: 'New Features',
+      description: 'The Resume Center now lets AI auto-fix your resume from suggestions and download it as PDF or DOCX instantly. An in-app resume builder editor lets you manually polish every field. All 9 Career Copilot agents are now fully interactive.',
+      details: [
+        '<strong>AI Fix & Download:</strong> A one-click "AI Fix Resume" button calls the /api/optimize endpoint, rewrites your resume using all suggestion context, and presents the fixed version in a preview panel with PDF and DOCX download options.',
+        '<strong>PDF Download:</strong> Opens a formatted print-ready HTML popup via window.open() + window.print() — clean, no third-party libraries needed.',
+        '<strong>DOCX Download:</strong> Generates a Word-compatible HTML blob with .doc extension for seamless Office compatibility.',
+        '<strong>In-App Resume Editor:</strong> A full-form modal editor for Personal Info, Summary, Skills, Experience (add/delete entries), and Education — changes sync instantly to the download pipeline.',
+        '<strong>9 Active Agents:</strong> Tab agents (Resume Agent, Job Discovery, Skill Coach, Interview Coach, Application Intel, Career Analytics) now navigate directly to their respective dashboards. Panel agents (LinkedIn Agent, Networking Agent, Salary Intel) expand inline below the agent grid with profile-aware dynamic content.',
+        '<strong>LinkedIn Agent Panel:</strong> Generates optimized headline suggestions, profile audit score, and outreach message templates based on extracted profile data.',
+        '<strong>Networking Agent Panel:</strong> Produces personalized connection request templates and referral DM scripts.',
+        '<strong>Salary Intel Panel:</strong> Shows market salary ranges for the user\'s role and years of experience with negotiation tips.'
+      ],
+      icon: Sparkles,
+      badgeColor: 'badge-purple'
+    },
+    {
+      id: 10,
+      version: 'v3.0.0',
+      date: 'June 28, 2026',
+      title: 'AI Career Copilot — 9 Agents, Career Health Score & Equipped Section',
+      tag: 'New Features',
+      description: 'The flagship AI Career Copilot feature launches with 9 specialized AI agents working in parallel. A step-based onboarding flow extracts your profile, computes a Career Health Score, and activates a full agent dashboard with a real-time activity feed.',
+      details: [
+        '<strong>9 Specialized AI Agents:</strong> Resume Agent, Job Discovery, Skill Coach, Interview Coach, Application Intel, Career Analytics, LinkedIn Agent, Networking Agent, and Salary Intel — each focusing on a distinct area of the job search.',
+        '<strong>Career Health Score:</strong> A composite 0–100 score combining resume strength, skill coverage, interview readiness, and application activity. Displayed as a gradient ring with trend indicator.',
+        '<strong>Step-Based Onboarding:</strong> A 3-step flow — Upload Resume → Build Profile → Activate Agents. The AI extracts name, experience, skills, job title, and career goal from your resume automatically.',
+        '<strong>Profile Name Fix:</strong> Resolved an issue where "Your Name / N/A years" appeared instead of the real extracted name. Continue button is now disabled during loading, and profile extraction re-fetches resume text if the initial parse was empty.',
+        '<strong>Equipped Section:</strong> A creative accordion + live mockup section on the Career Copilot landing page showcasing 5 key features (Resume Optimization, Job Discovery, Interview Coaching, Application Tracking, Career Analytics) with dynamic mockup previews.',
+        '<strong>Auto Apply Agent:</strong> A dedicated agent that auto-fills job applications using your extracted profile — name, email, phone, skills, and experience pre-populated into the application form.',
+        '<strong>Interview Modal Redesign:</strong> Full-screen interview coach modal with question cards, STAR framework guidance, answer input, and AI evaluation feedback.'
+      ],
+      icon: Cpu,
+      badgeColor: 'badge-blue'
+    },
+    {
       id: 9,
       version: 'v2.6.0',
       date: 'June 19, 2026',
@@ -196,11 +267,11 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       <section className="blog-hero">
         <div className="blog-badge-wrapper">
           <span className="blog-pulse-dot"></span>
-          <span className="blog-launch-date">Launching Soon</span>
+          <span className="blog-launch-date">Live at cvmind.online</span>
         </div>
         <h1 className="blog-title">CV Mind Changelog</h1>
         <p className="blog-subtitle">
-          Follow our build progress, features deployment, and system updates from Day 1 to our production-ready release.
+          Every feature, fix, and upgrade — tracked from Day 1. Now live with AI Career Copilot, 9 active agents, and a full job-search automation suite.
         </p>
       </section>
 
