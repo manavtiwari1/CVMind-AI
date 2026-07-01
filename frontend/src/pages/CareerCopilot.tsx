@@ -115,6 +115,12 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
   const [resumeLoading, setResumeLoading] = useState(false);
   const resumeAnalyzed = useRef(false);
 
+  // Resume builder / AI fix
+  const [aiFixLoading, setAiFixLoading] = useState(false);
+  const [aiFixedResume, setAiFixedResume] = useState<string | null>(null);
+  const [showResumeEditor, setShowResumeEditor] = useState(false);
+  const [editableProfile, setEditableProfile] = useState<any>(null);
+
   // Interview
   const [interviewSession, setInterviewSession] = useState<InterviewSession | null>(null);
   const [interviewInput, setInterviewInput] = useState('');
@@ -289,6 +295,78 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
       { skill: 'Redis', demand: 61, priority: 'medium' },
       { skill: 'GraphQL', demand: 52, priority: 'medium' },
     ];
+  };
+
+  const fixAndDownloadResume = async () => {
+    if (!resumeText) { setError('Resume text not available. Please re-upload.'); return; }
+    if (!resumeAnalysis) { setError('Wait for AI analysis to finish first.'); return; }
+    setAiFixLoading(true); setError('');
+    try {
+      const r = await fetch(`${API}/api/optimize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(customApiKey ? { 'x-gemini-key': customApiKey } : {}) },
+        body: JSON.stringify({ resumeText, analysisResult: resumeAnalysis })
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error);
+      setAiFixedResume(d.data.optimizedResume);
+    } catch (e: any) { setError(e.message || 'AI fix failed. Try again.'); }
+    finally { setAiFixLoading(false); }
+  };
+
+  const downloadAsPDF = (text: string) => {
+    const name = profile?.name || 'Resume';
+    const lines = text.split('\n').map(l =>
+      l.match(/^[A-Z][A-Z\s]+$/) ? `<h2>${l}</h2>` : `<p>${l || '&nbsp;'}</p>`
+    ).join('');
+    const html = `<!DOCTYPE html><html><head><title>${name} — Resume</title>
+<style>body{font-family:Arial,sans-serif;margin:40px;color:#1a1a1a;font-size:11pt;line-height:1.6}h2{font-size:12pt;text-transform:uppercase;border-bottom:1.5px solid #1a1a1a;padding-bottom:2px;margin:18px 0 8px}p{margin:2px 0}@media print{@page{margin:20mm}}</style>
+</head><body>${lines}</body></html>`;
+    const w = window.open('', '_blank');
+    if (w) { w.document.write(html); w.document.close(); setTimeout(() => w.print(), 300); }
+  };
+
+  const downloadAsDOC = (text: string, filename = 'resume') => {
+    const name = profile?.name || 'Resume';
+    const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'><title>${name}</title><style>body{font-family:Arial,sans-serif;font-size:11pt;line-height:1.6;margin:2cm}h2{font-size:12pt;text-transform:uppercase;border-bottom:1px solid #000;margin:18px 0 8px}p{margin:2px 0}</style></head><body>${text.split('\n').map(l => l.match(/^[A-Z][A-Z\s]+$/) ? `<h2>${l}</h2>` : `<p>${l || '&nbsp;'}</p>`).join('')}</body></html>`;
+    const blob = new Blob(['﻿', html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `${filename}.doc`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const buildResumeTextFromProfile = (p: any): string => {
+    const lines: string[] = [];
+    if (p.name) lines.push(p.name);
+    const contact = [p.email, p.phone, p.location].filter(Boolean).join(' | ');
+    if (contact) lines.push(contact);
+    const links = [p.linkedin, p.github, p.portfolio].filter(Boolean).join(' | ');
+    if (links) lines.push(links);
+    lines.push('');
+    if (p.summary) { lines.push('PROFESSIONAL SUMMARY'); lines.push(p.summary); lines.push(''); }
+    const allSkills = [...(p.skills || []), ...(p.techStack || [])].filter((v, i, a) => a.indexOf(v) === i);
+    if (allSkills.length) { lines.push('SKILLS'); lines.push(allSkills.join(', ')); lines.push(''); }
+    if (p.experience?.length) {
+      lines.push('EXPERIENCE');
+      p.experience.forEach((e: any) => {
+        lines.push(`${e.title} at ${e.company} | ${e.duration}`);
+        if (e.description) lines.push(`• ${e.description}`);
+        lines.push('');
+      });
+    }
+    if (p.education?.length) {
+      lines.push('EDUCATION');
+      p.education.forEach((e: any) => { lines.push(`${e.degree} | ${e.institution} | ${e.year}`); });
+      lines.push('');
+    }
+    if (p.certifications?.length) { lines.push('CERTIFICATIONS'); lines.push(p.certifications.join(', ')); }
+    return lines.join('\n');
+  };
+
+  const openResumeEditor = () => {
+    setEditableProfile(JSON.parse(JSON.stringify(profile || {})));
+    setShowResumeEditor(true);
+    setAiFixedResume(null);
   };
 
   const LEARN_PATH = [
@@ -817,14 +895,111 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
               </div>
             )}
 
-            <div className="cc-resume-actions">
-              <button className="cc-btn-primary" onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'resume-editor' }))}>
-                <FileText size={15} /> Open Resume Builder
+            {/* ── AI Fix & Download ── */}
+            <div className="cc-resume-fix-bar">
+              <button className="cc-btn-fix" onClick={fixAndDownloadResume} disabled={aiFixLoading || !resumeAnalysis}>
+                {aiFixLoading ? <><RefreshCw size={14} className="cc-spin" /> AI is fixing…</> : <><Sparkles size={14} /> AI Fix & Download</>}
               </button>
-              <button className="cc-btn-ghost" onClick={analyzeResume} disabled={resumeLoading}>
-                <RefreshCw size={15} className={resumeLoading ? 'cc-spin' : ''} /> Re-Analyze
+              <button className="cc-btn-edit" onClick={openResumeEditor} disabled={!profile}>
+                <FileText size={14} /> {showResumeEditor ? 'Close Editor' : 'Edit Resume'}
+              </button>
+              <button className="cc-btn-ghost cc-btn-sm-re" onClick={analyzeResume} disabled={resumeLoading}>
+                <RefreshCw size={13} className={resumeLoading ? 'cc-spin' : ''} /> Re-Analyze
               </button>
             </div>
+
+            {/* ── AI Fixed Resume Preview ── */}
+            {aiFixedResume && !showResumeEditor && (
+              <div className="cc-fixed-resume-panel">
+                <div className="cc-frp-header">
+                  <CheckCircle2 size={16} color="#30d158" />
+                  <span>AI-Fixed Resume Ready</span>
+                  <div className="cc-frp-actions">
+                    <button className="cc-frp-btn cc-frp-pdf" onClick={() => downloadAsPDF(aiFixedResume)}>
+                      <ArrowRight size={12} /> Download PDF
+                    </button>
+                    <button className="cc-frp-btn cc-frp-doc" onClick={() => downloadAsDOC(aiFixedResume, `${(profile?.name || 'resume').replace(/\s+/g, '_')}_optimized`)}>
+                      <ArrowRight size={12} /> Download DOCX
+                    </button>
+                    <button className="cc-frp-close" onClick={() => setAiFixedResume(null)}><X size={13} /></button>
+                  </div>
+                </div>
+                <pre className="cc-frp-preview">{aiFixedResume}</pre>
+              </div>
+            )}
+
+            {/* ── Resume Editor ── */}
+            {showResumeEditor && editableProfile && (
+              <div className="cc-resume-editor">
+                <div className="cc-re-header">
+                  <FileText size={16} color="#2997ff" /><span>Resume Builder</span>
+                  <div className="cc-re-actions">
+                    <button className="cc-frp-btn cc-frp-pdf" onClick={() => downloadAsPDF(buildResumeTextFromProfile(editableProfile))}>
+                      <ArrowRight size={12} /> PDF
+                    </button>
+                    <button className="cc-frp-btn cc-frp-doc" onClick={() => downloadAsDOC(buildResumeTextFromProfile(editableProfile), `${(editableProfile.name || 'resume').replace(/\s+/g, '_')}`)}>
+                      <ArrowRight size={12} /> DOCX
+                    </button>
+                    <button className="cc-frp-close" onClick={() => setShowResumeEditor(false)}><X size={13} /></button>
+                  </div>
+                </div>
+                <div className="cc-re-body">
+                  {/* Personal Info */}
+                  <div className="cc-re-section"><div className="cc-re-section-title">Personal Info</div>
+                    <div className="cc-re-grid2">
+                      <div className="cc-re-field"><label>Full Name</label><input value={editableProfile.name || ''} onChange={e => setEditableProfile({ ...editableProfile, name: e.target.value })} placeholder="Your Name" /></div>
+                      <div className="cc-re-field"><label>Job Title</label><input value={editableProfile.title || ''} onChange={e => setEditableProfile({ ...editableProfile, title: e.target.value })} placeholder="e.g. Software Engineer" /></div>
+                      <div className="cc-re-field"><label>Email</label><input value={editableProfile.email || ''} onChange={e => setEditableProfile({ ...editableProfile, email: e.target.value })} placeholder="you@email.com" /></div>
+                      <div className="cc-re-field"><label>Phone</label><input value={editableProfile.phone || ''} onChange={e => setEditableProfile({ ...editableProfile, phone: e.target.value })} placeholder="+91 98765 43210" /></div>
+                      <div className="cc-re-field"><label>Location</label><input value={editableProfile.location || ''} onChange={e => setEditableProfile({ ...editableProfile, location: e.target.value })} placeholder="City, Country" /></div>
+                      <div className="cc-re-field"><label>LinkedIn</label><input value={editableProfile.linkedin || ''} onChange={e => setEditableProfile({ ...editableProfile, linkedin: e.target.value })} placeholder="linkedin.com/in/you" /></div>
+                      <div className="cc-re-field"><label>GitHub</label><input value={editableProfile.github || ''} onChange={e => setEditableProfile({ ...editableProfile, github: e.target.value })} placeholder="github.com/you" /></div>
+                      <div className="cc-re-field"><label>Portfolio</label><input value={editableProfile.portfolio || ''} onChange={e => setEditableProfile({ ...editableProfile, portfolio: e.target.value })} placeholder="yoursite.com" /></div>
+                    </div>
+                  </div>
+                  {/* Summary */}
+                  <div className="cc-re-section"><div className="cc-re-section-title">Professional Summary</div>
+                    <textarea className="cc-re-textarea" rows={4} value={editableProfile.summary || ''} onChange={e => setEditableProfile({ ...editableProfile, summary: e.target.value })} placeholder="2-3 sentence professional summary…" />
+                  </div>
+                  {/* Skills */}
+                  <div className="cc-re-section"><div className="cc-re-section-title">Skills</div>
+                    <textarea className="cc-re-textarea" rows={2} value={(editableProfile.skills || []).join(', ')} onChange={e => setEditableProfile({ ...editableProfile, skills: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean) })} placeholder="React, TypeScript, Node.js, Python…" />
+                    <div className="cc-re-hint">Comma-separated list</div>
+                  </div>
+                  {/* Experience */}
+                  <div className="cc-re-section"><div className="cc-re-section-title">Experience
+                    <button className="cc-re-add-btn" onClick={() => setEditableProfile({ ...editableProfile, experience: [...(editableProfile.experience || []), { title: '', company: '', duration: '', description: '' }] })}>+ Add</button>
+                  </div>
+                    {(editableProfile.experience || []).map((exp: any, i: number) => (
+                      <div key={i} className="cc-re-entry">
+                        <div className="cc-re-grid2">
+                          <div className="cc-re-field"><label>Job Title</label><input value={exp.title || ''} onChange={e => { const ex = [...editableProfile.experience]; ex[i] = { ...ex[i], title: e.target.value }; setEditableProfile({ ...editableProfile, experience: ex }); }} placeholder="Software Engineer" /></div>
+                          <div className="cc-re-field"><label>Company</label><input value={exp.company || ''} onChange={e => { const ex = [...editableProfile.experience]; ex[i] = { ...ex[i], company: e.target.value }; setEditableProfile({ ...editableProfile, experience: ex }); }} placeholder="Acme Corp" /></div>
+                          <div className="cc-re-field"><label>Duration</label><input value={exp.duration || ''} onChange={e => { const ex = [...editableProfile.experience]; ex[i] = { ...ex[i], duration: e.target.value }; setEditableProfile({ ...editableProfile, experience: ex }); }} placeholder="Jan 2022 – Present" /></div>
+                        </div>
+                        <div className="cc-re-field"><label>Description</label><textarea className="cc-re-textarea" rows={2} value={exp.description || ''} onChange={e => { const ex = [...editableProfile.experience]; ex[i] = { ...ex[i], description: e.target.value }; setEditableProfile({ ...editableProfile, experience: ex }); }} placeholder="Bullet points describing your role and impact…" /></div>
+                        <button className="cc-re-del-btn" onClick={() => { const ex = editableProfile.experience.filter((_: any, j: number) => j !== i); setEditableProfile({ ...editableProfile, experience: ex }); }}>Remove</button>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Education */}
+                  <div className="cc-re-section"><div className="cc-re-section-title">Education
+                    <button className="cc-re-add-btn" onClick={() => setEditableProfile({ ...editableProfile, education: [...(editableProfile.education || []), { degree: '', institution: '', year: '' }] })}>+ Add</button>
+                  </div>
+                    {(editableProfile.education || []).map((edu: any, i: number) => (
+                      <div key={i} className="cc-re-entry">
+                        <div className="cc-re-grid2">
+                          <div className="cc-re-field"><label>Degree</label><input value={edu.degree || ''} onChange={e => { const ed = [...editableProfile.education]; ed[i] = { ...ed[i], degree: e.target.value }; setEditableProfile({ ...editableProfile, education: ed }); }} placeholder="B.Tech Computer Science" /></div>
+                          <div className="cc-re-field"><label>Institution</label><input value={edu.institution || ''} onChange={e => { const ed = [...editableProfile.education]; ed[i] = { ...ed[i], institution: e.target.value }; setEditableProfile({ ...editableProfile, education: ed }); }} placeholder="IIT Delhi" /></div>
+                          <div className="cc-re-field"><label>Year</label><input value={edu.year || ''} onChange={e => { const ed = [...editableProfile.education]; ed[i] = { ...ed[i], year: e.target.value }; setEditableProfile({ ...editableProfile, education: ed }); }} placeholder="2023" /></div>
+                        </div>
+                        <button className="cc-re-del-btn" onClick={() => { const ed = editableProfile.education.filter((_: any, j: number) => j !== i); setEditableProfile({ ...editableProfile, education: ed }); }}>Remove</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

@@ -401,6 +401,50 @@
 .cc-rewrite-arrow { flex-shrink: 0; margin-top: 20px; }
 .cc-resume-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
+/* ── AI FIX BAR ────────────────────────────────────────────────── */
+.cc-resume-fix-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.cc-btn-fix { display: flex; align-items: center; gap: 6px; padding: 9px 16px; background: linear-gradient(135deg, #1a1a2e, #0f3460); color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
+.cc-btn-fix:hover:not(:disabled) { opacity: .85; }
+.cc-btn-fix:disabled { opacity: .5; cursor: not-allowed; }
+.cc-btn-edit { display: flex; align-items: center; gap: 6px; padding: 9px 16px; background: rgba(41,151,255,.1); color: #2997ff; border: 1px solid rgba(41,151,255,.3); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.cc-btn-edit:hover:not(:disabled) { background: rgba(41,151,255,.18); }
+.cc-btn-edit:disabled { opacity: .5; cursor: not-allowed; }
+.cc-btn-sm-re { font-size: 12px; padding: 7px 12px; }
+
+/* ── AI FIXED RESUME PANEL ─────────────────────────────────────── */
+.cc-fixed-resume-panel { border: 1px solid rgba(48,209,88,.25); border-radius: 16px; overflow: hidden; animation: cc-modal-in .25s ease; }
+.cc-frp-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: rgba(48,209,88,.06); font-size: 13px; font-weight: 700; color: #1d1d1f; border-bottom: 1px solid rgba(48,209,88,.15); }
+.cc-frp-actions { display: flex; gap: 6px; margin-left: auto; align-items: center; }
+.cc-frp-btn { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .2s; color: #fff; }
+.cc-frp-btn:hover { opacity: .85; }
+.cc-frp-pdf { background: #ff453a; }
+.cc-frp-doc { background: #2997ff; }
+.cc-frp-close { background: none; border: none; cursor: pointer; color: #8e8e93; margin-left: 4px; display: flex; align-items: center; padding: 4px; border-radius: 6px; }
+.cc-frp-close:hover { background: rgba(0,0,0,.08); }
+.cc-frp-preview { padding: 20px; font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.7; color: #1d1d1f; white-space: pre-wrap; max-height: 360px; overflow-y: auto; background: #fafafa; margin: 0; }
+
+/* ── RESUME EDITOR ─────────────────────────────────────────────── */
+.cc-resume-editor { border: 1px solid rgba(41,151,255,.2); border-radius: 16px; overflow: hidden; animation: cc-modal-in .25s ease; }
+.cc-re-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: rgba(41,151,255,.06); border-bottom: 1px solid rgba(41,151,255,.15); font-size: 13px; font-weight: 700; color: #1d1d1f; }
+.cc-re-actions { display: flex; gap: 6px; margin-left: auto; align-items: center; }
+.cc-re-body { padding: 16px; display: flex; flex-direction: column; gap: 18px; max-height: 520px; overflow-y: auto; }
+.cc-re-section { display: flex; flex-direction: column; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,.06); }
+.cc-re-section:last-child { border-bottom: none; }
+.cc-re-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #3a3a3c; display: flex; align-items: center; justify-content: space-between; }
+.cc-re-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cc-re-field { display: flex; flex-direction: column; gap: 4px; }
+.cc-re-field label { font-size: 11px; font-weight: 600; color: #8e8e93; }
+.cc-re-field input { padding: 8px 10px; border: 1px solid rgba(0,0,0,.12); border-radius: 8px; font-size: 13px; outline: none; transition: border-color .15s; background: #fff; }
+.cc-re-field input:focus { border-color: #2997ff; }
+.cc-re-textarea { padding: 8px 10px; border: 1px solid rgba(0,0,0,.12); border-radius: 8px; font-size: 13px; outline: none; resize: vertical; font-family: inherit; line-height: 1.5; transition: border-color .15s; background: #fff; }
+.cc-re-textarea:focus { border-color: #2997ff; }
+.cc-re-hint { font-size: 11px; color: #8e8e93; }
+.cc-re-entry { background: rgba(0,0,0,.02); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.cc-re-add-btn { background: rgba(41,151,255,.1); color: #2997ff; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; padding: 3px 8px; cursor: pointer; }
+.cc-re-add-btn:hover { background: rgba(41,151,255,.2); }
+.cc-re-del-btn { align-self: flex-start; background: rgba(255,59,48,.08); color: #ff3b30; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; padding: 4px 10px; cursor: pointer; }
+.cc-re-del-btn:hover { background: rgba(255,59,48,.16); }
+
 /* ── JOBS TAB EXTRAS ─────────────────────────────────────────── */
 .cc-apply-links { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; }
 .cc-apply-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; }
