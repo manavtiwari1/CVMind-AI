@@ -167,7 +167,90 @@
 .cc-hero-agents { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 600px; margin: 0 auto; }
 .cc-agent-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,0,0,.04); border: 1px solid rgba(0,0,0,.08); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 500; color: #3a3a3c; }
 
-.cc-features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 48px 0; }
+.cc-features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 48px 0 0; }
+
+/* ── EQUIPPED SECTION ──────────────────────────────────────── */
+.cc-equipped-section { margin: 56px 0 48px; }
+.cc-equipped-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.cc-equipped-eyebrow { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: .1em; color: #636366; background: rgba(0,0,0,.04); border: 1px solid rgba(0,0,0,.08); padding: 5px 12px; border-radius: 20px; margin-bottom: 16px; }
+.cc-equipped-title { font-size: clamp(26px, 4vw, 38px); font-weight: 800; letter-spacing: -1px; line-height: 1.1; margin: 0 0 28px; color: #1d1d1f; }
+
+/* Accordion */
+.cc-accordion { display: flex; flex-direction: column; border: 1px solid rgba(0,0,0,.09); border-radius: 16px; overflow: hidden; }
+.cc-acc-item { border-bottom: 1px solid rgba(0,0,0,.07); cursor: pointer; transition: background .15s; }
+.cc-acc-item:last-child { border-bottom: none; }
+.cc-acc-item.open { background: rgba(0,0,0,.02); }
+.cc-acc-header { display: flex; align-items: center; gap: 10px; padding: 14px 16px; }
+.cc-acc-icon { display: flex; align-items: center; flex-shrink: 0; }
+.cc-acc-title { flex: 1; font-size: 14px; font-weight: 700; color: #1d1d1f; }
+.cc-acc-toggle { font-size: 18px; font-weight: 300; color: #8e8e93; line-height: 1; transition: color .15s; }
+.cc-acc-item.open .cc-acc-toggle { color: var(--acc-c, #2997ff); }
+.cc-acc-item.open .cc-acc-title { color: var(--acc-c, #2997ff); }
+.cc-acc-body { padding: 0 16px 16px 46px; font-size: 13px; line-height: 1.65; color: #636366; animation: cc-acc-in .2s ease; }
+@keyframes cc-acc-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Mockup window */
+.cc-equipped-right { perspective: 800px; }
+.cc-mockup-window { background: #fff; border-radius: 18px; box-shadow: 0 24px 72px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06); transform: rotateY(-3deg) rotateX(2deg); transition: all .35s ease; overflow: hidden; }
+.cc-equipped-right:hover .cc-mockup-window { transform: rotateY(0deg) rotateX(0deg); }
+.cc-mockup-titlebar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: #f5f5f7; border-bottom: 1px solid rgba(0,0,0,.08); }
+.cc-mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+.cc-mock-label { display: flex; align-items: center; gap: 5px; margin-left: 6px; font-size: 11px; font-weight: 600; color: #636366; }
+.cc-mock-body { padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 280px; animation: cc-mock-in .25s ease; }
+@keyframes cc-mock-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.cc-mock-section-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; color: #8e8e93; text-transform: uppercase; }
+
+/* Resume mockup */
+.cc-mock-ats-row { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+.cc-mock-ats-label { font-size: 16px; font-weight: 800; color: #1d1d1f; }
+.cc-mock-ats-sub { font-size: 12px; font-weight: 600; margin-top: 2px; }
+.cc-mock-kw-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #3a3a3c; }
+.cc-mock-kw-row span:first-child { width: 90px; }
+.cc-mock-kw-row span:last-child { width: 32px; text-align: right; font-weight: 600; }
+.cc-mock-bar { flex: 1; height: 6px; background: #e8e8ed; border-radius: 99px; overflow: hidden; }
+.cc-mock-bar div { height: 100%; border-radius: 99px; }
+.cc-mock-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.cc-mock-badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+.cc-mock-badge.green { background: rgba(48,209,88,.12); color: #30d158; }
+.cc-mock-badge.orange { background: rgba(255,159,10,.12); color: #ff9f0a; }
+
+/* Jobs mockup */
+.cc-mock-job-card { display: flex; align-items: center; gap: 10px; padding: 9px 10px; background: #f5f5f7; border-radius: 10px; }
+.cc-mock-job-score { font-size: 14px; font-weight: 800; width: 36px; text-align: center; }
+.cc-mock-job-info { flex: 1; }
+.cc-mock-job-title { font-size: 12px; font-weight: 700; color: #1d1d1f; }
+.cc-mock-job-meta { font-size: 11px; color: #8e8e93; margin-top: 1px; }
+.cc-mock-apply-btn { font-size: 10px; font-weight: 700; background: #1d1d1f; color: #fff; padding: 4px 9px; border-radius: 6px; white-space: nowrap; }
+.cc-mock-job-footer { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #8e8e93; margin-top: 2px; }
+
+/* Interview mockup */
+.cc-mock-question { display: flex; gap: 8px; align-items: flex-start; background: rgba(255,159,10,.06); border-radius: 10px; padding: 10px 12px; font-size: 12px; line-height: 1.5; color: #3a3a3c; }
+.cc-mock-answer-area { background: #f5f5f7; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #8e8e93; min-height: 44px; }
+.cc-mock-feedback-row { display: flex; align-items: center; gap: 8px; }
+.cc-mock-score-pill { font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+.cc-mock-fb-text { font-size: 11px; color: #636366; line-height: 1.4; }
+.cc-mock-progress-dots { display: flex; gap: 6px; justify-content: center; margin-top: 4px; }
+.cc-mock-dot-step { width: 20px; height: 5px; border-radius: 99px; background: #e8e8ed; }
+.cc-mock-dot-step.done { background: #30d158; }
+.cc-mock-dot-step.active { background: #ff9f0a; }
+
+/* Health mockup */
+.cc-mock-health-center { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+.cc-mock-health-label { font-size: 15px; font-weight: 800; color: #1d1d1f; }
+
+/* Apply mockup */
+.cc-mock-app-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,.05); }
+.cc-mock-app-row:last-of-type { border-bottom: none; }
+.cc-mock-app-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.cc-mock-app-info { flex: 1; }
+.cc-mock-app-title { font-size: 12px; font-weight: 700; color: #1d1d1f; }
+.cc-mock-app-co { font-size: 10px; color: #8e8e93; margin-top: 1px; }
+.cc-mock-app-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+
+@media (max-width: 720px) {
+  .cc-equipped-inner { grid-template-columns: 1fr; }
+  .cc-mockup-window { transform: none; }
+}
 .cc-feature-card { background: #fff; border: 1px solid rgba(0,0,0,.08); border-radius: 18px; padding: 22px; }
 .cc-feature-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
 .cc-feature-card h3 { font-size: 15px; font-weight: 700; margin: 0 0 6px; }

@@ -38,6 +38,14 @@ const FEATURES = [
   { icon: <BarChart3 size={28} />, color: '#ff9f0a', title: 'Career Analytics', desc: 'Track interview rate, offer rate, resume performance, and career growth over time.' },
 ];
 
+const COPILOT_FEATURES = [
+  { icon: <FileText size={20} />, color: '#2997ff', title: 'AI Resume Agent', desc: 'Get a 0–100 ATS score with complete keyword gap analysis. Our AI rewrites weak bullet points, injects missing keywords, and formats your resume to pass every screening filter automatically.', mockup: 'resume' },
+  { icon: <Search size={20} />, color: '#30d158', title: 'Smart Job Discovery', desc: 'Upload your resume once. AI scans and ranks matching roles across LinkedIn, Naukri, and Indeed by match %, salary, and location — filtered to exactly what you want.', mockup: 'jobs' },
+  { icon: <MessageSquare size={20} />, color: '#ff9f0a', title: 'Interview AI Coach', desc: 'Practice HR, Technical, and STAR behavioral rounds with AI-generated questions tailored to your resume. Get live scoring, refined model answers, and a full performance report.', mockup: 'interview' },
+  { icon: <TrendingUp size={20} />, color: '#bf5af2', title: 'Career Health Score', desc: 'A live 0–100 career fitness score across resume strength, LinkedIn optimization, skill gaps, interview readiness, and application velocity — updated as your profile improves.', mockup: 'health' },
+  { icon: <Briefcase size={20} />, color: '#ff6b35', title: 'One-Click Apply & Track', desc: 'Apply to matched jobs on LinkedIn, Naukri, or Indeed in one click. Every application auto-logs with status, date, and portal — giving you complete pipeline visibility.', mockup: 'apply' },
+];
+
 const SKILL_DEMAND: Record<string, number> = {
   'React': 82, 'Node.js': 78, 'Python': 88, 'TypeScript': 76, 'Docker': 79,
   'Kubernetes': 68, 'AWS': 73, 'System Design': 85, 'GraphQL': 52, 'Redis': 61,
@@ -109,6 +117,7 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
   const [dailyBriefing, setDailyBriefing] = useState<any>(null);
   const [agentActive, setAgentActive] = useState('');
   const [agentPanel, setAgentPanel] = useState<string | null>(null);
+  const [activeFeature, setActiveFeature] = useState(0);
 
   // Resume analysis
   const [resumeAnalysis, setResumeAnalysis] = useState<any>(null);
@@ -429,6 +438,139 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
             <p>{f.desc}</p>
           </div>
         ))}
+      </div>
+
+      {/* ── EQUIPPED SECTION ── */}
+      <div className="cc-equipped-section">
+        <div className="cc-equipped-inner">
+          <div className="cc-equipped-left">
+            <div className="cc-equipped-eyebrow"><Zap size={12} />FULLY EQUIPPED FOR THE AGE OF AI</div>
+            <h2 className="cc-equipped-title">Fully equipped for<br/>your career</h2>
+            <div className="cc-accordion">
+              {COPILOT_FEATURES.map((f, i) => (
+                <div key={i} className={`cc-acc-item ${activeFeature === i ? 'open' : ''}`} onClick={() => setActiveFeature(i)} style={{ '--acc-c': f.color } as any}>
+                  <div className="cc-acc-header">
+                    <span className="cc-acc-icon" style={{ color: f.color }}>{f.icon}</span>
+                    <span className="cc-acc-title">{f.title}</span>
+                    <span className="cc-acc-toggle">{activeFeature === i ? '−' : '+'}</span>
+                  </div>
+                  {activeFeature === i && <div className="cc-acc-body">{f.desc}</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="cc-equipped-right">
+            <div className="cc-mockup-window">
+              <div className="cc-mockup-titlebar">
+                <span className="cc-mock-dot" style={{ background: '#ff5f57' }} />
+                <span className="cc-mock-dot" style={{ background: '#febc2e' }} />
+                <span className="cc-mock-dot" style={{ background: '#28c840' }} />
+                <span className="cc-mock-label"><Bot size={11} />AI Career Copilot</span>
+              </div>
+
+              {/* Resume mockup */}
+              {activeFeature === 0 && (
+                <div className="cc-mock-body cc-mock-resume">
+                  <div className="cc-mock-ats-row">
+                    <svg width="72" height="72" viewBox="0 0 72 72">
+                      <circle cx="36" cy="36" r="28" fill="none" stroke="#e8e8ed" strokeWidth="6"/>
+                      <circle cx="36" cy="36" r="28" fill="none" stroke="#2997ff" strokeWidth="6" strokeDasharray="175.9" strokeDashoffset="26" strokeLinecap="round" transform="rotate(-90 36 36)"/>
+                      <text x="36" y="41" textAnchor="middle" fontSize="18" fontWeight="800" fill="#1d1d1f">85</text>
+                    </svg>
+                    <div><div className="cc-mock-ats-label">ATS Score</div><div className="cc-mock-ats-sub" style={{ color: '#30d158' }}>Great match ✓</div></div>
+                  </div>
+                  <div className="cc-mock-section-label">KEYWORD ANALYSIS</div>
+                  {[['React.js', 98, '#30d158'], ['TypeScript', 92, '#30d158'], ['AWS Cloud', 74, '#2997ff'], ['System Design', 55, '#ff9f0a']].map(([k, v, c]) => (
+                    <div key={String(k)} className="cc-mock-kw-row">
+                      <span>{k}</span>
+                      <div className="cc-mock-bar"><div style={{ width: `${v}%`, background: String(c) }} /></div>
+                      <span>{v}%</span>
+                    </div>
+                  ))}
+                  <div className="cc-mock-badges">
+                    <span className="cc-mock-badge green">✓ Format OK</span>
+                    <span className="cc-mock-badge green">✓ One Page</span>
+                    <span className="cc-mock-badge orange">⚠ 3 gaps</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Jobs mockup */}
+              {activeFeature === 1 && (
+                <div className="cc-mock-body cc-mock-jobs">
+                  <div className="cc-mock-section-label">TOP JOB MATCHES</div>
+                  {[{ title: 'Senior Frontend Engineer', co: 'Razorpay', score: 94, salary: '₹25–40L' },
+                    { title: 'Full Stack Developer', co: 'Zepto', score: 87, salary: '₹18–30L' },
+                    { title: 'React Developer', co: 'CRED', score: 81, salary: '₹20–35L' }].map((j, i) => (
+                    <div key={i} className="cc-mock-job-card">
+                      <div className="cc-mock-job-score" style={{ color: i === 0 ? '#30d158' : '#2997ff' }}>{j.score}%</div>
+                      <div className="cc-mock-job-info"><div className="cc-mock-job-title">{j.title}</div><div className="cc-mock-job-meta">{j.co} · {j.salary}</div></div>
+                      <div className="cc-mock-apply-btn">Apply</div>
+                    </div>
+                  ))}
+                  <div className="cc-mock-job-footer"><Search size={11} />30 matches found across 3 platforms</div>
+                </div>
+              )}
+
+              {/* Interview mockup */}
+              {activeFeature === 2 && (
+                <div className="cc-mock-body cc-mock-interview">
+                  <div className="cc-mock-section-label">INTERVIEW COACH · HR Round</div>
+                  <div className="cc-mock-question"><MessageSquare size={13} color="#ff9f0a" /><span>Tell me about yourself and why you're the right fit for this role?</span></div>
+                  <div className="cc-mock-answer-area">Your answer goes here…</div>
+                  <div className="cc-mock-feedback-row">
+                    <div className="cc-mock-score-pill" style={{ background: '#30d15820', color: '#30d158' }}>8 / 10</div>
+                    <div className="cc-mock-fb-text">Strong opening. Add a specific metric to boost impact.</div>
+                  </div>
+                  <div className="cc-mock-progress-dots">
+                    {[0,1,2,3,4].map(i => <div key={i} className={`cc-mock-dot-step ${i === 1 ? 'active' : i < 1 ? 'done' : ''}`} />)}
+                  </div>
+                </div>
+              )}
+
+              {/* Health score mockup */}
+              {activeFeature === 3 && (
+                <div className="cc-mock-body cc-mock-health">
+                  <div className="cc-mock-health-center">
+                    <svg width="90" height="90" viewBox="0 0 90 90">
+                      <circle cx="45" cy="45" r="36" fill="none" stroke="#e8e8ed" strokeWidth="7"/>
+                      <circle cx="45" cy="45" r="36" fill="none" stroke="url(#hg)" strokeWidth="7" strokeDasharray="226" strokeDashoffset="40" strokeLinecap="round" transform="rotate(-90 45 45)"/>
+                      <defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#bf5af2"/><stop offset="100%" stopColor="#2997ff"/></linearGradient></defs>
+                      <text x="45" y="50" textAnchor="middle" fontSize="24" fontWeight="800" fill="#1d1d1f">84</text>
+                    </svg>
+                    <div className="cc-mock-health-label">Career Health</div>
+                  </div>
+                  {[['Resume', 88, '#30d158'], ['LinkedIn', 72, '#2997ff'], ['Skills', 65, '#bf5af2'], ['Interview', 78, '#ff9f0a'], ['Applications', 55, '#ff6b35']].map(([k, v, c]) => (
+                    <div key={String(k)} className="cc-mock-kw-row">
+                      <span>{k}</span>
+                      <div className="cc-mock-bar"><div style={{ width: `${v}%`, background: String(c) }} /></div>
+                      <span>{v}%</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Apply & Track mockup */}
+              {activeFeature === 4 && (
+                <div className="cc-mock-body cc-mock-apply">
+                  <div className="cc-mock-section-label">APPLICATION TRACKER</div>
+                  {[{ title: 'Senior Frontend Eng', co: 'Razorpay', status: 'Applied', color: '#2997ff', days: '2d ago' },
+                    { title: 'Full Stack Dev', co: 'Zepto', status: 'Viewed', color: '#ff9f0a', days: '4d ago' },
+                    { title: 'React Developer', co: 'CRED', status: 'Interview', color: '#30d158', days: '6d ago' },
+                    { title: 'ML Engineer', co: 'Google', status: 'Applied', color: '#2997ff', days: '1w ago' }].map((a, i) => (
+                    <div key={i} className="cc-mock-app-row">
+                      <div className="cc-mock-app-dot" style={{ background: a.color }} />
+                      <div className="cc-mock-app-info"><div className="cc-mock-app-title">{a.title}</div><div className="cc-mock-app-co">{a.co} · {a.days}</div></div>
+                      <span className="cc-mock-app-status" style={{ color: a.color, background: `${a.color}18` }}>{a.status}</span>
+                    </div>
+                  ))}
+                  <div className="cc-mock-job-footer"><Activity size={11} />4 active applications tracked</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="cc-agents-section">
