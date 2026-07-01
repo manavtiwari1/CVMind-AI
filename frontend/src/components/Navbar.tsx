@@ -43,7 +43,10 @@ export default function Navbar({
   const [mobileLinkedInOpen, setMobileLinkedInOpen] = useState(false);
   const [mobileCareerOpen, setMobileCareerOpen] = useState(false);
   const [mobileCareerAiOpen, setMobileCareerAiOpen] = useState(false);
-  const [activeModal, setActiveModal] = useState<'profile' | 'works' | 'settings' | null>(null);
+  const [activeModal, setActiveModal] = useState<'profile' | 'works' | 'settings' | 'delete-account' | null>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
   const [user, setUser] = useState<any>(null);
 
 
@@ -263,6 +266,25 @@ export default function Navbar({
       }
     } catch (err: any) {
       alert(err.message || 'Failed to delete work.');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const userId = user?.id || user?._id;
+    if (!userId) return;
+    setDeleteLoading(true);
+    setDeleteError('');
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
+    try {
+      const res = await fetch(`${baseUrl}/api/user/${userId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete account.');
+      setActiveModal(null);
+      handleSignOut();
+    } catch (err: any) {
+      setDeleteError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -493,7 +515,11 @@ export default function Navbar({
                   </button>
                   
                   <div className="nav-profile-dropdown-divider" />
-                  
+
+                  <button className="nav-profile-dropdown-item delete-account-item" onClick={() => { setShowDropdown(false); setDeleteConfirmText(''); setDeleteError(''); setActiveModal('delete-account'); }}>
+                    <Trash2 size={14} /> Delete Account
+                  </button>
+
                   <button className="nav-profile-dropdown-item signout-item" onClick={() => { setShowDropdown(false); handleSignOut(); }}>
                     <LogOut size={14} /> Sign Out
                   </button>
@@ -1031,6 +1057,50 @@ export default function Navbar({
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Delete Account Confirmation Modal */}
+      {activeModal === 'delete-account' && (
+        <div className="nav-modal-overlay animate-fade-in" onClick={() => setActiveModal(null)}>
+          <div className="nav-modal-card delete-account-card glass-card animate-scale-up" onClick={e => e.stopPropagation()}>
+            <button className="nav-modal-close" onClick={() => setActiveModal(null)} aria-label="Close modal">
+              <X size={16} />
+            </button>
+            <div className="nav-modal-header">
+              <Trash2 size={18} className="delete-account-icon" />
+              <h2 className="nav-modal-title" style={{ color: '#ef4444' }}>Delete Account</h2>
+              <p className="nav-modal-subtitle">This action is <strong>permanent and irreversible</strong>. All your data — profile, works, history — will be deleted forever.</p>
+            </div>
+            <div className="delete-account-body">
+              <p className="delete-account-label">Type <strong>DELETE</strong> to confirm:</p>
+              <input
+                className="delete-account-input"
+                type="text"
+                placeholder="Type DELETE here"
+                value={deleteConfirmText}
+                onChange={e => setDeleteConfirmText(e.target.value)}
+                autoComplete="off"
+              />
+              {deleteError && (
+                <div className="nav-modal-error-bar">
+                  <AlertCircle size={14} /> {deleteError}
+                </div>
+              )}
+              <div className="delete-account-actions">
+                <button className="delete-account-cancel-btn" onClick={() => setActiveModal(null)}>
+                  Cancel
+                </button>
+                <button
+                  className="delete-account-confirm-btn"
+                  disabled={deleteConfirmText !== 'DELETE' || deleteLoading}
+                  onClick={handleDeleteAccount}
+                >
+                  {deleteLoading ? <><Loader2 size={14} className="cl-spin" /> Deleting…</> : <><Trash2 size={14} /> Yes, Delete My Account</>}
+                </button>
+              </div>
             </div>
           </div>
         </div>
