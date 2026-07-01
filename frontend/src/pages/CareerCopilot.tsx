@@ -3,7 +3,7 @@ import {
   Sparkles, Upload, Target, Brain, Briefcase, TrendingUp, Users, BarChart3,
   MessageSquare, DollarSign, BookOpen, CheckCircle2, ChevronRight, ChevronLeft,
   RefreshCw, Zap, Star, ArrowRight, Bell, Globe, Code2,
-  FileText, Linkedin, AlertCircle, Play, LayoutDashboard,
+  FileText, Linkedin as LinkedinIcon, AlertCircle, Play, LayoutDashboard,
   GraduationCap, Activity, Rocket, Bot, Search, X, ExternalLink, Youtube
 } from 'lucide-react';
 import './CareerCopilot.css';
@@ -22,7 +22,7 @@ interface InterviewSession {
 const AGENTS = [
   { icon: <FileText size={22} />, name: 'Resume Agent', color: '#2997ff', desc: 'ATS optimization, tailoring, keyword injection', status: 'active' },
   { icon: <Search size={22} />, name: 'Job Discovery', color: '#30d158', desc: 'Finds & ranks matching jobs across all platforms', status: 'active' },
-  { icon: <Linkedin size={22} />, name: 'LinkedIn Agent', color: '#0077b5', desc: 'Profile optimization, networking, posts', status: 'active' },
+  { icon: <LinkedinIcon size={22} />, name: 'LinkedIn Agent', color: '#0077b5', desc: 'Profile optimization, networking, posts', status: 'active' },
   { icon: <BookOpen size={22} />, name: 'Skill Coach', color: '#bf5af2', desc: 'Gap analysis, learning roadmap, certifications', status: 'active' },
   { icon: <MessageSquare size={22} />, name: 'Interview Coach', color: '#ff9f0a', desc: 'Mock sessions, STAR method, voice practice', status: 'active' },
   { icon: <Users size={22} />, name: 'Networking Agent', color: '#00c7be', desc: 'Recruiters, alumni, connection drafts', status: 'active' },
@@ -108,6 +108,7 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
   const [jobs, setJobs] = useState<any[]>([]);
   const [dailyBriefing, setDailyBriefing] = useState<any>(null);
   const [agentActive, setAgentActive] = useState('');
+  const [agentPanel, setAgentPanel] = useState<string | null>(null);
 
   // Resume analysis
   const [resumeAnalysis, setResumeAnalysis] = useState<any>(null);
@@ -611,15 +612,148 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
             <div className="cc-agents-status">
               <div className="cc-section-label">Active Agents</div>
               <div className="cc-agents-row">
-                {AGENTS.map((a, i) => (
-                  <button key={i} className={`cc-agent-status-card ${agentActive === a.name ? 'active' : ''}`} onClick={() => setAgentActive(agentActive === a.name ? '' : a.name)} style={{ '--ag-c': a.color } as any}>
-                    <div style={{ color: a.color }}>{a.icon}</div>
-                    <span>{a.name.split(' ')[0]}</span>
-                    <div className="cc-agent-pulse" style={{ background: a.color }} />
-                  </button>
-                ))}
+                {AGENTS.map((a, i) => {
+                  const tabMap: Record<string, Tab> = {
+                    'Resume Agent': 'resume', 'Job Discovery': 'jobs',
+                    'Skill Coach': 'learn', 'Interview Coach': 'interview',
+                    'Application Intel': 'analytics', 'Career Analytics': 'analytics',
+                  };
+                  const panelAgents = ['LinkedIn Agent', 'Networking Agent', 'Salary Intel'];
+                  const isPanel = panelAgents.includes(a.name);
+                  const handleClick = () => {
+                    setAgentActive(a.name);
+                    if (isPanel) {
+                      setAgentPanel(agentPanel === a.name ? null : a.name);
+                    } else {
+                      setAgentPanel(null);
+                      if (tabMap[a.name]) setTab(tabMap[a.name]);
+                    }
+                  };
+                  return (
+                    <button key={i} className={`cc-agent-status-card ${agentActive === a.name ? 'active' : ''}`} onClick={handleClick} style={{ '--ag-c': a.color } as any} title={a.desc}>
+                      <div style={{ color: a.color }}>{a.icon}</div>
+                      <span>{a.name.split(' ')[0]}</span>
+                      <div className="cc-agent-pulse" style={{ background: a.color }} />
+                    </button>
+                  );
+                })}
               </div>
-              {agentActive && <div className="cc-agent-detail">{(() => { const ag = AGENTS.find(a => a.name === agentActive)!; return <><span style={{ color: ag.color, fontWeight: 700 }}>{ag.name}</span> — {ag.desc}</>; })()}</div>}
+              {agentActive && !agentPanel && (
+                <div className="cc-agent-detail">
+                  {(() => { const ag = AGENTS.find(a => a.name === agentActive)!; return <><span style={{ color: ag.color, fontWeight: 700 }}>{ag.name}</span> — {ag.desc} <span className="cc-agent-detail-action">↑ Navigating…</span></>; })()}
+                </div>
+              )}
+              {agentPanel === 'LinkedIn Agent' && (
+                <div className="cc-agent-panel">
+                  <div className="cc-agent-panel-header" style={{ borderColor: '#0077b5' }}>
+                    <LinkedinIcon size={18} color="#0077b5" /><span style={{ color: '#0077b5' }}>LinkedIn Agent</span>
+                    <button className="cc-panel-close" onClick={() => { setAgentPanel(null); setAgentActive(''); }}><X size={14} /></button>
+                  </div>
+                  <div className="cc-agent-panel-body">
+                    <div className="cc-ap-section">
+                      <div className="cc-ap-label">Optimized Headline</div>
+                      <div className="cc-ap-content cc-ap-copyable">
+                        {profile?.title || goal} | {(profile?.skills || []).slice(0, 3).join(' · ')} | {profile?.yearsOfExperience ? `${profile.yearsOfExperience}+ yrs exp` : 'Open to Opportunities'}
+                      </div>
+                    </div>
+                    <div className="cc-ap-section">
+                      <div className="cc-ap-label">About Section Draft</div>
+                      <div className="cc-ap-content">
+                        I'm a passionate {profile?.title || goal} with {profile?.yearsOfExperience || '2+'} years of experience building impactful solutions using {(profile?.skills || ['modern technologies']).slice(0, 4).join(', ')}. I thrive at the intersection of technical excellence and business outcomes — turning complex problems into clean, scalable solutions. Currently seeking {goal || 'exciting new opportunities'} where I can drive meaningful impact. Let's connect!
+                      </div>
+                    </div>
+                    <div className="cc-ap-section">
+                      <div className="cc-ap-label">Post Ideas to Boost Visibility</div>
+                      {['Share a project you built: what problem it solves, your tech stack, and key learnings.',
+                        `Write about your journey learning ${(profile?.skills || ['your top skill'])[0]} — your mistakes and breakthroughs.`,
+                        'Share 3 interview tips specific to your domain. Engineers love concrete advice.'
+                      ].map((idea, i) => (
+                        <div key={i} className="cc-ap-post-idea"><Zap size={12} color="#0077b5" /><span>{idea}</span></div>
+                      ))}
+                    </div>
+                    <a href="https://www.linkedin.com/in/" target="_blank" rel="noopener noreferrer" className="cc-ap-action-btn" style={{ background: '#0077b5' }}>
+                      <ExternalLink size={14} /> Open LinkedIn Profile
+                    </a>
+                  </div>
+                </div>
+              )}
+              {agentPanel === 'Networking Agent' && (
+                <div className="cc-agent-panel">
+                  <div className="cc-agent-panel-header" style={{ borderColor: '#00c7be' }}>
+                    <Users size={18} color="#00c7be" /><span style={{ color: '#00c7be' }}>Networking Agent</span>
+                    <button className="cc-panel-close" onClick={() => { setAgentPanel(null); setAgentActive(''); }}><X size={14} /></button>
+                  </div>
+                  <div className="cc-agent-panel-body">
+                    <div className="cc-ap-section">
+                      <div className="cc-ap-label">Recruiter Outreach Message</div>
+                      <div className="cc-ap-content cc-ap-copyable">
+                        Hi [Recruiter Name], I came across your profile while exploring {goal || 'tech'} opportunities. I'm a {profile?.title || goal} with {profile?.yearsOfExperience || '2+'} years in {(profile?.skills || ['software development']).slice(0, 2).join(' & ')}. Would love to learn about any open roles at your company. Happy to share my resume. Thanks!
+                      </div>
+                    </div>
+                    <div className="cc-ap-section">
+                      <div className="cc-ap-label">Peer Connection Request</div>
+                      <div className="cc-ap-content cc-ap-copyable">
+                        Hey [Name]! I noticed you work as a {goal} — would love to connect and exchange learnings. Always great to grow my network with like-minded professionals in {(profile?.industries || ['tech'])[0] || 'tech'}!
+                      </div>
+                    </div>
+                    <div className="cc-ap-section">
+                      <div className="cc-ap-label">Daily Networking Actions</div>
+                      {[`Search "${goal} hiring" on LinkedIn and connect with 3 active recruiters`,
+                        'Comment on 2 posts in your feed with a thoughtful insight (boosts visibility)',
+                        'Follow 5 companies in your target industry to stay updated on openings',
+                        'Send a follow-up to any pending applications older than 7 days'
+                      ].map((action, i) => (
+                        <div key={i} className="cc-ap-post-idea"><CheckCircle2 size={12} color="#00c7be" /><span>{action}</span></div>
+                      ))}
+                    </div>
+                    <a href={`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent((goal || 'software engineer') + ' recruiter')}`} target="_blank" rel="noopener noreferrer" className="cc-ap-action-btn" style={{ background: '#00c7be' }}>
+                      <ExternalLink size={14} /> Find Recruiters on LinkedIn
+                    </a>
+                  </div>
+                </div>
+              )}
+              {agentPanel === 'Salary Intel' && (() => {
+                const SALARY_MAP: Record<string, [number, number, number]> = {
+                  'Software Engineer': [10, 35, 18], 'Frontend Developer': [8, 28, 15],
+                  'Backend Developer': [10, 32, 17], 'Full Stack Developer': [10, 35, 18],
+                  'Data Scientist': [12, 40, 22], 'AI/ML Engineer': [15, 50, 28],
+                  'DevOps Engineer': [12, 38, 20], 'Product Manager': [15, 45, 25],
+                  'React Developer': [8, 28, 15], 'Data Analyst': [7, 22, 13],
+                };
+                const key = Object.keys(SALARY_MAP).find(k => (goal || '').toLowerCase().includes(k.toLowerCase())) || 'Software Engineer';
+                const [min, max, avg] = SALARY_MAP[key] || [10, 30, 16];
+                return (
+                  <div className="cc-agent-panel">
+                    <div className="cc-agent-panel-header" style={{ borderColor: '#30d158' }}>
+                      <DollarSign size={18} color="#30d158" /><span style={{ color: '#30d158' }}>Salary Intel</span>
+                      <button className="cc-panel-close" onClick={() => { setAgentPanel(null); setAgentActive(''); }}><X size={14} /></button>
+                    </div>
+                    <div className="cc-agent-panel-body">
+                      <div className="cc-salary-range-card">
+                        <div className="cc-salary-role">{goal || 'Software Engineer'} · India Market</div>
+                        <div className="cc-salary-bars">
+                          <div className="cc-salary-bar-row"><span>Entry</span><div className="cc-sbar"><div style={{ width: `${(min/max)*100}%`, background: '#ff9f0a' }} /></div><span>₹{min}L</span></div>
+                          <div className="cc-salary-bar-row cc-highlight"><span>Mid (You)</span><div className="cc-sbar"><div style={{ width: `${(avg/max)*100}%`, background: '#30d158' }} /></div><span>₹{avg}L</span></div>
+                          <div className="cc-salary-bar-row"><span>Senior</span><div className="cc-sbar"><div style={{ width: '100%', background: '#2997ff' }} /></div><span>₹{max}L</span></div>
+                        </div>
+                      </div>
+                      <div className="cc-ap-section">
+                        <div className="cc-ap-label">Negotiation Tips</div>
+                        {[`Your skills in ${(profile?.skills || ['your stack'])[0]} command a premium — mention it early.`,
+                          `Counter-offer: always ask for at least 15–20% above the first offer.`,
+                          'Research the company\'s funding stage — Series B+ companies have more headroom.',
+                          'Ask for stock options if base is non-negotiable.'
+                        ].map((tip, i) => (
+                          <div key={i} className="cc-ap-post-idea"><Star size={12} color="#30d158" /><span>{tip}</span></div>
+                        ))}
+                      </div>
+                      <a href={`https://www.glassdoor.co.in/Salaries/${encodeURIComponent((goal || 'software-engineer').toLowerCase().replace(/\s+/g, '-'))}-salary-SRCH_KO0,${(goal || 'Software Engineer').length}.htm`} target="_blank" rel="noopener noreferrer" className="cc-ap-action-btn" style={{ background: '#30d158' }}>
+                        <ExternalLink size={14} /> Check Live Salaries on Glassdoor
+                      </a>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
             <div className="cc-quick-jobs">
               <div className="cc-section-label">Top Job Matches Today</div>
@@ -709,7 +843,7 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
                     {(j.missingSkills || []).slice(0, 2).map((s: string) => <span key={s} className="cc-skill-missing">{s}</span>)}
                   </div>
                   <div className="cc-apply-links">
-                    <button className="cc-apply-btn cc-apply-linkedin" onClick={() => applyToJob(j, 'linkedin')}><Linkedin size={13} /> LinkedIn</button>
+                    <button className="cc-apply-btn cc-apply-linkedin" onClick={() => applyToJob(j, 'linkedin')}><LinkedinIcon size={13} /> LinkedIn</button>
                     <button className="cc-apply-btn cc-apply-naukri" onClick={() => applyToJob(j, 'naukri')}>🅽 Naukri</button>
                     <button className="cc-apply-btn cc-apply-indeed" onClick={() => applyToJob(j, 'indeed')}><Search size={13} /> Indeed</button>
                   </div>
@@ -816,7 +950,7 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
                 {applications.slice().reverse().slice(0, 8).map((a, i) => (
                   <div key={i} className="cc-app-row">
                     <div className="cc-app-icon" style={{ background: a.portal === 'linkedin' ? 'rgba(0,119,181,.1)' : a.portal === 'naukri' ? 'rgba(255,107,53,.1)' : 'rgba(33,100,243,.1)' }}>
-                      {a.portal === 'linkedin' ? <Linkedin size={14} color="#0077b5" /> : <Search size={14} color="#ff6b35" />}
+                      {a.portal === 'linkedin' ? <LinkedinIcon size={14} color="#0077b5" /> : <Search size={14} color="#ff6b35" />}
                     </div>
                     <div className="cc-app-info">
                       <div className="cc-app-title">{a.title} — {a.company}</div>
