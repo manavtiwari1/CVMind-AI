@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Resume Checker</string>
+    <string name="title_activity_main">AI Resume Checker</string>
+    <string name="package_name">com.airesumechecker.app</string>
+    <string name="custom_url_scheme">com.airesumechecker.app</string>
+</resources>

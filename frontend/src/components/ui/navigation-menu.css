@@ -1,0 +1,182 @@
+/* ══════════════════════════════════════════════════════════════
+   CV Mind — Navigation Menu Styles (Light / Enhancv style)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Menu Root */
+[data-slot="navigation-menu"] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* List container */
+[data-slot="navigation-menu-list"] {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Menu Item */
+[data-slot="navigation-menu-item"] {
+  position: relative;
+}
+
+/* Trigger Button — matches .nav-link exactly */
+[data-slot="navigation-menu-trigger"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: none;
+  border: none;
+  color: #374151;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: color 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+
+[data-slot="navigation-menu-trigger"]:hover {
+  color: #0d0d0d;
+  background: #f3f4f6;
+}
+
+[data-slot="navigation-menu-trigger"][data-popup-open="true"] {
+  color: #0d0d0d;
+  background: #f3f4f6;
+}
+
+[data-slot="navigation-menu-trigger"] svg {
+  color: #9ca3af;
+  transition: transform 0.2s ease;
+  width: 14px;
+  height: 14px;
+}
+
+[data-slot="navigation-menu-trigger"][data-popup-open="true"] svg {
+  transform: rotate(180deg);
+  color: #6b7280;
+}
+
+/* ── Positioner (the floating layer) ── */
+[data-slot="navigation-menu-positioner"] {
+  z-index: 1500 !important;
+}
+
+/* ── Popup panel — SOLID white, no backdrop blur ── */
+[data-slot="navigation-menu-popup"] {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 14px !important;
+  padding: 6px !important;
+  box-shadow:
+    0 4px 6px -1px rgba(0,0,0,0.07),
+    0 10px 32px -4px rgba(0,0,0,0.12),
+    0 0 0 1px rgba(0,0,0,0.03) !important;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+/* Arrow fill — white to match popup */
+.fill-popover { fill: #ffffff !important; }
+.fill-border  { fill: #e5e7eb !important; }
+
+/* Content area inside popup */
+[data-slot="navigation-menu-content"] {
+  padding: 0.25rem;
+  list-style: none;
+}
+
+/* Individual link rows */
+[data-slot="navigation-menu-link"] {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.12s ease, color 0.12s ease;
+  cursor: pointer;
+  text-align: left;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+}
+
+[data-slot="navigation-menu-link"]:hover {
+  background: #f3f4f6;
+  color: #0d0d0d;
+}
+
+[data-slot="navigation-menu-link"][data-active] {
+  background: rgba(45, 192, 141, 0.08);
+  color: #2dc08d;
+}
+
+[data-slot="navigation-menu-link"] .font-medium {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+}
+
+[data-slot="navigation-menu-link"]:hover .font-medium {
+  color: #0d0d0d;
+}
+
+[data-slot="navigation-menu-link"] .text-muted-foreground {
+  font-size: 0.775rem;
+  color: #6b7280;
+  margin-top: 0.1rem;
+  line-height: 1.4;
+}
+
+/* ── Multi-column grids ── */
+.nav-menu-grid-3cols {
+  display: grid;
+  grid-template-columns: 200px 200px 200px;
+  gap: 0.25rem;
+  padding: 0.5rem;
+}
+
+.nav-menu-grid-2cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  padding: 0.5rem;
+}
+
+.nav-menu-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.nav-menu-column-header {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #9ca3af;
+  padding: 0.4rem 0.85rem 0.25rem;
+  letter-spacing: 0.06em;
+  margin-top: 0.35rem;
+}
+
+.nav-menu-column-header:first-child {
+  margin-top: 0;
+}

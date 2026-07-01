@@ -1,0 +1,546 @@
+/* ════════════════════════════════════════════════════════════
+   CV Mind — Pricing Page Custom Styling (Matching Mockup)
+   ════════════════════════════════════════════════════════════ */
+
+.pricing-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem 2rem 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── 1. Header Hero ──────────────────────────────────────── */
+.pricing-hero {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 4.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.pricing-main-title {
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #1e293b;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.pricing-main-cta {
+  background: #2dc08d;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 0.95rem 2.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(45, 192, 141, 0.35);
+  transition: all 0.25s var(--ease-apple);
+}
+
+.pricing-main-cta:hover {
+  transform: translateY(-2px);
+  background: #22a577;
+  box-shadow: 0 8px 24px rgba(45, 192, 141, 0.48);
+}
+
+/* ── 2. Two-Column Plans Grid ────────────────────────────── */
+.pricing-grid-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5rem;
+}
+
+.pricing-card-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 900px;
+  align-items: stretch;
+}
+
+.pricing-column-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(124, 58, 237, 0.15);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.03);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s var(--ease-apple);
+}
+
+.pricing-column-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(124, 58, 237, 0.06);
+}
+
+/* Highlight card style */
+.pricing-pro-highlight {
+  border-color: rgba(124, 58, 237, 0.3);
+  box-shadow: 0 20px 50px rgba(124, 58, 237, 0.08), 0 0 0 1px rgba(124, 58, 237, 0.1);
+  background: #ffffff;
+}
+
+/* Badge headers */
+.pricing-badge-tier {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.pricing-pro-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.pricing-pro-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pricing-pro-crown {
+  color: #fbbf24;
+}
+
+.pricing-pro-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #7c3aed;
+}
+
+.pricing-pro-discount-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  background: #ff9500;
+  padding: 0.22rem 0.65rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* Pricing Row */
+.pricing-amount-row {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1;
+  color: #0d0d0d;
+  margin-bottom: 0.5rem;
+}
+
+.pricing-currency {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-top: 0.3rem;
+  margin-right: 0.1rem;
+}
+
+.pricing-value {
+  font-size: 4rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.pricing-superscript {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.25rem;
+  margin-top: 0.4rem;
+}
+
+.pricing-decimal {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.pricing-mo {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6b7280;
+  margin-top: 0.1rem;
+}
+
+.pricing-cycle-sub {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Interactive billing toggles */
+.pricing-cycle-selector {
+  display: flex;
+  gap: 0.25rem;
+  background: #f1f5f9;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  margin-bottom: 2rem;
+}
+
+.pricing-cycle-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #4b5563;
+  padding: 0.5rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pricing-cycle-btn.active {
+  background: #ffffff;
+  color: #7c3aed;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* Benefits Checklists */
+.pricing-benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 2.5rem;
+  flex: 1;
+}
+
+.pricing-benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pricing-check-icon {
+  font-size: 0.82rem;
+  font-weight: 900;
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pricing-check-icon.check-green {
+  color: #2dc08d;
+}
+
+.pricing-check-icon.check-red {
+  color: #ef4444;
+}
+
+.pricing-benefit-text {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.pricing-benefit-text.text-disabled {
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+/* Button variants */
+.pricing-card-btn-outline {
+  width: 100%;
+  background: transparent;
+  color: #0d0d0d;
+  border: 1.5px solid #0d0d0d;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: auto;
+}
+
+.pricing-card-btn-outline:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.pricing-card-btn-filled {
+  width: 100%;
+  background: #7c3aed;
+  color: #ffffff;
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+  margin-top: auto;
+}
+
+.pricing-card-btn-filled:hover {
+  background: #6d28d9;
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.38);
+}
+
+@media (max-width: 768px) {
+  .pricing-card-layout {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+  }
+}
+
+/* ── 3. Trust Section ────────────────────────────────────── */
+.pricing-payment-trust {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 2rem 0;
+  margin-bottom: 6rem;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.12);
+}
+
+.pricing-trust-header {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.pricing-payment-logos {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.pricing-payment-logos img {
+  height: 1.25rem;
+  opacity: 0.6;
+  filter: grayscale(1);
+  transition: opacity 0.2s;
+}
+
+.pricing-payment-logos img:hover {
+  opacity: 0.9;
+  filter: none;
+}
+
+/* ── 4. Features Intro Sections ──────────────────────────── */
+.pricing-intro-section,
+.pricing-tailor-section {
+  width: 100%;
+  max-width: 1000px;
+  padding: 5rem 0;
+}
+
+.pricing-intro-inner,
+.pricing-tailor-inner {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.pricing-tailor-inner {
+  grid-template-columns: 0.9fr 1.1fr;
+}
+
+.pricing-intro-content,
+.pricing-tailor-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.pricing-intro-title,
+.pricing-tailor-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0d0d0d;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.pricing-intro-desc,
+.pricing-tailor-desc {
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.pricing-intro-cta,
+.pricing-tailor-cta {
+  background: transparent;
+  color: #0d0d0d;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border: 1.5px solid #0d0d0d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pricing-intro-cta:hover,
+.pricing-tailor-cta:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.pricing-intro-visual,
+.pricing-tailor-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pricing-intro-img,
+.pricing-tailor-img {
+  width: 100%;
+  max-width: 440px;
+  border-radius: 1rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  object-fit: cover;
+}
+
+.pricing-tailor-img {
+  max-height: 280px;
+}
+
+@media (max-width: 768px) {
+  .pricing-intro-inner,
+  .pricing-tailor-inner {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .pricing-tailor-inner .pricing-tailor-visual {
+    order: 2;
+  }
+}
+
+/* ── 6. FAQ Section ──────────────────────────────────────── */
+.pricing-faq-section {
+  width: 100%;
+  max-width: 780px;
+  margin: 4rem auto 0;
+}
+
+.pricing-faq-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.pricing-faq-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0d0d0d;
+  text-align: center;
+  margin: 0;
+}
+
+.pricing-faq-sub {
+  font-size: 0.98rem;
+  color: #6b7280;
+  text-align: center;
+  margin: 0;
+}
+
+.pricing-faq-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pricing-faq-item {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(124, 58, 237, 0.15);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.02);
+}
+
+.pricing-faq-item:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(124, 58, 237, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.05);
+}
+
+.pricing-faq-item.open {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+.pricing-faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0d0d0d;
+  text-align: left;
+  transition: background 0.2s;
+  border-radius: 0.75rem;
+}
+
+.pricing-faq-chevron {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2dc08d;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.pricing-faq-answer {
+  padding: 0 1.5rem 1.25rem;
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.65;
+}

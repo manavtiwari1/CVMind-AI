@@ -1,0 +1,657 @@
+/* ════════════════════════════════════════════════════════════════════
+   CV Mind — Premium 3D Effects System
+   Inspired by: Linear.app, Vercel, Stripe
+   Techniques: CSS perspective tilt, layered depth shadows, parallax
+   ambient glows, shimmer sweeps, 3D transform animations
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Global 3D Perspective Root ─────────────────────────────── */
+/* Canvas-based particle background (ParticleBackground.tsx) sits at z-index 0.
+   All UI content sits at z-index ≥ 1 via .main-content.
+   Perspective is kept for card tilt effects. */
+.main-content {
+  perspective: 2200px;
+  perspective-origin: 50% 0%;
+  /* z-index: 1 set in theme.css */
+}
+
+/* ── 2. Tilt-on-hover for all glass cards ───────────────────────── */
+.glass-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition:
+    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 0.3s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-6px) rotateX(2deg) rotateY(-1deg) scale(1.01);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Light mode glass card hover */
+:root[data-theme='light'] .glass-card:hover {
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* ── 3. Shimmer Sweep on hover ──────────────────────────────────── */
+.glass-card {
+  overflow: hidden;
+  position: relative;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.045) 50%,
+    transparent 60%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  transition: left 0.6s ease;
+  z-index: 1;
+}
+
+.glass-card:hover::before {
+  left: 160%;
+}
+
+:root[data-theme='light'] .glass-card::before {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 60%
+  );
+}
+
+/* ── 4. 3D Depth Layered Shadows on Step/Feature Cards ─────────── */
+.step-card,
+.feature-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition:
+    transform 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 0.3s ease;
+  position: relative;
+}
+
+.step-card:hover {
+  transform: translateY(-8px) rotateX(3deg) rotateY(-0.5deg) scale(1.015);
+  box-shadow:
+    0 4px 0 rgba(41, 151, 255, 0.15),
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(41, 151, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.feature-card:hover {
+  transform: translateY(-8px) rotateX(2.5deg) scale(1.015);
+  box-shadow:
+    0 4px 0 rgba(191, 90, 242, 0.15),
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(191, 90, 242, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* ── 5. 3D Floating Animation Keyframes ────────────────────────── */
+@keyframes float3d {
+  0%, 100% {
+    transform: translateY(0px) rotateX(0deg) rotateZ(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotateX(2deg) rotateZ(0.5deg);
+  }
+  50% {
+    transform: translateY(-16px) rotateX(0deg) rotateZ(-0.5deg);
+  }
+  75% {
+    transform: translateY(-8px) rotateX(-1deg) rotateZ(0.3deg);
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotateY(0deg); }
+  50% { transform: translateY(-12px) rotateY(2deg); }
+}
+
+@keyframes orbitGlow {
+  0% {
+    box-shadow: 0 0 20px rgba(41, 151, 255, 0.15), 0 0 60px rgba(41, 151, 255, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(191, 90, 242, 0.2), 0 0 80px rgba(191, 90, 242, 0.08);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(41, 151, 255, 0.15), 0 0 60px rgba(41, 151, 255, 0.05);
+  }
+}
+
+@keyframes depthPulse {
+  0%, 100% {
+    transform: translateZ(0px) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateZ(20px) scale(1.02);
+    opacity: 1;
+  }
+}
+
+@keyframes glowRing {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(41, 151, 255, 0),
+      0 0 0 0 rgba(41, 151, 255, 0);
+  }
+  50% {
+    box-shadow:
+      0 0 0 4px rgba(41, 151, 255, 0.08),
+      0 0 0 8px rgba(41, 151, 255, 0.03);
+  }
+}
+
+@keyframes gradient3dShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes scanLine {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(800%); opacity: 0; }
+}
+
+/* ── 6. Ambient Depth Glow Nodes (site-wide) ────────────────────── */
+.glow-ambient {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(41, 151, 255, 0.06) 0%,
+    rgba(191, 90, 242, 0.03) 50%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: breathe 10s ease-in-out infinite;
+  filter: blur(2px);
+}
+
+/* ── 7. 3D Navbar Header — depth chrome ─────────────────────────── */
+.navbar-header {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.03) inset;
+}
+
+:root[data-theme='light'] .navbar-header {
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.06),
+    0 4px 24px rgba(0, 0, 0, 0.06),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+
+/* ── 8. Button glass-pill press effects ─────────────────────────── */
+.navbar-cta,
+.upload-cta {
+  position: relative;
+  transform-style: preserve-3d;
+  transition:
+    transform 0.18s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.18s cubic-bezier(0.23, 1, 0.32, 1),
+    background 0.2s ease;
+  border-radius: 9999px !important;
+}
+
+.navbar-cta:hover { transform: translateY(-2px) scale(1.02); }
+.navbar-cta:active { transform: translateY(1px) scale(0.975); }
+
+/* ── 9. Section Dividers — 3D perspective lines ─────────────────── */
+.steps-section,
+.features-section,
+.privacy-features-section,
+.matrix-section,
+.about-capabilities-section,
+.about-timeline-section {
+  position: relative;
+}
+
+.steps-section::before,
+.features-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(41, 151, 255, 0.4),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* ── 10. Icon wrappers — 3D depth lift on hover ─────────────────── */
+.step-icon,
+.capability-icon-wrapper,
+.feature-icon-wrapper,
+.timeline-icon-box {
+  transition:
+    transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.35s ease;
+}
+
+.step-card:hover .step-icon,
+.capability-card:hover .capability-icon-wrapper,
+.feature-card:hover .feature-icon-wrapper,
+.timeline-item:hover .timeline-icon-box {
+  transform: translateY(-4px) scale(1.1) rotateY(10deg);
+  box-shadow: 0 12px 30px rgba(41, 151, 255, 0.25);
+}
+
+/* ── 11. Capability Card 3D tilt ────────────────────────────────── */
+.capability-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition:
+    transform 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.45s ease,
+    border-color 0.3s ease;
+}
+
+.capability-card:hover {
+  transform: translateY(-10px) rotateX(4deg) rotateY(-2deg) scale(1.02);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    0 4px 0 rgba(41, 151, 255, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* ── 12. Timeline items 3D slide ────────────────────────────────── */
+.timeline-item {
+  transform-style: preserve-3d;
+  transition:
+    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.4s ease,
+    border-color 0.3s ease;
+}
+
+.timeline-item:hover {
+  transform: translateX(10px) rotateY(-3deg) scale(1.01) !important;
+  box-shadow:
+    -6px 0 0 rgba(41, 151, 255, 0.4),
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(41, 151, 255, 0.08);
+}
+
+/* ── 13. Hero title 3D text shadow ──────────────────────────────── */
+.hero-title,
+.about-title,
+.privacy-title {
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 8px 20px rgba(41, 151, 255, 0.08);
+}
+
+/* ── 14. Badge 3D pop ───────────────────────────────────────────── */
+.badge,
+.hero-badge,
+.modal-badge,
+.constitution-badge,
+.work-type-badge {
+  transition:
+    transform 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.2s ease;
+}
+
+.badge:hover,
+.hero-badge:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 18px rgba(41, 151, 255, 0.2);
+}
+
+/* ── 15. Footer 3D cards ────────────────────────────────────────── */
+.footer-element {
+  position: relative;
+}
+
+.footer-element::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(41, 151, 255, 0.3) 30%,
+    rgba(191, 90, 242, 0.3) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* ── 16. Upload zone 3D depth on drag ───────────────────────────── */
+.upload-zone {
+  transition:
+    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.4s ease,
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+
+.upload-zone:hover {
+  transform: translateY(-4px) scale(1.005);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(41, 151, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.upload-zone.drag-active {
+  transform: scale(1.02);
+  box-shadow:
+    0 0 0 2px rgba(41, 151, 255, 0.5),
+    0 25px 80px rgba(41, 151, 255, 0.15),
+    inset 0 0 40px rgba(41, 151, 255, 0.04);
+}
+
+/* ── 17. Constitution card 3D depth shimmer ─────────────────────── */
+.constitution-card {
+  transform-style: preserve-3d;
+  transition:
+    transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.5s ease,
+    border-color 0.3s ease;
+}
+
+.constitution-card:hover {
+  transform: translateY(-8px) rotateX(2deg) rotateY(1deg);
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(212, 175, 55, 0.35),
+    inset 0 1px 0 rgba(212, 175, 55, 0.1),
+    0 4px 0 rgba(212, 175, 55, 0.15);
+}
+
+/* ── 18. Interactive theme toggle 3D spin ───────────────────────── */
+.theme-toggle-btn {
+  transition:
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.12) rotate(20deg);
+  box-shadow: 0 0 16px rgba(41, 151, 255, 0.3);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.9) rotate(-10deg);
+}
+
+/* ── 19. Nav profile monogram 3D depth ──────────────────────────── */
+.nav-profile-monogram,
+.nav-profile-avatar {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.nav-profile-trigger:hover .nav-profile-monogram,
+.nav-profile-trigger:hover .nav-profile-avatar {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 24px rgba(41, 151, 255, 0.3);
+}
+
+/* ── 20. Dropdown menus 3D entrance animation ───────────────────── */
+.nav-dropdown-menu,
+.nav-profile-dropdown {
+  transform-origin: top center;
+  animation: none;
+}
+
+.nav-dropdown-container:hover .nav-dropdown-menu {
+  animation: dropdownEnter3d 0.28s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes dropdownEnter3d {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) rotateX(-8deg) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) rotateX(0deg) scale(1);
+  }
+}
+
+/* ── 21. Score ring 3D pop for homepage ─────────────────────────── */
+.score-ring-container,
+.score-ring-container-3d {
+  animation: depthPulse 4s ease-in-out infinite;
+}
+
+/* ── 22. Privacy feature cards 3D tilt ─────────────────────────── */
+.feature-card.glass-card:hover {
+  transform: translateY(-8px) rotateX(3deg) rotateY(-1.5deg) scale(1.01);
+}
+
+/* ── 23. Matrix table rows 3D hover ────────────────────────────── */
+.matrix-table tbody tr {
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.matrix-table tbody tr:hover td {
+  background: rgba(41, 151, 255, 0.03);
+}
+
+:root[data-theme='light'] .matrix-table tbody tr:hover td {
+  background: rgba(0, 102, 204, 0.04);
+}
+
+/* ── 24. Tailor / Prep highlight cards 3D depth ─────────────────── */
+.tailor-highlight-card,
+.highlight-card {
+  transform-style: preserve-3d;
+  transition:
+    transform 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.45s ease;
+}
+
+.tailor-highlight-card:hover,
+.highlight-card:hover {
+  transform: translateY(-10px) rotateX(3deg) scale(1.02);
+  box-shadow:
+    0 35px 90px rgba(0, 0, 0, 0.5),
+    0 4px 0 rgba(41, 151, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ── 25. Work item cards 3D pop ────────────────────────────────── */
+.work-item-card {
+  transition:
+    transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.35s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.work-item-card:hover {
+  transform: translateY(-6px) rotateX(2deg) scale(1.02);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 2px 0 rgba(41, 151, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* ── 26. Responsive — disable heavy 3D on mobile ───────────────── */
+@media (max-width: 768px) {
+  .glass-card:hover {
+    transform: translateY(-4px) scale(1.005);
+  }
+
+  .step-card:hover,
+  .feature-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  .capability-card:hover {
+    transform: translateY(-6px) scale(1.01);
+  }
+
+  .timeline-item:hover {
+    transform: translateX(6px) scale(1.005) !important;
+  }
+
+  .constitution-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .tailor-highlight-card:hover,
+  .highlight-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+}
+
+/* ── 27. Prefer-reduced-motion — safety net ─────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .glass-card,
+  .step-card,
+  .feature-card,
+  .capability-card,
+  .timeline-item,
+  .constitution-card,
+  .tailor-highlight-card,
+  .highlight-card,
+  .work-item-card,
+  .upload-zone,
+  .btn-primary,
+  .btn-gradient,
+  .navbar-cta,
+  .theme-toggle-btn {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .glass-card::before {
+    display: none;
+  }
+}
+
+/* ── 28. Global Depth Background Layer ─────────────────────────── */
+.global-depth-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.depth-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 1;
+  will-change: transform;
+}
+
+.depth-orb-1 {
+  width: min(800px, 70vw);
+  height: min(800px, 70vw);
+  top: -15%;
+  left: -15%;
+  background: radial-gradient(circle at 40% 40%, rgba(41,151,255,0.07) 0%, rgba(41,151,255,0.025) 45%, transparent 70%);
+  animation: orbDrift1 22s ease-in-out infinite;
+}
+
+.depth-orb-2 {
+  width: min(700px, 60vw);
+  height: min(700px, 60vw);
+  bottom: -10%;
+  right: -10%;
+  background: radial-gradient(circle at 60% 60%, rgba(191,90,242,0.06) 0%, rgba(191,90,242,0.02) 50%, transparent 70%);
+  animation: orbDrift2 28s ease-in-out infinite;
+}
+
+.depth-orb-3 {
+  width: min(600px, 50vw);
+  height: min(600px, 50vw);
+  top: 35%;
+  left: 30%;
+  background: radial-gradient(circle at 50% 50%, rgba(48,209,88,0.025) 0%, transparent 65%);
+  animation: orbDrift3 35s ease-in-out infinite;
+}
+
+.depth-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.3) 0%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,0.3) 0%, transparent 100%);
+}
+
+:root[data-theme='light'] .depth-orb-1 {
+  background: radial-gradient(circle at 40% 40%, rgba(0,102,204,0.05) 0%, rgba(0,102,204,0.015) 45%, transparent 70%);
+}
+
+:root[data-theme='light'] .depth-orb-2 {
+  background: radial-gradient(circle at 60% 60%, rgba(168,85,247,0.04) 0%, transparent 65%);
+}
+
+:root[data-theme='light'] .depth-orb-3 {
+  background: radial-gradient(circle at 50% 50%, rgba(16,185,129,0.025) 0%, transparent 65%);
+}
+
+:root[data-theme='light'] .depth-grid {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+}
+
+@keyframes orbDrift1 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.05); }
+  50% { transform: translate(60px, 10px) scale(0.97); }
+  75% { transform: translate(20px, 30px) scale(1.03); }
+}
+
+@keyframes orbDrift2 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(-40px, -25px) scale(1.04); }
+  66% { transform: translate(-15px, 20px) scale(0.96); }
+}
+
+@keyframes orbDrift3 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(25px, -35px) scale(1.06); }
+}
+

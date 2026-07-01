@@ -1,0 +1,134 @@
+import { Cpu, Eye, FileSearch, Briefcase, Sparkles, FileText, Users } from 'lucide-react';
+import './About.css';
+
+export default function About() {
+  const steps = [
+    {
+      icon: <FileSearch className="step-icon" />,
+      title: "1. Raw Document Parse",
+      desc: "Our node parser processes your uploaded PDF, DOCX, or TXT file entirely in memory, extracting unicode blocks, raw paragraph layouts, and styling sections. No file logs are ever written to disk."
+    },
+    {
+      icon: <Cpu className="step-icon" />,
+      title: "2. ATS Keyword Match",
+      desc: "The system runs text vector matching against standard corporate role models to detect missing technologies, key tools, and structural keywords critical to passing automated screening audits."
+    },
+    {
+      icon: <Eye className="step-icon" />,
+      title: "3. Multi-Layer Scorecard",
+      desc: "All extracted metrics are compiled into a comprehensive results dashboard detailing key strengths, weaknesses, line-by-line before/after recommendations, and downloadable PDF reports."
+    }
+  ];
+
+  return (
+    <div className="about-container animate-fade-in-up">
+      {/* Background glow node */}
+      <div className="glow-ambient" style={{ top: '20%', right: '10%' }}></div>
+      <div className="glow-ambient" style={{ bottom: '20%', left: '10%' }}></div>
+
+      <section className="about-hero">
+        <h1 className="about-title">Cognitive Resume Intelligence</h1>
+        <p className="about-subtitle">
+          Engineered to give job seekers an unfair advantage in the modern hiring landscape.
+        </p>
+      </section>
+
+      {/* Tech Stack details */}
+      <section className="about-info-block glass-card">
+        <h3 className="info-title">Why CV Mind?</h3>
+        <p className="info-text">
+          Modern recruitment is broken. Over 75% of resumes are discarded by Applicant Tracking Systems (ATS) before a human recruiter even looks at them. Of the remaining 25%, the average recruiter spends less than 6 seconds reviewing each document.
+        </p>
+        <p className="info-text">
+          CV Mind was built to solve this asymmetry. By deploying advanced Large Language Models, we give you immediate access to corporate-level resume diagnostics. You receive instant, comprehensive, and hyper-actionable feedback that aligns your profile with what recruiters and algorithms search for.
+        </p>
+      </section>
+
+      {/* Core Capabilities Suite */}
+      <section className="about-capabilities-section">
+        <h2 className="capabilities-title">Our Premium Product Suite</h2>
+        <p className="capabilities-subtitle">Advanced AI products engineered to transform your career search:</p>
+        
+        <div className="capabilities-grid">
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper score-icon">
+              <Eye size={24} />
+            </div>
+            <h4>Resume Analyzer & Audit</h4>
+            <p>
+              Scans your resume for keyword matches, readability, structural format, and sentence impact scores to bypass strict ATS filters.
+            </p>
+          </div>
+          
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper tailor-icon">
+              <Briefcase size={24} />
+            </div>
+            <h4>AI Resume Tailoring</h4>
+            <p>
+              Compare your resume against any target job description. The AI automatically identifies skill gaps and rewrites your resume sections to perfectly match recruiter expectations.
+            </p>
+          </div>
+          
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper prep-icon">
+              <Sparkles size={24} />
+            </div>
+            <h4>SmartPrep AI Interview Coach</h4>
+            <p>
+              Generates customized interview prep scorecards based on your CV history, featuring Big Tech and Big 4 style Q&As, STAR method answers, insider recruiter tips, and vector PDF exports.
+            </p>
+          </div>
+
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper builder-icon">
+              <FileText size={24} />
+            </div>
+            <h4>Interactive Document Builders</h4>
+            <p>
+              Draft resumes and cover letters in real time with our premium inline-editable builder. Select from elegant, ATS-friendly templates, set custom titles, and let AI refine drafts instantly.
+            </p>
+          </div>
+
+          <div className="capability-card glass-card">
+            <div className="capability-icon-wrapper profile-icon">
+              <Users size={24} />
+            </div>
+            <h4>Profile & Work Cloud Persistence</h4>
+            <p>
+              Sign up natively or via Google OAuth to access your central account. Upload profile avatars, edit biography fields, and sync all your resume and cover letter drafts securely across multiple devices.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Workflow Process Timeline */}
+      <section className="about-timeline-section">
+        <h2 className="timeline-section-title">The Engineering Workflow</h2>
+        <p className="timeline-section-subtitle">How our platform evaluates your career history:</p>
+ 
+        <div className="timeline-wrapper">
+          {steps.map((step, idx) => (
+            <div key={idx} className="timeline-item glass-card animate-fade-in-up" style={{ animationDelay: `${idx * 0.15}s` }}>
+              <div className="timeline-icon-box">
+                {step.icon}
+              </div>
+              <div className="timeline-content-box">
+                <h4 className="step-title">{step.title}</h4>
+                <p className="step-desc">{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Data Ethics Section */}
+      <section className="privacy-card glass-card">
+        <h3 className="privacy-title">Data Ethics & Security</h3>
+        <p className="privacy-text">
+          We believe in absolute data privacy. Your resume content is never stored on a database, never shared with third parties, and never used to train machine learning models. The file is parsed in-memory, analyzed by our secure AI engine in a secure single session, and immediately cleared from the server.
+        </p>
+      </section>
+    </div>
+  );
+}

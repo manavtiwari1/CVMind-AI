@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* ── Shared: Upload mode toggle + Link input (used across Home, Tailor, Prep, Proofreading) ── */
+.upload-mode-toggle {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.3rem;
+}
+.upload-mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.upload-mode-btn.active {
+  background: var(--blue-dim);
+  color: var(--blue);
+}
+.upload-mode-btn:disabled { opacity: 0.5; cursor: default; }
+
+.link-input-state {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+.link-input-icon { color: var(--blue); opacity: 0.85; }
+.link-input-label { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
+.resume-link-input {
+  width: 100%;
+  max-width: 460px;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.resume-link-input:focus { border-color: var(--blue); }
+.resume-link-input::placeholder { color: var(--text-tertiary); }
+.link-input-hint { font-size: 0.78rem; color: var(--text-tertiary); margin: -0.25rem 0 0; }
+
+/* Bridge variables required by glass UI components */
+:root {
+  --background: #ffffff;
+  --foreground: #0d0d0d;
+  --color-chart-1: #2997ff;
+  --color-chart-2: #2dc08d;
+  --color-chart-3: #7c3aed;
+  --color-chart-4: #f59e0b;
+  --color-chart-5: #ef4444;
+  --color-destructive: #ef4444;
+}
+
+:root[data-theme='dark'] {
+  --background: #0f172a;
+  --foreground: #f5f5f7;
+  --color-chart-1: #2997ff;
+  --color-chart-2: #30d158;
+  --color-chart-3: #bf5af2;
+  --color-chart-4: #ff9f0a;
+  --color-chart-5: #ff453a;
+}
+
+/* Tailwind v4 theme — maps shadcn-style utilities to project vars */
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--glass-bg);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--text-tertiary);
+  --color-primary: var(--blue);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--purple);
+  --color-secondary-foreground: #ffffff;
+  --color-destructive: var(--red);
+  --color-muted: var(--bg-secondary);
+}
