@@ -25,7 +25,7 @@ const sendWelcomeEmail = async (email, name, origin) => {
   }
 
   const isLocal = origin && (origin.includes('localhost') || origin.includes('127.0.0.1'));
-  const host = isLocal ? origin : 'https://cv-mind-ai.vercel.app';
+  const host = isLocal ? origin : 'https://www.cvmind.online';
   const createResumeLink = `${host}`;
 
   try {
