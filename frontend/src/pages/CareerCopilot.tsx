@@ -722,7 +722,7 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
           <div className="cc-module">
             <div className="cc-module-header"><GraduationCap size={20} color="#bf5af2" /><h3>Learning Center</h3></div>
             <div className="cc-section-label">Skill Gaps — Market Demand</div>
-            {skillGaps.map((s, i) => (
+            {skillGaps.map((s: { skill: string; demand: number; priority: string }, i: number) => (
               <div key={i} className="cc-skill-gap-row">
                 <span className="cc-skill-gap-name">{s.skill}</span>
                 <div className="cc-skill-gap-bar"><div style={{ width: `${s.demand}%`, background: s.priority === 'high' ? '#ff453a' : '#ff9f0a' }} /></div>
