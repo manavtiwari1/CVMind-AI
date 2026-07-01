@@ -172,10 +172,21 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
     if (!resumeText.trim() && !resumeFile) { setError('Please upload your resume first.'); return; }
     setLoading(true); setLoadingMsg('AI is building your career profile…'); setError('');
     try {
+      let text = resumeText;
+      if (!text.trim() && resumeFile) {
+        setLoadingMsg('Extracting resume text…');
+        const fd = new FormData(); fd.append('resume', resumeFile);
+        const r0 = await fetch(`${API}/api/analyze`, { method: 'POST', body: fd, headers: customApiKey ? { 'x-gemini-key': customApiKey } : {} });
+        const d0 = await r0.json();
+        text = d0.resumeText || '';
+        if (text) { setResumeText(text); if (setGlobalResume) setGlobalResume(text); }
+      }
+      if (!text.trim()) { setError('Could not read resume text. Please try a different file.'); return; }
+      setLoadingMsg('AI is building your career profile…');
       const r = await fetch(`${API}/api/auto-apply/profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(customApiKey ? { 'x-gemini-key': customApiKey } : {}) },
-        body: JSON.stringify({ resumeText })
+        body: JSON.stringify({ resumeText: text })
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error);
@@ -392,7 +403,7 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
                   <><Upload size={40} color="#8e8e93" /><p className="cc-upload-title">Drop your resume here</p><p className="cc-upload-hint">PDF, DOCX · Max 5MB</p></>}
             </div>
             {error && <div className="cc-error"><AlertCircle size={14} />{error}</div>}
-            <button className="cc-btn-primary cc-btn-full" disabled={!resumeFile} onClick={() => setStep(2)}>Continue <ChevronRight size={16} /></button>
+            <button className="cc-btn-primary cc-btn-full" disabled={!resumeFile || loading} onClick={() => setStep(2)}>Continue <ChevronRight size={16} /></button>
           </>
         )}
 
@@ -418,9 +429,9 @@ export default function CareerCopilot({ customApiKey, resumeText: initialResume 
           <>
             <div className="cc-ob-header"><CheckCircle2 size={32} color="#30d158" /><h2>Profile Built!</h2><p>Your AI career profile is ready. Here's what we found:</p></div>
             <div className="cc-profile-preview">
-              <div className="cc-profile-row"><span className="cc-profile-label">Name</span><span>{profile.name || 'Your Name'}</span></div>
-              <div className="cc-profile-row"><span className="cc-profile-label">Title</span><span>{profile.title || goal}</span></div>
-              <div className="cc-profile-row"><span className="cc-profile-label">Experience</span><span>{profile.yearsOfExperience || 'N/A'} years</span></div>
+              <div className="cc-profile-row"><span className="cc-profile-label">Name</span><span>{(profile.name && profile.name !== 'Full Name') ? profile.name : (profile.email?.split('@')[0] || '—')}</span></div>
+              <div className="cc-profile-row"><span className="cc-profile-label">Title</span><span>{(profile.title && profile.title !== 'Job Title') ? profile.title : goal}</span></div>
+              <div className="cc-profile-row"><span className="cc-profile-label">Experience</span><span>{profile.yearsOfExperience ? `${profile.yearsOfExperience} years` : (profile.experience?.length ? `${profile.experience.length}+ roles` : '—')}</span></div>
               <div className="cc-profile-row"><span className="cc-profile-label">Skills</span>
                 <div className="cc-skills-preview">{(profile.skills || []).slice(0, 8).map((s: string) => <span key={s} className="cc-skill-tag">{s}</span>)}</div>
               </div>

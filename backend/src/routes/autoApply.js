@@ -96,31 +96,33 @@ router.post('/profile', async (req, res) => {
     return res.status(400).json({ error: 'Resume text is required.' });
 
   try {
-    const prompt = `Extract a detailed candidate profile from this resume. Return ONLY valid JSON with this exact structure:
+    const prompt = `You are a resume parser. Extract the candidate's real information from the resume text below and return ONLY a JSON object. Do NOT use placeholder values — extract actual data.
+
+JSON schema (return exactly this shape, use null for missing fields):
 {
-  "name": "Full Name",
-  "title": "Current or Target Job Title",
-  "email": "email if found",
-  "phone": "phone if found",
-  "location": "City, Country",
-  "summary": "2-3 sentence professional summary",
-  "skills": ["skill1", "skill2", ...up to 15 skills],
-  "techStack": ["tech1", "tech2", ...up to 10 technologies],
-  "experience": [{"company":"","title":"","duration":"","description":""}],
-  "education": [{"degree":"","institution":"","year":""}],
-  "languages": ["English"],
-  "preferredRoles": ["role1", "role2", "role3"],
-  "seniority": "Entry / Mid / Senior / Lead",
-  "yearsOfExperience": 3,
-  "certifications": ["cert1"],
-  "github": "",
-  "linkedin": "",
-  "portfolio": "",
-  "industries": ["industry1", "industry2"]
+  "name": <string — candidate's actual full name from resume, null if not found>,
+  "title": <string — current or most recent job title, null if not found>,
+  "email": <string — actual email from resume, null if not found>,
+  "phone": <string — actual phone number, null if not found>,
+  "location": <string — city or location mentioned, null if not found>,
+  "summary": <string — 2-3 sentence professional summary>,
+  "skills": <array of up to 15 actual skill strings>,
+  "techStack": <array of up to 10 actual technology strings>,
+  "experience": <array of {company, title, duration, description} objects>,
+  "education": <array of {degree, institution, year} objects>,
+  "languages": <array of language strings>,
+  "preferredRoles": <array of 3 suitable role strings based on background>,
+  "seniority": <"Entry" | "Mid" | "Senior" | "Lead">,
+  "yearsOfExperience": <number — total years of professional experience, 0 if fresher>,
+  "certifications": <array of certification strings>,
+  "github": <string — GitHub URL if found, null otherwise>,
+  "linkedin": <string — LinkedIn URL if found, null otherwise>,
+  "portfolio": <string — portfolio URL if found, null otherwise>,
+  "industries": <array of industry strings>
 }
 
-Resume:
-${resumeText.substring(0, 3000)}`;
+Resume text:
+${resumeText.substring(0, 4000)}`;
 
     const profile = await callGemini(prompt, apiKey);
     return res.json({ success: true, data: profile });
