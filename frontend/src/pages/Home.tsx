@@ -609,7 +609,62 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
         </div>
       </section>
 
-      {/* ── 9. UPLOAD / SCORE SECTION ────────────────────────── */}
+      {/* ── 9. AI CAREER COPILOT ─────────────────────────────── */}
+      <section className="home-alt2-section home-alt2-gray">
+        <div className="home-alt2-inner home-alt2-reversed">
+          <div className="home-alt2-content">
+            <span className="home-alt2-eyebrow">AI Career Copilot</span>
+            <h2 className="home-alt2-title">Your entire job search,<br />on autopilot</h2>
+            <p className="home-alt2-desc">9 specialized AI agents working in parallel — optimizing your resume, discovering jobs, coaching your interviews, and tracking every application so you don't have to.</p>
+            <ul className="home-alt2-bullets">
+              {['Resume Agent auto-fixes & tailors your CV', 'Job Discovery across LinkedIn, Indeed & more', 'AI Interview Coach with STAR feedback', 'Application Intel & career health tracking'].map(b => (
+                <li key={b}><span className="home-check-icon">✓</span>{b}</li>
+              ))}
+            </ul>
+            <button className="home-alt2-btn home-alt2-btn-accent" onClick={() => setCurrentPage('career-copilot')}>Launch Career Copilot →</button>
+          </div>
+          <div className="home-alt2-visual">
+            <div className="home-copilot-visual">
+              <div className="home-copilot-header">
+                <div className="home-mock-dot red" /><div className="home-mock-dot yellow" /><div className="home-mock-dot green" />
+                <span className="home-copilot-header-title">AI Career Copilot</span>
+              </div>
+              <div className="home-copilot-score-row">
+                <div className="home-copilot-score-circle">
+                  <svg viewBox="0 0 56 56" className="home-copilot-ring">
+                    <circle cx="28" cy="28" r="24" fill="none" stroke="#e2e8f0" strokeWidth="4" />
+                    <circle cx="28" cy="28" r="24" fill="none" stroke="#6c63ff" strokeWidth="4"
+                      strokeDasharray="150.8" strokeDashoffset="30" strokeLinecap="round"
+                      transform="rotate(-90 28 28)" />
+                  </svg>
+                  <span className="home-copilot-ring-val">82</span>
+                </div>
+                <div className="home-copilot-score-meta">
+                  <div className="home-copilot-score-label">Career Health Score</div>
+                  <div className="home-copilot-score-status">Strong · 3 agents active</div>
+                </div>
+              </div>
+              <div className="home-copilot-agents">
+                {[
+                  { icon: '📄', name: 'Resume Agent', status: 'Optimizing…', active: true },
+                  { icon: '🔍', name: 'Job Discovery', status: '14 new matches', active: true },
+                  { icon: '🎯', name: 'Interview Coach', status: 'Ready', active: false },
+                  { icon: '📊', name: 'Application Intel', status: '6 tracked', active: true },
+                ].map(agent => (
+                  <div key={agent.name} className={`home-copilot-agent-row${agent.active ? ' home-copilot-agent-active' : ''}`}>
+                    <span className="home-copilot-agent-icon">{agent.icon}</span>
+                    <span className="home-copilot-agent-name">{agent.name}</span>
+                    <span className="home-copilot-agent-status">{agent.status}</span>
+                    {agent.active && <span className="home-copilot-agent-dot" />}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 10. UPLOAD / SCORE SECTION ───────────────────────── */}
       <section ref={scoreRef} className="home-score-section">
         <div className="home-score-inner">
           <div className="home-score-text">
