@@ -369,19 +369,19 @@ export default function Navbar({
                         <div className="font-medium">AI Job Finder</div>
                         <div className="text-muted-foreground">Curated roles matching your profile.</div>
                       </NavigationMenuLink>
-                      <NavigationMenuLink render={<button onClick={() => go('auto-apply')} />}>
-                        <div className="font-medium" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          Auto Apply Agent
-                          <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: '99px', background: 'linear-gradient(135deg,#2997ff,#bf5af2)', color: '#fff', letterSpacing: '0.04em' }}>NEW</span>
-                        </div>
-                        <div className="text-muted-foreground">AI applies to jobs for you automatically.</div>
-                      </NavigationMenuLink>
                       <NavigationMenuLink render={<button onClick={() => go('career-copilot')} />}>
                         <div className="font-medium" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           AI Career Copilot
-                          <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: '99px', background: 'linear-gradient(135deg,#bf5af2,#ff9f0a)', color: '#fff', letterSpacing: '0.04em' }}>SOON</span>
+                          <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: '99px', background: 'linear-gradient(135deg,#2997ff,#bf5af2)', color: '#fff', letterSpacing: '0.04em' }}>NEW</span>
                         </div>
                         <div className="text-muted-foreground">9 AI agents managing your entire career.</div>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink render={<button onClick={() => go('auto-apply')} />}>
+                        <div className="font-medium" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          Auto Apply Agent
+                          <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: '99px', background: 'linear-gradient(135deg,#bf5af2,#ff9f0a)', color: '#fff', letterSpacing: '0.04em' }}>SOON</span>
+                        </div>
+                        <div className="text-muted-foreground">AI applies to jobs for you automatically.</div>
                       </NavigationMenuLink>
                     </div>
                   </div>
@@ -610,16 +610,16 @@ export default function Navbar({
                 AI Job Finder
               </button>
               <button
-                className={`mobile-drawer-link mobile-sub-link${currentPage === 'auto-apply' ? ' active' : ''}`}
-                onClick={() => go('auto-apply')}
-              >
-                Auto Apply Agent ✨
-              </button>
-              <button
                 className={`mobile-drawer-link mobile-sub-link${currentPage === 'career-copilot' ? ' active' : ''}`}
                 onClick={() => go('career-copilot')}
               >
                 AI Career Copilot 🧠
+              </button>
+              <button
+                className={`mobile-drawer-link mobile-sub-link${currentPage === 'auto-apply' ? ' active' : ''}`}
+                onClick={() => go('auto-apply')}
+              >
+                Auto Apply Agent ✨
               </button>
 
               {/* SmartPrep AI sub-accordion */}
