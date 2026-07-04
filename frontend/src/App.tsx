@@ -24,7 +24,7 @@ import LinkedInPost from './pages/linkedin/LinkedInPost';
 import VoicePrep from './pages/VoicePrep';
 import PortfolioGen from './pages/PortfolioGen';
 import Products from './pages/Products';
-import JobFinder from './pages/JobFinder';
+// import JobFinder from './pages/JobFinder'; // temporarily disabled — restore with the job-finder case below
 import ResumeBuilderLanding from './pages/ResumeBuilderLanding';
 import Pricing from './pages/Pricing';
 import AuthModal from './components/AuthModal';
