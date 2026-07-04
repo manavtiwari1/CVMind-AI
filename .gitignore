@@ -2,3 +2,6 @@ node_modules
 .expo/
 dist/
 *.zip
+.env
+.env.local
+backend/data/
