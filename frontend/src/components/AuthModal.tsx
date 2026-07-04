@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft,
   User, CheckCircle, AlertCircle, X, Sparkles,
+  ShieldCheck, RefreshCw,
 } from 'lucide-react';
 import {
   Confetti,
@@ -20,7 +21,7 @@ import { useRef } from 'react';
 type AuthMode = 'signIn' | 'signUp' | 'forgotPassword' | 'resetPassword';
 
 const MODE_STEPS: Record<AuthMode, string[]> = {
-  signIn:         ['email', 'password'],
+  signIn:         ['email', 'password', 'captcha'],
   signUp:         ['email', 'password', 'confirm'],
   forgotPassword: ['email'],
   resetPassword:  ['password'],
@@ -77,6 +78,9 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [resetToken, setResetToken] = useState('');
+  const [captcha, setCaptcha] = useState<{ id: string; svg: string } | null>(null);
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
+  const [captchaLoading, setCaptchaLoading] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -107,9 +111,28 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     setStep(0);
     setName(''); setPassword(''); setConfirm('');
     setShowPw(false); setShowConfirm(false);
+    setCaptcha(null); setCaptchaAnswer('');
     setErrorMsg(null); setSuccessMsg(null);
     setLoading(false); setDone(false);
   }, [isOpen]);
+
+  /* Load a fresh captcha whenever the sign-in captcha step is shown ─ */
+  useEffect(() => {
+    if (isOpen && mode === 'signIn' && MODE_STEPS.signIn[step] === 'captcha') loadCaptcha();
+  }, [isOpen, mode, step]);
+
+  async function loadCaptcha() {
+    setCaptchaAnswer('');
+    setCaptchaLoading(true);
+    try {
+      const res = await fetch(`${getBaseUrl()}/api/auth/captcha`);
+      const data = await res.json();
+      setCaptcha({ id: data.captchaId, svg: data.svg });
+    } catch {
+      setCaptcha(null);
+      setErrorMsg('Could not load captcha. Please try refreshing.');
+    } finally { setCaptchaLoading(false); }
+  }
 
   if (!isOpen) return null;
 
@@ -122,6 +145,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     setMode(m); setStep(0);
     setPassword(''); setConfirm('');
     setShowPw(false); setShowConfirm(false);
+    setCaptcha(null); setCaptchaAnswer('');
     setDone(false);
   }
 
@@ -143,6 +167,9 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     if (currentStepName === 'password' && mode !== 'forgotPassword') {
       if (!password) { setErrorMsg('Please enter a password.'); return; }
       if (password.length < 6) { setErrorMsg('Password must be at least 6 characters.'); return; }
+    }
+    if (currentStepName === 'captcha') {
+      if (!captchaAnswer.trim()) { setErrorMsg('Please enter the code shown in the image.'); return; }
     }
 
     if (!isLastStep) { setStep(s => s + 1); return; }
@@ -213,14 +240,17 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     try {
       const res = await fetch(`${getBaseUrl()}/api/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, captchaId: captcha?.id, captchaAnswer }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Authentication failed.');
       localStorage.setItem('cvmind_logged_in', 'true');
       localStorage.setItem('cvmind_user', JSON.stringify(data.user));
       fireSuccess();
-    } catch (err: any) { setErrorMsg(err.message || 'Connection failed.'); }
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Connection failed.');
+      loadCaptcha(); // challenge is single-use — get a fresh one for the retry
+    }
     finally { setLoading(false); }
   }
 
@@ -265,6 +295,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     email:    mode === 'signUp' ? 'Enter your name and email to continue' : 'Enter your email address',
     password: mode === 'signUp' ? 'Choose a password (min 6 characters)' : 'Enter your password',
     confirm:  'Re-enter your password to confirm',
+    captcha:  "Type the code below to verify you're human",
   };
 
   const submitLabel: Record<AuthMode, string> = {
@@ -456,6 +487,55 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                             autoFocus
                             onKeyDown={e => { if (e.key === 'Enter' && !loading) goNext(); }}
                           />
+                        </BlurFade>
+                      )}
+
+                      {/* Captcha step (sign in) */}
+                      {currentStepName === 'captcha' && (
+                        <BlurFade delay={0}>
+                          <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className="flex flex-1 items-center justify-center rounded-xl overflow-hidden"
+                                style={{ border: '1px solid var(--border)', background: '#f4f4f7', minHeight: '64px' }}
+                              >
+                                {captchaLoading ? (
+                                  <RefreshCw size={18} className="animate-spin" style={{ color: 'var(--text-tertiary)' }} />
+                                ) : captcha ? (
+                                  <img
+                                    src={`data:image/svg+xml;utf8,${encodeURIComponent(captcha.svg)}`}
+                                    alt="Captcha challenge"
+                                    style={{ display: 'block', height: '64px' }}
+                                    draggable={false}
+                                  />
+                                ) : (
+                                  <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Captcha unavailable</span>
+                                )}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={loadCaptcha}
+                                disabled={loading || captchaLoading}
+                                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full transition-all hover:opacity-70"
+                                style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
+                                aria-label="Get a new code"
+                                title="Get a new code"
+                              >
+                                <RefreshCw size={15} />
+                              </button>
+                            </div>
+                            <GlassInput
+                              type="text"
+                              placeholder="Enter the code"
+                              value={captchaAnswer}
+                              onChange={e => setCaptchaAnswer(e.target.value.toUpperCase())}
+                              autoComplete="off"
+                              icon={<ShieldCheck size={16} />}
+                              disabled={loading}
+                              autoFocus
+                              onKeyDown={e => { if (e.key === 'Enter' && !loading) goNext(); }}
+                            />
+                          </div>
                         </BlurFade>
                       )}
 

@@ -205,12 +205,60 @@ apiRouter.post('/api/auth/signup', async (req, res) => {
   }
 });
 
+// ── Login Captcha ─────────────────────────────────────────────────────────────
+// Self-hosted SVG captcha: challenges live in memory, are single-use, and expire.
+const captchaStore = new Map(); // id -> { answer, expires }
+const CAPTCHA_TTL_MS = 5 * 60 * 1000;
+const CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I/O/0/1 to avoid ambiguity
+
+function generateCaptchaSvg(code) {
+  const width = 200, height = 64;
+  const colors = ['#1d4ed8', '#7c3aed', '#0f766e', '#b91c1c', '#a16207'];
+  const rand = (min, max) => min + Math.random() * (max - min);
+  let parts = [`<rect width="${width}" height="${height}" fill="#f4f4f7" rx="10"/>`];
+  for (let i = 0; i < 4; i++) {
+    parts.push(`<line x1="${rand(0, width)}" y1="${rand(0, height)}" x2="${rand(0, width)}" y2="${rand(0, height)}" stroke="${colors[Math.floor(rand(0, colors.length))]}" stroke-width="1.2" opacity="0.35"/>`);
+  }
+  code.split('').forEach((ch, i) => {
+    const x = 25 + i * 32 + rand(-4, 4);
+    const y = rand(38, 48);
+    parts.push(`<text x="${x}" y="${y}" font-family="Georgia, serif" font-size="${rand(28, 34)}" font-weight="bold" fill="${colors[Math.floor(rand(0, colors.length))]}" transform="rotate(${rand(-22, 22)} ${x} ${y})">${ch}</text>`);
+  });
+  for (let i = 0; i < 25; i++) {
+    parts.push(`<circle cx="${rand(0, width)}" cy="${rand(0, height)}" r="${rand(0.5, 1.5)}" fill="${colors[Math.floor(rand(0, colors.length))]}" opacity="0.3"/>`);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${parts.join('')}</svg>`;
+}
+
+apiRouter.get('/api/auth/captcha', (req, res) => {
+  for (const [id, entry] of captchaStore) {
+    if (Date.now() > entry.expires) captchaStore.delete(id);
+  }
+  let code = '';
+  for (let i = 0; i < 5; i++) code += CAPTCHA_CHARS[crypto.randomInt(CAPTCHA_CHARS.length)];
+  const captchaId = crypto.randomUUID();
+  captchaStore.set(captchaId, { answer: code, expires: Date.now() + CAPTCHA_TTL_MS });
+  res.json({ captchaId, svg: generateCaptchaSvg(code) });
+});
+
+function verifyCaptcha(captchaId, answer) {
+  const entry = captchaStore.get(captchaId);
+  if (!entry) return false;
+  captchaStore.delete(captchaId); // single-use: consumed on any attempt
+  if (Date.now() > entry.expires) return false;
+  return String(answer || '').trim().toUpperCase() === entry.answer;
+}
+
 // User Sign In Route
 apiRouter.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body || {};
+  const { email, password, captchaId, captchaAnswer } = req.body || {};
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
+  }
+
+  if (!verifyCaptcha(captchaId, captchaAnswer)) {
+    return res.status(400).json({ error: 'Captcha verification failed. Please try the new code.', captchaFailed: true });
   }
 
   const cleanEmail = String(email || '').trim().toLowerCase();
@@ -597,10 +645,9 @@ apiRouter.delete('/api/admin/career-copilot-access/:email', async (req, res) => 
   try { await revokeCareerCopilotAccess(req.params.email); res.json({ success: true }); } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// Career Copilot is unlocked for all users — always grant access.
 apiRouter.get('/api/career-copilot/check-access', async (req, res) => {
-  const email = req.query.email || '';
-  if (!email) return res.json({ hasAccess: false });
-  try { res.json({ hasAccess: await hasCareerCopilotAccess(email) }); } catch { res.json({ hasAccess: false }); }
+  res.json({ hasAccess: true });
 });
 
 apiRouter.post('/api/contact', async (req, res) => {
