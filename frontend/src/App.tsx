@@ -81,178 +81,6 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  // Dynamically update SEO Metadata based on the active page
-  useEffect(() => {
-    const metaData: Record<string, { title: string; description: string; keywords: string }> = {
-      home: {
-        title: "CV Mind - Free AI Resume Checker & ATS Optimization Tool",
-        description: "Optimize your resume instantly with CV Mind. Our corporate AI recruiter audits formatting, structural weaknesses, missing keywords, and provides professional before-and-after experience rewrites.",
-        keywords: "AI Resume Checker, ATS Optimizer, Resume Audit, Free Resume Review, Career Optimization, Bullet Rewriter, Resume Rating"
-      },
-      about: {
-        title: "About Us | CV Mind Resume Intelligence",
-        description: "Learn about CV Mind, our mission to democratize recruitment technology, and how our corporate AI resume scanner helps candidates beat applicant tracking systems.",
-        keywords: "About CV Mind, AI resume scanner, ATS technology, resume optimization mission, career tech"
-      },
-      contact: {
-        title: "Contact Us | Support & Feedback - CV Mind",
-        description: "Get in touch with the CV Mind team. We welcome your feedback, partnership inquiries, and questions about our AI resume checker and ATS optimization tools.",
-        keywords: "Contact CV Mind, resume checker support, career tool help, feedback, partnership"
-      },
-      privacy: {
-        title: "Privacy Policy | Secure & Anonymous Resume Parsing - CV Mind",
-        description: "Your privacy is our priority. CV Mind parses your resume entirely in memory. Read our Privacy Policy to understand how we protect your document and data.",
-        keywords: "Privacy Policy, secure resume parsing, data privacy, resume builder terms"
-      },
-      faq: {
-        title: "Frequently Asked Questions (FAQ) | CV Mind",
-        description: "Find answers to common questions about CV Mind, ATS resume scoring, keyword optimization, privacy, and how to download your recruiter-ready resume.",
-        keywords: "FAQ, CV Mind questions, ATS help, resume builder help, how to write resume"
-      },
-      blog: {
-        title: "Career Advice & Resume Optimization Blog | CV Mind",
-        description: "Explore expert tips, resume writing guides, career strategies, and ATS secrets from recruiters to help you land your dream job.",
-        keywords: "Resume Blog, Career Advice, Resume Writing Guides, Job Search Tips, Recruiter Secrets, ATS Optimization"
-      },
-      dashboard: {
-        title: "Resume Audit Scorecard & ATS Analytics | CV Mind",
-        description: "View your detailed AI resume analysis score, structural formatting alerts, keyword matches, and recruiter insights on your personalized CVMind dashboard.",
-        keywords: "Resume Dashboard, Resume Scorecard, ATS Score, Keyword Match, Resume Analysis"
-      },
-      admin: {
-        title: "Admin Dashboard | CV Mind",
-        description: "Secure administrator console for CV Mind system health, user analytics, and database telemetry.",
-        keywords: "Admin, CVMind Admin, DB Telemetry"
-      },
-      tailor: {
-        title: "AI Resume Tailoring Tool | Match Job Descriptions - CV Mind",
-        description: "Tailor your resume to any job description instantly. Our AI matches keywords, optimizes achievements, and aligns your experience for maximum ATS compatibility.",
-        keywords: "Resume Tailorer, Job Matching, Resume Alignment, ATS Keyword Match"
-      },
-      prep: {
-        title: "AI Interview Preparation & Mock Interviews | CV Mind",
-        description: "Prepare for interviews with personalized AI coaching. Get simulated behavioral questions, instant answers assessment, and industry-specific prep tips based on your resume.",
-        keywords: "AI Interview Prep, Mock Interview, Interview Coaching, Behavioral Questions"
-      },
-      linkedin: {
-        title: "LinkedIn Profile Optimizer | CV Mind",
-        description: "Optimize your LinkedIn profile to get noticed by recruiters. Learn how to align your experience, headline, and skills with AI-driven recommendations.",
-        keywords: "LinkedIn Optimizer, LinkedIn SEO, Profile Optimization, Recruiter Attraction"
-      },
-      'linkedin-bio': {
-        title: "AI LinkedIn Bio Generator | Headline & Summary - CV Mind",
-        description: "Create a compelling LinkedIn bio and headline in seconds. Our AI generates professional summaries that align with your industry, resume, and target roles.",
-        keywords: "LinkedIn Bio Generator, Professional Headline, LinkedIn Summary AI"
-      },
-      'linkedin-outreach': {
-        title: "AI LinkedIn Outreach Message Generator | CV Mind",
-        description: "Generate personalized LinkedIn outreach messages to connect with recruiters, hiring managers, and industry peers to accelerate your job search.",
-        keywords: "LinkedIn Outreach, Networking Messages, Recruiter Outreach AI"
-      },
-      'career-courses': {
-        title: "AI-Recommended Career & Skill Development Courses | CV Mind",
-        description: "Discover online courses curated by AI to fill your skill gaps. Advance your career with targeted learning options based on your resume analysis.",
-        keywords: "Career Development Courses, Skill Gap, Professional Learning, Online Courses"
-      },
-      'elevator-pitch': {
-        title: "AI Elevator Pitch Generator | Self-Introduction - CV Mind",
-        description: "Generate a high-impact professional elevator pitch for networking events, job interviews, and cold outreach. Sound confident, clear, and recruiter-ready.",
-        keywords: "Elevator Pitch Generator, Self-Introduction, Job Interview Pitch"
-      },
-      'career-roadmap': {
-        title: "AI Career Path Roadmap Generator | Career Planning - CV Mind",
-        description: "Map out your long-term career growth with our AI Career Roadmap generator. Get step-by-step career milestones, certification paths, and skill progression plans.",
-        keywords: "Career Roadmap Generator, Career Path Planner, Skill Progression, Career Strategy"
-      },
-      'resume-builder': {
-        title: "AI Resume Builder & Free ATS Templates | CV Mind",
-        description: "Build a professionally formatted resume in minutes with our free AI Resume Builder. Choose from 10+ ATS-compliant templates and get AI-powered text refining.",
-        keywords: "AI Resume Builder, ATS Templates, Free Resume Maker, Resume Generator"
-      },
-      'linkedin-post': {
-        title: "AI LinkedIn Post Generator | Viral Posts - CV Mind",
-        description: "Generate 3 viral LinkedIn post styles in seconds. AI writes professional, storytelling & bold posts with hooks, emojis, and optimized hashtags.",
-        keywords: "LinkedIn Post Generator, Viral LinkedIn Posts, AI Content Writer, LinkedIn Growth"
-      },
-      'voice-prep': {
-        title: "Voice Interview Practice | AI Coaching - CV Mind",
-        description: "Practice interviews by speaking your answers aloud. AI transcribes, analyzes confidence, detects filler words, and gives real-time coaching feedback.",
-        keywords: "Voice Interview Practice, AI Interview Coach, Mock Interview, Speech Analysis"
-      },
-      'portfolio-gen': {
-        title: "AI Portfolio Website Generator | Free - CV Mind",
-        description: "Generate a stunning, responsive portfolio website from your resume in seconds. Choose themes, preview live, and download the HTML file instantly.",
-        keywords: "Portfolio Website Generator, AI Portfolio Builder, Resume to Portfolio, HTML Portfolio"
-      },
-      portfolio: {
-        title: "Developer Portfolio Showcase | CV Mind",
-        description: "Interactive professional portfolio showcasing developer projects, skills, and work achievements powered by CV Mind.",
-        keywords: "Developer Portfolio, Interactive CV, Project Showcase"
-      },
-      products: {
-        title: "All AI Career Tools | Product Showcase - CV Mind",
-        description: "Explore all 7 AI-powered career tools by CVMind. From resume checking to interview prep, LinkedIn optimization, career roadmapping, and AI job finding — all in one place.",
-        keywords: "AI Career Tools, Resume Checker, Interview Prep, LinkedIn Optimizer, Career Roadmap, Voice Coach, Job Finder"
-      },
-      'job-finder': {
-        title: "AI Job Finder | Match Jobs to Your CV - CV Mind",
-        description: "Upload your CV and describe your target role. CV Mind matches you with 8–10 curated job openings complete with match scores, required skills, salary ranges, and direct apply links.",
-        keywords: "AI Job Finder, Job Search, Resume to Jobs, Remote Jobs, Full-time Jobs, Internship Finder, Career Match"
-      },
-      proofreading: {
-        title: "AI Proofreading | Grammar, Tone & Power Verbs - CV Mind",
-        description: "Let AI proofread your resume, cover letter, or any professional text. Fixes grammar, spelling, passive voice, weak verbs, and aligns tone to your target industry — one click.",
-        keywords: "AI Proofreading, Grammar Checker, Active Voice, Power Verbs, Resume Proofreader, Professional Writing"
-      }
-    };
-
-    const currentMeta = metaData[currentPage] || metaData.home;
-    document.title = currentMeta.title;
-
-    // Update description meta tag
-    let descMeta = document.querySelector('meta[name="description"]');
-    if (!descMeta) {
-      descMeta = document.createElement('meta');
-      descMeta.setAttribute('name', 'description');
-      document.head.appendChild(descMeta);
-    }
-    descMeta.setAttribute('content', currentMeta.description);
-
-    // Update keywords meta tag
-    let keywordsMeta = document.querySelector('meta[name="keywords"]');
-    if (!keywordsMeta) {
-      keywordsMeta = document.createElement('meta');
-      keywordsMeta.setAttribute('name', 'keywords');
-      document.head.appendChild(keywordsMeta);
-    }
-    keywordsMeta.setAttribute('content', currentMeta.keywords);
-
-    // Update Open Graph tags (dynamic matching)
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', currentMeta.title);
-
-    const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute('content', currentMeta.description);
-
-    // Update Twitter Card tags (dynamic matching)
-    const twitterTitle = document.querySelector('meta[property="twitter:title"]');
-    if (twitterTitle) twitterTitle.setAttribute('content', currentMeta.title);
-
-    const twitterDesc = document.querySelector('meta[property="twitter:description"]');
-    if (twitterDesc) twitterDesc.setAttribute('content', currentMeta.description);
-
-    // Update canonical link
-    let canonicalLink = document.querySelector('link[rel="canonical"]');
-    if (!canonicalLink) {
-      canonicalLink = document.createElement('link');
-      canonicalLink.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonicalLink);
-    }
-    const domain = window.location.origin;
-    const path = currentPage === 'home' ? '' : `/${currentPage}`;
-    canonicalLink.setAttribute('href', `${domain}${path}`);
-  }, [currentPage]);
-
 
   const [customApiKey, setCustomApiKey] = useState<string>(() => {
     return localStorage.getItem('resumetrics_gemini_key') || '';
@@ -514,7 +342,17 @@ export default function App() {
       case 'products':
         return <Products setCurrentPage={setCurrentPage} />;
       case 'job-finder':
-        return <JobFinder customApiKey={customApiKey} />;
+        // Temporarily locked — restore `return <JobFinder customApiKey={customApiKey} />;` to re-enable.
+        return (
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'70vh',gap:'18px',textAlign:'center',padding:'40px 24px'}}>
+            <div style={{fontSize:'3rem'}}>🔍</div>
+            <h2 style={{fontSize:'1.8rem',fontWeight:800,margin:0}}>AI Job Finder</h2>
+            <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'linear-gradient(135deg,#ff9f0a,#ff453a)',color:'#fff',padding:'4px 14px',borderRadius:'99px',fontSize:'0.78rem',fontWeight:700,letterSpacing:'0.05em'}}>TEMPORARILY UNAVAILABLE</div>
+            <p style={{color:'#6e6e73',fontSize:'1rem',maxWidth:'440px',lineHeight:1.6,margin:0}}>AI Job Finder is temporarily unavailable while we upgrade it. It will be back soon — meanwhile, try the AI Career Copilot for curated job matches.</p>
+            <button onClick={() => setCurrentPage('career-copilot')} style={{marginTop:'8px',padding:'12px 28px',borderRadius:'12px',border:'none',background:'linear-gradient(135deg,#2997ff,#bf5af2)',color:'#fff',fontWeight:600,fontSize:'0.95rem',cursor:'pointer'}}>Try AI Career Copilot →</button>
+            <button onClick={() => setCurrentPage('home')} style={{padding:'10px 24px',borderRadius:'12px',border:'none',background:'#1d1d1f',color:'#fff',fontWeight:600,fontSize:'0.9rem',cursor:'pointer'}}>← Go Home</button>
+          </div>
+        );
       case 'portfolio':
         const wId = window.location.pathname.split('/').pop();
         return <Portfolio workId={wId} />;
