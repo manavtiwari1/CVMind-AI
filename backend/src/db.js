@@ -250,6 +250,9 @@ const userSchema = new mongoose.Schema({
   isGoogleUser: { type: Boolean, default: false },
   resetPasswordToken: { type: String, default: '' },
   resetPasswordExpires: { type: Date, default: null },
+  status: { type: String, default: 'active' }, // 'active' | 'suspended' | 'banned'
+  statusReason: { type: String, default: '' },
+  statusUpdatedAt: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
   usageMap: { type: Map, of: Number, default: new Map() }
 });
@@ -1375,6 +1378,90 @@ export async function deleteUserWork(workId, userId) {
   db.works = db.works.filter(w => !(w.id === cleanWorkId && w.userId === cleanUserId));
   writeDb(db);
   return { deletedCount: 1 };
+}
+
+// ─── ADMIN USER MODERATION ───────────────────────────────────────────────────
+export const USER_STATUSES = ['active', 'suspended', 'banned'];
+
+export async function getAllUsersForAdmin() {
+  await ensureMongoConnection();
+
+  const buildLoginMap = (logs) => {
+    const map = new Map();
+    logs.forEach(l => {
+      const cur = map.get(l.email) || { lastLogin: null, loginCount: 0 };
+      cur.loginCount += 1;
+      if (!cur.lastLogin || new Date(l.createdAt) > new Date(cur.lastLogin)) cur.lastLogin = l.createdAt;
+      map.set(l.email, cur);
+    });
+    return map;
+  };
+
+  const sanitize = (u, loginMap) => {
+    const email = String(u.email || '');
+    const logins = loginMap.get(email) || { lastLogin: null, loginCount: 0 };
+    return {
+      id: String(u.id || u._id),
+      name: u.name || '',
+      email,
+      isGoogleUser: !!u.isGoogleUser,
+      status: u.status || 'active',
+      statusReason: u.statusReason || '',
+      statusUpdatedAt: u.statusUpdatedAt || null,
+      createdAt: u.createdAt || null,
+      lastLogin: logins.lastLogin,
+      loginCount: logins.loginCount
+    };
+  };
+
+  // 1. MongoDB Mode
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const [users, logs] = await Promise.all([
+      User.find().sort({ createdAt: -1 }).select('name email isGoogleUser status statusReason statusUpdatedAt createdAt').lean(),
+      LoginLog.find().select('email createdAt').lean()
+    ]);
+    const loginMap = buildLoginMap(logs);
+    return users.map(u => sanitize(u, loginMap));
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  const users = Array.isArray(db.users) ? db.users : [];
+  const loginMap = buildLoginMap(Array.isArray(db.loginLogs) ? db.loginLogs : []);
+  return users.map(u => sanitize(u, loginMap));
+}
+
+export async function setUserStatus(userId, status, reason = '') {
+  await ensureMongoConnection();
+  const cleanId = String(userId || '').trim();
+  const cleanStatus = String(status || '').trim().toLowerCase();
+  const cleanReason = String(reason || '').trim();
+
+  if (!USER_STATUSES.includes(cleanStatus)) {
+    throw new Error(`Invalid status. Must be one of: ${USER_STATUSES.join(', ')}`);
+  }
+
+  // 1. MongoDB Mode
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const user = await User.findById(cleanId);
+    if (!user) throw new Error('User not found');
+    user.status = cleanStatus;
+    user.statusReason = cleanStatus === 'active' ? '' : cleanReason;
+    user.statusUpdatedAt = new Date();
+    await user.save();
+    return { id: String(user._id), email: user.email, status: user.status, statusReason: user.statusReason };
+  }
+
+  // 2. Local JSON DB Fallback
+  const db = readDb();
+  if (!db.users) db.users = [];
+  const u = db.users.find(x => x.id === cleanId || x._id === cleanId);
+  if (!u) throw new Error('User not found');
+  u.status = cleanStatus;
+  u.statusReason = cleanStatus === 'active' ? '' : cleanReason;
+  u.statusUpdatedAt = new Date().toISOString();
+  writeDb(db);
+  return { id: u.id || u._id, email: u.email, status: u.status, statusReason: u.statusReason };
 }
 
 export async function deleteAccount(userId) {
