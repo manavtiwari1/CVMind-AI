@@ -275,6 +275,21 @@ export default function Blog({ setCurrentPage }: BlogProps) {
         </p>
       </section>
 
+      {/* Featured Articles */}
+      <section style={{ maxWidth: '860px', margin: '0 auto 40px', padding: '0 20px' }}>
+        <h2 style={{ fontSize: '1.3rem', fontWeight: 750, marginBottom: '14px' }}>📚 Career Guides</h2>
+        <div
+          onClick={() => setCurrentPage('how-to-create-an-ats-friendly-resume')}
+          style={{ cursor: 'pointer', background: 'var(--bg-card, #fff)', border: '1px solid var(--border, #e8e8ed)', borderRadius: '16px', padding: '22px 24px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', transition: 'transform 0.15s' }}
+        >
+          <span style={{ display: 'inline-block', background: 'linear-gradient(135deg,#2997ff,#bf5af2)', color: '#fff', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.05em', padding: '2px 10px', borderRadius: '99px', marginBottom: '10px' }}>RESUME GUIDE</span>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 6px' }}>How to Create an ATS-Friendly Resume in 2026 (Step-by-Step Guide)</h3>
+          <p style={{ color: 'var(--text-secondary, #6e6e73)', fontSize: '0.92rem', margin: 0, lineHeight: 1.6 }}>
+            Why 88% of qualified candidates get filtered out before a human sees their resume — and the exact formatting rules, keywords, and tests to get past the software. 12 min read <ArrowRight size={13} style={{ verticalAlign: '-2px' }} />
+          </p>
+        </div>
+      </section>
+
       {/* Tag Filters */}
       <div className="blog-filters">
         {tags.map(tag => (

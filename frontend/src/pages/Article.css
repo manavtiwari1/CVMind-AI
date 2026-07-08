@@ -1,0 +1,179 @@
+/* ── Shared blog-article styling ─────────────────────────────── */
+.art-page {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  color: var(--text-primary, #1d1d1f);
+  line-height: 1.75;
+  font-size: 1.02rem;
+}
+
+.art-breadcrumb {
+  font-size: 0.85rem;
+  color: var(--text-tertiary, #86868b);
+  margin-bottom: 18px;
+}
+.art-breadcrumb button {
+  background: none;
+  border: none;
+  color: var(--blue, #2997ff);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.art-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, #2997ff, #bf5af2);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 12px;
+  border-radius: 99px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+
+.art-h1 {
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+
+.art-meta {
+  color: var(--text-tertiary, #86868b);
+  font-size: 0.88rem;
+  margin-bottom: 34px;
+}
+
+.art-page h2 {
+  font-size: 1.5rem;
+  font-weight: 750;
+  margin: 44px 0 14px;
+  letter-spacing: -0.01em;
+}
+.art-page h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 28px 0 10px;
+}
+.art-page p { margin: 0 0 16px; }
+.art-page ul, .art-page ol { margin: 0 0 18px; padding-left: 22px; }
+.art-page li { margin-bottom: 7px; }
+.art-page strong { font-weight: 650; }
+
+.art-page a {
+  color: var(--blue, #2997ff);
+  text-decoration: none;
+  font-weight: 550;
+}
+.art-page a:hover { text-decoration: underline; }
+.art-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--blue, #2997ff);
+  font-weight: 550;
+  cursor: pointer;
+}
+.art-link-btn:hover { text-decoration: underline; }
+
+/* Table of contents */
+.art-toc {
+  background: var(--bg-card, #f5f5f7);
+  border: 1px solid var(--border, #e8e8ed);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin: 26px 0 10px;
+}
+.art-toc-title { font-weight: 700; margin-bottom: 10px; font-size: 0.95rem; }
+.art-toc ol { margin: 0; padding-left: 20px; }
+.art-toc li { margin-bottom: 5px; font-size: 0.93rem; }
+
+/* Tables */
+.art-table-wrap { overflow-x: auto; margin: 0 0 20px; }
+.art-page table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.92rem;
+}
+.art-page th, .art-page td {
+  border: 1px solid var(--border, #e8e8ed);
+  padding: 9px 13px;
+  text-align: left;
+  vertical-align: top;
+}
+.art-page th { background: var(--bg-card, #f5f5f7); font-weight: 650; }
+
+/* Callout / example blocks */
+.art-example {
+  border-left: 3px solid var(--blue, #2997ff);
+  background: var(--bg-card, #f5f5f7);
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+  margin: 0 0 18px;
+  font-size: 0.95rem;
+}
+.art-example p { margin-bottom: 8px; }
+.art-example p:last-child { margin-bottom: 0; }
+
+/* FAQ */
+.art-faq {
+  border: 1px solid var(--border, #e8e8ed);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+.art-faq summary {
+  font-weight: 650;
+  cursor: pointer;
+  font-size: 0.98rem;
+}
+.art-faq p { margin: 10px 0 2px; font-size: 0.95rem; }
+
+/* CTA */
+.art-cta {
+  background: linear-gradient(135deg, rgba(41,151,255,0.08), rgba(191,90,242,0.08));
+  border: 1px solid rgba(41,151,255,0.25);
+  border-radius: 18px;
+  padding: 28px;
+  margin-top: 44px;
+  text-align: center;
+}
+.art-cta h2 { margin-top: 0; }
+.art-cta-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.art-cta-primary {
+  background: linear-gradient(135deg, #2997ff, #bf5af2);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 13px 26px;
+  font-weight: 650;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.art-cta-secondary {
+  background: var(--bg-card, #fff);
+  color: var(--text-primary, #1d1d1f);
+  border: 1px solid var(--border, #d2d2d7);
+  border-radius: 12px;
+  padding: 13px 26px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .art-h1 { font-size: 1.6rem; }
+  .art-page { padding: 32px 18px 60px; }
+}
