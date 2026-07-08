@@ -97,7 +97,6 @@ export default function Footer({ setCurrentPage }: FooterProps) {
               <button className="footer-link" onClick={() => setCurrentPage('faq')}>FAQ's</button>
               <button className="footer-link" onClick={() => setCurrentPage('blog')}>Blog</button>
               <button className="footer-link" onClick={() => setCurrentPage('privacy')}>Privacy</button>
-              <button className="footer-link" onClick={() => setCurrentPage('copyright-policy')}>Copyright Policy</button>
             </div>
 
             {/* Legal column */}
@@ -106,6 +105,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
               <button className="footer-link" onClick={() => setCurrentPage('terms')}>Terms &amp; Conditions</button>
               <button className="footer-link" onClick={() => setCurrentPage('refund-policy')}>Refund Policy</button>
               <button className="footer-link" onClick={() => setCurrentPage('disclaimer')}>Disclaimer</button>
+              <button className="footer-link" onClick={() => setCurrentPage('copyright-policy')}>Copyright Policy</button>
             </div>
           </div>
         </div>
