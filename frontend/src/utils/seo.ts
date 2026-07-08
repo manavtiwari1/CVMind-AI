@@ -54,6 +54,11 @@ const PAGE_SEO: Record<string, PageSEO> = {
     description: "CV Mind's refund policy for paid services.",
     keywords: 'Refund Policy, CV Mind refunds, payment policy',
   },
+  'copyright-policy': {
+    title: 'Copyright Policy | CV Mind',
+    description: "CV Mind's copyright policy — ownership of site content, your rights over uploaded and AI-generated content, and how to report infringement.",
+    keywords: 'Copyright Policy, DMCA, Intellectual Property, Content Ownership, CV Mind copyright',
+  },
   disclaimer: {
     title: 'Disclaimer | CV Mind',
     description: "Disclaimer regarding the use of CV Mind's AI-generated resume and career content.",

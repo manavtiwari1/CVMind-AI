@@ -35,6 +35,7 @@ import Proofreading from './pages/Proofreading';
 import AutoApply from './pages/AutoApply';
 import CareerCopilot from './pages/CareerCopilot';
 import ArticleAtsResume from './pages/ArticleAtsResume';
+import CopyrightPolicy from './pages/CopyrightPolicy';
 import ArticlePage from './pages/ArticlePage';
 import { ARTICLES } from './data/articles';
 import DigitalSerenityBackground from './components/DigitalSerenityBackground';
@@ -52,7 +53,7 @@ export default function App() {
       return 'portfolio';
     }
     const urlPage = pathname.replace(/^\//, '');
-    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing', 'terms', 'refund-policy', 'disclaimer', 'proofreading', 'auto-apply', 'career-copilot', ...ARTICLES.map(a => a.slug)];
+    const validPages = ['home', 'about', 'contact', 'dashboard', 'admin', 'tailor', 'prep', 'linkedin', 'linkedin-bio', 'linkedin-outreach', 'linkedin-post', 'career-courses', 'elevator-pitch', 'career-roadmap', 'resume-builder', 'resume-editor', 'privacy', 'faq', 'blog', 'voice-prep', 'portfolio-gen', 'products', 'job-finder', 'pricing', 'terms', 'refund-policy', 'disclaimer', 'proofreading', 'auto-apply', 'career-copilot', 'copyright-policy', ...ARTICLES.map(a => a.slug)];
     if (urlPage && validPages.includes(urlPage)) {
       return urlPage;
     }
@@ -375,6 +376,8 @@ export default function App() {
         return <Terms />;
       case 'refund-policy':
         return <RefundPolicy />;
+      case 'copyright-policy':
+        return <CopyrightPolicy />;
       case 'disclaimer':
         return <Disclaimer />;
       case 'proofreading':

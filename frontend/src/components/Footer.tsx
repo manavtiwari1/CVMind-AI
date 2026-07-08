@@ -97,6 +97,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
               <button className="footer-link" onClick={() => setCurrentPage('faq')}>FAQ's</button>
               <button className="footer-link" onClick={() => setCurrentPage('blog')}>Blog</button>
               <button className="footer-link" onClick={() => setCurrentPage('privacy')}>Privacy</button>
+              <button className="footer-link" onClick={() => setCurrentPage('copyright-policy')}>Copyright Policy</button>
             </div>
 
             {/* Legal column */}
