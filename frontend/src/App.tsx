@@ -220,6 +220,10 @@ export default function App() {
 
   // Helper to switch pages dynamically
   const renderPage = () => {
+    // Registry-driven articles render generically; bespoke ones fall through to the switch.
+    if (ARTICLES.some(a => a.slug === currentPage && a.sections)) {
+      return <ArticlePage slug={currentPage} setCurrentPage={setCurrentPage} />;
+    }
     switch (currentPage) {
       case 'home':
         return (
@@ -242,11 +246,6 @@ export default function App() {
         return <Blog setCurrentPage={setCurrentPage} />;
       case 'how-to-create-an-ats-friendly-resume':
         return <ArticleAtsResume setCurrentPage={setCurrentPage} />;
-      case 'resume-keywords-guide':
-      case 'ats-resume-checklist':
-      case 'pdf-vs-docx-resume':
-      case 'resume-mistakes-to-avoid':
-        return <ArticlePage slug={currentPage} setCurrentPage={setCurrentPage} />;
       case 'dashboard':
         return (
           <Dashboard 
