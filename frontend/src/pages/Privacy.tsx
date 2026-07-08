@@ -158,6 +158,20 @@ export default function Privacy() {
         </div>
       </section>
 
+      {/* Advertising & Cookies (required disclosure for Google AdSense) */}
+      <section className="summary-box glass-card">
+        <h3 className="summary-title">Advertising & Cookies</h3>
+        <p className="summary-text">
+          CV Mind uses Google AdSense, a third-party advertising service, to display ads on some pages. Google and its partners use cookies (including the DoubleClick cookie) to serve ads based on your prior visits to this website and other websites, and to measure ad performance. Google's use of advertising cookies enables it and its partners to show you personalized ads.
+        </p>
+        <p className="summary-text">
+          You can opt out of personalized advertising at any time by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--blue)' }}>Google Ads Settings</a>, or opt out of many third-party advertising cookies at <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--blue)' }}>www.aboutads.info</a>. You can also block or delete cookies through your browser settings — the site's core tools work without advertising cookies.
+        </p>
+        <p className="summary-text">
+          We also use essential cookies and local storage to keep you signed in and remember your preferences. These are strictly functional and are never sold or shared with advertisers.
+        </p>
+      </section>
+
       {/* Transit Security / Bottom Note */}
       <section className="summary-box glass-card">
         <h3 className="summary-title">End-to-End Encryption & Security</h3>
