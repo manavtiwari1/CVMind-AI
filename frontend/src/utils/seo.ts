@@ -8,9 +8,9 @@ const SITE_URL = 'https://www.cvmind.online';
 
 const PAGE_SEO: Record<string, PageSEO> = {
   home: {
-    title: 'CV Mind - Free AI Resume Checker & ATS Optimization Tool',
-    description: 'Optimize your resume instantly with CV Mind. Our AI recruiter audits formatting, structural weaknesses, missing keywords, and provides professional before-and-after experience rewrites.',
-    keywords: 'AI Resume Checker, ATS Optimizer, Resume Audit, Free Resume Review, Career Optimization, Bullet Rewriter, Resume Rating',
+    title: 'Free AI Resume Builder & CV Maker Online | CV Mind',
+    description: "Make a professional resume or CV online in minutes with CV Mind's free AI Resume Builder. ATS-friendly templates, instant resume score, AI rewriting, and one-click job tailoring — no sign-up needed to start.",
+    keywords: 'Resume Builder, Free Resume Builder, CV Maker, CV Making Online, Online CV Builder, AI Resume Builder, ATS Resume Checker, Resume Maker Free, CV Builder India, Professional CV Format',
   },
   about: {
     title: 'About Us | CV Mind Resume Intelligence',
@@ -68,9 +68,9 @@ const PAGE_SEO: Record<string, PageSEO> = {
     keywords: 'AI Career Tools, Resume Checker, Interview Prep, LinkedIn Optimizer, Career Roadmap, Voice Coach, Job Finder',
   },
   'resume-builder': {
-    title: 'AI Resume Builder & Free ATS Templates | CV Mind',
-    description: 'Build a professionally formatted resume in minutes with our free AI Resume Builder. Choose from 10+ ATS-compliant templates and get AI-powered text refining.',
-    keywords: 'AI Resume Builder, ATS Templates, Free Resume Maker, Resume Generator',
+    title: 'Free Resume Builder - Make Your CV Online in Minutes | CV Mind',
+    description: 'Build a professional, ATS-friendly resume or CV online for free. Choose from 10+ recruiter-approved templates, get AI-powered writing help, and download as PDF or DOC in minutes.',
+    keywords: 'Free Resume Builder, CV Maker Online, Make CV Online Free, AI Resume Builder, ATS Resume Templates, Resume Maker, CV Format for Freshers, Professional Resume Builder',
   },
   tailor: {
     title: 'AI Resume Tailoring Tool | Match Job Descriptions - CV Mind',
