@@ -355,9 +355,9 @@ export default function Blog({ setCurrentPage }: BlogProps) {
       <section className="blog-cta-section">
         <div className="blog-cta-card">
           <div className="cta-content">
-            <h3 className="cta-title">Launching Soon</h3>
+            <h3 className="cta-title">We're Live! 🎉</h3>
             <p className="cta-desc">
-              CV Mind has completed rigorous performance optimizations, CORS resolutions, and TypeScript compilations. We are officially going live soon.
+              CV Mind is officially live at cvmind.online — free ATS resume checks, AI resume building, interview prep, and the new AI Career Copilot. Start with a free resume scan.
             </p>
             <button className="cta-btn" onClick={() => setCurrentPage('home')}>
               Try CV Mind Now <ArrowRight size={16} />
