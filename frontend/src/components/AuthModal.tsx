@@ -114,6 +114,15 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     setCaptcha(null); setCaptchaAnswer('');
     setErrorMsg(null); setSuccessMsg(null);
     setLoading(false); setDone(false);
+
+    // Surface OAuth redirect errors (GitHub/LinkedIn) passed back via query param
+    const authError = params.get('authError');
+    if (authError) {
+      setErrorMsg(authError);
+      params.delete('authError');
+      const qs = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+    }
   }, [isOpen]);
 
   /* Load a fresh captcha whenever the sign-in captcha step is shown ─ */
