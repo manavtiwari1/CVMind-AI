@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt, fetchResumeFromUrl } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini, generateResumeWithGemini, generateProofreadingWithDeepSeek } from './services/gemini.js';
-import { getPublicStats, getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, deleteAccount, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, getUserUsageToday, FREE_DAILY_LIMITS, isUserPaid, getWhitelistedEmails, addWhitelistedEmail, deleteWhitelistedEmail, getAutoApplyAccessList, grantAutoApplyAccess, revokeAutoApplyAccess, hasAutoApplyAccess, getCareerCopilotAccessList, grantCareerCopilotAccess, revokeCareerCopilotAccess, hasCareerCopilotAccess } from './db.js';
+import { getPublicStats, getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, deleteAccount, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, getUserUsageToday, FREE_DAILY_LIMITS, isUserPaid, getWhitelistedEmails, addWhitelistedEmail, deleteWhitelistedEmail, getAutoApplyAccessList, grantAutoApplyAccess, revokeAutoApplyAccess, hasAutoApplyAccess, getCareerCopilotAccessList, grantCareerCopilotAccess, revokeCareerCopilotAccess, hasCareerCopilotAccess, getAllUsersForAdmin, setUserStatus } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -264,6 +264,20 @@ function verifyCaptcha(captchaId, answer) {
   return String(answer || '').trim().toUpperCase() === entry.answer;
 }
 
+// Blocked-account messages shown when a moderated user attempts to sign in
+const ACCOUNT_STATUS_MESSAGES = {
+  suspended: 'Your account has been temporarily suspended. Please contact support for assistance.',
+  banned: 'Your account has been banned for violating our terms of service. Contact support if you believe this is a mistake.'
+};
+
+function getAccountBlockError(user) {
+  const status = user?.status;
+  if (status && status !== 'active') {
+    return { error: ACCOUNT_STATUS_MESSAGES[status] || 'Your account access has been restricted.', accountStatus: status };
+  }
+  return null;
+}
+
 // User Sign In Route
 apiRouter.post('/api/auth/login', async (req, res) => {
   const { email, password, captchaId, captchaAnswer } = req.body || {};
@@ -329,6 +343,11 @@ apiRouter.post('/api/auth/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    const blockError = getAccountBlockError(user);
+    if (blockError) {
+      return res.status(403).json(blockError);
     }
 
     await saveLoginLog({ email: user.email, name: user.name, provider: 'password' });
@@ -504,6 +523,11 @@ apiRouter.post('/api/auth/google', async (req, res) => {
       sendWelcomeEmail(user.email, user.name, req.headers.origin);
     }
 
+    const blockError = getAccountBlockError(user);
+    if (blockError) {
+      return res.status(403).json(blockError);
+    }
+
     await saveLoginLog({ email: user.email, name: user.name, provider: 'google' });
 
     const isPaid = await isUserPaid(user);
@@ -663,6 +687,35 @@ apiRouter.delete('/api/admin/career-copilot-access/:email', async (req, res) => 
 // Career Copilot is unlocked for all users — always grant access.
 apiRouter.get('/api/career-copilot/check-access', async (req, res) => {
   res.json({ hasAccess: true });
+});
+
+// ── User Moderation (Admin) ───────────────────────────────────────────────────
+// List all registered accounts with status + login activity
+apiRouter.get('/api/admin/users', async (req, res) => {
+  const secret = req.headers['x-admin-secret'];
+  if (!secret || secret !== process.env.ADMIN_SECRET) return res.status(401).json({ error: 'Unauthorized' });
+  try { res.json({ success: true, data: await getAllUsersForAdmin() }); } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// Change account status: active | suspended | banned
+apiRouter.post('/api/admin/users/:id/status', async (req, res) => {
+  const secret = req.headers['x-admin-secret'];
+  if (!secret || secret !== process.env.ADMIN_SECRET) return res.status(401).json({ error: 'Unauthorized' });
+  const { status, reason } = req.body || {};
+  if (!status) return res.status(400).json({ error: 'Status is required.' });
+  try {
+    const result = await setUserStatus(req.params.id, status, reason);
+    res.json({ success: true, data: result });
+  } catch (e) {
+    res.status(e.message === 'User not found' ? 404 : 400).json({ error: e.message });
+  }
+});
+
+// Permanently delete an account and its data
+apiRouter.delete('/api/admin/users/:id', async (req, res) => {
+  const secret = req.headers['x-admin-secret'];
+  if (!secret || secret !== process.env.ADMIN_SECRET) return res.status(401).json({ error: 'Unauthorized' });
+  try { await deleteAccount(req.params.id); res.json({ success: true, message: 'User account deleted.' }); } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 apiRouter.post('/api/contact', async (req, res) => {
