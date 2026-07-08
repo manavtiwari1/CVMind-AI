@@ -115,6 +115,39 @@ export default function App() {
       .then(r => r.json()).then(d => { setHasAutoApplyAccess(!!d.hasAccess); localStorage.setItem('cvmind_aa_access', d.hasAccess ? 'true' : 'false'); }).catch(() => {});
   }, [isLoggedIn]);
 
+  // Enforce moderation on existing sessions — banned/suspended/deleted users
+  // are signed out as soon as they open (or return to) the app.
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const base = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://cvmindai-backend.onrender.com');
+
+    const checkAccountStatus = () => {
+      const user = JSON.parse(localStorage.getItem('cvmind_user') || '{}');
+      if (!user?.email) return;
+      fetch(`${base}/api/auth/account-status?email=${encodeURIComponent(user.email)}`)
+        .then(r => r.json())
+        .then(d => {
+          if (d && d.active === false) {
+            localStorage.removeItem('cvmind_logged_in');
+            localStorage.removeItem('cvmind_user');
+            setIsLoggedIn(false);
+            setCurrentPageState('home');
+            const params = new URLSearchParams(window.location.search);
+            params.set('authError', d.message || 'Your account access has been restricted.');
+            window.history.replaceState({}, '', window.location.pathname + `?${params.toString()}`);
+            setShowAuthModal(true);
+          }
+        })
+        .catch(() => {}); // network/offline — never sign the user out on errors
+    };
+
+    checkAccountStatus();
+    const onFocus = () => { if (document.visibilityState === 'visible') checkAccountStatus(); };
+    document.addEventListener('visibilitychange', onFocus);
+    return () => document.removeEventListener('visibilitychange', onFocus);
+  }, [isLoggedIn]);
+
   const setCurrentPage = (page: string) => {
     setCurrentPageState(page);
     localStorage.setItem('cvmind_current_page', page);
@@ -200,12 +233,16 @@ export default function App() {
         setCurrentPage('dashboard');
       } catch (err: any) {
         console.error('Google Redirect Auth Error:', err);
+        // Surface the failure (e.g. banned/suspended account) in the auth modal
+        const params = new URLSearchParams(window.location.search);
+        params.set('authError', err?.message || 'Google sign-in failed. Please try again.');
+        window.history.replaceState({}, '', window.location.pathname + `?${params.toString()}`);
+        setShowAuthModal(true);
       }
     };
 
     handleGoogleRedirect();
   }, []);
-
 
   const handleSignOut = () => {
     localStorage.removeItem('cvmind_logged_in');

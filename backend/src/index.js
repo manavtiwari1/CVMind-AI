@@ -555,6 +555,26 @@ apiRouter.post('/api/auth/google', async (req, res) => {
   }
 });
 
+// Lightweight session validity check — lets the SPA kick out banned/suspended
+// (or deleted) users who still hold a localStorage session from before.
+apiRouter.get('/api/auth/account-status', async (req, res) => {
+  const email = String(req.query.email || '').trim().toLowerCase();
+  if (!email) return res.status(400).json({ error: 'Email is required.' });
+  try {
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.json({ status: 'deleted', active: false, message: 'This account no longer exists.' });
+    }
+    const blockError = getAccountBlockError(user);
+    if (blockError) {
+      return res.json({ status: user.status, active: false, message: blockError.error });
+    }
+    return res.json({ status: 'active', active: true });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Status check failed.' });
+  }
+});
+
 // Admin Analytics Stats Secure Route
 apiRouter.post('/api/admin/stats', async (req, res) => {
   const adminSecret = req.headers['x-admin-secret'] || req.body.secret || null;
