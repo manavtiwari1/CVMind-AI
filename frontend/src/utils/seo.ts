@@ -1,3 +1,5 @@
+import { ARTICLES } from '../data/articles';
+
 interface PageSEO {
   title: string;
   description: string;
@@ -147,12 +149,12 @@ const PAGE_SEO: Record<string, PageSEO> = {
     description: "CV Mind's Auto Apply Agent finds matching jobs and applies on your behalf with a tailored resume and cover letter. Coming soon.",
     keywords: 'Auto Apply, AI Job Application, Automated Job Applying, Job Application Agent',
   },
-  'how-to-create-an-ats-friendly-resume': {
-    title: 'How to Create an ATS-Friendly Resume in 2026 (Guide)',
-    description: 'Learn how to create an ATS-friendly resume that gets past screening software. Formatting rules, keyword tips, templates, and a free checker to test yours.',
-    keywords: 'ATS Friendly Resume, ATS Resume Format, Resume Keywords, Applicant Tracking System, Resume Formatting Rules, ATS Resume Checker',
-  },
 };
+
+// Blog articles register their own SEO from the central registry.
+for (const a of ARTICLES) {
+  PAGE_SEO[a.slug] = { title: a.metaTitle, description: a.metaDescription, keywords: a.keywords };
+}
 
 function setMeta(name: string, content: string, attr: 'name' | 'property' = 'name') {
   let el = document.querySelector(`meta[${attr}="${name}"]`);
