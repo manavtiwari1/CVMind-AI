@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle2, ChevronDown, ArrowRight, FileText, Zap, Target, Shield, Users, Star } from 'lucide-react';
+import { useLiveStats, formatStat } from '../utils/stats';
 import './ResumeBuilderLanding.css';
 
 interface ResumeBuilderLandingProps {
@@ -55,6 +56,8 @@ const FEATURES = [
 
 export default function ResumeBuilderLanding({ setCurrentPage }: ResumeBuilderLandingProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const liveStats = useLiveStats();
+  const resumesStat = liveStats.resumesAnalyzed != null ? formatStat(liveStats.resumesAnalyzed) : '50K+';
 
   useEffect(() => {
     const main = document.querySelector('.main-content') as HTMLElement | null;
@@ -103,10 +106,10 @@ export default function ResumeBuilderLanding({ setCurrentPage }: ResumeBuilderLa
             <div className="rbl-hero-trust">
               <div className="rbl-trust-stars">
                 {'★★★★★'.split('').map((s, i) => <span key={i} className="rbl-star">{s}</span>)}
-                <span className="rbl-trust-text">4.9 · <strong>12,400+ Reviews</strong></span>
+                <span className="rbl-trust-text">4.9 · <strong>250+ Reviews</strong></span>
               </div>
               <span className="rbl-trust-divider" />
-              <span className="rbl-trust-users"><Users size={14} /> <strong>50K+</strong> resumes built</span>
+              <span className="rbl-trust-users"><Users size={14} /> <strong>{resumesStat}</strong> resumes analyzed</span>
             </div>
             <div className="rbl-trust-pills">
               {['No credit card required', 'ATS-tested templates', 'Instant AI feedback'].map(t => (
@@ -338,7 +341,7 @@ export default function ResumeBuilderLanding({ setCurrentPage }: ResumeBuilderLa
           <div className="rbl-section-tag">Social Proof</div>
           <h2 className="rbl-section-h2">Trusted by Professionals Worldwide</h2>
           <div className="rbl-stats-row">
-            {[['50K+','Resumes Built'],['4.9★','User Rating'],['+42%','More Interviews'],['12K+','Jobs Landed']].map(([v,l]) => (
+            {[[resumesStat,'Resumes Analyzed'],['4.9★','User Rating'],['+42%','More Interviews'],['12K+','Jobs Landed']].map(([v,l]) => (
               <div key={l} className="rbl-stat">
                 <div className="rbl-stat-val">{v}</div>
                 <div className="rbl-stat-lbl">{l}</div>
@@ -397,7 +400,7 @@ export default function ResumeBuilderLanding({ setCurrentPage }: ResumeBuilderLa
           </div>
           <div className="rbl-final-trust">
             {'★★★★★'.split('').map((s, i) => <span key={i} style={{ color: '#f59e0b' }}>{s}</span>)}
-            <span style={{ marginLeft: '0.5rem', fontSize: '0.85rem', opacity: 0.8 }}>4.9 rated · 12,400+ reviews</span>
+            <span style={{ marginLeft: '0.5rem', fontSize: '0.85rem', opacity: 0.8 }}>4.9 rated · 250+ reviews</span>
           </div>
         </div>
       </section>

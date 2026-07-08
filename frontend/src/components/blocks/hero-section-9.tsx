@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cn } from '@/lib/utils'
+import { useLiveStats, formatStat } from '../../utils/stats'
 import './hero-section-9.css'
 
 interface HeroSectionProps {
@@ -8,6 +9,7 @@ interface HeroSectionProps {
 }
 
 export const HeroSection = ({ setCurrentPage, onAnalyzeClick }: HeroSectionProps) => {
+    const liveStats = useLiveStats()
 
     React.useEffect(() => {
         const main = document.querySelector('.main-content') as HTMLElement | null
@@ -75,12 +77,12 @@ export const HeroSection = ({ setCurrentPage, onAnalyzeClick }: HeroSectionProps
                     <div className="hero9-social-proof">
                         <div className="hero9-stars">
                             {'★★★★★'.split('').map((s, i) => <span key={i} className="hero9-star">{s}</span>)}
-                            <span className="hero9-rating-text">4.9 · <strong>12,400+ Reviews</strong></span>
+                            <span className="hero9-rating-text">4.9 · <strong>250+ Reviews</strong></span>
                         </div>
                         <span className="hero9-sp-divider" />
                         <span className="hero9-sp-users">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            <strong>50K+</strong> resumes analyzed
+                            <strong>{liveStats.resumesAnalyzed != null ? formatStat(liveStats.resumesAnalyzed) : '50K+'}</strong> resumes analyzed
                         </span>
                     </div>
 
