@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { parsePdf, parseDocx, parseTxt, fetchResumeFromUrl } from './services/parser.js';
 import { analyzeResumeWithGemini, chatWithCVMind, optimizeResumeWithGemini, tailorResumeWithGemini, generatePrepQuestionsWithGemini, refineCoverLetterWithGemini, analyzeLinkedInProfileWithGemini, evaluatePrepAnswerWithGemini, generateLinkedinBioWithGemini, generateLinkedinOutreachWithGemini, generateCareerCoursesWithGemini, generateElevatorPitchWithGemini, generateCareerRoadmapWithGemini, findJobsWithGemini, generateResumeWithGemini, generateProofreadingWithDeepSeek } from './services/gemini.js';
-import { getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, deleteAccount, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, getUserUsageToday, FREE_DAILY_LIMITS, isUserPaid, getWhitelistedEmails, addWhitelistedEmail, deleteWhitelistedEmail, getAutoApplyAccessList, grantAutoApplyAccess, revokeAutoApplyAccess, hasAutoApplyAccess, getCareerCopilotAccessList, grantCareerCopilotAccess, revokeCareerCopilotAccess, hasCareerCopilotAccess } from './db.js';
+import { getPublicStats, getAdminStats, saveContactMessage, saveScan, saveFix, saveTailorLog, savePrepLog, findUserByEmail, createUser, saveLoginLog, saveWork, getUserWorks, deleteUserWork, deleteAccount, updateUserProfile, updateUserPassword, findUserById, saveUserResetToken, findUserByResetToken, saveLinkedinLog, saveLinkedinBioLog, saveLinkedinOutreachLog, saveCareerCoursesLog, saveElevatorPitchLog, saveCareerRoadmapLog, saveVoicePrepLog, savePortfolioGenLog, saveLinkedinPostLog, getWorkById, saveJobFinderLog, savePaymentLog, checkJobFinderAccess, getUserUsageToday, FREE_DAILY_LIMITS, isUserPaid, getWhitelistedEmails, addWhitelistedEmail, deleteWhitelistedEmail, getAutoApplyAccessList, grantAutoApplyAccess, revokeAutoApplyAccess, hasAutoApplyAccess, getCareerCopilotAccessList, grantCareerCopilotAccess, revokeCareerCopilotAccess, hasCareerCopilotAccess } from './db.js';
 import { Resend } from 'resend';
 
 const app = express();
@@ -202,6 +202,21 @@ apiRouter.post('/api/auth/signup', async (req, res) => {
   } catch (err) {
     console.error('Sign Up Error:', err);
     return res.status(500).json({ error: err.message || 'An error occurred during account creation.' });
+  }
+});
+
+// ── Public Stats (homepage banner) ────────────────────────────────────────────
+// Short cache keeps DB load low; new scans invalidate it so counts update live.
+let publicStatsCache = { data: null, at: 0 };
+const invalidatePublicStats = () => { publicStatsCache = { data: null, at: 0 }; };
+apiRouter.get('/api/stats/public', async (req, res) => {
+  try {
+    if (!publicStatsCache.data || Date.now() - publicStatsCache.at > 60 * 1000) {
+      publicStatsCache = { data: await getPublicStats(), at: Date.now() };
+    }
+    res.json({ success: true, data: publicStatsCache.data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
 });
 
@@ -763,6 +778,7 @@ apiRouter.post('/api/analyze', upload.single('resume'), async (req, res) => {
         fileSize: file ? file.size : 0,
         evaluation
       });
+      invalidatePublicStats();
     }
 
     // Return the detailed analysis + original text (needed for AI optimizer)

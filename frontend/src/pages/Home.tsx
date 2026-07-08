@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Upload, FileText, CheckCircle2, ShieldAlert, ArrowRight, ShieldCheck, Lock, Search, BarChart3, Sparkles, Link, ChevronLeft, ChevronRight, Palette, Columns2 } from 'lucide-react';
+import { useLiveStats, formatStat } from '../utils/stats';
 import { HeroSection } from '../components/blocks/hero-section-9';
 import './Home.css';
 import './HomeCarousel.css';
@@ -23,6 +24,9 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState(0);
   const [tplActiveIndex, setTplActiveIndex] = useState(0);
+
+  // Live stats for the banner — falls back to the static values if the API is unreachable.
+  const liveStats = useLiveStats();
 
   const userId = (() => {
     try { const u = JSON.parse(localStorage.getItem('cvmind_user') || '{}'); return u.id || u._id || ''; } catch { return ''; }
@@ -294,10 +298,10 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       <section className="home-stats-banner">
         <div className="home-stats-inner">
           {[
-            { value: '50K+', label: 'Resumes Analyzed' },
+            { value: liveStats.resumesAnalyzed != null ? formatStat(liveStats.resumesAnalyzed) : '50K+', label: 'Resumes Analyzed' },
             { value: '4.9★', label: 'User Rating' },
             { value: '+42%', label: 'Interview Rate' },
-            { value: '28K+', label: 'Users This Month' },
+            { value: liveStats.usersThisMonth != null ? formatStat(liveStats.usersThisMonth) : '28K+', label: 'Users This Month' },
           ].map((stat) => (
             <div key={stat.label} className="home-stat-item">
               <div className="home-stat-value">{stat.value}</div>
@@ -896,7 +900,7 @@ export default function Home({ setCurrentPage, setAnalysisResult, setResumeText,
       {/* ── 11. FINAL CTA BANNER ─────────────────────────────── */}
       <section className="home-final-cta">
         <div className="home-final-cta-inner">
-          <div className="home-final-stars">{'★★★★★'} <span>Rated 4.9 by 12,400+ users</span></div>
+          <div className="home-final-stars">{'★★★★★'} <span>Rated 4.9 by 250+ users</span></div>
           <h2 className="home-final-title">Ready to land more interviews?</h2>
           <p className="home-final-sub">Join 50,000+ job seekers who improved their resume score and got hired faster with AI.</p>
           <div className="home-final-actions">

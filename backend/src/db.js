@@ -893,6 +893,35 @@ export async function getWorkById(workId) {
 
 
 
+// Real public counters for the homepage stats banner — no sensitive data.
+export async function getPublicStats() {
+  await ensureMongoConnection();
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+
+  if (mongoURI && mongoose.connection.readyState === 1) {
+    const [resumesAnalyzed, totalUsers, monthEmails] = await Promise.all([
+      Scan.countDocuments(),
+      User.countDocuments(),
+      LoginLog.distinct('email', { createdAt: { $gte: monthStart } }),
+    ]);
+    return { resumesAnalyzed, totalUsers, usersThisMonth: monthEmails.length };
+  }
+
+  const db = readDb();
+  const monthEmails = new Set(
+    (db.loginLogs || [])
+      .filter(l => l.createdAt && new Date(l.createdAt) >= monthStart)
+      .map(l => l.email)
+  );
+  return {
+    resumesAnalyzed: (db.scans || []).length,
+    totalUsers: (db.users || []).length,
+    usersThisMonth: monthEmails.size,
+  };
+}
+
 export async function getAdminStats() {
   await ensureMongoConnection();
   // 1. MongoDB Mode
