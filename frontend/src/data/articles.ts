@@ -411,6 +411,278 @@ export const ARTICLES: ArticleDef[] = [
       { q: 'How do I know which mistakes my resume has?', a: 'Scan it with CV Mind\'s free ATS Resume Checker — it flags formatting risks, weak bullets, missing keywords, and scores the result, so you fix real problems instead of guessing.' },
     ],
   },
+  {
+    slug: 'resume-format-for-freshers',
+    tag: 'Freshers',
+    title: 'Resume Format for Freshers: What to Write When You Have No Experience',
+    metaTitle: 'Resume Format for Freshers (2026): No-Experience Guide',
+    metaDescription: 'The exact resume format for freshers in 2026 — section order, what replaces work experience, project examples, and mistakes that cost campus placements.',
+    keywords: 'Resume Format for Freshers, Fresher Resume, Resume Without Experience, First Job Resume, Campus Placement Resume, B.Tech Fresher Resume',
+    date: 'July 8, 2026',
+    isoDate: '2026-07-08',
+    readTime: '9 min read',
+    blurb: 'No work experience? No problem. The exact section order, project descriptions, and one-page format that gets freshers shortlisted — with real examples.',
+    related: ['how-to-create-an-ats-friendly-resume', 'tell-me-about-yourself', 'resume-mistakes-to-avoid'],
+    intro: `<p>Every fresher faces the same paradox: jobs want experience, and experience needs a job. So what do you put on a resume when the "Work Experience" section is empty?</p>
+<p>Plenty, actually. Recruiters screening freshers aren't looking for job history — they're looking for evidence you can learn, build, and finish things. Projects, internships, coursework, and campus roles all count, if you present them right.</p>
+<p>This guide gives you the exact format that works for entry-level applications and campus placements, section by section, with examples you can adapt today.</p>`,
+    sections: [
+      {
+        id: 'structure',
+        heading: 'The Right Section Order for a Fresher Resume',
+        html: `<p>Order matters: put your strongest evidence first. For most freshers, that's <strong>not</strong> education — it's projects and skills.</p>
+<ol>
+<li><strong>Header</strong> — name, phone, email, LinkedIn, GitHub/portfolio (if technical)</li>
+<li><strong>Professional Summary</strong> — 3 lines: who you are, your strongest skills, what you're targeting</li>
+<li><strong>Skills</strong> — the keywords recruiters and ATS software search for</li>
+<li><strong>Projects</strong> — your substitute for work experience</li>
+<li><strong>Internships &amp; Training</strong> — even short ones</li>
+<li><strong>Education</strong> — degree, college, year, CGPA (if 7.5+)</li>
+<li><strong>Achievements &amp; Positions of Responsibility</strong> — optional, one section, only if relevant</li>
+</ol>
+<p>Keep it to <strong>one page</strong>. Recruiters expect it from freshers, and anything longer signals padding.</p>`,
+      },
+      {
+        id: 'summary',
+        heading: 'Writing a Summary With No Experience',
+        html: `<p>Skip the outdated "objective" ("Seeking a challenging role in a reputed organization…"). Write a summary that leads with what you <em>can do</em>:</p>
+<div class="art-example">
+<p>✅ <em>"Final-year B.Tech (Computer Science) student with strong foundations in Java, React, and SQL. Built 3 full-stack projects including a placement-portal app used by 400+ students. Seeking a Software Engineer role where I can ship production code from day one."</em></p>
+</div>
+<p>The formula: <strong>degree + top skills + best proof + target role.</strong> Mirror the job posting's exact keywords here — the summary is the heaviest-weighted section for ATS matching. More on that in our <a href="/resume-keywords-guide">Resume Keywords Guide</a>.</p>`,
+      },
+      {
+        id: 'projects',
+        heading: 'Projects: Your Work Experience Substitute',
+        html: `<p>This is the section that decides fresher shortlists. Write each project like a job — title, tech/tools, dates, and 2–3 result-focused bullets:</p>
+<div class="art-example">
+<p><strong>Placement Portal Web App</strong> — React, Node.js, MongoDB · Jan–Apr 2026</p>
+<ul>
+<li>Built a job-listing portal adopted by the college placement cell, serving 400+ students.</li>
+<li>Implemented resume upload with automated skill extraction, reducing manual data entry by 80%.</li>
+</ul>
+</div>
+<p>Rules that separate strong project sections from weak ones:</p>
+<ul>
+<li><strong>Numbers wherever honest</strong> — users, data size, accuracy, time saved, marks/rank.</li>
+<li><strong>Outcomes over descriptions</strong> — "built X that did Y" beats "worked on X."</li>
+<li><strong>2–4 projects maximum</strong>, your best ones, most relevant first.</li>
+<li><strong>Link the code or demo</strong> — a GitHub link turns a claim into proof.</li>
+</ul>
+<p>No projects yet? Build one two-week project aimed at the role you want — it's the highest-ROI move a fresher can make before applying.</p>`,
+      },
+      {
+        id: 'education-skills',
+        heading: 'Education, Skills, and Internships',
+        html: `<h3>Education</h3>
+<p>Degree, institution, year, and CGPA if it helps (7.5+ generally does; below that, leave it off unless asked). Add 3–4 relevant coursework topics only if they match the job posting.</p>
+<h3>Skills</h3>
+<p>Group them so they scan in seconds:</p>
+<div class="art-example">
+<p><strong>Languages:</strong> Java, Python, JavaScript &nbsp;·&nbsp; <strong>Web:</strong> React, Node.js, REST APIs &nbsp;·&nbsp; <strong>Tools:</strong> Git, Docker, MySQL</p>
+</div>
+<p>List only what you can defend in an interview — one honest "intermediate" skill beats five padded ones.</p>
+<h3>Internships</h3>
+<p>Even a 4-week internship goes above education, formatted like a job with result bullets. Include virtual internships and freelance work — output counts, not the office.</p>`,
+      },
+      {
+        id: 'fresher-mistakes',
+        heading: '5 Fresher-Specific Mistakes to Avoid',
+        html: `<ul>
+<li><strong>Photo, age, father's name, full address.</strong> None belong on a modern resume — they waste space and invite bias. Name, phone, email, city, links: done.</li>
+<li><strong>School marks on a degree resume.</strong> Once you're in college, 10th/12th percentages matter only if a posting explicitly asks.</li>
+<li><strong>A skills list with no evidence.</strong> Every skill you name should appear in a project or internship bullet. Unbacked lists read as keyword stuffing.</li>
+<li><strong>Fancy Canva templates.</strong> Campus placements increasingly run resumes through ATS software, and design-tool exports often parse as blank pages. Use a clean single-column format — full rules in the <a href="/how-to-create-an-ats-friendly-resume">ATS-friendly resume guide</a>.</li>
+<li><strong>One resume for every company.</strong> Match your summary and skills to each job description — 10 minutes that measurably raises shortlist rates. The other 15 classic errors are covered in <a href="/resume-mistakes-to-avoid">Resume Mistakes to Avoid</a>.</li>
+</ul>
+<p>Before you submit anywhere, run your resume through <a href="/">CV Mind's free ATS checker</a> — it scores fresher resumes on formatting, keywords, and structure in seconds. And if you'd rather start from a template that's already ATS-tested, use the <a href="/resume-builder">free Resume Builder</a>.</p>`,
+      },
+    ],
+    faqs: [
+      { q: 'What is the best resume format for freshers?', a: 'A one-page, single-column, reverse-chronological format with this order: header, summary, skills, projects, internships, education. Projects act as your work-experience section.' },
+      { q: 'Should freshers include a photo on their resume?', a: 'No — unless the posting explicitly asks (rare, mostly in hospitality/aviation). Photos waste space, parse badly in ATS software, and invite bias.' },
+      { q: 'What if I have no projects and no internships?', a: 'Build one focused project in the next two weeks — a working app, an analysis, a portfolio site relevant to your target role. It\'s faster than applying with an empty resume and getting silence.' },
+      { q: 'Should I mention my CGPA?', a: 'Include it if it\'s 7.5+ (or the posting sets a cutoff). Below that, leave it off unless explicitly required — let projects and skills carry the resume.' },
+      { q: 'Is a two-page resume okay for freshers?', a: 'No. Recruiters expect one page from candidates with under ~8 years of experience. If you\'re overflowing, cut generic content — not margins or font size.' },
+      { q: 'Do campus placements use ATS software?', a: 'Increasingly yes, especially at larger companies — and off-campus applications almost always do. Format for ATS from day one so the same resume works everywhere.' },
+    ],
+  },
+  {
+    slug: 'tell-me-about-yourself',
+    tag: 'Interview',
+    title: '"Tell Me About Yourself": The Formula + Sample Answers That Work',
+    metaTitle: 'Tell Me About Yourself: Formula + Sample Answers',
+    metaDescription: 'A simple Present-Past-Future formula for "Tell me about yourself" — with sample answers for freshers, experienced candidates, and career changers.',
+    keywords: 'Tell Me About Yourself, Interview Introduction, Self Introduction Interview, Tell Me About Yourself Answer, HR Interview Questions',
+    date: 'July 8, 2026',
+    isoDate: '2026-07-08',
+    readTime: '8 min read',
+    blurb: 'The first question of almost every interview — and the easiest to prepare. A 3-part formula with word-for-word sample answers for freshers and pros.',
+    related: ['resume-format-for-freshers', 'resume-mistakes-to-avoid', 'linkedin-profile-optimization'],
+    intro: `<p>It's the first question in almost every interview, and it sounds harmless: "So — tell me about yourself."</p>
+<p>Then candidates either recite their resume line by line, start from their birthplace, or freeze wondering what the interviewer actually wants. All three waste the single best opportunity of the interview: for two minutes, you control the narrative completely.</p>
+<p>Interviewers ask it to break the ice, check your communication skills, and — most importantly — decide which threads to pull on next. A good answer plants exactly the threads you want them to pull. Here's the formula.</p>`,
+    sections: [
+      {
+        id: 'formula',
+        heading: 'The Present–Past–Future Formula',
+        html: `<p>Structure your answer in three parts, 90–120 seconds total:</p>
+<div class="art-table-wrap"><table>
+<thead><tr><th>Part</th><th>What to say</th><th>Time</th></tr></thead>
+<tbody>
+<tr><td><strong>Present</strong></td><td>Who you are professionally right now — role/degree, core skills, one headline strength</td><td>~30 sec</td></tr>
+<tr><td><strong>Past</strong></td><td>The 1–2 experiences or projects that prove that strength, with a concrete result</td><td>~45 sec</td></tr>
+<tr><td><strong>Future</strong></td><td>Why this role, this company — what you want to do next and why they're the fit</td><td>~30 sec</td></tr>
+</tbody>
+</table></div>
+<p>Why this order works: it answers "what can you do for us?" first, backs it with proof, and ends by connecting your goals to their job — which naturally leads the interviewer into questions you've already prepared for.</p>`,
+      },
+      {
+        id: 'sample-fresher',
+        heading: 'Sample Answer: Fresher',
+        html: `<div class="art-example">
+<p><em>"I'm a final-year Computer Science student at NIT Surathkal with a focus on full-stack development — mainly React and Node.js. <strong>(Present)</strong></em></p>
+<p><em>Over the last two years I've built three production-grade projects, including a placement portal my college now uses, with 400+ student accounts. During my summer internship at a fintech startup, I shipped a dashboard feature that cut the support team's reporting time by half. <strong>(Past)</strong></em></p>
+<p><em>I'm now looking for a software engineering role where I can work on products at scale, and your team's work on payments infrastructure is exactly the kind of engineering I want to grow in." <strong>(Future)</strong></em></p>
+</div>
+<p>Notice: no birthplace, no hobbies, no family details, no repeating the resume top to bottom — just proof and direction. Your resume should set up this same story; see the <a href="/resume-format-for-freshers">fresher resume format guide</a>.</p>`,
+      },
+      {
+        id: 'sample-experienced',
+        heading: 'Sample Answers: Experienced & Career Change',
+        html: `<h3>Experienced professional</h3>
+<div class="art-example">
+<p><em>"I'm a digital marketer with five years of experience, currently leading paid acquisition at a D2C brand where I manage a ₹40-lakh monthly budget across Google and Meta. Before this, I spent two years at an agency running campaigns for 12 clients, which taught me to move fast across very different industries — my last two quarters here, I've cut customer acquisition cost by 30% while doubling spend. I'm looking to move into a growth-lead role, and this position's mix of paid and lifecycle marketing is exactly the scope I've been building toward."</em></p>
+</div>
+<h3>Career changer</h3>
+<div class="art-example">
+<p><em>"I spent four years in banking operations, where I kept gravitating toward the data side — automating reports, building dashboards, finding patterns in customer complaints. That pull got strong enough that I completed a data analytics certification and built three portfolio projects, including a churn model on real banking-style data. I'm now looking to make analytics my full-time work, and this analyst role is ideal because my domain background in finance means I already speak your stakeholders' language."</em></p>
+</div>
+<p>The career-change version works because it frames the switch as a <strong>pull toward</strong> the new field with evidence, not an escape from the old one.</p>`,
+      },
+      {
+        id: 'mistakes',
+        heading: '6 Mistakes That Ruin This Answer',
+        html: `<ul>
+<li><strong>Reciting your resume chronologically.</strong> They've read it. Curate the highlights that fit <em>this</em> job.</li>
+<li><strong>Starting from childhood.</strong> "I was born in…" — no. Start from your current professional identity.</li>
+<li><strong>Going over 2 minutes.</strong> Past that, interviewers stop listening. Practice with a timer.</li>
+<li><strong>Personal details.</strong> Family, religion, relationship status — irrelevant and awkward in a professional answer.</li>
+<li><strong>No ending.</strong> Trailing off with "…so, yeah" hands back an awkward silence. End with the Future part — it gives the interviewer their next question.</li>
+<li><strong>Memorizing word-for-word.</strong> Memorize the three beats and your numbers, not sentences — a recited answer sounds robotic the moment you're nervous.</li>
+</ul>`,
+      },
+      {
+        id: 'practice',
+        heading: 'How to Practice It Properly',
+        html: `<ol>
+<li>Write your answer using the formula (aim for ~200–250 words).</li>
+<li>Read it aloud three times, then throw the script away and speak from the three beats.</li>
+<li>Record yourself once — you'll instantly hear filler words and pacing problems.</li>
+<li>Practice against a real interviewer: <a href="/prep">CV Mind's AI Interview Prep</a> generates questions from your actual resume and scores your answers, and <a href="/voice-prep">Voice Practice</a> gives real-time feedback on how you sound, not just what you say.</li>
+</ol>
+<p>Three rounds of practice is usually the difference between rambling and owning the first two minutes of every interview.</p>`,
+      },
+    ],
+    faqs: [
+      { q: 'How long should my answer to "tell me about yourself" be?', a: '90 seconds to 2 minutes. Under a minute feels underprepared; over two minutes loses the interviewer. Practice with a timer until you land in the window naturally.' },
+      { q: 'Should I mention hobbies or family?', a: 'No, not in this answer. Keep it professional: present role, proof from your past, and why this job. If the interviewer wants personal rapport, they\'ll ask separately.' },
+      { q: 'Is it okay to memorize my answer?', a: 'Memorize the structure and your key numbers, not the sentences. A word-for-word script sounds robotic and falls apart under nerves; three practiced beats stay flexible.' },
+      { q: 'What if I\'m a fresher with nothing to say?', a: 'You have more than you think: your degree focus, your best project with a number attached, an internship or campus role, and why this company. That\'s a complete Present-Past-Future answer.' },
+      { q: 'How is this different from "walk me through your resume"?', a: '"Walk me through your resume" wants a chronological tour with reasons for each transition. "Tell me about yourself" wants a curated pitch. Prepare both — the formula still helps with structure.' },
+      { q: 'Should the answer change for every company?', a: 'The Present and Past parts mostly stay stable; the Future part must change every time — name the role and a specific reason this company fits your direction.' },
+    ],
+  },
+  {
+    slug: 'linkedin-profile-optimization',
+    tag: 'LinkedIn',
+    title: 'LinkedIn Profile Optimization: 10 Steps to Start Getting Recruiter Messages',
+    metaTitle: 'LinkedIn Profile Optimization: 10 Steps (2026)',
+    metaDescription: 'Optimize your LinkedIn profile in 10 steps — headline formulas, About section template, keyword placement, and settings that make recruiters find you.',
+    keywords: 'LinkedIn Profile Optimization, LinkedIn Headline, LinkedIn About Section, LinkedIn SEO, LinkedIn for Job Search, Recruiter Search LinkedIn',
+    date: 'July 8, 2026',
+    isoDate: '2026-07-08',
+    readTime: '9 min read',
+    blurb: 'Recruiters search LinkedIn like Google. These 10 steps — headline, About section, keywords, and settings — decide whether you show up in their results.',
+    related: ['resume-keywords-guide', 'tell-me-about-yourself', 'how-to-create-an-ats-friendly-resume'],
+    intro: `<p>While you're applying to jobs, recruiters are doing the reverse: searching LinkedIn for candidates. They type skills and titles into a search bar — "React developer Bangalore," "performance marketing manager" — and message whoever ranks on the first pages.</p>
+<p>That means your LinkedIn profile is not a social page; it's a search listing. Optimize it like one and opportunities start arriving instead of being chased. These 10 steps take about two hours total and cover everything recruiter search rewards.</p>`,
+    sections: [
+      {
+        id: 'headline',
+        heading: 'Steps 1–2: Headline and Photo',
+        html: `<h3>1. Rewrite your headline (the highest-impact 220 characters on LinkedIn)</h3>
+<p>Your headline follows you everywhere — search results, comments, connection requests. "Student at XYZ College" or bare "Software Engineer" wastes it. Use this formula:</p>
+<div class="art-example">
+<p><strong>Role | Top skills | Proof or focus</strong></p>
+<p>✅ <em>"Frontend Developer | React, TypeScript, Next.js | Built products used by 50K+ users"</em></p>
+<p>✅ <em>"Digital Marketer | SEO &amp; Performance Ads | Scaled D2C revenue 3x in 12 months"</em></p>
+<p>✅ <em>"Final-year CS Student | Java, React, SQL | Seeking SDE roles · 3 full-stack projects"</em></p>
+</div>
+<p>Skills in the headline carry heavy weight in recruiter search — put your 2–3 most searched ones there. <a href="/linkedin-bio">CV Mind's LinkedIn Bio Generator</a> drafts headline options from your resume in one click.</p>
+<h3>2. Fix the photo and banner</h3>
+<p>Profiles with a photo get dramatically more views and messages. You need: clear face, decent light, plain background — a phone photo against a wall works. Add a banner (even a simple color with your stack or tagline) so your profile doesn't look abandoned.</p>`,
+      },
+      {
+        id: 'about',
+        heading: 'Steps 3–4: About Section and Experience',
+        html: `<h3>3. Write an About section that front-loads keywords</h3>
+<p>Only the first ~3 lines show before "…see more" — put your role, top skills, and best number there. A template that works:</p>
+<div class="art-example">
+<p><em>Line 1–3: Who you are + top skills + headline proof.</em><br/>
+<em>Middle: 2–3 short paragraphs — what you've built/achieved, with numbers.</em><br/>
+<em>End: what you're looking for + how to reach you.</em></p>
+</div>
+<p>Write it in first person — "I build…" reads human; third person reads like a press release.</p>
+<h3>4. Turn experience entries into achievement bullets</h3>
+<p>Copy the discipline from your resume: action verb + task + measurable result, 2–4 bullets per role. Recruiters compare your LinkedIn against your resume — they should match in substance. Same rules as your resume bullets, covered in <a href="/resume-mistakes-to-avoid">Resume Mistakes to Avoid</a>.</p>`,
+      },
+      {
+        id: 'keywords-skills',
+        heading: 'Steps 5–7: Skills, Keywords, and Endorsements',
+        html: `<h3>5. Fill all 50 skill slots — top 3 pinned deliberately</h3>
+<p>Recruiter search filters directly on the Skills section. Add every skill you can defend, and pin the 3 most relevant to the roles you want — those get shown first and gather endorsements fastest.</p>
+<h3>6. Repeat your core keywords across sections</h3>
+<p>LinkedIn's search ranks profiles partly on keyword frequency and placement: headline, About, experience titles, and skills all count. Pick 5–6 core terms (same method as our <a href="/resume-keywords-guide">resume keywords guide</a>) and make sure each appears in at least two sections — naturally, not stuffed.</p>
+<h3>7. Get 5–10 endorsements on your pinned skills</h3>
+<p>Endorse classmates and colleagues for skills you've genuinely seen — most people reciprocate within days. Endorsed skills rank better in filtered searches.</p>`,
+      },
+      {
+        id: 'settings-activity',
+        heading: 'Steps 8–10: Settings, URL, and Activity',
+        html: `<h3>8. Turn on "Open to Work" — the right way</h3>
+<p>Settings → Job seeking preferences. Choose <strong>"Recruiters only"</strong> if you're currently employed (hides it from your company), or the public green ring if you're a fresher or openly searching. Fill in target titles and locations precisely — recruiters filter on these fields.</p>
+<h3>9. Claim a clean custom URL</h3>
+<p>linkedin.com/in/priya-sharma-dev beats linkedin.com/in/priya-sharma-8842a91b7. Takes 30 seconds in profile settings, and it's what goes on your resume header.</p>
+<h3>10. Be minimally active — it compounds</h3>
+<p>You don't need to become an influencer. Two comments a week on posts in your field plus one post a month (a project you built, something you learned) keeps you in your network's feed — and profile views convert to recruiter messages. <a href="/linkedin-post">CV Mind's LinkedIn Post Generator</a> can draft posts from a one-line idea, and <a href="/linkedin">the LinkedIn Audit tool</a> scores your finished profile with specific fixes.</p>`,
+      },
+      {
+        id: 'checklist',
+        heading: 'The 2-Hour Checklist',
+        html: `<div class="art-table-wrap"><table>
+<thead><tr><th>Step</th><th>Item</th><th>Time</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Keyword headline (Role | Skills | Proof)</td><td>15 min</td></tr>
+<tr><td>2</td><td>Photo + banner</td><td>15 min</td></tr>
+<tr><td>3</td><td>About section, keywords in first 3 lines</td><td>30 min</td></tr>
+<tr><td>4</td><td>Achievement bullets on every role</td><td>30 min</td></tr>
+<tr><td>5–7</td><td>50 skills, pin top 3, seed endorsements</td><td>20 min</td></tr>
+<tr><td>8–9</td><td>Open to Work settings + custom URL</td><td>5 min</td></tr>
+<tr><td>10</td><td>First comment/post of the week</td><td>10 min</td></tr>
+</tbody>
+</table></div>`,
+      },
+    ],
+    faqs: [
+      { q: 'How do recruiters actually find candidates on LinkedIn?', a: 'Through keyword search with filters — titles, skills, location, and Open to Work status. Your headline, Skills section, and About section carry the most weight in whether you appear.' },
+      { q: 'What is the best LinkedIn headline format?', a: 'Role | Top 2–3 skills | Proof or focus. Example: "Data Analyst | SQL, Power BI, Python | Turned churn data into a 12% retention lift." Skills in the headline rank heavily in search.' },
+      { q: 'Should I use "Open to Work" if I\'m employed?', a: 'Yes — set it to "Recruiters only," which hides the signal from recruiters at your own company. The public green ring is best for freshers and openly searching candidates.' },
+      { q: 'Does LinkedIn activity really matter for job search?', a: 'Moderately, and it compounds: commenting and posting keeps your face in feeds, which drives profile views, which drives recruiter messages. Two comments a week is enough to start.' },
+      { q: 'Should my LinkedIn match my resume exactly?', a: 'In substance, yes — same roles, dates, and headline achievements. LinkedIn can carry more detail and personality, but contradictions between the two are a red flag recruiters check for.' },
+      { q: 'How long does LinkedIn optimization take to show results?', a: 'Search visibility improves within days of updating headline and skills. Recruiter messages typically follow within 2–6 weeks, depending on how in-demand your role and location are.' },
+    ],
+  },
 ];
 
 export const getArticle = (slug: string) => ARTICLES.find(a => a.slug === slug);
